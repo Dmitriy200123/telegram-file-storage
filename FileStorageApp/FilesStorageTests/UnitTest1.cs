@@ -19,7 +19,7 @@ namespace FilesStorageTests
             testClient = new S3Client("123", "123", "mytestbucket", config);
             Task.Run(async () =>
             {
-                var buckets = await testClient.GetBuckets();
+                var buckets = await testClient.GetBucketsAsync();
                 foreach (var bucket in buckets.Buckets)
                 {
                     await testClient.DeleteBucket(bucket.BucketName);
@@ -32,7 +32,7 @@ namespace FilesStorageTests
         {
             Task.Run(async () =>
             {
-                var buckets = await testClient.GetBuckets();
+                var buckets = await testClient.GetBucketsAsync();
                 foreach (var bucket in buckets.Buckets)
                 {
                     await testClient.DeleteBucket(bucket.BucketName);
@@ -45,7 +45,7 @@ namespace FilesStorageTests
         {
             var testName = "abc";
             await testClient.CreateBucket(testName);
-            var buckets = await testClient.GetBuckets();
+            var buckets = await testClient.GetBucketsAsync();
             foreach (var bucket in buckets.Buckets)
             {
                 if (bucket.BucketName == testName)

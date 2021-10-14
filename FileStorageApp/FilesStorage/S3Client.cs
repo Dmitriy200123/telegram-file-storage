@@ -9,20 +9,38 @@ namespace FilesStorage
 {
     public class S3Client : IFilesStorage
     {
-        private static string _defaultBucket;
+        private static string _defaultBucketName;
         private readonly IAmazonS3 _s3Client;
 
         public S3Client(string accessKey, string secretKey, string defautBucket, AmazonS3Config config)
         {
             accessKey = accessKey ?? throw new ArgumentNullException(nameof(accessKey));
             secretKey = secretKey ?? throw new ArgumentNullException(nameof(secretKey));
-            _defaultBucket = defautBucket ?? throw new ArgumentNullException(nameof(defautBucket));
+            _defaultBucketName = defautBucket ?? throw new ArgumentNullException(nameof(defautBucket));
 
             _s3Client = new AmazonS3Client(
                 accessKey,
                 secretKey,
                 config
             );
+
+            CreateDefaultBucket();
+        }
+
+        private void CreateDefaultBucket()
+        {
+            ListBucketsResponse buckets = new ListBucketsResponse();
+            Task.Run(async () => { buckets = await this.GetBucketsAsync(); }).GetAwaiter().GetResult();
+
+            foreach (var bucket in buckets.Buckets)
+            {
+                if (_defaultBucketName == bucket.BucketName)
+                {
+                    return;
+                }
+            }
+
+            Task.Run(async () => { await this.CreateBucket(_defaultBucketName); }).GetAwaiter().GetResult();
         }
 
         public async Task<PutObjectResponse> SaveAsync(string key, FileStream stream,
@@ -30,7 +48,7 @@ namespace FilesStorage
         {
             var request = new PutObjectRequest
             {
-                BucketName = bucketName ?? _defaultBucket,
+                BucketName = bucketName ?? _defaultBucketName,
                 CannedACL = accessFlag,
                 Key = key,
                 InputStream = stream
@@ -46,7 +64,7 @@ namespace FilesStorage
             var response = await _s3Client.GetObjectAsync(
                 new GetObjectRequest()
                 {
-                    BucketName = _defaultBucket,
+                    BucketName = _defaultBucketName,
                     Key = key
                 }
             );
@@ -55,7 +73,7 @@ namespace FilesStorage
 
         public async Task<ListObjectsResponse> GetFilesAsync()
         {
-            var response = await _s3Client.ListObjectsAsync(new ListObjectsRequest() {BucketName = _defaultBucket});
+            var response = await _s3Client.ListObjectsAsync(new ListObjectsRequest() {BucketName = _defaultBucketName});
             return response;
         }
 
@@ -80,7 +98,7 @@ namespace FilesStorage
             return response;
         }
 
-        public async Task<ListBucketsResponse> GetBuckets()
+        public async Task<ListBucketsResponse> GetBucketsAsync()
         {
             var response = await _s3Client.ListBucketsAsync();
             return response;
