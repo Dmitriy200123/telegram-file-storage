@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    network_mode: bridge
+    ports:
+      - 4566:4566
+      - "${PORT_WEB_UI-8090}:${PORT_WEB_UI-8090}"
+    environment:
+      - SERVICES=s3,sns,sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=${PORT_WEB_UI- }
+    volumes:
+      - "localstack-vol:/tmp/localstack"
+
+
+volumes:
+  localstack-vol:
+  
