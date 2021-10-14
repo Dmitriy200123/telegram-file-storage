@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FileStorageApp.Data.InfoStorage.Tables.Chat
 {
-    public class ChatTable : IChatTable
+    internal class ChatTable : IChatTable
     {
-        private DbSet<Models.Chat> _сhats { get; set; }
-        internal ChatTable(IMainStorage mainStorage)
+        private IMainStorage _mainStorage;
+        public ChatTable(IMainStorage mainStorage)
         {
-            _сhats = mainStorage.Chats;
+            this._mainStorage = mainStorage;
         }
 
         public Models.Chat GetChatById(Guid id)
         {
-            var fileSender = _сhats.FirstOrDefault(x => x.Id == id);
+            var fileSender = _mainStorage.Chats.FirstOrDefault(x => x.Id == id);
             if (fileSender == null)
                 throw new ArgumentException($"Chat with id {id} not found");
             return fileSender;

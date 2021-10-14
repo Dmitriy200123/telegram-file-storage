@@ -5,6 +5,7 @@ namespace FileStorageApp.Data.InfoStorage
 {
     internal interface IMainStorage
     {
+        public void Save();
         public DbSet<File> Files { get; set; }
         public DbSet<FileSender> FileSenders { get; set; }
         public DbSet<Chat> Chats { get; set; }
