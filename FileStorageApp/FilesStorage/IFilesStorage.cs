@@ -7,8 +7,9 @@ namespace FilesStorage
 {
     public interface IFilesStorage
     {
-        Task<PutObjectResponse> Save(string key, FileStream stream, S3CannedACL accessFlag);
+        Task<PutObjectResponse> SaveAsync(string key, FileStream stream, S3CannedACL accessFlag,
+            string bucketName = null);
 
-        Task<GetObjectResponse> GetFile(string key);
+        Task<GetObjectResponse> GetFileAsync(string key);
     }
 }
