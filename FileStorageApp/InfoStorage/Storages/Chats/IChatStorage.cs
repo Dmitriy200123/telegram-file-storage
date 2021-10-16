@@ -5,6 +5,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 {
     public interface IChatStorage : IDisposable
     {
-        Chat GetChatById(Guid id);
+      
     }
 }

@@ -5,6 +5,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 {
     public interface IFileSenderStorage : IDisposable
     {
-        FileSender GetFileSenderById(Guid id);
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FileStorageApp.Data.InfoStorage.Config;
+﻿using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,14 +6,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 {
     internal class FilesStorage : BaseStorage<File>, IFilesStorage
     {
-        public File GetFileById(Guid id)
-        {
-            var fileSender = DbSet.FirstOrDefault(x => x.Id == id);
-            if (fileSender == null)
-                throw new ArgumentException($"File with id {id} not found");
-            return fileSender;
-        }
-
         internal FilesStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }

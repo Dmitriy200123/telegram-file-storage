@@ -5,6 +5,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 {
     public interface IFilesStorage : IDisposable
     {
-        File GetFileById(Guid id);
     }
 }

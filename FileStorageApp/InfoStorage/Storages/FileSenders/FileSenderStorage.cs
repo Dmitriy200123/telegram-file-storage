@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FileStorageApp.Data.InfoStorage.Config;
+﻿using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,14 +6,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 {
     internal class FileSenderStorage : BaseStorage<FileSender>, IFileSenderStorage
     {
-        public FileSender GetFileSenderById(Guid id)
-        {
-            var fileSender = DbSet.FirstOrDefault(x => x.Id == id);
-            if (fileSender == null)
-                throw new ArgumentException($"User with id {id} not found");
-            return fileSender;
-        }
-
         internal FileSenderStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }
