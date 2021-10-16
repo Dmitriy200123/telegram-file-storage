@@ -4,9 +4,9 @@ using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileStorageApp.Data.InfoStorage.Tables.FileSenders
+namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 {
-    internal class FileSenderTable : BaseStorage<FileSender>, IFileSenderTable
+    internal class FileSenderStorage : BaseStorage<FileSender>, IFileSenderStorage
     {
         public FileSender GetFileSenderById(Guid id)
         {
@@ -16,7 +16,7 @@ namespace FileStorageApp.Data.InfoStorage.Tables.FileSenders
             return fileSender;
         }
 
-        internal FileSenderTable(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
+        internal FileSenderStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }
 

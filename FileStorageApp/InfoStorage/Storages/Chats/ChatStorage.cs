@@ -4,9 +4,9 @@ using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileStorageApp.Data.InfoStorage.Tables.Chats
+namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 {
-    internal class ChatTable : BaseStorage<Chat>, IChatTable
+    internal class ChatStorage : BaseStorage<Chat>, IChatStorage
     {
         public Chat GetChatById(Guid id)
         {
@@ -16,7 +16,7 @@ namespace FileStorageApp.Data.InfoStorage.Tables.Chats
             return fileSender;
         }
 
-        internal ChatTable(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
+        internal ChatStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }
 

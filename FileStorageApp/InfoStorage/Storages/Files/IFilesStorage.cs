@@ -1,9 +1,9 @@
 using System;
 using FileStorageApp.Data.InfoStorage.Models;
 
-namespace FileStorageApp.Data.InfoStorage.Tables.Files
+namespace FileStorageApp.Data.InfoStorage.Storages.Files
 {
-    public interface IFilesTable : IDisposable
+    public interface IFilesStorage : IDisposable
     {
         File GetFileById(Guid id);
     }

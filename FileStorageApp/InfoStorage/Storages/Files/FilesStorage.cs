@@ -4,9 +4,9 @@ using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileStorageApp.Data.InfoStorage.Tables.Files
+namespace FileStorageApp.Data.InfoStorage.Storages.Files
 {
-    internal class FilesTable : BaseStorage<File>, IFilesTable
+    internal class FilesStorage : BaseStorage<File>, IFilesStorage
     {
         public File GetFileById(Guid id)
         {
@@ -16,7 +16,7 @@ namespace FileStorageApp.Data.InfoStorage.Tables.Files
             return fileSender;
         }
 
-        internal FilesTable(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
+        internal FilesStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }
 

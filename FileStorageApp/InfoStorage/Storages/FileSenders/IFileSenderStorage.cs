@@ -1,9 +1,9 @@
 ﻿using System;
 using FileStorageApp.Data.InfoStorage.Models;
 
-namespace FileStorageApp.Data.InfoStorage.Tables.FileSenders
+namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 {
-    public interface IFileSenderTable : IDisposable
+    public interface IFileSenderStorage : IDisposable
     {
         FileSender GetFileSenderById(Guid id);
     }
