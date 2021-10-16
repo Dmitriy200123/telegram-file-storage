@@ -1,9 +1,10 @@
 using System;
+using FileStorageApp.Data.InfoStorage.Models;
 
 namespace FileStorageApp.Data.InfoStorage.Tables.Files
 {
     public interface IFilesTable
     {
-        Models.File GetFileById(Guid id);
+        File GetFileById(Guid id);
     }
 }
