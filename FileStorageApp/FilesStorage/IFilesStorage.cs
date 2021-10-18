@@ -7,9 +7,22 @@ namespace FilesStorage
 {
     public interface IFilesStorage
     {
-        Task<PutObjectResponse> SaveAsync(string key, FileStream stream, S3CannedACL accessFlag,
-            string bucketName = null);
+        Task SaveFileAsync(string key, FileStream stream);
 
-        Task<GetObjectResponse> GetFileAsync(string key);
+        Task GetFileAsync(string key);
+    }
+    public interface IS3FilesStorageOptions
+    {
+        string AccessKey { get; }
+        string SecretKey { get; }
+        string DefautBucketName { get; }
+        AmazonS3Config Config { get; }
+        S3CannedACL DefaultPermission { get; }
+    }
+
+    public interface IFilesStorageFactory
+    {
+        Task<IFilesStorage> CreateAsync(IS3FilesStorageOptions options);
+
     }
 }
