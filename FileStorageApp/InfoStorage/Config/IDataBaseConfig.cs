@@ -1,8 +1,9 @@
 ﻿namespace FileStorageApp.Data.InfoStorage.Config
 {
-    internal interface IDataBaseConfig
+    public interface IDataBaseConfig
     {
         string GetConnectionString();
+
         void SetConnectionString(string connectionString);
     }
 }
