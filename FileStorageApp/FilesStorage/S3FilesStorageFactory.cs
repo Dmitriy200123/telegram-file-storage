@@ -9,7 +9,7 @@ namespace FilesStorage
 {
     public class S3FilesStorageFactory : IFilesStorageFactory
     {
-        public IS3FilesStorageOptions Options { get; }
+        private IS3FilesStorageOptions Options { get; }
 
         public S3FilesStorageFactory(IS3FilesStorageOptions options)
         {

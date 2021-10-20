@@ -4,7 +4,6 @@ namespace FilesStorage.Interfaces
 {
     public interface IFilesStorageFactory
     {
-        IS3FilesStorageOptions Options { get; }
         Task<IFilesStorage> CreateAsync();
     }
 }
