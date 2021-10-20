@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Amazon.S3;
 using FilesStorage;
+using FilesStorage.Interfaces;
 
 namespace FilesStorageTests
 {
@@ -17,8 +18,8 @@ namespace FilesStorageTests
             config.ServiceURL = serviceUrl;
             config.ForcePathStyle = true;
             testClient =
-                await new S3FilesStorageFactory().CreateAsync(new S3FilesStorageOptions("123", "123",
-                    "test", config, S3CannedACL.PublicReadWrite));
+                await new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
+                    "test", config, S3CannedACL.PublicReadWrite, 2)).CreateAsync();
         }
 
         [TearDown]
