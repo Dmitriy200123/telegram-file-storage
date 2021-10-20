@@ -8,6 +8,6 @@ namespace FilesStorage.Interfaces
     {
         Task SaveFileAsync(string key, FileStream stream);
 
-        Task<File> GetFileAsync(string key);
+        File GetFile(string key);
     }
 }

@@ -33,16 +33,8 @@ namespace FilesStorage
             await _s3Client.PutObjectAsync(request);
         }
 
-        public async Task<File> GetFileAsync(string key)
+        public File GetFile(string key)
         {
-            var response = await _s3Client.GetObjectAsync(
-                new GetObjectRequest()
-                {
-                    BucketName = _options.BucketName,
-                    Key = key
-                }
-            );
-
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = _options.BucketName,
