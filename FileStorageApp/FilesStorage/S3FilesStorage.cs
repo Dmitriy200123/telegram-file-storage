@@ -12,6 +12,7 @@ namespace FilesStorage
     {
         private readonly IS3FilesStorageOptions _options;
         private readonly IAmazonS3 _s3Client;
+        private bool _disposed = false;
 
         public S3FilesStorage(IAmazonS3 client, IS3FilesStorageOptions options)
         {
@@ -45,11 +46,42 @@ namespace FilesStorage
             return new File(urlString);
         }
 
+        public async Task DeleteFileAsync(string key)
+        {
+            var deleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = key
+            };
+
+            await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+        }
+
         public async Task<ListObjectsResponse> GetFilesAsync()
         {
             var response = await _s3Client.ListObjectsAsync(new ListObjectsRequest()
                 {BucketName = _options.BucketName});
             return response;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _s3Client.Dispose();
+            }
+
+            _disposed = true;
         }
     }
 }
