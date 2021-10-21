@@ -1,0 +1,22 @@
+.paginator{
+  display: flex;
+  color: #67757C;
+  &__nothing, &__item{
+    color: #67757C;
+    padding: 12px 15px;
+    border: 1px solid #E9E9E9;
+    background: white;
+  }
+  &__item{
+    transition: border 0.25s ease;
+    &:hover{
+      border: 1px solid #2684FF;
+      cursor: pointer;
+    }
+    &_active{
+      color: #2684FF;
+      border: 1px solid #2684FF;
+    }
+  }
+}
+
