@@ -1,3 +1,9 @@
 # Rider ignored files
 .idea/
 *.sln.iml
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+*.user
