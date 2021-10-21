@@ -27,7 +27,10 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 
         public Task<List<Chat>> GetAll()
         {
-            return DbSet.ToListAsync();
+            return DbSet
+                .OrderBy(x => x.Name)
+                .ThenBy(x => x.Id)
+                .ToListAsync();
         }
 
         public Task<Chat> GetById(Guid id)
@@ -45,13 +48,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             return DbSet.AddAsync(chat);
         }
 
-        public async Task<EntityEntry<Chat>> Update(Guid id, string? name = null, Guid? imageId = null)
+        public EntityEntry<Chat> Update(Chat chat)
         {
-            var chat = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            if (name != null)
-                chat.Name = name;
-            if (imageId != null)
-                chat.ImageId = imageId.Value;
             return DbSet.Update(chat);
         }
 

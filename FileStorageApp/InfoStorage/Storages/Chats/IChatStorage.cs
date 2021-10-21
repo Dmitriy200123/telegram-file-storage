@@ -12,7 +12,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         public Task<Chat> GetById(Guid id);
         public Task<List<Chat>> GetBySubString(string subString);
         public ValueTask<EntityEntry<Chat>> Add(Chat chat);
-        public Task<EntityEntry<Chat>> Update(Guid id, string? name = null, Guid? imageId = null);
+        public EntityEntry<Chat> Update(Chat chat);
         public Task<EntityEntry<Chat>> Delete(Guid id);
         public Task<bool> Contains(Guid id);
     }
