@@ -48,6 +48,7 @@ namespace FilesStorage
 
         public async Task DeleteFileAsync(string key)
         {
+            var abc = (await this.GetFilesAsync()).S3Objects;
             var deleteObjectRequest = new DeleteObjectRequest
             {
                 BucketName = _options.BucketName,
@@ -55,6 +56,7 @@ namespace FilesStorage
             };
 
             await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+            abc = (await this.GetFilesAsync()).S3Objects;
         }
 
         public async Task<ListObjectsResponse> GetFilesAsync()
