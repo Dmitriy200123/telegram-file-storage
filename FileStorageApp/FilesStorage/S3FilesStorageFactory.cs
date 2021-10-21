@@ -9,7 +9,7 @@ namespace FilesStorage
 {
     public class S3FilesStorageFactory : IFilesStorageFactory
     {
-        private IS3FilesStorageOptions Options { get; }
+        private readonly IS3FilesStorageOptions Options;
 
         public S3FilesStorageFactory(IS3FilesStorageOptions options)
         {
@@ -26,7 +26,7 @@ namespace FilesStorage
 
             var buckets = await client.ListBucketsAsync();
 
-            if (buckets.Buckets.Any(bucket => bucket.BucketName == Options.BucketName))
+            if (buckets.Buckets.All(bucket => bucket.BucketName != Options.BucketName))
             {
                 await client.PutBucketAsync(new PutBucketRequest
                 {
