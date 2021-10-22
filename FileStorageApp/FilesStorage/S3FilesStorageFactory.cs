@@ -9,33 +9,33 @@ namespace FilesStorage
 {
     public class S3FilesStorageFactory : IFilesStorageFactory
     {
-        private readonly IS3FilesStorageOptions Options;
+        private readonly IS3FilesStorageOptions _options;
 
         public S3FilesStorageFactory(IS3FilesStorageOptions options)
         {
-            Options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task<IFilesStorage> CreateAsync()
         {
             var client = new AmazonS3Client(
-                Options.AccessKey,
-                Options.SecretKey,
-                Options.Config
+                _options.AccessKey,
+                _options.SecretKey,
+                _options.Config
             );
 
             var buckets = await client.ListBucketsAsync();
 
-            if (buckets.Buckets.All(bucket => bucket.BucketName != Options.BucketName))
+            if (buckets.Buckets.All(bucket => bucket.BucketName != _options.BucketName))
             {
                 await client.PutBucketAsync(new PutBucketRequest
                 {
-                    BucketName = Options.BucketName,
+                    BucketName = _options.BucketName,
                     UseClientRegion = true
                 });
             }
 
-            return new S3FilesStorage(client, Options);
+            return new S3FilesStorage(client, _options);
         }
     }
 }

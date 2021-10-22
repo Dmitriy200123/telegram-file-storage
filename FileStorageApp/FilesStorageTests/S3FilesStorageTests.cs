@@ -14,7 +14,7 @@ namespace FilesStorageTests
     public class S3FilesStorageShould
     {
         private const string serviceUrl = "http://localhost:4566";
-        private IFilesStorage testClient;
+        private IFilesStorage _sut;
 
         [SetUp]
         public void Setup()
@@ -23,20 +23,19 @@ namespace FilesStorageTests
             config.ServiceURL = serviceUrl;
             config.ForcePathStyle = true;
 
-            testClient = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
+            _sut = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
                 "test", config, S3CannedACL.PublicReadWrite, 2)).CreateAsync().GetAwaiter().GetResult();
-
-            var files = testClient.GetFilesAsync().GetAwaiter().GetResult().S3Objects;
-
-            foreach (var file in files)
-            {
-                testClient.DeleteFileAsync(file.Key);
-            }
         }
 
         [TearDown]
         public void TearDown()
         {
+            var files = _sut.GetFilesAsync().GetAwaiter().GetResult().S3Objects;
+
+            foreach (var file in files)
+            {
+                _sut.DeleteFileAsync(file.Key);
+            }
         }
 
         [Test]
@@ -49,9 +48,9 @@ namespace FilesStorageTests
                 var key = fileStream.Name;
                 fileStream.Write(new byte[8]);
 
-                await testClient.SaveFileAsync(key, fileStream);
+                await _sut.SaveFileAsync(key, fileStream);
 
-                var result = (await testClient.GetFilesAsync()).S3Objects;
+                var result = (await _sut.GetFilesAsync()).S3Objects;
 
                 result.Should().HaveCount(1).And.Subject.First().Key.Should().Be(key);
             }
@@ -67,10 +66,10 @@ namespace FilesStorageTests
                 var key = fileStream.Name;
                 fileStream.Write(new byte[8]);
 
-                await testClient.SaveFileAsync(key, fileStream);
+                await _sut.SaveFileAsync(key, fileStream);
 
-                await testClient.DeleteFileAsync(key);
-                var result = (await testClient.GetFilesAsync()).S3Objects;
+                await _sut.DeleteFileAsync(key);
+                var result = (await _sut.GetFilesAsync()).S3Objects;
 
                 result.Should().HaveCount(0);
             }
@@ -80,7 +79,7 @@ namespace FilesStorageTests
         public async Task GetFileAsync_ThrowNorFoundExc_ThenCalledToUnknownFile()
         {
             var key = "smth";
-            Func<Task> act = testClient.Awaiting(x => x.GetFileAsync(key));
+            Func<Task> act = _sut.Awaiting(x => x.GetFileAsync(key));
             await act.Should().ThrowAsync<FileNotFoundException>()
                 .WithMessage("Not found file with key=smth in bucket=test");
         }
