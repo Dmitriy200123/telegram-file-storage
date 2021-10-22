@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -33,8 +34,12 @@ namespace FilesStorage
             await _s3Client.PutObjectAsync(request);
         }
 
-        public File GetFile(string key)
+        public async Task<File> GetFileAsync(string key)
         {
+            var existingFiles = await this.GetFilesAsync();
+            if (existingFiles.S3Objects.All(x => x.Key != key))
+                throw new FileNotFoundException($"Not found file with key={key} in bucket={_options.BucketName}");
+
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = _options.BucketName,
@@ -48,7 +53,6 @@ namespace FilesStorage
 
         public async Task DeleteFileAsync(string key)
         {
-            var abc = (await this.GetFilesAsync()).S3Objects;
             var deleteObjectRequest = new DeleteObjectRequest
             {
                 BucketName = _options.BucketName,
@@ -56,7 +60,6 @@ namespace FilesStorage
             };
 
             await _s3Client.DeleteObjectAsync(deleteObjectRequest);
-            abc = (await this.GetFilesAsync()).S3Objects;
         }
 
         public async Task<ListObjectsResponse> GetFilesAsync()

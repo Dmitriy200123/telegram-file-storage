@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Amazon.S3;
 using FilesStorage;
 using FluentAssertions;
 using FilesStorage.Interfaces;
+using File = FilesStorage.models.File;
 
 namespace FilesStorageTests
 {
@@ -67,11 +69,20 @@ namespace FilesStorageTests
 
                 await testClient.SaveFileAsync(key, fileStream);
 
-                testClient.DeleteFileAsync(key).GetAwaiter().GetResult();
+                await testClient.DeleteFileAsync(key);
                 var result = (await testClient.GetFilesAsync()).S3Objects;
 
                 result.Should().HaveCount(0);
             }
+        }
+
+        [Test]
+        public async Task GetFileAsync_ThrowNorFoundExc_ThenCalledToUnknownFile()
+        {
+            var key = "smth";
+            Func<Task> act = testClient.Awaiting(x => x.GetFileAsync(key));
+            await act.Should().ThrowAsync<FileNotFoundException>()
+                .WithMessage("Not found file with key=smth in bucket=test");
         }
     }
 }
