@@ -43,20 +43,50 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             return DbSet.Where(x => x.Name.Contains(subString)).ToListAsync();
         }
 
-        public ValueTask<EntityEntry<Chat>> Add(Chat chat)
+        public async Task<bool> Add(Chat chat)
         {
-            return DbSet.AddAsync(chat);
+            await DbSet.AddAsync(chat);
+            try
+            {
+                await SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public EntityEntry<Chat> Update(Chat chat)
+        public async Task<bool> Update(Chat chat)
         {
-            return DbSet.Update(chat);
+            DbSet.Update(chat);
+            try
+            {
+                await SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
-        public async Task<EntityEntry<Chat>> Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            var chat = await DbSet.FirstAsync(x => x.Id == id);
-            return DbSet.Remove(chat);
+            var chat = await GetById(id);
+            DbSet.Remove(chat);
+            try
+            {
+                await SaveChangesAsync();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         public async Task<bool> Contains(Guid id)

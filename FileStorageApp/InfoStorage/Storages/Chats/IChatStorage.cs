@@ -11,9 +11,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         public Task<List<Chat>> GetAll();
         public Task<Chat> GetById(Guid id);
         public Task<List<Chat>> GetBySubString(string subString);
-        public ValueTask<EntityEntry<Chat>> Add(Chat chat);
-        public EntityEntry<Chat> Update(Chat chat);
-        public Task<EntityEntry<Chat>> Delete(Guid id);
+        public Task<bool> Add(Chat chat);
+        public Task<bool> Update(Chat chat);
+        public Task<bool> Delete(Guid id);
         public Task<bool> Contains(Guid id);
     }
 }
