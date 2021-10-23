@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace FileStorageApp.Data.InfoStorage
+namespace FileStorageApp.Data.InfoStorage.Storages
 {
     public interface IInfoStorage<T>
     {

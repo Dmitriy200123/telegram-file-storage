@@ -5,7 +5,7 @@ using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileStorageApp.Data.InfoStorage
+namespace FileStorageApp.Data.InfoStorage.Storages
 {
     internal abstract class BaseStorage<T> : DbContext, IInfoStorage<T>
         where T : class, IModel
