@@ -15,69 +15,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         {
         }
 
-        public async Task<bool> AddAsync(File fileSender)
+        public new async Task<List<File>> GetAllAsync()
         {
-            await DbSet.AddAsync(fileSender);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateAsync(File fileSender)
-        {
-            DbSet.Update(fileSender);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var file = await GetByIdAsync(id);
-            DbSet.Remove(file);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> ContainsAsync(Guid id)
-        {
-            var file = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return file != null;
-        }
-
-        public Task<List<File>> GetAllAsync()
-        {
-            return DbSet
+            var list = await base.GetAllAsync();
+            return list
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
-                .ToListAsync();
-        }
-
-        public Task<File> GetByIdAsync(Guid id)
-        {
-            return DbSet.FirstAsync(x => x.Id == id);
+                .ToList();
         }
 
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression)
@@ -90,7 +34,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<File>> GetBySubStringAsync(string subString)
         {
-            return DbSet.Where(x => x.Name.Contains(subString)).ToListAsync();
+            return DbSet
+                .Where(x => x.Name.Contains(subString))
+                .OrderByDescending(x => x.UploadDate)
+                .ThenBy(x => x.Id)
+                .ToListAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -14,79 +13,31 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
         {
         }
 
-        public Task<List<FileSender>> GetAllAsync()
+        public new async Task<List<FileSender>> GetAllAsync()
+        {
+            var list = await base.GetAllAsync();
+            return list
+                .OrderBy(x => x.FullName)
+                .ThenBy(x => x.Id)
+                .ToList();
+        }
+
+        public Task<List<FileSender>> GetBySubstringAsync(string subString)
         {
             return DbSet
+                .Where(x => x.FullName.Contains(subString))
                 .OrderBy(x => x.FullName)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
-        public Task<FileSender> GetByIdAsync(Guid id)
-        {
-            return DbSet.FirstAsync(x => x.Id == id);
-        }
-
-        public Task<List<FileSender>> GetBySubstringAsync(string subString)
-        {
-            return DbSet.Where(x => x.FullName.Contains(subString)).ToListAsync();
-        }
-
         public Task<List<FileSender>> GetByUserNameAsync(string userName)
         {
-            return DbSet.Where(x => x.TelegramUserName.Contains(userName)).ToListAsync();
-        }
-
-        public async Task<bool> AddAsync(FileSender fileSender)
-        {
-            await DbSet.AddAsync(fileSender);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateAsync(FileSender fileSender)
-        {
-            DbSet.Update(fileSender);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var fileSender = await GetByIdAsync(id);
-            DbSet.Remove(fileSender);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> ContainsAsync(Guid id)
-        {
-            var fileSender = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return fileSender != null;
+            return DbSet
+                .Where(x => x.TelegramUserName.Contains(userName))
+                .OrderBy(x => x.FullName)
+                .ThenBy(x => x.Id)
+                .ToListAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -14,74 +13,22 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         {
         }
 
-        public Task<List<Chat>> GetAllAsync()
+        public new async Task<List<Chat>> GetAllAsync()
         {
-            return DbSet
+            var list = await base.GetAllAsync();
+            return list
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.Id)
-                .ToListAsync();
-        }
-
-        public Task<Chat> GetByIdAsync(Guid id)
-        {
-            return DbSet.FirstAsync(x => x.Id == id);
+                .ToList();
         }
 
         public Task<List<Chat>> GetBySubStringAsync(string subString)
         {
-            return DbSet.Where(x => x.Name.Contains(subString)).ToListAsync();
-        }
-
-        public async Task<bool> AddAsync(Chat chat)
-        {
-            await DbSet.AddAsync(chat);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateAsync(Chat chat)
-        {
-            DbSet.Update(chat);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var chat = await GetByIdAsync(id);
-            DbSet.Remove(chat);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
-        public async Task<bool> ContainsAsync(Guid id)
-        {
-            var chat = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return chat != null;
+            return DbSet
+                .OrderBy(x => x.Name)
+                .ThenBy(x => x.Id)
+                .Where(x => x.Name.Contains(subString))
+                .ToListAsync();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
