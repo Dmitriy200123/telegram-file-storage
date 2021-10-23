@@ -6,7 +6,6 @@ namespace FileStorageApp.Data.InfoStorage
     internal abstract class BaseStorage<T> : DbContext
         where T : class
     {
-        protected DbSet<T> DbSet { get; set; }
         private readonly string _connectionLink;
 
         protected BaseStorage(IDataBaseConfig dataBaseConfig)
@@ -14,6 +13,8 @@ namespace FileStorageApp.Data.InfoStorage
             _connectionLink = dataBaseConfig.GetConnectionString();
             Database.EnsureCreated();
         }
+
+        protected DbSet<T> DbSet { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

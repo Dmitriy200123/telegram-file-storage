@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 {
@@ -15,17 +14,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Chat>(entity =>
-            {
-                entity.ToTable("Chats");
-                entity.HasIndex(e => e.Id);
-                entity.Property(e => e.Name).HasMaxLength(255);
-            });
-        }
-
-        public Task<List<Chat>> GetAll()
+        public Task<List<Chat>> GetAllAsync()
         {
             return DbSet
                 .OrderBy(x => x.Name)
@@ -33,17 +22,17 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
                 .ToListAsync();
         }
 
-        public Task<Chat> GetById(Guid id)
+        public Task<Chat> GetByIdAsync(Guid id)
         {
             return DbSet.FirstAsync(x => x.Id == id);
         }
 
-        public Task<List<Chat>> GetBySubString(string subString)
+        public Task<List<Chat>> GetBySubStringAsync(string subString)
         {
             return DbSet.Where(x => x.Name.Contains(subString)).ToListAsync();
         }
 
-        public async Task<bool> Add(Chat chat)
+        public async Task<bool> AddAsync(Chat chat)
         {
             await DbSet.AddAsync(chat);
             try
@@ -58,7 +47,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             }
         }
 
-        public async Task<bool> Update(Chat chat)
+        public async Task<bool> UpdateAsync(Chat chat)
         {
             DbSet.Update(chat);
             try
@@ -73,9 +62,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             }
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            var chat = await GetById(id);
+            var chat = await GetByIdAsync(id);
             DbSet.Remove(chat);
             try
             {
@@ -89,10 +78,20 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             }
         }
 
-        public async Task<bool> Contains(Guid id)
+        public async Task<bool> ContainsAsync(Guid id)
         {
             var chat = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             return chat != null;
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Chat>(entity =>
+            {
+                entity.ToTable("Chats");
+                entity.HasIndex(e => e.Id);
+                entity.Property(e => e.Name).HasMaxLength(255);
+            });
         }
     }
 }
