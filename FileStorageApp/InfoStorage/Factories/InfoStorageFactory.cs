@@ -14,19 +14,10 @@ namespace FileStorageApp.Data.InfoStorage.Factories
             _dataBaseConfig = dataBaseConfig;
         }
 
-        public IChatStorage CreateChatStorage()
-        {
-            return new ChatStorage(_dataBaseConfig);
-        }
+        public IChatStorage CreateChatStorage() => new ChatStorage(_dataBaseConfig);
 
-        public IFilesStorage CreateFileStorage()
-        {
-            return new FilesStorage(_dataBaseConfig);
-        }
+        public IFilesStorage CreateFileStorage() => new FilesStorage(_dataBaseConfig);
 
-        public IFileSenderStorage CreateFileSenderStorage()
-        {
-            return new FileSenderStorage(_dataBaseConfig);
-        }
+        public IFileSenderStorage CreateFileSenderStorage() => new FileSenderStorage(_dataBaseConfig);
     }
 }
