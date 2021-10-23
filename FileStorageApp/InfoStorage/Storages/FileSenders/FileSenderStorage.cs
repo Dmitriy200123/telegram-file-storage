@@ -22,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .ToList();
         }
 
-        public Task<List<FileSender>> GetBySubstringAsync(string subString)
+        public Task<List<FileSender>> GetBySenderNameSubstringAsync(string subString)
         {
             return DbSet
                 .Where(x => x.FullName.Contains(subString))
@@ -31,7 +31,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .ToListAsync();
         }
 
-        public Task<List<FileSender>> GetByUserNameAsync(string userName)
+        public Task<List<FileSender>> GetByTelegramNameSubstringAsync(string userName)
         {
             return DbSet
                 .Where(x => x.TelegramUserName.Contains(userName))

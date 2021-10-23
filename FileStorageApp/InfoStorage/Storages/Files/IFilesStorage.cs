@@ -9,6 +9,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
     public interface IFilesStorage : IDisposable, IInfoStorage<File>
     {
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression);
-        public Task<List<File>> GetBySubStringAsync(string subString);
+        public Task<List<File>> GetByFileNameSubstringAsync(string subString);
     }
 }

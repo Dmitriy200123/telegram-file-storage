@@ -7,6 +7,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 {
     public interface IChatStorage : IDisposable, IInfoStorage<Chat>
     {
-        public Task<List<Chat>> GetBySubStringAsync(string subString);
+        public Task<List<Chat>> GetByChatNameSubstringAsync(string subString);
     }
 }

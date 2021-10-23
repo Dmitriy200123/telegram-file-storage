@@ -32,7 +32,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 .ToListAsync();
         }
 
-        public Task<List<File>> GetBySubStringAsync(string subString)
+        public Task<List<File>> GetByFileNameSubstringAsync(string subString)
         {
             return DbSet
                 .Where(x => x.Name.Contains(subString))

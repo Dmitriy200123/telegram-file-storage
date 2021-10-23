@@ -22,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
                 .ToList();
         }
 
-        public Task<List<Chat>> GetBySubStringAsync(string subString)
+        public Task<List<Chat>> GetByChatNameSubstringAsync(string subString)
         {
             return DbSet
                 .OrderBy(x => x.Name)
