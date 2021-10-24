@@ -1,6 +1,6 @@
 import React from 'react';
 import "./File.scss"
-import Svg from "../../assets/download.svg";
+import {ReactComponent as Svg} from "../../assets/download.svg";
 
 const File = () => {
     return (
