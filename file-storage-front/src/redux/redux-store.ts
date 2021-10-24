@@ -1,20 +1,25 @@
-import {Action, applyMiddleware, combineReducers, compose, createStore} from "redux";
-import thunkMiddleware, {ThunkAction} from "redux-thunk";
-import filesReducer from "./files-reducer";
+import {combineReducers} from "redux";
+import {configureStore} from "@reduxjs/toolkit";
+import filesReducer from "./filesSlice";
 
 let rootReducer = combineReducers({
     filesReducer: filesReducer
 });
 
+export const setupStore = () => {
+    return configureStore({
+        reducer: rootReducer
+    })
+}
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore["dispatch"];
 
 type RootReducerType = typeof rootReducer;
 export type AppStateType = ReturnType<RootReducerType>;
 
-export type InferActionsTypes<T> = T extends { [key: string]: (...args: any[]) => infer U } ? U : never;
-export type BaseThunkType<ActionsTypes extends Action, R = Promise<void>> = ThunkAction<R, AppStateType, unknown, ActionsTypes>;
-
-// @ts-ignore
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware)));
-
-export default store;
+// export type InferActionsTypes<T> = T extends { [key: string]: (...args: any[]) => infer U } ? U : never;
+// export type BaseThunkType<ActionsTypes extends Action, R = Promise<void>> = ThunkAction<R, AppStateType, unknown, ActionsTypes>;
+// const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunkMiddleware)));
+// export default store;

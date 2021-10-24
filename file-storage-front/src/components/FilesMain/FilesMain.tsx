@@ -2,13 +2,12 @@ import React, {useEffect, useState} from 'react';
 import "./FilesMain.scss"
 import Select, {MultiValue, SingleValue} from "react-select";
 import Paginator from '../utils/Paginator/Paginator';
-import {useDispatch, useSelector} from "react-redux";
-import {AppStateType} from "../../redux/redux-store";
-import {Category} from "../../types/types";
-import {actions, FormType} from "../../redux/files-reducer";
+import {Category, FormType} from "../../models/File";
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import * as queryString from "querystring";
+import {filesSlice} from "../../redux/filesSlice";
+import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 
 const optionsCategory: Array<{ value: Category, label: Category }> = [
     {value: 'images', label: 'images'},
@@ -32,9 +31,10 @@ const select = {
     }),
 };
 
+const actions = filesSlice.actions;
 const FilesMain = () => {
-    const filesReducer = useSelector((state: AppStateType) => state.filesReducer);
-    const dispatch = useDispatch();
+    const filesReducer = useAppSelector((state) => state.filesReducer);
+    const dispatch = useAppDispatch();
     const filesData = filesReducer.files;
     const form = filesReducer.form;
     const history = useHistory();
@@ -90,7 +90,6 @@ const FilesMain = () => {
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
             <div className={"files-main__content"}>
-
                 <div className={"files"}>
                     <h3 className={"files__title"}>Название</h3>
                     <h3 className={"files__title"}>Дата</h3>

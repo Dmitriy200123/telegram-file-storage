@@ -1,6 +1,6 @@
 import React from 'react';
 import "./FilesMain.scss"
-import {Category} from "../../types/types";
+import {Category} from "../../models/File";
 
 const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, senderId, chatId}) => {
     return <React.Fragment key={fileId}>

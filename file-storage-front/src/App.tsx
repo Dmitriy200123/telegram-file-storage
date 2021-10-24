@@ -1,10 +1,11 @@
 import React, {FC} from 'react';
 import './App.css';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
-import FilesMain from "./components/FilesMain/FilesMain";
+// import FilesMain from "./components/FilesMain/FilesMain";
 import {Provider} from "react-redux";
-import store from "./redux/redux-store";
 import File from "./components/File/File";
+import {setupStore} from "./redux/redux-store";
+import FilesMain from "./components/FilesMain/FilesMain";
 
 const App:FC = () => {
     return (<div className="App">
@@ -16,6 +17,7 @@ const App:FC = () => {
     </div>)
 }
 
+const store = setupStore();
 function FileStorageApp() {
     return (
         <BrowserRouter>

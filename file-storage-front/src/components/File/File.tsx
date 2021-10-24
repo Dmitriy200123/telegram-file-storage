@@ -1,6 +1,6 @@
 import React from 'react';
 import "./File.scss"
-import {ReactComponent as DownloadIcon} from "../../assets/download.svg";
+import Svg from "../../assets/download.svg";
 
 const File = () => {
     return (
@@ -15,7 +15,7 @@ const File = () => {
                 <div className="file__item"><span>Отправитель: </span><a>Покровский Степан</a></div>
                 <div className="file__item"><span>Чат: </span><a>office</a></div>
                 <div className="file__item"><span>Дата отправки: </span>29.10.2020</div>
-                <button className="file__btn"><div>Скачать</div><DownloadIcon /></button>
+                <button className="file__btn"><div>Скачать</div><Svg/></button>
             </div>
         </div>
     );
