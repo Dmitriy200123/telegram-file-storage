@@ -26,7 +26,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         public Task<List<Chat>> GetByChatNameSubstringAsync(string subString)
         {
             if (subString == null)
-                throw new ArgumentException("Substring can not be null");
+                throw new ArgumentNullException(nameof(subString));
             return DbSet
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.Id)

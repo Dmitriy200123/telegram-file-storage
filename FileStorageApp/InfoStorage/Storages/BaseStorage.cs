@@ -23,7 +23,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public async Task<bool> AddAsync(T entity)
         {
             if (entity == null)
-                throw new ArgumentException("Entity can not be null");
+                throw new ArgumentNullException(nameof(entity));
             
             await DbSet.AddAsync(entity);
             try
@@ -41,7 +41,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public async Task<bool> UpdateAsync(T entity)
         {
             if (entity == null)
-                throw new ArgumentException("Entity can not be null");
+                throw new ArgumentNullException(nameof(entity));
             
             DbSet.Update(entity);
             try

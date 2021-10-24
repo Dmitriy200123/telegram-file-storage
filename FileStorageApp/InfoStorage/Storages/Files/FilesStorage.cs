@@ -27,7 +27,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression)
         {
             if (expression == null)
-                throw new ArgumentException("Expression can not be null");
+                throw new ArgumentNullException(nameof(expression));
             return DbSet
                 .Where(expression)
                 .OrderByDescending(x => x.UploadDate)
@@ -38,7 +38,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         public Task<List<File>> GetByFileNameSubstringAsync(string subString)
         {
             if (subString == null)
-                throw new ArgumentException("Substring can not be null");
+                throw new ArgumentNullException(nameof(subString));
             return DbSet
                 .Where(x => x.Name.Contains(subString))
                 .OrderByDescending(x => x.UploadDate)
