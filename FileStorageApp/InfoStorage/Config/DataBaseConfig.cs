@@ -8,6 +8,7 @@
         {
             _connectionString = connectionString;
         }
+
         public string GetConnectionString()
         {
             return _connectionString;
