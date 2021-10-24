@@ -29,7 +29,7 @@ const FilesMain = () => {
 
     useEffect(() => {
         setLoading(true);
-        let urlSearchParams = new URLSearchParams(history.location.search);
+        const urlSearchParams = new URLSearchParams(history.location.search);
         //todo: read array from url
         //#region todo: Instead of this do thunk request to api
         dispatch(actions.changeFilterFileName(urlSearchParams.get("fileName")));

@@ -1,6 +1,7 @@
 import {Category, File, FormType} from "../../models/File";
 import {MultiValue, SingleValue} from "react-select";
 import {filesSlice} from "../../redux/filesSlice";
+import {AppDispatch} from "../../redux/redux-store";
 
 const optionsCategory: Array<{ value: Category, label: Category }> = [
     {value: 'images', label: 'images'},
@@ -24,7 +25,7 @@ export const configFilters = (filesData: File[]) => {
     return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
 }
 
-export const EventsChange = (dispatch: any, actions: typeof filesSlice.actions) => {
+export const EventsChange = (dispatch: AppDispatch, actions: typeof filesSlice.actions) => {
     const onChangeDate = (e: SingleValue<FormType<string>>) => dispatch(actions.changeFilterDate(e?.value));
     const onChangeSenders = (e: MultiValue<FormType<number>>) => dispatch(actions.changeFilterSenders(e.map((v => v?.value))));
     const onChangeChats = (e: MultiValue<FormType<number>>) => dispatch(actions.changeFilterChats(e.map((v => v?.value))));
