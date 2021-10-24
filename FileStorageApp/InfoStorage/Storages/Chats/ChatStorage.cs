@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -24,6 +25,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
 
         public Task<List<Chat>> GetByChatNameSubstringAsync(string subString)
         {
+            if (subString == null)
+                throw new ArgumentException("Substring can not be null");
             return DbSet
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.Id)
@@ -36,7 +39,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             modelBuilder.Entity<Chat>(entity =>
             {
                 entity.ToTable("Chats");
-                entity.HasIndex(e => e.Id);
+                entity.HasMany(x => x.Files)
+                    .WithOne(x => x.Chat)
+                    .HasForeignKey(x => x.ChatId);
                 entity.Property(e => e.Name).HasMaxLength(255);
             });
         }

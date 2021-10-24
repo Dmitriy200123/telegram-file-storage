@@ -11,5 +11,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public Guid SenderId { get; set; }
         public Guid ChatId { get; set; }
         public Guid Id { get; set; }
+        public FileSender FileSender { get; set; }
+        public Chat Chat { get; set; }
     }
 }

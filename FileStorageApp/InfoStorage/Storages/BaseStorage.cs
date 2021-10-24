@@ -20,9 +20,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected DbSet<T> DbSet { get; set; }
 
-        public async Task<bool> AddAsync(T fileSender)
+        public async Task<bool> AddAsync(T entity)
         {
-            await DbSet.AddAsync(fileSender);
+            if (entity == null)
+                throw new ArgumentException("Entity can not be null");
+            
+            await DbSet.AddAsync(entity);
             try
             {
                 await SaveChangesAsync();
@@ -35,9 +38,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             }
         }
 
-        public async Task<bool> UpdateAsync(T fileSender)
+        public async Task<bool> UpdateAsync(T entity)
         {
-            DbSet.Update(fileSender);
+            if (entity == null)
+                throw new ArgumentException("Entity can not be null");
+            
+            DbSet.Update(entity);
             try
             {
                 await SaveChangesAsync();
@@ -53,6 +59,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public async Task<bool> DeleteAsync(Guid id)
         {
             var entity = await GetByIdAsync(id);
+            if (entity == null)
+                throw new ArgumentException($"There is no entity with ID {id} in the database");
+
             DbSet.Remove(entity);
             try
             {
@@ -79,7 +88,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public async Task<T> GetByIdAsync(Guid id)
         {
-            return await DbSet.FirstAsync(x => x.Id == id);
+            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

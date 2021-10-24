@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -24,6 +25,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 
         public Task<List<FileSender>> GetBySenderNameSubstringAsync(string subString)
         {
+            if (subString == null)
+                throw new ArgumentException("Substring can not be null");
             return DbSet
                 .Where(x => x.FullName.Contains(subString))
                 .OrderBy(x => x.FullName)
@@ -33,6 +36,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 
         public Task<List<FileSender>> GetByTelegramNameSubstringAsync(string userName)
         {
+            if (userName == null)
+                throw new ArgumentException("User name can not be null");
             return DbSet
                 .Where(x => x.TelegramUserName.Contains(userName))
                 .OrderBy(x => x.FullName)
@@ -45,7 +50,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
             modelBuilder.Entity<FileSender>(entity =>
             {
                 entity.ToTable("Senders");
-                entity.HasIndex(e => e.Id);
+                entity.HasMany(x => x.Files)
+                    .WithOne(x => x.FileSender)
+                    .HasForeignKey(x => x.SenderId);
                 entity.Property(e => e.FullName).HasMaxLength(255);
                 entity.Property(e => e.TelegramUserName).HasMaxLength(255);
             });

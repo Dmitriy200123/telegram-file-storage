@@ -26,7 +26,10 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression)
         {
-            return DbSet.Where(expression)
+            if (expression == null)
+                throw new ArgumentException("Expression can not be null");
+            return DbSet
+                .Where(expression)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
@@ -34,6 +37,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<File>> GetByFileNameSubstringAsync(string subString)
         {
+            if (subString == null)
+                throw new ArgumentException("Substring can not be null");
             return DbSet
                 .Where(x => x.Name.Contains(subString))
                 .OrderByDescending(x => x.UploadDate)
@@ -46,8 +51,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             modelBuilder.Entity<File>(entity =>
             {
                 entity.ToTable("File");
-                entity.HasIndex(e => e.Id);
-                entity.HasKey(e => new {e.SenderId, e.ChatId});
+                entity.HasOne(x => x.FileSender)
+                    .WithMany(x => x.Files)
+                    .HasForeignKey(x => x.SenderId);
+                entity.HasOne(x => x.Chat)
+                    .WithMany(x => x.Files)
+                    .HasForeignKey(x => x.ChatId);
                 entity.Property(e => e.Name).HasMaxLength(255);
                 entity.Property(e => e.Extension).HasMaxLength(255);
                 entity.Property(e => e.Type).HasMaxLength(255);
