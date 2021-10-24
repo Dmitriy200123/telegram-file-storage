@@ -22,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public async Task<bool> AddAsync(T entity)
         {
-            if (entity == null)
+            if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
             
             await DbSet.AddAsync(entity);
@@ -40,7 +40,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public async Task<bool> UpdateAsync(T entity)
         {
-            if (entity == null)
+            if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
             
             DbSet.Update(entity);
@@ -59,7 +59,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public async Task<bool> DeleteAsync(Guid id)
         {
             var entity = await GetByIdAsync(id);
-            if (entity == null)
+            if (entity is null)
                 throw new ArgumentException($"There is no entity with ID {id} in the database");
 
             DbSet.Remove(entity);
@@ -77,8 +77,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public async Task<bool> ContainsAsync(Guid id)
         {
-            var file = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return file != null;
+            var entity = await DbSet.FindAsync(id);
+            return entity is not null;
         }
 
         public Task<List<T>> GetAllAsync()
@@ -88,7 +88,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public async Task<T> GetByIdAsync(Guid id)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return await DbSet.FindAsync(id);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
