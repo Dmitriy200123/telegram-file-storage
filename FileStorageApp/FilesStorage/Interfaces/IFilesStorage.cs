@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Amazon.S3.Model;
 using File = FilesStorage.models.File;
 
 namespace FilesStorage.Interfaces
@@ -14,6 +14,6 @@ namespace FilesStorage.Interfaces
 
         Task DeleteFileAsync(string key);
 
-        Task<ListObjectsResponse> GetFilesAsync();
+        Task<IEnumerable<File>> GetFilesAsync();
     }
 }

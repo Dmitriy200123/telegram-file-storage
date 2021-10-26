@@ -7,7 +7,6 @@ using Amazon.S3;
 using FilesStorage;
 using FluentAssertions;
 using FilesStorage.Interfaces;
-using File = FilesStorage.models.File;
 
 namespace FilesStorageTests
 {
@@ -30,7 +29,7 @@ namespace FilesStorageTests
         [TearDown]
         public void TearDown()
         {
-            var files = _sut.GetFilesAsync().GetAwaiter().GetResult().S3Objects;
+            var files = _sut.GetFilesAsync().GetAwaiter().GetResult();
 
             foreach (var file in files)
             {
@@ -50,7 +49,7 @@ namespace FilesStorageTests
 
                 await _sut.SaveFileAsync(key, fileStream);
 
-                var result = (await _sut.GetFilesAsync()).S3Objects;
+                var result = await _sut.GetFilesAsync();
 
                 result.Should().HaveCount(1).And.Subject.First().Key.Should().Be(key);
             }
@@ -69,7 +68,7 @@ namespace FilesStorageTests
                 await _sut.SaveFileAsync(key, fileStream);
 
                 await _sut.DeleteFileAsync(key);
-                var result = (await _sut.GetFilesAsync()).S3Objects;
+                var result = await _sut.GetFilesAsync();
 
                 result.Should().HaveCount(0);
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,18 +38,22 @@ namespace FilesStorage
         public async Task<File> GetFileAsync(string key)
         {
             var existingFiles = await this.GetFilesAsync();
-            if (existingFiles.S3Objects.All(x => x.Key != key))
+            if (existingFiles.All(x => x.Key != key))
                 throw new FileNotFoundException($"Not found file with key={key} in bucket={_options.BucketName}");
 
+
+            return new File(this.GetDownloadStringFromKey(key), key);
+        }
+
+        private string GetDownloadStringFromKey(string key)
+        {
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = _options.BucketName,
                 Key = key,
                 Expires = DateTime.UtcNow.AddHours(_options.FileDownloadLinkTtlInHours)
             };
-            var urlString = _s3Client.GetPreSignedURL(request);
-
-            return new File(urlString);
+            return _s3Client.GetPreSignedURL(request);
         }
 
         public async Task DeleteFileAsync(string key)
@@ -62,11 +67,16 @@ namespace FilesStorage
             await _s3Client.DeleteObjectAsync(deleteObjectRequest);
         }
 
-        public async Task<ListObjectsResponse> GetFilesAsync()
+        public async Task<IEnumerable<File>> GetFilesAsync()
         {
             var response = await _s3Client.ListObjectsAsync(new ListObjectsRequest()
                 {BucketName = _options.BucketName});
-            return response;
+
+            var result = response.S3Objects.Select(
+                x => new File(GetDownloadStringFromKey(x.Key), x.Key)
+            );
+
+            return result;
         }
 
         public void Dispose()
