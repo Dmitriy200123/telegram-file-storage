@@ -11,17 +11,17 @@ namespace FilesStorage
         public string BucketName { get; }
         public AmazonS3Config Config { get; }
         public S3CannedACL Permission { get; }
-        public double FileDownloadLinkTtlInHours { get; }
+        public TimeSpan FileDownloadLinkTtl { get; }
 
         public S3FilesStorageOptions(string accessKey, string secretKey, string bucketName, AmazonS3Config config,
-            S3CannedACL permission, double fileDownloadLinkTtlInHours)
+            S3CannedACL permission, TimeSpan fileDownloadLinkTtl)
         {
             AccessKey = accessKey ?? throw new ArgumentNullException(nameof(accessKey));
             SecretKey = secretKey ?? throw new ArgumentNullException(nameof(secretKey));
             BucketName = bucketName ?? throw new ArgumentNullException(nameof(bucketName));
             Config = config ?? throw new ArgumentNullException(nameof(config));
             Permission = permission ?? throw new ArgumentNullException(nameof(permission));
-            FileDownloadLinkTtlInHours = fileDownloadLinkTtlInHours;
+            FileDownloadLinkTtl = fileDownloadLinkTtl;
         }
     }
 }

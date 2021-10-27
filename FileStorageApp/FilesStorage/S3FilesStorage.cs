@@ -51,7 +51,7 @@ namespace FilesStorage
             {
                 BucketName = _options.BucketName,
                 Key = key,
-                Expires = DateTime.UtcNow.AddHours(_options.FileDownloadLinkTtlInHours)
+                Expires = DateTime.UtcNow.Add(_options.FileDownloadLinkTtl)
             };
             return _s3Client.GetPreSignedURL(request);
         }

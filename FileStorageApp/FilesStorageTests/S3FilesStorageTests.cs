@@ -23,7 +23,9 @@ namespace FilesStorageTests
             config.ForcePathStyle = true;
 
             _sut = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
-                "test", config, S3CannedACL.PublicReadWrite, 2)).CreateAsync().GetAwaiter().GetResult();
+                    "test", config, S3CannedACL.PublicReadWrite,
+                    TimeSpan.FromHours(1))).CreateAsync().GetAwaiter()
+                .GetResult();
         }
 
         [TearDown]

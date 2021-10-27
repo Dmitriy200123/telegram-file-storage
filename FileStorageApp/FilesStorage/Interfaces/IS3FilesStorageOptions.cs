@@ -10,6 +10,6 @@ namespace FilesStorage.Interfaces
         string BucketName { get; }
         AmazonS3Config Config { get; }
         S3CannedACL Permission { get; }
-        double FileDownloadLinkTtlInHours { get; }
+        TimeSpan FileDownloadLinkTtl { get; }
     }
 }
