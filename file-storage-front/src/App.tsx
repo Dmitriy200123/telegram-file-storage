@@ -8,6 +8,7 @@ import {setupStore} from "./redux/redux-store";
 import FilesMain from "./components/FilesMain/FilesMain";
 import Select from "./components/utils/Inputs/Select";
 import {useForm} from "react-hook-form";
+import FilesMainCustomSelect from "./components/FilesMain/FilesMainCustomSelect";
 
 const App: FC = () => {
     return (<div className="App">
@@ -20,20 +21,14 @@ const App: FC = () => {
 }
 
 const TestApp = () => {
-    const {register, handleSubmit, formState: {errors, dirtyFields: {}}, setValue, getValues} = useForm();
 
-    const consoleLog = (e: any) => {
-        console.log(e);
-    }
-
-    const onChangeForm = handleSubmit(consoleLog);
-
-    return <form onChange={onChangeForm}>
-        <Select register={register} name={"categories"} onChangeForm={onChangeForm} setValue={setValue}
-                getValues={getValues}/>
-        <Select register={register} name={"categories2"} onChangeForm={onChangeForm} setValue={setValue}
-                getValues={getValues}/>
-    </form>
+    return <div className="App">
+        <Switch>
+            <Route path={"/files"} exact component={FilesMainCustomSelect}/>
+            <Route path={"/file"} component={File}/>
+            <Redirect to={"/files"}/>
+        </Switch>
+    </div>
 }
 
 const store = setupStore();
@@ -42,7 +37,7 @@ function FileStorageApp() {
     return (
         <BrowserRouter>
             <Provider store={store}>
-                <App/>
+                <TestApp/>
             </Provider>
         </BrowserRouter>
     );

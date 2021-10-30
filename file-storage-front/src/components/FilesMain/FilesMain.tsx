@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, {useEffect, useState} from 'react';
 import "./FilesMain.scss"
 import Select, {SingleValue} from "react-select";
@@ -65,11 +66,12 @@ const FilesMain = () => {
     const FragmentsFiles = filesData.map((f) => <FragmentFile fileType={f.fileType} fileId={f.fileId}
                                                               fileName={f.fileName} chatId={f.chatId}
                                                               senderId={f.senderId} uploadDate={f.uploadDate}/>);
+
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
             <div className={"files-main__content"}>
-                <div className={"files"}>
+                <form className={"files"}>
                     <h3 className={"files__title"}>Название</h3>
                     <h3 className={"files__title"}>Дата</h3>
                     <h3 className={"files__title"}>Формат</h3>
@@ -104,7 +106,7 @@ const FilesMain = () => {
                                 styles={select} isClearable={true} onChange={onChangeChats}/>
                     </div>
                     {FragmentsFiles}
-                </div>
+                </form>
             </div>
             <Paginator count={filesData.length}/>
         </div>

@@ -19,17 +19,19 @@ const optionsDate = [
 ];
 
 export const configFilters = (filesData: File[]) => {
-    const optionsName = filesData.map((f) => ({label: f.fileName, value: f.fileId}));
+    const optionsName = filesData.map((f) => ({label: f.fileName, value: f.fileName}));
     const optionsSender = filesData.map((f) => ({label: f.senderId.toString(), value: f.senderId}));
     const optionsChat = filesData.map((f) => ({label: f.chatId.toString(), value: f.chatId}));
     return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
 }
 
+// @ts-nocheck
 export const EventsChange = (dispatch: AppDispatch, actions: typeof filesSlice.actions) => {
     const onChangeDate = (e: SingleValue<FormType<string>>) => dispatch(actions.changeFilterDate(e?.value));
     const onChangeSenders = (e: MultiValue<FormType<number>>) => dispatch(actions.changeFilterSenders(e.map((v => v?.value))));
     const onChangeChats = (e: MultiValue<FormType<number>>) => dispatch(actions.changeFilterChats(e.map((v => v?.value))));
     const onChangeFileName = (e: SingleValue<FormType<number>>) => {
+        // @ts-ignore
         dispatch(actions.changeFilterFileName(e?.label))
     };
     const onChangeCategories = (e: MultiValue<FormType<Category>>) => {

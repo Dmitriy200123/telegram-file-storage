@@ -34,7 +34,7 @@ const initialState = {
         },
     ] as Array<File>,
     form: {
-        fileName: null as string | null | undefined,
+        fileName: null as Array<string> | null | undefined,
         date: null as string | null | undefined,
         categories: null as Array<Category> | null | undefined,
         senders: null as Array<number> | null | undefined,
@@ -49,7 +49,7 @@ export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        changeFilterFileName(state, action: PayloadAction<string | null | undefined>) {
+        changeFilterFileName(state, action: PayloadAction<Array<string> | null | undefined>) {
             state.form.fileName = action.payload;
         },
         changeFilterDate(state, action: PayloadAction<string | null | undefined>) {
@@ -63,6 +63,15 @@ export const filesSlice = createSlice({
         },
         changeFilterSenders(state, action: PayloadAction<Array<number> | null | undefined>) {
             state.form.senders = action.payload;
+        },
+        changeFilters(state, action: PayloadAction<{
+            fileName: Array<string> | null | undefined,
+            date: string | null | undefined,
+            categories: Array<Category> | null | undefined,
+            senders: Array<number> | null | undefined,
+            chats:Array<number> | null | undefined,
+        }>) {
+            state.form = action.payload;
         },
     },
     extraReducers: {
