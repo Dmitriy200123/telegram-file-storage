@@ -1,0 +1,25 @@
+.select{
+  position: relative;
+  & select {
+    display: none;
+  }
+
+  &__list{
+    position: absolute;
+    display: none;
+    &_open{
+      display: block;
+    }
+  }
+
+  &__option{
+    &:hover{
+      cursor: pointer;
+      color: blue;
+    }
+
+    &_active{
+      text-decoration: underline;
+    }
+  }
+}
