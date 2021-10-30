@@ -6,6 +6,7 @@ import {Provider} from "react-redux";
 import File from "./components/File/File";
 import {setupStore} from "./redux/redux-store";
 import FilesMain from "./components/FilesMain/FilesMain";
+import Select from "./components/utils/Inputs/Select";
 
 const App:FC = () => {
     return (<div className="App">
@@ -17,12 +18,16 @@ const App:FC = () => {
     </div>)
 }
 
+const TestApp = () => {
+    return <Select/>
+}
+
 const store = setupStore();
 function FileStorageApp() {
     return (
         <BrowserRouter>
           <Provider store={store}>
-            <App/>
+            <TestApp/>
           </Provider>
         </BrowserRouter>
     );

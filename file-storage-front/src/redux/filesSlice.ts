@@ -1,5 +1,6 @@
 import {Category, File} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {fetchFiles} from "./ActionsCreators";
 
 
 const initialState = {
@@ -63,6 +64,11 @@ export const filesSlice = createSlice({
         changeFilterSenders(state, action: PayloadAction<Array<number> | null | undefined>) {
             state.form.senders = action.payload;
         },
+    },
+    extraReducers: {
+        [fetchFiles.fulfilled.type]:(state, action:PayloadAction) => {
+
+        }
     }
 });
 
