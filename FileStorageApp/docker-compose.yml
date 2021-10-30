@@ -1,9 +1,9 @@
 version: '3.9'
 
 services:
-  localstack:
+  s3:
     image: localstack/localstack
-    container_name: localstack
+    container_name: s3
     network_mode: bridge
     ports:
       - 4566:4566
@@ -16,8 +16,15 @@ services:
       - PORT_WEB_UI=8080
     volumes:
       - "localstack-vol:/tmp/localstack"
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=FileStorageApp
+      - POSTGRES_PASSWORD=change
+      - POSTGRES_DB=FileStorageApp
+    ports:
+      - "5432:5432"
 
 
 volumes:
   localstack-vol:
-  
