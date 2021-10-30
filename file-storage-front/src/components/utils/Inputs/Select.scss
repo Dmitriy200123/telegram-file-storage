@@ -19,7 +19,7 @@
 
   &__list{
     width: 100%;
-    max-height: 171px;
+    height: auto;
     position: absolute;
     display: none;
     border: 1px solid #CFD8E1;
@@ -32,9 +32,11 @@
   }
 
   &__scroll{
+    max-height: 171px;
+
     overflow-y: auto;
     box-sizing: border-box;
-    height: 100%;
+    height: auto;
     &::-webkit-scrollbar {
       width: 4px;               /* ширина scrollbar */
     }
@@ -45,6 +47,7 @@
   }
 
   &__option{
+    box-sizing: border-box;
     padding: 7px 12px;
     position: relative;
     display: grid;
