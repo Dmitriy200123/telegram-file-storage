@@ -12,7 +12,7 @@ const optionsDate = [
     {value: 'Вчера', label: 'Вчера'},
     {value: 'За последние 7 дней', label: 'За последние 7 дней'},
     {value: 'За последние 30 дней', label: 'За последние 30 дней'},
-    {value: '', label: 'Другой период...'}
+    {value: '1', label: 'Другой период...'}
 ];
 
 export const configFilters = (filesData: File[]) => {
