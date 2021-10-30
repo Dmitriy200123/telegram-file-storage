@@ -1,22 +1,14 @@
-// @ts-nocheck
 import React, {useEffect, useState} from 'react';
 import "./FilesMain.scss"
-import Select, {SingleValue} from "react-select";
 import Paginator from '../utils/Paginator/Paginator';
-import {FormType} from "../../models/File";
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import * as queryString from "querystring";
 import {filesSlice} from "../../redux/filesSlice";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
-import {configFilters, EventsChange} from "./ConfigFilters";
-
-const select = {
-    input: (asd: any) => ({
-        ...asd,
-        height: 30,
-    }),
-};
+import {configFilters} from "./ConfigFilters";
+import Select from "../utils/Inputs/Select";
+import {SubmitHandler, useForm} from "react-hook-form";
 
 const actions = filesSlice.actions;
 const FilesMain = () => {
@@ -33,11 +25,24 @@ const FilesMain = () => {
         const urlSearchParams = new URLSearchParams(history.location.search);
         //todo: read array from url
         //#region todo: Instead of this do thunk request to api
-        dispatch(actions.changeFilterFileName(urlSearchParams.get("fileName")));
-        dispatch(actions.changeFilterSenders(urlSearchParams.get("senderId") as any));
-        dispatch(actions.changeFilterCategories(urlSearchParams.get("categories") as any));
-        dispatch(actions.changeFilterDate(urlSearchParams.get("date")));
-        dispatch(actions.changeFilterChats(urlSearchParams.get("chats") as any));
+        let fileName = urlSearchParams.get("fileName")?.split("&");
+        let senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => +e);
+        let categories = urlSearchParams.get("categories")?.split("&") as any;
+        let date = urlSearchParams.get("date");
+        let chats = urlSearchParams.get("chats")?.split("&")?.map((e) => +e);
+        dispatch(actions.changeFilters({
+            fileName: fileName,
+            senders: senderId,
+            categories:categories,
+            date:date,
+            chats:chats,
+        }));
+
+        setValue("fileName", fileName);
+        setValue("senders", senderId);
+        setValue("categories", categories);
+        setValue("chats", chats);
+        setValue("date", date);
         //#endregion
         setLoading(false);
     }, [])
@@ -50,23 +55,36 @@ const FilesMain = () => {
             // @ts-ignore
             const value = form[key];
             if (value) {
-                // @ts-ignore
-                urlParams[key] = value instanceof Array ? value.join("&") : (value);
+                if (value instanceof Array ) {
+                    if (value.length > 0) {
+                        // @ts-ignore
+                        urlParams[key] = value.join(`&`)
+                    }
+                }
+                else {
+                    // @ts-ignore
+                    urlParams[key] = value;
+                }
             }
         })
+
         history.push({
             search: queryString.stringify(urlParams)
         })
     }, [form])
 
     const {optionsName, optionsCategory, optionsSender, optionsChat, optionsDate} = configFilters(filesData);
-    const {onChangeFileName,onChangeCategories, onChangeSenders, onChangeDate,
-        onChangeChats} = EventsChange(dispatch, actions);
 
+
+
+    const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
+    const dispatchValuesForm: SubmitHandler<any> = (e) => {
+        dispatch(actions.changeFilters(e));
+    }
+    const onChangeForm = handleSubmit(dispatchValuesForm);
     const FragmentsFiles = filesData.map((f) => <FragmentFile fileType={f.fileType} fileId={f.fileId}
                                                               fileName={f.fileName} chatId={f.chatId}
                                                               senderId={f.senderId} uploadDate={f.uploadDate}/>);
-
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
@@ -77,55 +95,21 @@ const FilesMain = () => {
                     <h3 className={"files__title"}>Формат</h3>
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
-                    <div className={"files__filter files__filter_select"}>
-                        <Select value={optionsName.filter((e) => e.label === form.fileName)} options={optionsName}
-                                styles={select} onChange={onChangeFileName} isClearable={true}/>
-                    </div>
-                    <div className={"files__filter files__filter_select"}>
-                        <Select value={optionsDate.filter((e) => e.value === form.date)} placeholder={"дд.мм.гггг"} options={optionsDate}
-                                components={{Option: CustomOption}}
-                                styles={select} onChange={onChangeDate}/>
-                    </div>
-                    <div className={"files__filter files__filter_select"}>
-                        <Select value={optionsCategory.filter((e) => form.categories?.includes(e.value))}
-                                placeholder={"Выберите формат"} options={optionsCategory}
-                                isMulti
-                                styles={select} onChange={onChangeCategories}/>
-                    </div>
-                    <div className={"files__filter files__filter_select"}>
-                        <Select value={optionsSender.filter((e) => form.senders?.includes(e.value))}
-                                placeholder={"Выберите отправителя"} options={optionsSender}
-                                isMulti styles={select}
-                                onChange={onChangeSenders}
-                        />
-                    </div>
-                    <div className={"files__filter files__filter_select"}>
-                        <Select value={optionsChat.filter((e) => form.chats?.includes(e.value))}
-                                placeholder={"Выберите название чата"} options={optionsChat}
-                                isMulti
-                                styles={select} isClearable={true} onChange={onChangeChats}/>
-                    </div>
+                    <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsName}/>
+                    <Select name={"date"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsDate}/>
+                    <Select name={"categories"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsCategory}/>
+                    <Select name={"senders"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsSender}/>
+                    <Select name={"chats"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsChat}/>
                     {FragmentsFiles}
                 </form>
             </div>
             <Paginator count={filesData.length}/>
         </div>
-    );
-}
-
-const CustomOption = ({innerRef, innerProps, ...props}: any) => {
-    const {data} = props;
-    // console.log(innerProps)
-    const onClick = (e: number) => {
-        alert("Жопа");
-    };
-    if (data.label === "Другой период...") {
-        return (
-            <div onClick={onClick} ref={innerRef} {...innerProps} >{data.label}</div>
-        );
-    }
-    return (
-        <div ref={innerRef} {...innerProps} >{data.label}</div>
     );
 }
 
