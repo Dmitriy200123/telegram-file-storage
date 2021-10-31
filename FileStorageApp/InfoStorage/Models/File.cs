@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileStorageApp.Data.InfoStorage.Models
 {
@@ -8,10 +9,10 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public string Extension { get; set; }
         public string Type { get; set; }
         public DateTime UploadDate { get; set; }
-        public Guid SenderId { get; set; }
+        public Guid FileSenderId { get; set; }
         public Guid ChatId { get; set; }
         public Guid Id { get; set; }
-        public FileSender FileSender { get; set; }
-        public Chat Chat { get; set; }
+        public virtual FileSender FileSender { get; set; }
+        public virtual Chat Chat { get; set; }
     }
 }

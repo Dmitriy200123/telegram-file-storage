@@ -17,31 +17,25 @@ namespace InfoStorage.Tests
         public FileSenderStorageShould()
         {
             var config = new DataBaseConfig();
-            config.SetConnectionString(
-                "");
+            config.SetConnectionString(Settings.SetupString);
             infoStorageFactory = new InfoStorageFactory(config);
         }
 
-
-        [SetUp]
-        public void Setup()
-        {
-        }
         [TestCase("ubs")]
         [TestCase("Substring")]
         [TestCase("")]
-        public async Task GetBySenderNameSubstringAsync_ReturnCorrectChat_WhenNameHasSubstring(string substring)
+        public async Task GetBySenderNameSubstringAsync_ReturnCorrectFileSenders_WhenNameHasSubstring(string substring)
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            expected.Add(chat);
-            elementsToDelete.Add(chat);
-            await chatStorage.AddAsync(chat);
+            expected.Add(fileSender);
+            elementsToDelete.Add(fileSender);
+            await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
 
@@ -50,36 +44,38 @@ namespace InfoStorage.Tests
 
         [TestCase("aboba")]
         [TestCase("bus")]
-        public async Task GetBySenderNameSubstringAsync_NoChats_WhenNameHasNoSubstring(string substring)
+        public async Task GetBySenderNameSubstringAsync_NoFileSenders_WhenNameHasNoSubstring(string substring)
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            elementsToDelete.Add(chat);
-            await chatStorage.AddAsync(chat);
+            elementsToDelete.Add(fileSender);
+            await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
 
             actual.Should().BeEmpty();
         }
+
         [TestCase("ubs")]
         [TestCase("Substring")]
         [TestCase("")]
-        public async Task GetByTelegramNameSubstringAsync_ReturnCorrectChat_WhenNameHasSubstring(string substring)
+        public async Task GetByTelegramNameSubstringAsync_ReturnCorrectFileSenders_WhenNameHasSubstring(
+            string substring)
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 TelegramUserName = "Substring",
                 FullName = "",
             };
-            expected.Add(chat);
-            elementsToDelete.Add(chat);
-            await chatStorage.AddAsync(chat);
+            expected.Add(fileSender);
+            elementsToDelete.Add(fileSender);
+            await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
 
@@ -88,48 +84,49 @@ namespace InfoStorage.Tests
 
         [TestCase("aboba")]
         [TestCase("bus")]
-        public async Task GetByTelegramNameSubstringAsync_NoChats_WhenNameHasNoSubstring(string substring)
+        public async Task GetByTelegramNameSubstringAsync_NoFileSenders_WhenNameHasNoSubstring(string substring)
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 TelegramUserName = "Substring",
                 FullName = "",
             };
-            elementsToDelete.Add(chat);
-            await chatStorage.AddAsync(chat);
+            elementsToDelete.Add(fileSender);
+            await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
 
             actual.Should().BeEmpty();
         }
+
         [Test]
         public async Task GetAll_CorrectSort_WhenNoSameNames()
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "bbbb",
             };
-            var chat2 = new FileSender
+            var fileSender2 = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "cccc",
             };
-            var chat3 = new FileSender
+            var fileSender3 = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "aaaaa",
             };
-            expected.Add(chat3);
-            expected.Add(chat);
-            expected.Add(chat2);
+            expected.Add(fileSender3);
+            expected.Add(fileSender);
+            expected.Add(fileSender2);
             elementsToDelete.AddRange(expected);
-            await chatStorage.AddAsync(chat);
-            await chatStorage.AddAsync(chat2);
-            await chatStorage.AddAsync(chat3);
+            await chatStorage.AddAsync(fileSender);
+            await chatStorage.AddAsync(fileSender2);
+            await chatStorage.AddAsync(fileSender3);
 
             var actual = await chatStorage.GetAllAsync();
 
@@ -141,31 +138,31 @@ namespace InfoStorage.Tests
         {
             using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
-            var chat = new FileSender
+            var fileSender = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            var chat2 = new FileSender
+            var fileSender2 = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            var chat3 = new FileSender
+            var fileSender3 = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            expected.Add(chat3);
-            expected.Add(chat);
-            expected.Add(chat2);
+            expected.Add(fileSender3);
+            expected.Add(fileSender);
+            expected.Add(fileSender2);
             elementsToDelete.AddRange(expected);
-            await chatStorage.AddAsync(chat);
-            await chatStorage.AddAsync(chat2);
-            await chatStorage.AddAsync(chat3);
+            await chatStorage.AddAsync(fileSender);
+            await chatStorage.AddAsync(fileSender2);
+            await chatStorage.AddAsync(fileSender3);
 
             var actual = await chatStorage.GetAllAsync();
 

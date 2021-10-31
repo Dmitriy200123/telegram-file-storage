@@ -17,8 +17,7 @@ namespace InfoStorage.Tests
         public ChatStorageShould()
         {
             var config = new DataBaseConfig();
-            config.SetConnectionString(
-                "");
+            config.SetConnectionString(Settings.SetupString);
             infoStorageFactory = new InfoStorageFactory(config);
         }
 
@@ -31,7 +30,7 @@ namespace InfoStorage.Tests
         [TestCase("ubs")]
         [TestCase("Substring")]
         [TestCase("")]
-        public async Task GetByChatNameSubstringAsync_ReturnCorrectChat_WhenNameHasSubstring(string substring)
+        public async Task GetByChatNameSubstringAsync_ReturnCorrectChats_WhenNameHasSubstring(string substring)
         {
             using var chatStorage = infoStorageFactory.CreateChatStorage();
             var expected = new List<Chat>();
