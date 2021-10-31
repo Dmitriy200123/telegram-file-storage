@@ -11,7 +11,7 @@ namespace InfoStorage.Tests
 {
     public class ChatStorageShould
     {
-        private readonly List<Chat> elementsToDelete = new();
+        private List<Chat> elementsToDelete;
         private readonly IInfoStorageFactory infoStorageFactory;
 
         public ChatStorageShould()
@@ -25,6 +25,7 @@ namespace InfoStorage.Tests
         [SetUp]
         public void Setup()
         {
+            elementsToDelete = new List<Chat>();
         }
 
         [TestCase("ubs")]
@@ -141,7 +142,6 @@ namespace InfoStorage.Tests
             using var chatStorage = infoStorageFactory.CreateChatStorage();
             foreach (var elem in elementsToDelete)
                 await chatStorage.DeleteAsync(elem.Id);
-            elementsToDelete.Clear();
         }
     }
 }

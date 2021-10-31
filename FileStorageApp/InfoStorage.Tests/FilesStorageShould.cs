@@ -12,7 +12,7 @@ namespace InfoStorage.Tests
 {
     public class FilesStorageShould
     {
-        private readonly List<File> filesToDelete = new();
+        private List<File> filesToDelete;
         private readonly IInfoStorageFactory infoStorageFactory;
         private Chat chat;
         private FileSender fileSender;
@@ -27,6 +27,7 @@ namespace InfoStorage.Tests
         [SetUp]
         public async Task SetUp()
         {
+            filesToDelete = new List<File>();
             chat = CreateChat(Guid.NewGuid());
             await infoStorageFactory.CreateChatStorage().AddAsync(chat);
 
@@ -137,7 +138,7 @@ namespace InfoStorage.Tests
             await chatStorage.AddAsync(file2);
             await chatStorage.AddAsync(file3);
             Expression<Func<File, bool>> selector = (f) => f.Extension == "xlsx";
-            var expected = new List<File>{file3, file2};
+            var expected = new List<File> {file3, file2};
 
             var actual = await chatStorage.GetByFilePropertiesAsync(selector);
 
@@ -155,10 +156,6 @@ namespace InfoStorage.Tests
                 await fileStorage.DeleteAsync(elem.Id);
             await chatStorage.DeleteAsync(chat.Id);
             await fileSenderStorage.DeleteAsync(fileSender.Id);
-
-            chat = null;
-            fileSender = null;
-            filesToDelete.Clear();
         }
 
         private Chat CreateChat(Guid chatId)

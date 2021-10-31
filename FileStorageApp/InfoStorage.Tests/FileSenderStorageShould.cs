@@ -11,7 +11,7 @@ namespace InfoStorage.Tests
 {
     public class FileSenderStorageShould
     {
-        private readonly List<FileSender> elementsToDelete = new();
+        private List<FileSender> elementsToDelete;
         private readonly IInfoStorageFactory infoStorageFactory;
 
         public FileSenderStorageShould()
@@ -19,6 +19,12 @@ namespace InfoStorage.Tests
             var config = new DataBaseConfig();
             config.SetConnectionString(Settings.SetupString);
             infoStorageFactory = new InfoStorageFactory(config);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            elementsToDelete = new List<FileSender>();
         }
 
         [TestCase("ubs")]
@@ -175,7 +181,6 @@ namespace InfoStorage.Tests
             using var fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
             foreach (var elem in elementsToDelete)
                 await fileSenderStorage.DeleteAsync(elem.Id);
-            elementsToDelete.Clear();
         }
     }
 }
