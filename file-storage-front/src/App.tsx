@@ -16,14 +16,18 @@ const App: FC = () => {
     </div>)
 }
 
-// const TestApp = () => {
-//
+// const TestApp:FC = () => {
+//     const { isLoading, isError, error, } = Api.useFetchAllPostsQuery("");
+//     const dispatch = useAppDispatch();
+//     useEffect(() =>{
+//         dispatch(fetchFiles());
+//     },[])
+//     const some = useAppSelector((state) => state.filesReducer.some);
 //     return <div className="App">
-//         <Switch>
-//             <Route path={"/files"} exact component={FilesMain}/>
-//             <Route path={"/file"} component={File}/>
-//             <Redirect to={"/files"}/>
-//         </Switch>
+//         {/*{isLoading ? "Загрузка" : ""}*/}
+//         {/*{isError ? JSON.stringify(error) : ""}*/}
+//         {JSON.stringify(some)}
+//         {/*{!isError &&data?.map((elem:any) => <>{elem.id} {elem.title}</>)}*/}
 //     </div>
 // }
 

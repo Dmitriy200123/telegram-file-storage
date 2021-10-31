@@ -39,7 +39,8 @@ const initialState = {
         categories: null as Array<Category> | null | undefined,
         senders: null as Array<number> | null | undefined,
         chats: null as Array<number> | null | undefined,
-    }
+    },
+    some: null as any
 }
 
 // export type InitialStateType = typeof initialState;
@@ -76,8 +77,14 @@ export const filesSlice = createSlice({
     },
     extraReducers: {
         [fetchFiles.fulfilled.type]:(state, action:PayloadAction) => {
-
-        }
+            state.some = action.payload;
+        },
+        [fetchFiles.pending.type]:(state, action:PayloadAction) => {
+            state.some = action.payload;
+        },
+        [fetchFiles.rejected.type]:(state, action:PayloadAction) => {
+            state.some = action.payload
+        },
     }
 });
 

@@ -1,14 +1,17 @@
 import {combineReducers} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import filesReducer from "./filesSlice";
+import {Api} from "../services/Api";
 
 let rootReducer = combineReducers({
-    filesReducer: filesReducer
+    filesReducer: filesReducer,
+    [Api.reducerPath]: Api.reducer
 });
 
 export const setupStore = () => {
     return configureStore({
-        reducer: rootReducer
+        reducer: rootReducer,
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(Api.middleware)
     })
 }
 
