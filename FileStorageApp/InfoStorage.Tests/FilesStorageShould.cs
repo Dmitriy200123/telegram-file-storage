@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -119,6 +120,26 @@ namespace InfoStorage.Tests
             await chatStorage.AddAsync(file3);
 
             var actual = await chatStorage.GetAllAsync();
+
+            actual.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
+        }
+
+        [Test]
+        public async Task GetByFilePropertiesAsync_CorrectResult_WhenTakeByExpression()
+        {
+            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            var dateTime = DateTime.Now;
+            var file = CreateFile(dateTime, Guid.NewGuid());
+            var file2 = CreateFile(dateTime, Guid.NewGuid());
+            var file3 = CreateFile(dateTime.AddHours(1), Guid.NewGuid());
+            file.Extension = "docx";
+            await chatStorage.AddAsync(file);
+            await chatStorage.AddAsync(file2);
+            await chatStorage.AddAsync(file3);
+            Expression<Func<File, bool>> selector = (f) => f.Extension == "xlsx";
+            var expected = new List<File>{file3, file2};
+
+            var actual = await chatStorage.GetByFilePropertiesAsync(selector);
 
             actual.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
