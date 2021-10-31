@@ -13,14 +13,24 @@ namespace InfoStorage.Tests
     {
         private readonly List<File> filesToDelete = new();
         private readonly IInfoStorageFactory infoStorageFactory;
-        private readonly List<Chat> chatsToDelete = new();
-        private readonly List<FileSender> fileSendersToDelete = new();
+        private Chat chat;
+        private FileSender fileSender;
 
         public FilesStorageShould()
         {
             var config = new DataBaseConfig();
             config.SetConnectionString(Settings.SetupString);
             infoStorageFactory = new InfoStorageFactory(config);
+        }
+
+        [SetUp]
+        public async Task SetUp()
+        {
+            chat = CreateChat(Guid.NewGuid());
+            await infoStorageFactory.CreateChatStorage().AddAsync(chat);
+
+            fileSender = CreateFileSender(Guid.NewGuid());
+            await infoStorageFactory.CreateFileSenderStorage().AddAsync(fileSender);
         }
 
 
@@ -31,18 +41,14 @@ namespace InfoStorage.Tests
         {
             using var chatStorage = infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
-            var senderId = Guid.NewGuid();
-            var chatId = Guid.NewGuid();
             var file = new File
             {
                 Name = "Substring",
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = DateTime.Now,
-                FileSenderId = senderId,
-                ChatId = chatId,
-                Chat = CreateChat(chatId),
-                FileSender = CreateFileSender(senderId)
+                FileSenderId = fileSender.Id,
+                ChatId = chat.Id,
             };
             expected.Add(file);
             filesToDelete.Add(file);
@@ -58,18 +64,14 @@ namespace InfoStorage.Tests
         public async Task GetByFileNameSubstringAsync_NoFiles_WhenNameHasNoSubstring(string substring)
         {
             using var chatStorage = infoStorageFactory.CreateFileStorage();
-            var senderId = Guid.NewGuid();
-            var chatId = Guid.NewGuid();
             var file = new File
             {
                 Name = "Substring",
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = DateTime.Now,
-                FileSenderId = senderId,
-                ChatId = chatId,
-                Chat = CreateChat(chatId),
-                FileSender = CreateFileSender(senderId)
+                FileSenderId = fileSender.Id,
+                ChatId = chat.Id,
             };
             filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
@@ -84,12 +86,10 @@ namespace InfoStorage.Tests
         {
             using var chatStorage = infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
-            var senderIds = CreateGuids(3);
-            var chatIds = CreateGuids(3);
             var dateTime = DateTime.Now;
-            var file = CreateFile(dateTime, senderIds[0], chatIds[0], Guid.NewGuid());
-            var file2 = CreateFile(dateTime.AddHours(1), senderIds[1], chatIds[1], Guid.NewGuid());
-            var file3 = CreateFile(dateTime.AddHours(-1), senderIds[2], chatIds[2], Guid.NewGuid());
+            var file = CreateFile(dateTime, Guid.NewGuid());
+            var file2 = CreateFile(dateTime.AddHours(1), Guid.NewGuid());
+            var file3 = CreateFile(dateTime.AddHours(-1), Guid.NewGuid());
             expected.Add(file2);
             expected.Add(file);
             expected.Add(file3);
@@ -107,15 +107,10 @@ namespace InfoStorage.Tests
         {
             using var chatStorage = infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
-            var senderIds = CreateGuids(3);
-            var chatIds = CreateGuids(3);
             var dateTime = DateTime.Now;
-            var file = CreateFile(dateTime, senderIds[0], chatIds[0],
-                Guid.Parse("00000000-0000-0000-0000-000000000002"));
-            var file2 = CreateFile(dateTime, senderIds[1], chatIds[1],
-                Guid.Parse("00000000-0000-0000-0000-000000000003"));
-            var file3 = CreateFile(dateTime, senderIds[2], chatIds[2],
-                Guid.Parse("00000000-0000-0000-0000-000000000001"));
+            var file = CreateFile(dateTime, Guid.Parse("00000000-0000-0000-0000-000000000002"));
+            var file2 = CreateFile(dateTime, Guid.Parse("00000000-0000-0000-0000-000000000003"));
+            var file3 = CreateFile(dateTime, Guid.Parse("00000000-0000-0000-0000-000000000001"));
             expected.Add(file3);
             expected.Add(file);
             expected.Add(file2);
@@ -134,42 +129,38 @@ namespace InfoStorage.Tests
             using var fileStorage = infoStorageFactory.CreateFileStorage();
             using var chatStorage = infoStorageFactory.CreateChatStorage();
             using var fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
+
             foreach (var elem in filesToDelete)
                 await fileStorage.DeleteAsync(elem.Id);
-            foreach (var elem in chatsToDelete)
-                await chatStorage.DeleteAsync(elem.Id);
-            foreach (var elem in fileSendersToDelete)
-                await fileSenderStorage.DeleteAsync(elem.Id);
+            await chatStorage.DeleteAsync(chat.Id);
+            await fileSenderStorage.DeleteAsync(fileSender.Id);
+
+            chat = null;
+            fileSender = null;
             filesToDelete.Clear();
-            chatsToDelete.Clear();
-            fileSendersToDelete.Clear();
         }
 
         private Chat CreateChat(Guid chatId)
         {
-            var chat = new Chat
+            return new Chat
             {
                 Name = "",
                 ImageId = Guid.NewGuid(),
                 Id = chatId
             };
-            chatsToDelete.Add(chat);
-            return chat;
         }
 
         private FileSender CreateFileSender(Guid senderId)
         {
-            var fileSender = new FileSender
+            return new FileSender
             {
                 TelegramUserName = "",
                 FullName = "",
                 Id = senderId
             };
-            fileSendersToDelete.Add(fileSender);
-            return fileSender;
         }
 
-        private File CreateFile(DateTime dateTime, Guid senderId, Guid chatId, Guid id)
+        private File CreateFile(DateTime dateTime, Guid id)
         {
             var file = new File
             {
@@ -178,21 +169,11 @@ namespace InfoStorage.Tests
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = dateTime,
-                FileSenderId = senderId,
-                ChatId = chatId,
-                Chat = CreateChat(chatId),
-                FileSender = CreateFileSender(senderId)
+                FileSenderId = fileSender.Id,
+                ChatId = chat.Id,
             };
             filesToDelete.Add(file);
             return file;
-        }
-
-        private static List<Guid> CreateGuids(int count)
-        {
-            var result = new List<Guid>();
-            for (var i = 0; i < count; i++)
-                result.Add(Guid.NewGuid());
-            return result;
         }
     }
 }
