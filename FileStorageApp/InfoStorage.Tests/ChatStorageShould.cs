@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
-using FileStorageApp.Data.InfoStorage.Storages.Chats;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -92,9 +91,9 @@ namespace InfoStorage.Tests
             expected.Add(chat2);
             expected.Add(chat3);
             elementsToDelete.AddRange(expected);
-            await chatStorage.AddAsync(chat3);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
+            await chatStorage.AddAsync(chat3);
 
             var actual = await chatStorage.GetAllAsync();
 
@@ -128,9 +127,9 @@ namespace InfoStorage.Tests
             expected.Add(chat);
             expected.Add(chat2);
             elementsToDelete.AddRange(expected);
-            await chatStorage.AddAsync(chat3);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
+            await chatStorage.AddAsync(chat3);
 
             var actual = await chatStorage.GetAllAsync();
 

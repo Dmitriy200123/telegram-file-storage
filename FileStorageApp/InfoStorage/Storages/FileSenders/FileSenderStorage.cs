@@ -49,7 +49,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
         {
             modelBuilder.Entity<FileSender>(entity =>
             {
-                entity.ToTable("Senders");
+                entity.ToTable("FileSender");
                 entity.HasMany(x => x.Files)
                     .WithOne(x => x.FileSender)
                     .HasForeignKey(x => x.SenderId);

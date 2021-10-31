@@ -38,7 +38,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         {
             modelBuilder.Entity<Chat>(entity =>
             {
-                entity.ToTable("Chats");
+                entity.ToTable("Chat");
                 entity.HasMany(x => x.Files)
                     .WithOne(x => x.Chat)
                     .HasForeignKey(x => x.ChatId);
