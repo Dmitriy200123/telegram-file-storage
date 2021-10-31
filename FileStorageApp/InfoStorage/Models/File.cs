@@ -1,18 +1,20 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FileStorageApp.Data.InfoStorage.Models
 {
+    [Table("Files")]
     public class File : IModel
     {
-        public string Name { get; set; }
-        public string Extension { get; set; }
-        public string Type { get; set; }
-        public DateTime UploadDate { get; set; }
-        public Guid FileSenderId { get; set; }
-        public Guid ChatId { get; set; }
-        public Guid Id { get; set; }
-        public virtual FileSender FileSender { get; set; }
-        public virtual Chat Chat { get; set; }
+        [Required] [MaxLength(255)] public string Name { get; set; }
+        [Required] [MaxLength(255)] public string Extension { get; set; }
+        [Required] [MaxLength(255)] public string Type { get; set; }
+        [Required] public DateTime UploadDate { get; set; }
+        [Required] public Guid FileSenderId { get; set; }
+        [Required] public Guid ChatId { get; set; }
+        [Key] public Guid Id { get; set; }
+        [ForeignKey("FileSenderId")] public virtual FileSender FileSender { get; set; }
+        [ForeignKey("ChatId")] public virtual Chat Chat { get; set; }
     }
 }

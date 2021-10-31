@@ -33,17 +33,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
                 .Where(x => x.Name.Contains(subString))
                 .ToListAsync();
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Chat>(entity =>
-            {
-                entity.ToTable("Chat");
-                entity.HasMany(x => x.Files)
-                    .WithOne(x => x.Chat)
-                    .HasForeignKey(x => x.ChatId);
-                entity.Property(e => e.Name).HasMaxLength(255);
-            });
-        }
     }
 }
