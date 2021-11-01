@@ -11,20 +11,20 @@ namespace InfoStorage.Tests
 {
     public class FileSenderStorageShould
     {
-        private List<FileSender> elementsToDelete;
-        private readonly IInfoStorageFactory infoStorageFactory;
+        private List<FileSender> _elementsToDelete;
+        private readonly IInfoStorageFactory _infoStorageFactory;
 
         public FileSenderStorageShould()
         {
             var config = new DataBaseConfig();
             config.SetConnectionString(Settings.SetupString);
-            infoStorageFactory = new InfoStorageFactory(config);
+            _infoStorageFactory = new InfoStorageFactory(config);
         }
 
         [SetUp]
         public void SetUp()
         {
-            elementsToDelete = new List<FileSender>();
+            _elementsToDelete = new List<FileSender>();
         }
 
         [TestCase("ubs")]
@@ -32,7 +32,7 @@ namespace InfoStorage.Tests
         [TestCase("")]
         public async Task GetBySenderNameSubstringAsync_ReturnCorrectFileSenders_WhenNameHasSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
@@ -40,7 +40,7 @@ namespace InfoStorage.Tests
                 FullName = "Substring",
             };
             expected.Add(fileSender);
-            elementsToDelete.Add(fileSender);
+            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
@@ -52,13 +52,13 @@ namespace InfoStorage.Tests
         [TestCase("bus")]
         public async Task GetBySenderNameSubstringAsync_NoFileSenders_WhenNameHasNoSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSender = new FileSender
             {
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            elementsToDelete.Add(fileSender);
+            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
@@ -72,7 +72,7 @@ namespace InfoStorage.Tests
         public async Task GetByTelegramNameSubstringAsync_ReturnCorrectFileSenders_WhenNameHasSubstring(
             string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
@@ -80,7 +80,7 @@ namespace InfoStorage.Tests
                 FullName = "",
             };
             expected.Add(fileSender);
-            elementsToDelete.Add(fileSender);
+            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
@@ -92,13 +92,13 @@ namespace InfoStorage.Tests
         [TestCase("bus")]
         public async Task GetByTelegramNameSubstringAsync_NoFileSenders_WhenNameHasNoSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSender = new FileSender
             {
                 TelegramUserName = "Substring",
                 FullName = "",
             };
-            elementsToDelete.Add(fileSender);
+            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
@@ -109,7 +109,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenNoSameNames()
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
@@ -129,7 +129,7 @@ namespace InfoStorage.Tests
             expected.Add(fileSender3);
             expected.Add(fileSender);
             expected.Add(fileSender2);
-            elementsToDelete.AddRange(expected);
+            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(fileSender);
             await chatStorage.AddAsync(fileSender2);
             await chatStorage.AddAsync(fileSender3);
@@ -142,7 +142,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenSameNames()
         {
-            using var chatStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
@@ -165,7 +165,7 @@ namespace InfoStorage.Tests
             expected.Add(fileSender3);
             expected.Add(fileSender);
             expected.Add(fileSender2);
-            elementsToDelete.AddRange(expected);
+            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(fileSender);
             await chatStorage.AddAsync(fileSender2);
             await chatStorage.AddAsync(fileSender3);
@@ -178,8 +178,8 @@ namespace InfoStorage.Tests
         [TearDown]
         public async Task TearDown()
         {
-            using var fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
-            foreach (var elem in elementsToDelete)
+            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            foreach (var elem in _elementsToDelete)
                 await fileSenderStorage.DeleteAsync(elem.Id);
         }
     }

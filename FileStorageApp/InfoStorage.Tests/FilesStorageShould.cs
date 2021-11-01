@@ -12,27 +12,29 @@ namespace InfoStorage.Tests
 {
     public class FilesStorageShould
     {
-        private List<File> filesToDelete;
-        private readonly IInfoStorageFactory infoStorageFactory;
-        private Chat chat;
-        private FileSender fileSender;
+        private List<File> _filesToDelete;
+        private readonly IInfoStorageFactory _infoStorageFactory;
+        private Chat _chat;
+        private FileSender _fileSender;
 
         public FilesStorageShould()
         {
             var config = new DataBaseConfig();
             config.SetConnectionString(Settings.SetupString);
-            infoStorageFactory = new InfoStorageFactory(config);
+            _infoStorageFactory = new InfoStorageFactory(config);
         }
 
         [SetUp]
         public async Task SetUp()
         {
-            filesToDelete = new List<File>();
-            chat = CreateChat(Guid.NewGuid());
-            await infoStorageFactory.CreateChatStorage().AddAsync(chat);
+            _filesToDelete = new List<File>();
+            _chat = CreateChat(Guid.NewGuid());
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            await chatStorage.AddAsync(_chat);
 
-            fileSender = CreateFileSender(Guid.NewGuid());
-            await infoStorageFactory.CreateFileSenderStorage().AddAsync(fileSender);
+            _fileSender = CreateFileSender(Guid.NewGuid());
+            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            await fileSenderStorage.AddAsync(_fileSender);
         }
 
 
@@ -41,7 +43,7 @@ namespace InfoStorage.Tests
         [TestCase("")]
         public async Task GetByFileNameSubstringAsync_ReturnCorrectFiles_WhenNameHasSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
             var file = new File
             {
@@ -49,11 +51,11 @@ namespace InfoStorage.Tests
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = DateTime.Now,
-                FileSenderId = fileSender.Id,
-                ChatId = chat.Id,
+                FileSenderId = _fileSender.Id,
+                ChatId = _chat.Id,
             };
             expected.Add(file);
-            filesToDelete.Add(file);
+            _filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
 
             var actual = await chatStorage.GetByFileNameSubstringAsync(substring);
@@ -65,17 +67,17 @@ namespace InfoStorage.Tests
         [TestCase("bus")]
         public async Task GetByFileNameSubstringAsync_NoFiles_WhenNameHasNoSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileStorage();
             var file = new File
             {
                 Name = "Substring",
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = DateTime.Now,
-                FileSenderId = fileSender.Id,
-                ChatId = chat.Id,
+                FileSenderId = _fileSender.Id,
+                ChatId = _chat.Id,
             };
-            filesToDelete.Add(file);
+            _filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
 
             var actual = await chatStorage.GetByFileNameSubstringAsync(substring);
@@ -86,7 +88,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenNoSameDates()
         {
-            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
             var dateTime = DateTime.Now;
             var file = CreateFile(dateTime, Guid.NewGuid());
@@ -107,7 +109,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenSameDates()
         {
-            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileStorage();
             var expected = new List<File>();
             var dateTime = DateTime.Now;
             var file = CreateFile(dateTime, Guid.Parse("00000000-0000-0000-0000-000000000002"));
@@ -128,7 +130,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetByFilePropertiesAsync_CorrectResult_WhenTakeByExpression()
         {
-            using var chatStorage = infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateFileStorage();
             var dateTime = DateTime.Now;
             var file = CreateFile(dateTime, Guid.NewGuid());
             var file2 = CreateFile(dateTime, Guid.NewGuid());
@@ -148,14 +150,14 @@ namespace InfoStorage.Tests
         [TearDown]
         public async Task TearDown()
         {
-            using var fileStorage = infoStorageFactory.CreateFileStorage();
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
-            using var fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
+            using var fileStorage = _infoStorageFactory.CreateFileStorage();
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
 
-            foreach (var elem in filesToDelete)
+            foreach (var elem in _filesToDelete)
                 await fileStorage.DeleteAsync(elem.Id);
-            await chatStorage.DeleteAsync(chat.Id);
-            await fileSenderStorage.DeleteAsync(fileSender.Id);
+            await chatStorage.DeleteAsync(_chat.Id);
+            await fileSenderStorage.DeleteAsync(_fileSender.Id);
         }
 
         private Chat CreateChat(Guid chatId)
@@ -187,10 +189,10 @@ namespace InfoStorage.Tests
                 Extension = "xlsx",
                 Type = "file",
                 UploadDate = dateTime,
-                FileSenderId = fileSender.Id,
-                ChatId = chat.Id,
+                FileSenderId = _fileSender.Id,
+                ChatId = _chat.Id,
             };
-            filesToDelete.Add(file);
+            _filesToDelete.Add(file);
             return file;
         }
     }

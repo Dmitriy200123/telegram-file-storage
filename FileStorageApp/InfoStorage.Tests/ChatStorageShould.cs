@@ -11,21 +11,21 @@ namespace InfoStorage.Tests
 {
     public class ChatStorageShould
     {
-        private List<Chat> elementsToDelete;
-        private readonly IInfoStorageFactory infoStorageFactory;
+        private List<Chat> _elementsToDelete;
+        private readonly IInfoStorageFactory _infoStorageFactory;
 
         public ChatStorageShould()
         {
             var config = new DataBaseConfig();
             config.SetConnectionString(Settings.SetupString);
-            infoStorageFactory = new InfoStorageFactory(config);
+            _infoStorageFactory = new InfoStorageFactory(config);
         }
 
 
         [SetUp]
         public void Setup()
         {
-            elementsToDelete = new List<Chat>();
+            _elementsToDelete = new List<Chat>();
         }
 
         [TestCase("ubs")]
@@ -33,7 +33,7 @@ namespace InfoStorage.Tests
         [TestCase("")]
         public async Task GetByChatNameSubstringAsync_ReturnCorrectChats_WhenNameHasSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var expected = new List<Chat>();
             var chat = new Chat
             {
@@ -41,7 +41,7 @@ namespace InfoStorage.Tests
                 ImageId = Guid.NewGuid(),
             };
             expected.Add(chat);
-            elementsToDelete.Add(chat);
+            _elementsToDelete.Add(chat);
             await chatStorage.AddAsync(chat);
 
             var actual = await chatStorage.GetByChatNameSubstringAsync(substring);
@@ -53,13 +53,13 @@ namespace InfoStorage.Tests
         [TestCase("bus")]
         public async Task GetByChatNameSubstringAsync_NoChats_WhenNameHasNoSubstring(string substring)
         {
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chat = new Chat
             {
                 Name = "Substring",
                 ImageId = Guid.NewGuid(),
             };
-            elementsToDelete.Add(chat);
+            _elementsToDelete.Add(chat);
             await chatStorage.AddAsync(chat);
 
             var actual = await chatStorage.GetByChatNameSubstringAsync(substring);
@@ -70,7 +70,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenNoSameNames()
         {
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var expected = new List<Chat>();
             var chat = new Chat
             {
@@ -90,7 +90,7 @@ namespace InfoStorage.Tests
             expected.Add(chat);
             expected.Add(chat2);
             expected.Add(chat3);
-            elementsToDelete.AddRange(expected);
+            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
             await chatStorage.AddAsync(chat3);
@@ -103,7 +103,7 @@ namespace InfoStorage.Tests
         [Test]
         public async Task GetAll_CorrectSort_WhenSameNames()
         {
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var expected = new List<Chat>();
             var chat = new Chat
             {
@@ -126,7 +126,7 @@ namespace InfoStorage.Tests
             expected.Add(chat3);
             expected.Add(chat);
             expected.Add(chat2);
-            elementsToDelete.AddRange(expected);
+            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
             await chatStorage.AddAsync(chat3);
@@ -139,8 +139,8 @@ namespace InfoStorage.Tests
         [TearDown]
         public async Task TearDown()
         {
-            using var chatStorage = infoStorageFactory.CreateChatStorage();
-            foreach (var elem in elementsToDelete)
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            foreach (var elem in _elementsToDelete)
                 await chatStorage.DeleteAsync(elem.Id);
         }
     }
