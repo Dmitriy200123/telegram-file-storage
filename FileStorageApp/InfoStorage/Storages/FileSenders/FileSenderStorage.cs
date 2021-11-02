@@ -44,18 +44,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .ThenBy(x => x.Id)
                 .ToListAsync();
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<FileSender>(entity =>
-            {
-                entity.ToTable("Senders");
-                entity.HasMany(x => x.Files)
-                    .WithOne(x => x.FileSender)
-                    .HasForeignKey(x => x.SenderId);
-                entity.Property(e => e.FullName).HasMaxLength(255);
-                entity.Property(e => e.TelegramUserName).HasMaxLength(255);
-            });
-        }
     }
 }

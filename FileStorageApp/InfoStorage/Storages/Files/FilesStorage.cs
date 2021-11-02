@@ -45,22 +45,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 .ThenBy(x => x.Id)
                 .ToListAsync();
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<File>(entity =>
-            {
-                entity.ToTable("File");
-                entity.HasOne(x => x.FileSender)
-                    .WithMany(x => x.Files)
-                    .HasForeignKey(x => x.SenderId);
-                entity.HasOne(x => x.Chat)
-                    .WithMany(x => x.Files)
-                    .HasForeignKey(x => x.ChatId);
-                entity.Property(e => e.Name).HasMaxLength(255);
-                entity.Property(e => e.Extension).HasMaxLength(255);
-                entity.Property(e => e.Type).HasMaxLength(255);
-            });
-        }
     }
 }
