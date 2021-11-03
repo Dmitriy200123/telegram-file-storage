@@ -53,5 +53,11 @@
     padding-top: 25px;
     padding-bottom: 25px;
     padding-left: 10px;
+    &_name{
+      &:hover{
+        color: blue;
+        cursor: pointer;
+      }
+    }
   }
 }

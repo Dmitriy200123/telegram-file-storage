@@ -8,7 +8,7 @@ import {filesSlice} from "../../redux/filesSlice";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {MultiSelect, Select} from "../utils/Inputs/Select";
+import {Select} from "../utils/Inputs/Select";
 
 const actions = filesSlice.actions;
 const FilesMain = () => {
@@ -23,7 +23,6 @@ const FilesMain = () => {
     useEffect(() => {
         setLoading(true);
         const urlSearchParams = new URLSearchParams(history.location.search);
-        //todo: read array from url
         //#region todo: Instead of this do thunk request to api
         let fileName = urlSearchParams.get("fileName")?.split("&");
         let senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => +e);
@@ -95,16 +94,16 @@ const FilesMain = () => {
                     <h3 className={"files__title"}>Формат</h3>
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
-                    <MultiSelect name={"fileName"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsName}/>
+                    <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsName} isMulti={true}/>
                     <Select name={"date"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
                             getValues={getValues} options={optionsDate} placeholder={"Выберите дату"}/>
-                    <MultiSelect name={"categories"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsCategory}/>
-                    <MultiSelect name={"senders"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsSender}/>
-                    <MultiSelect name={"chats"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsChat}/>
+                    <Select name={"categories"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsCategory} isMulti={true}/>
+                    <Select name={"senders"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsSender} isMulti={true}/>
+                    <Select name={"chats"} className={"files__filter files__filter_select"} register={register}  onChangeForm={onChangeForm} setValue={setValue}
+                            getValues={getValues} options={optionsChat} isMulti={true}/>
                     {FragmentsFiles}
                 </form>
             </div>
