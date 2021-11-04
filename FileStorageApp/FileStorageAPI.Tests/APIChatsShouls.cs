@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -70,16 +71,62 @@ namespace FileStorageAPI.Tests
         }
 
         [Fact]
-        public async Task ReturnHelloWorld()
+        public async Task GetChatById_ReturnCorrectChat_ThenCalled()
         {
             var chatGuid = Guid.NewGuid();
-            await _chatClient.AddAsync(new Chat() {Id = chatGuid, ImageId = Guid.NewGuid(), Name = "test"});
+            await _chatClient.AddAsync(new Chat(chatGuid, Guid.NewGuid(), "test"));
 
             var response = await _client.GetAsync($"/api/v1/Chats/{chatGuid}");
+
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-
             responseString.Should().Contain($"\"id\":\"{chatGuid}\"");
+        }
+
+        [Fact]
+        public async Task GetChatById_404_ThenCalledWithOtherId()
+        {
+            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "test"));
+
+            var response = await _client.GetAsync($"/api/v1/Chats/{Guid.NewGuid()}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task GetChatById_400_ThenCalledWithWrongId()
+        {
+            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "test"));
+
+            var response = await _client.GetAsync("/api/v1/Chats/abc");
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task SearchChat_ReturnCorrectChat_ThenCalledWithExistingName()
+        {
+            var chatName = "testName";
+            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), chatName));
+
+            var response = await _client.GetAsync($"/api/v1/Chats/search?chatName={chatName}");
+
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            responseString.Should().Contain($"\"name\":\"{chatName}\"");
+        }
+
+        [Fact]
+        public async Task SearchChat_ReturnZeroArray_ThenCalledWithNotExistingName()
+        {
+            var chatName = "testName";
+            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "anotherChat"));
+
+            var response = await _client.GetAsync($"/api/v1/Chats/search?chatName={chatName}");
+
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            responseString.Should().Be("[]");
         }
     }
 }
