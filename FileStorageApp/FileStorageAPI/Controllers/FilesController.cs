@@ -38,14 +38,14 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> PostFile([FromForm] UploadFile uploadFile)
         {
             var file = await filesService.CreateFile(uploadFile);
-            return Created(file.DownloadLink, file);
+            return Created(string.Empty, file);
         }
 
         [HttpPut("files/{id:guid}")]
         public async Task<IActionResult> PutFile(UpdateFile updateFile)
         {
             var file = await filesService.UpdateFile(updateFile);
-            return Created(file.DownloadLink, file);
+            return Created(string.Empty, file);
         }
 
         [HttpDelete("files/{id:guid}")]
