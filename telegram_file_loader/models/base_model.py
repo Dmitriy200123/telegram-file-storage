@@ -1,9 +1,8 @@
 import uuid
 
-from peewee import UUIDField
-
 from common.postgres.basic import BaseModel as Model
 from common.postgres.basic import manager
+from peewee import UUIDField
 
 
 class BaseModel(Model):

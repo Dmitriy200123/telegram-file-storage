@@ -3,7 +3,6 @@ import uuid
 
 import pytest
 import uvloop
-
 from common import postgres
 from common.utils import now_utc
 from models import Chat, File, FileSender, FileTypeEnum

@@ -1,9 +1,8 @@
 import logging
 from time import sleep
 
-import peewee
-
 import config as config
+import peewee
 from common.postgres import basic
 
 log = logging.getLogger('db.init')
