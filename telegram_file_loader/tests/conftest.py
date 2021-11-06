@@ -5,7 +5,8 @@ import pytest
 import uvloop
 from common import postgres
 from common.utils import now_utc
-from models import Chat, File, FileSender, FileTypeEnum
+from models.db_models import Chat, File, FileSender, FileTypeEnum
+from models.external_models import Chat as chat_ext_model
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -33,11 +34,13 @@ def clean_db(init_db):
 
 
 async def create_chat(image_id=None, telegram_id=None, chat_name=None):
-    chat = await Chat.create(
-        Name=chat_name or 'test',
-        ImageId=image_id or uuid.uuid4(),
-        TelegramId=telegram_id or 123
+    chat_model = chat_ext_model(
+        name=chat_name or 'test',
+        image_id=image_id or uuid.uuid4(),
+        telegram_id=telegram_id or 123
     )
+    chat = await Chat.create(**chat_model.dict(by_alias=True))
+    # эта штука для Вани. Вот так лего pydantic модель разваливается на kwargs. И точно также может собираться из kwargs
     return chat
 
 

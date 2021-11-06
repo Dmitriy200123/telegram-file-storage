@@ -17,7 +17,7 @@ repos:
     rev: 3.9.2
     hooks:
       - id: flake8
-        exclude: ^common/db/migrations/
+        args: ["--max-line-length","120"]
   - repo: https://github.com/pycqa/isort
     rev: 5.9.3
     hooks:
