@@ -14,6 +14,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Chat>().HasAlternateKey(chat => chat.TelegramId);
+        }
+
         public new async Task<List<Chat>> GetAllAsync()
         {
             var list = await base.GetAllAsync();

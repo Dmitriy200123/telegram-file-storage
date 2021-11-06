@@ -35,6 +35,7 @@ namespace InfoStorage.Tests
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
@@ -54,6 +55,7 @@ namespace InfoStorage.Tests
             using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSender = new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
@@ -75,6 +77,7 @@ namespace InfoStorage.Tests
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "Substring",
                 FullName = "",
             };
@@ -94,6 +97,7 @@ namespace InfoStorage.Tests
             using var chatStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSender = new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "Substring",
                 FullName = "",
             };
@@ -112,16 +116,19 @@ namespace InfoStorage.Tests
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "bbbb",
             };
             var fileSender2 = new FileSender
             {
+                TelegramId = 1,
                 TelegramUserName = "",
                 FullName = "cccc",
             };
             var fileSender3 = new FileSender
             {
+                TelegramId = 2,
                 TelegramUserName = "",
                 FullName = "aaaaa",
             };
@@ -146,18 +153,21 @@ namespace InfoStorage.Tests
             var fileSender = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
             var fileSender2 = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                TelegramId = 1,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
             var fileSender3 = new FileSender
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                TelegramId = 2,
                 TelegramUserName = "",
                 FullName = "Substring",
             };

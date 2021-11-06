@@ -36,6 +36,7 @@ namespace InfoStorage.Tests
             var expected = new List<Chat>();
             var chat = new Chat
             {
+                TelegramId = 0,
                 Name = "Substring",
                 ImageId = Guid.NewGuid(),
             };
@@ -55,6 +56,7 @@ namespace InfoStorage.Tests
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chat = new Chat
             {
+                TelegramId = 0,
                 Name = "Substring",
                 ImageId = Guid.NewGuid(),
             };
@@ -73,16 +75,19 @@ namespace InfoStorage.Tests
             var expected = new List<Chat>();
             var chat = new Chat
             {
+                TelegramId = 0,
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
             var chat2 = new Chat
             {
+                TelegramId = 1,
                 Name = "bbbbb",
                 ImageId = Guid.NewGuid(),
             };
             var chat3 = new Chat
             {
+                TelegramId = 2,
                 Name = "cccc",
                 ImageId = Guid.NewGuid(),
             };
@@ -106,18 +111,21 @@ namespace InfoStorage.Tests
             var expected = new List<Chat>();
             var chat = new Chat
             {
+                TelegramId = 0,
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
             var chat2 = new Chat
             {
+                TelegramId = 1,
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
             var chat3 = new Chat
             {
+                TelegramId = 2,
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),

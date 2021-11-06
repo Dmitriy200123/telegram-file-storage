@@ -164,6 +164,7 @@ namespace InfoStorage.Tests
         {
             return new Chat
             {
+                TelegramId = 0,
                 Name = "",
                 ImageId = Guid.NewGuid(),
                 Id = chatId
@@ -174,6 +175,7 @@ namespace InfoStorage.Tests
         {
             return new FileSender
             {
+                TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "",
                 Id = senderId
