@@ -4,9 +4,9 @@ import uuid
 import pytest
 import uvloop
 
-from telegram_file_loader.common import postgres
-from telegram_file_loader.common.utils import now_utc
-from telegram_file_loader.models import Chat, File, FileSender, FileTypeEnum
+from common import postgres
+from common.utils import now_utc
+from models import Chat, File, FileSender, FileTypeEnum
 
 
 @pytest.fixture(scope='session', autouse=True)

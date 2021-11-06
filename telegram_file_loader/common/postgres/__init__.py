@@ -3,8 +3,8 @@ from time import sleep
 
 import peewee
 
-import telegram_file_loader.config as config
-from telegram_file_loader.common.postgres import basic
+import config as config
+from common.postgres import basic
 
 log = logging.getLogger('db.init')
 

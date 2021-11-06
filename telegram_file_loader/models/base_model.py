@@ -2,8 +2,8 @@ import uuid
 
 from peewee import UUIDField
 
-from telegram_file_loader.common.postgres.basic import BaseModel as Model
-from telegram_file_loader.common.postgres.basic import manager
+from common.postgres.basic import BaseModel as Model
+from common.postgres.basic import manager
 
 
 class BaseModel(Model):

@@ -8,8 +8,8 @@ from peewee import (
     UUIDField,
 )
 
-from telegram_file_loader.common.postgres.basic import EnumField, manager
-from telegram_file_loader.models.base_model import BaseModel
+from common.postgres.basic import EnumField, manager
+from models.base_model import BaseModel
 
 __all__ = ['Chat', 'FileSender', 'File', 'FileTypeEnum']
 

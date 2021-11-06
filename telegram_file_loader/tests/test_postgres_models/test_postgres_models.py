@@ -1,8 +1,8 @@
 from typing import List
 
-from telegram_file_loader.common.postgres.basic import manager
-from telegram_file_loader.models import Chat, File, FileSender
-from telegram_file_loader.tests.conftest import create_chat, create_file, create_sender
+from common.postgres.basic import manager
+from models import Chat, File, FileSender
+from tests.conftest import create_chat, create_file, create_sender
 
 
 async def test_create_chat():
