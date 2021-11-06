@@ -44,5 +44,10 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .ThenBy(x => x.Id)
                 .ToListAsync();
         }
+
+        public Task<bool> ContainsByTelegramIdAsync(long id)
+        {
+            return DbSet.AnyAsync(sender => sender.TelegramId == id);
+        }
     }
 }

@@ -33,5 +33,10 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
                 .Where(x => x.Name.Contains(subString))
                 .ToListAsync();
         }
+
+        public Task<bool> ContainsByTelegramIdAsync(long id)
+        {
+            return DbSet.AnyAsync(chat => chat.TelegramId == id);
+        }
     }
 }

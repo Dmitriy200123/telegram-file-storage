@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
+using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
@@ -49,7 +50,7 @@ namespace InfoStorage.Tests
             {
                 Name = "Substring",
                 Extension = "xlsx",
-                Type = "file",
+                Type = FileType.Document,
                 UploadDate = DateTime.Now,
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,
@@ -72,7 +73,7 @@ namespace InfoStorage.Tests
             {
                 Name = "Substring",
                 Extension = "xlsx",
-                Type = "file",
+                Type = FileType.Document,
                 UploadDate = DateTime.Now,
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,
@@ -187,7 +188,7 @@ namespace InfoStorage.Tests
                 Id = id,
                 Name = "Substring",
                 Extension = "xlsx",
-                Type = "file",
+                Type = FileType.Document,
                 UploadDate = dateTime,
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,

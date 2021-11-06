@@ -8,17 +8,20 @@ namespace FileStorageApp.Data.InfoStorage.Models
     [Table("FileSenders")]
     public class FileSender : IModel
     {
-        [Required] 
-        [MaxLength(255)] 
-        public string TelegramUserName { get; set; }
-        
-        [Required] 
-        [MaxLength(255)] 
-        public string FullName { get; set; }
-        
-        [Key] 
+        [Key]
         public Guid Id { get; set; }
-        
+
+        [Required]
+        public long TelegramId { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string TelegramUserName { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string FullName { get; set; }
+
         public virtual ICollection<File> Files { get; set; }
     }
 }

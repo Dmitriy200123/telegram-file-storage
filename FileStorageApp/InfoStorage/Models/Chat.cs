@@ -8,16 +8,18 @@ namespace FileStorageApp.Data.InfoStorage.Models
     [Table("Chats")]
     public class Chat : IModel
     {
-        [Key] 
+        [Key]
         public Guid Id { get; set; }
-        
-        [Required] 
-        [MaxLength(255)] 
+
+        [Required]
+        public long TelegramId { get; set; }
+
+        [Required]
+        [MaxLength(255)]
         public string Name { get; set; }
-        
-        [Required] 
+
         public Guid ImageId { get; set; }
-        
+
         public virtual ICollection<File> Files { get; set; }
     }
 }

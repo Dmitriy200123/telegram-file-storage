@@ -24,7 +24,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         {
             if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
-            
+
             await DbSet.AddAsync(entity);
             try
             {
@@ -42,7 +42,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         {
             if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
-            
+
             DbSet.Update(entity);
             try
             {
