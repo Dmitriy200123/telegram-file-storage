@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using FileStorageAPI.Converters;
+using FileStorageAPI.Services;
+using FileStorageApp.Data.InfoStorage.Config;
+using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace FileStorageAPI
@@ -28,6 +25,10 @@ namespace FileStorageAPI
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"}); });
+
+            RegisterDtoConverters(services);
+            RegisterInfoStorage(services);
+            RegisterApiServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,6 +48,29 @@ namespace FileStorageAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private static void RegisterDtoConverters(IServiceCollection services)
+        {
+            services.AddSingleton<IChatConverter, ChatConverter>();
+        }
+
+        private static void RegisterInfoStorage(IServiceCollection services)
+        {
+            var config = new ConfigurationBuilder().AddJsonFile("appsettings.test.json").Build();
+            var connectionString = $"Server={config["DbHost"]};" +
+                                   $"Username={config["DbUser"]};" +
+                                   $"Database={config["DbName"]};" +
+                                   $"Port={config["DbPort"]};" +
+                                   $"Password={config["DbPassword"]};" +
+                                   "SSLMode=Prefer";
+            services.AddSingleton<IDataBaseConfig>(new DataBaseConfig(connectionString));
+            services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
+        }
+
+        private static void RegisterApiServices(IServiceCollection services)
+        {
+            services.AddSingleton<IChatService, ChatService>();
         }
     }
 }

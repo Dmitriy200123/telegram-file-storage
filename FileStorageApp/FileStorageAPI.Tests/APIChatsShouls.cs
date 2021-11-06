@@ -1,132 +1,116 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using FileStorageAPI.Converters;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
-using FileStorageApp.Data.InfoStorage.Storages.Chats;
 using Xunit;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using FluentAssertions;
-
+using Newtonsoft.Json;
 
 namespace FileStorageAPI.Tests
 {
-    public abstract class TestsBase : IDisposable
+    public class APIChatsShould : IDisposable
     {
-        public void Dispose()
-        {
-            var config = APIChatsShould.config;
-            var chatsConfig = new DataBaseConfig();
-            chatsConfig.SetConnectionString(
-                $"Server={config["DbHost"]};" +
-                $"Username={config["DbUser"]};" +
-                $"Database={config["DbName"]};" +
-                $"Port={config["DbPort"]};" +
-                $"Password={config["DbPassword"]};" +
-                "SSLMode=Prefer"
-            );
-            var chatClient = new InfoStorageFactory(chatsConfig).CreateChatStorage();
+        private readonly HttpClient _apiClient;
+        private readonly IInfoStorageFactory _infoStorageFactory;
+        private readonly IChatConverter _chatConverter = new ChatConverter();
 
-            var chats = chatClient.GetAllAsync().GetAwaiter().GetResult();
-            foreach (var chat in chats)
-            {
-                chatClient.DeleteAsync(chat.Id).GetAwaiter().GetResult();
-            }
-        }
-    }
-
-    public class APIChatsShould : TestsBase
-    {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
-        private readonly IChatStorage _chatClient;
-
-        public static readonly IConfigurationRoot config = new ConfigurationBuilder()
+        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.test.json")
             .Build();
 
         public APIChatsShould()
         {
-            _server = new TestServer(new WebHostBuilder()
-                .UseConfiguration(config)
+            var server = new TestServer(new WebHostBuilder()
+                .UseConfiguration(Config)
                 .UseEnvironment("Development")
                 .UseStartup<Startup>());
-            _client = _server.CreateClient();
+            _apiClient = server.CreateClient();
+            _apiClient.DefaultRequestHeaders
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
+            var dbConfig = new DataBaseConfig($"Server={Config["DbHost"]};" +
+                                              $"Username={Config["DbUser"]};" +
+                                              $"Database={Config["DbName"]};" +
+                                              $"Port={Config["DbPort"]};" +
+                                              $"Password={Config["DbPassword"]};" +
+                                              "SSLMode=Prefer");
+            _infoStorageFactory = new InfoStorageFactory(dbConfig);
+        }
 
-            var chatsConfig = new DataBaseConfig();
-            chatsConfig.SetConnectionString(
-                $"Server={config["DbHost"]};" +
-                $"Username={config["DbUser"]};" +
-                $"Database={config["DbName"]};" +
-                $"Port={config["DbPort"]};" +
-                $"Password={config["DbPassword"]};" +
-                "SSLMode=Prefer"
-            );
-            _chatClient = new InfoStorageFactory(chatsConfig).CreateChatStorage();
+        public void Dispose()
+        {
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            var chats = chatStorage.GetAllAsync().Result;
+            Task.WaitAll(chats.Select(chat => chatStorage.DeleteAsync(chat.Id)).ToArray<Task>());
         }
 
         [Fact]
         public async Task GetChatById_ReturnCorrectChat_ThenCalled()
         {
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatGuid = Guid.NewGuid();
-            await _chatClient.AddAsync(new Chat(chatGuid, Guid.NewGuid(), "test"));
+            var chatInDb = new Chat {Id = chatGuid, TelegramId = 0, ImageId = new Guid(), Name = "test"};
+            await chatStorage.AddAsync(chatInDb);
 
-            var response = await _client.GetAsync($"/api/v1/Chats/{chatGuid}");
+            var response = await _apiClient.GetAsync($"/api/chats/{chatGuid}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().Contain($"\"id\":\"{chatGuid}\"");
+            var actual = JsonConvert.DeserializeObject<Models.Chat>(responseString);
+            actual.Should().BeEquivalentTo(_chatConverter.ConvertToChatInApi(chatInDb));
         }
 
         [Fact]
         public async Task GetChatById_404_ThenCalledWithOtherId()
         {
-            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "test"));
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            await chatStorage.AddAsync(new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "test"});
 
-            var response = await _client.GetAsync($"/api/v1/Chats/{Guid.NewGuid()}");
+            var response = await _apiClient.GetAsync($"/api/chats/{Guid.NewGuid()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public async Task GetChatById_400_ThenCalledWithWrongId()
-        {
-            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "test"));
-
-            var response = await _client.GetAsync("/api/v1/Chats/abc");
-
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
-
-        [Fact]
         public async Task SearchChat_ReturnCorrectChat_ThenCalledWithExistingName()
         {
-            var chatName = "testName";
-            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), chatName));
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            const string chatName = "testName";
+            var chatInDb = new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = chatName};
+            await chatStorage.AddAsync(chatInDb);
 
-            var response = await _client.GetAsync($"/api/v1/Chats/search?chatName={chatName}");
+            var response = await _apiClient.GetAsync($"/api/chats/search?chatName={chatName}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().Contain($"\"name\":\"{chatName}\"");
+            var actual = JsonConvert.DeserializeObject<List<Models.Chat>>(responseString);
+            actual.Should().BeEquivalentTo(new List<Models.Chat> {_chatConverter.ConvertToChatInApi(chatInDb)});
         }
 
         [Fact]
         public async Task SearchChat_ReturnZeroArray_ThenCalledWithNotExistingName()
         {
-            var chatName = "testName";
-            await _chatClient.AddAsync(new Chat(Guid.NewGuid(), Guid.NewGuid(), "anotherChat"));
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            const string chatName = "testName";
+            await chatStorage.AddAsync(new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "anotherChat"});
 
-            var response = await _client.GetAsync($"/api/v1/Chats/search?chatName={chatName}");
+            var response = await _apiClient.GetAsync($"/api/chats/search?chatName={chatName}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            responseString.Should().Be("[]");
+            var actual = JsonConvert.DeserializeObject<List<Models.Chat>>(responseString);
+            actual.Should().BeEmpty();
         }
     }
 }

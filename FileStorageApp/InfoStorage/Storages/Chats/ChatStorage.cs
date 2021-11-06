@@ -33,9 +33,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             if (subString == null)
                 throw new ArgumentNullException(nameof(subString));
             return DbSet
+                .Where(x => x.Name.Contains(subString))
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.Id)
-                .Where(x => x.Name.Contains(subString))
                 .ToListAsync();
         }
 
