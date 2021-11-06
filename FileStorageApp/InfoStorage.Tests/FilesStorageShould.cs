@@ -20,8 +20,7 @@ namespace InfoStorage.Tests
 
         public FilesStorageShould()
         {
-            var config = new DataBaseConfig();
-            config.SetConnectionString(Settings.SetupString);
+            var config = new DataBaseConfig(Settings.SetupString);
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 

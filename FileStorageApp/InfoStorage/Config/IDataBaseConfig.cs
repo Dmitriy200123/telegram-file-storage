@@ -2,8 +2,6 @@
 {
     public interface IDataBaseConfig
     {
-        string GetConnectionString();
-
-        void SetConnectionString(string connectionString);
+        public string ConnectionString { get; }
     }
 }

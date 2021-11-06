@@ -2,16 +2,11 @@
 {
     public class DataBaseConfig : IDataBaseConfig
     {
-        private string _connectionString;
+        public string ConnectionString { get; }
 
-        public void SetConnectionString(string connectionString)
+        public DataBaseConfig(string connectionString)
         {
-            _connectionString = connectionString;
-        }
-
-        public string GetConnectionString()
-        {
-            return _connectionString;
+            ConnectionString = connectionString;
         }
     }
 }

@@ -16,8 +16,7 @@ namespace InfoStorage.Tests
 
         public FileSenderStorageShould()
         {
-            var config = new DataBaseConfig();
-            config.SetConnectionString(Settings.SetupString);
+            var config = new DataBaseConfig(Settings.SetupString);
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 

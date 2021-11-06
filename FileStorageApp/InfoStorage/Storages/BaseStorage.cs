@@ -10,11 +10,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages
     internal abstract class BaseStorage<T> : DbContext, IInfoStorage<T>
         where T : class, IModel
     {
-        private readonly string _connectionLink;
+        private readonly IDataBaseConfig _dataBaseConfig;
 
         protected BaseStorage(IDataBaseConfig dataBaseConfig)
         {
-            _connectionLink = dataBaseConfig.GetConnectionString();
+            _dataBaseConfig = dataBaseConfig;
             Database.EnsureCreated();
         }
 
@@ -93,7 +93,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionLink);
+            optionsBuilder.UseNpgsql(_dataBaseConfig.ConnectionString);
         }
     }
 }
