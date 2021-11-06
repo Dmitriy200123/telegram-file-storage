@@ -18,6 +18,7 @@ services:
       - "localstack-vol:/tmp/localstack"
   postgres:
     image: postgres
+    container_name: postgres
     environment:
       - POSTGRES_USER=FileStorageApp
       - POSTGRES_PASSWORD=change
