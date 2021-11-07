@@ -1,5 +1,5 @@
 import pytest
-from common.clients.s3_client import S3Client
+from clients.s3_client import S3Client
 
 
 @pytest.fixture

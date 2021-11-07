@@ -1,8 +1,8 @@
 import asyncio
 
+import postgres
 import pytest
-from common import db
-from models.db_models import Chat, File, FileSender
+from postgres.models.db_models import Chat, File, FileSender
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -14,12 +14,12 @@ def loop():
 
 @pytest.fixture(scope='session', autouse=True)
 def init_db():
-    db.start()
+    postgres.start()
     Chat.create_table()
     FileSender.create_table()
     File.create_table()
 
-    return db
+    return postgres
 
 
 @pytest.fixture(autouse=True)

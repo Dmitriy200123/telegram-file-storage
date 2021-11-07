@@ -1,8 +1,8 @@
 import uuid
 
 from common.utils import now_utc
-from models.db_models import Chat, File, FileSender, FileTypeEnum
-from models.external_models import Chat as chat_ext_model
+from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
+from postgres.models.external_models import Chat as chat_ext_model
 
 
 async def create_chat(image_id=None, telegram_id=None, chat_name=None):

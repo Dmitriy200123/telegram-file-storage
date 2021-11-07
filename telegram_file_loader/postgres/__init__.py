@@ -3,7 +3,7 @@ from time import sleep
 
 import config as config
 import peewee
-from common.db import basic
+from postgres import basic
 
 log = logging.getLogger('db.init')
 

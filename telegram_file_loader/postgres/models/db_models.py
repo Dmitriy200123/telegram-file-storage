@@ -1,6 +1,5 @@
 from enum import Enum
 
-from common.db.basic import BaseModel, EnumField, manager
 from peewee import (
     BigIntegerField,
     CharField,
@@ -8,6 +7,7 @@ from peewee import (
     TimestampField,
     UUIDField,
 )
+from postgres.basic import BaseModel, EnumField, manager
 
 __all__ = ['Chat', 'FileSender', 'File', 'FileTypeEnum']
 

@@ -1,8 +1,8 @@
 from typing import List
 
-from common.db.basic import manager
 from conftest import create_chat, create_file, create_sender
-from models.db_models import Chat, File, FileSender
+from postgres.basic import manager
+from postgres.models.db_models import Chat, File, FileSender
 
 
 async def test_create_chat():

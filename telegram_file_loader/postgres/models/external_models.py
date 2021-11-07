@@ -1,6 +1,6 @@
 import datetime
 
-from db_models import FileTypeEnum
+from postgres.models.db_models import FileTypeEnum
 from pydantic import UUID4, BaseModel, Field
 
 

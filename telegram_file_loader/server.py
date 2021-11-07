@@ -1,11 +1,11 @@
 import asyncio
 
 import config
-from common import db
+import postgres
 
 
 async def init():
-    db.start(max_connections=config.MAX_DB_CONNECTION)
+    postgres.start(max_connections=config.MAX_DB_CONNECTION)
 
 
 def main():
