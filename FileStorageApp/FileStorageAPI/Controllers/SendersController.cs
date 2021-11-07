@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
@@ -36,15 +37,17 @@ namespace FileStorageAPI.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданному идентификатору", typeof(List<Sender>))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если отправитель с таким идентификатором не найден", typeof(string))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданному идентификатору",
+            typeof(List<Sender>))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если отправитель с таким идентификатором не найден",
+            typeof(string))]
         public async Task<IActionResult> GetSenderById(Guid id)
         {
-            var result = await _senderService.GetSenderByIdAsync(id);
-            return result.ResponseCode switch
+            var sender = await _senderService.GetSenderByIdAsync(id);
+            return sender.ResponseCode switch
             {
-                HttpStatusCode.NotFound => NotFound(result.Message),
-                HttpStatusCode.OK => Ok(result.Value),
+                HttpStatusCode.NotFound => NotFound(sender.Message),
+                HttpStatusCode.OK => Ok(sender.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -55,35 +58,57 @@ namespace FileStorageAPI.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает всех доступных отправителей для текущего пользователя", typeof(List<Sender>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает всех доступных отправителей для текущего пользователя",
+            typeof(List<Sender>))]
         public async Task<IActionResult> GetSenders()
         {
-            var result = await _senderService.GetSendersAsync();
-            return result.ResponseCode switch
+            var senders = await _senderService.GetSendersAsync();
+            return senders.ResponseCode switch
             {
-                HttpStatusCode.OK => Ok(result.Value),
+                HttpStatusCode.OK => Ok(senders.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
 
         /// <summary>
-        /// Возвращает отправителя по заданной подстроке, если оба параметры не были заданы, вернет 404
-        /// Если были заданы оба параметра, то вернет их пересечение
+        ///  Возвращает отправителя по заданной подстроке. Проверяет телеграм ник
         /// </summary>
-        /// <param name="telegramName">подстрока для поиска по телеграм нику</param>
-        /// <param name="fullName">подстрока для поиска по имени отправителя</param>
+        /// <param name="telegramName">Подстрока для поиска по телеграм нику</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpGet("search")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданной подстроке, если заданы обе подстроки, возвращает их пересечение", typeof(List<Sender>))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если оба параметра не были заданы", typeof(string))]
-        public async Task<IActionResult> GetSendersByTelegramNameSubstring(string? telegramName, string? fullName)
+        [HttpGet("search/telegramname")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке",
+            typeof(List<Sender>))]
+        public async Task<IActionResult> GetSendersByTelegramNameSubstring(
+            [FromQuery(Name = "telegramName")] [Required]
+            string telegramName)
         {
-            var senders = await _senderService.GetSendersByUserNameAndTelegramNameSubstringAsync(fullName, telegramName);
+            var senders = await _senderService.GetSendersByTelegramNameSubstringAsync(telegramName);
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
                 HttpStatusCode.NotFound => NotFound(senders.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Возвращает отправителя по заданной подстроке. Проверяет имя пользователя
+        /// </summary>
+        /// <param name="fullName">Подстрока для поиска по имени отправителя</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("search/fullname")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке",
+            typeof(List<Sender>))]
+        public async Task<IActionResult> GetSendersByFullNameSubstring(
+            [FromQuery(Name = "fullName")] [Required]
+            string fullName)
+        {
+            var senders = await _senderService.GetSendersByUserNameSubstringAsync(fullName);
+            return senders.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(senders.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
