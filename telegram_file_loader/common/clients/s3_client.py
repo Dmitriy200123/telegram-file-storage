@@ -23,14 +23,13 @@ class S3Client(aioboto3.session.Session):
         self.aws_access_key_id = aws_access_key_id or config.AWS_ACCESS_KEY_ID
         self.aws_secret_access_key = aws_secret_access_key or config.AWS_SECRET_ACCESS_KEY
         self.bucket_name = bucket_name
-        self.session = aioboto3.Session()
         super().__init__(**kwargs)
 
-    async def upload_file(self, file: BytesIO, key=None) -> bool:
+    async def upload_file(self, file: BytesIO, key: str) -> bool:
         """Загружает файлик в с3
 
         :param file: read-like байты файла
-        :param key: имя файла в с3. Если не указано берет путь файла
+        :param key: имя файла в с3
         :return: Удачно или нет загружен
         """
 
@@ -47,7 +46,7 @@ class S3Client(aioboto3.session.Session):
                 return False
         return True
 
-    async def download_file(self, key) -> StreamReader:
+    async def download_file(self, key: str) -> StreamReader:
         """Загружает файлик из s3  в aiohttp стрим
 
         :param key: имя файла в с3
@@ -79,3 +78,27 @@ class S3Client(aioboto3.session.Session):
         ) as s3:
             bucket = await s3.Bucket(self.bucket_name)
             return await bucket.objects.all()
+
+    async def get_download_link(self, key: str, expires=config.S3_URL_EXPIRES_IN_SECONDS) -> str:
+        """Возвращает урл для загрузки файла
+
+        :param key: имя файла в с3
+        :param expires: Время жизни ссылки в секундах
+        :return: объекты из Bucket
+        """
+        async with self.client(
+                service_name='s3',
+                endpoint_url=self.url,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key
+        ) as client:
+            try:
+                await client.get_object(Bucket=self.bucket_name, Key=key)
+                return await client.generate_presigned_url(
+                    'get_object',
+                    Params={'Bucket': self.bucket_name, 'Key': key},
+                    ExpiresIn=expires
+                )
+            except ClientError:
+                raise FileNotFoundError(
+                    f'No file with {key=} in bucket {self.bucket_name}')

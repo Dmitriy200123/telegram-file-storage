@@ -1,5 +1,6 @@
 from io import BytesIO
 
+import config
 import pytest
 
 
@@ -24,3 +25,12 @@ async def test_s3_get_unknown_file(s3_client):
         await s3_client.download_file('very_rare_file')
 
     assert True
+
+
+async def tests_s3_get_download_link(s3_client):
+    file = b'\x01' * 128
+    file_name = 'test_file_name'
+    await s3_client.upload_file(BytesIO(file), file_name)
+    url = await s3_client.get_download_link(file_name)
+
+    assert f'{config.S3_URL}/test/{file_name}?AWSAccessKeyId={config.AWS_ACCESS_KEY_ID}' in url
