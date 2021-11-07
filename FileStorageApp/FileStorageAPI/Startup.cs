@@ -13,28 +13,16 @@ using Microsoft.OpenApi.Models;
 
 namespace FileStorageAPI
 {
-    /// <summary>
-    /// Startup
-    /// </summary>
+#pragma warning disable CS1591
     public class Startup
     {
-        /// <summary>
-        /// Configuration.
-        /// </summary>
         public IConfiguration Configuration { get; }
 
-        /// <summary>
-        /// Create new instance <see cref="Startup"/>
-        /// </summary>
-        /// <param name="configuration">Configuration</param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to add services to the container.
-        /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -50,10 +38,6 @@ namespace FileStorageAPI
             RegisterApiServices(services);
         }
 
-        
-        /// <summary>
-        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -98,4 +82,5 @@ namespace FileStorageAPI
             services.AddSingleton<IChatService, ChatService>();
         }
     }
+#pragma warning restore CS1591
 }
