@@ -10,50 +10,55 @@ using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
 
 namespace FileStorageAPI.Services
 {
+    /// <inheritdoc />
     public class SenderService : ISenderService
     {
-        private readonly ISenderConverter senderConverter;
-        private readonly IFileSenderStorage fileSenderStorage;
-
+        private readonly ISenderConverter _senderConverter;
+        private readonly IFileSenderStorage _fileSenderStorage;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="infoStorageFactory"></param>
+        /// <param name="senderConverter"></param>
         public SenderService(IInfoStorageFactory infoStorageFactory, ISenderConverter senderConverter)
         {
-            this.senderConverter = senderConverter;
-            fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
+            _senderConverter = senderConverter;
+            _fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<Sender>> GetSenderByIdAsync(Guid id)
         {
-            var fileSender = await fileSenderStorage.GetByIdAsync(id);
+            var fileSender = await _fileSenderStorage.GetByIdAsync(id);
             if (fileSender != null)
-                return RequestResult.Ok(senderConverter.ConvertFileSender(fileSender));
+                return RequestResult.Ok(_senderConverter.ConvertFileSender(fileSender));
 
             return RequestResult.NotFound<Sender>("User with identifier {id} not found");
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<List<Sender>>> GetSendersAsync()
         {
-            var fileSenders = await fileSenderStorage.GetAllAsync();
-            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
+            var fileSenders = await _fileSenderStorage.GetAllAsync();
+            return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<List<Sender>>> GetSendersByUserNameSubstringAsync(string? fullName)
         {
             if (fullName == null)
                 return RequestResult.NotFound<List<Sender>>("fullName is empty");
 
-            var fileSenders = await fileSenderStorage.GetBySenderNameSubstringAsync(fullName);
-            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
+            var fileSenders = await _fileSenderStorage.GetBySenderNameSubstringAsync(fullName);
+            return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<List<Sender>>> GetSendersByTelegramNameSubstringAsync(string? telegramName)
         {
             if (telegramName == null)
                 return RequestResult.NotFound<List<Sender>>("telegramName is empty");
 
-            var fileSenders = await fileSenderStorage.GetByTelegramNameSubstringAsync(telegramName);
-            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
+            var fileSenders = await _fileSenderStorage.GetByTelegramNameSubstringAsync(telegramName);
+            return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<List<Sender>>> GetSendersByUserNameAndTelegramNameSubstringAsync(
             string? fullName, string? telegramName)
         {
