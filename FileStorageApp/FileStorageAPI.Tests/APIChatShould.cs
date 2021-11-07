@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,26 +8,27 @@ using FileStorageAPI.Converters;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
-using Xunit;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using FluentAssertions;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace FileStorageAPI.Tests
 {
-    public class APIChatsShould : IDisposable
+    public class APIChatShould
     {
         private readonly HttpClient _apiClient;
         private readonly IInfoStorageFactory _infoStorageFactory;
-        private readonly IChatConverter _chatConverter = new ChatConverter();
+
+        private static readonly IChatConverter ChatConverter = new ChatConverter();
 
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.test.json")
             .Build();
 
-        public APIChatsShould()
+        public APIChatShould()
         {
             var server = new TestServer(new WebHostBuilder()
                 .UseConfiguration(Config)
@@ -48,14 +48,16 @@ namespace FileStorageAPI.Tests
             _infoStorageFactory = new InfoStorageFactory(dbConfig);
         }
 
-        public void Dispose()
+        [TearDown]
+        public async Task TearDown()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
-            var chats = chatStorage.GetAllAsync().Result;
-            Task.WaitAll(chats.Select(chat => chatStorage.DeleteAsync(chat.Id)).ToArray<Task>());
+            var chats = await chatStorage.GetAllAsync();
+            foreach (var chat in chats)
+                await chatStorage.DeleteAsync(chat.Id);
         }
 
-        [Fact]
+        [Test]
         public async Task GetChatById_ReturnCorrectChat_ThenCalled()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
@@ -68,10 +70,10 @@ namespace FileStorageAPI.Tests
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             var actual = JsonConvert.DeserializeObject<Models.Chat>(responseString);
-            actual.Should().BeEquivalentTo(_chatConverter.ConvertToChatInApi(chatInDb));
+            actual.Should().BeEquivalentTo(ChatConverter.ConvertToChatInApi(chatInDb));
         }
 
-        [Fact]
+        [Test]
         public async Task GetChatById_404_ThenCalledWithOtherId()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
@@ -82,7 +84,7 @@ namespace FileStorageAPI.Tests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        [Fact]
+        [Test]
         public async Task SearchChat_ReturnCorrectChat_ThenCalledWithExistingName()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
@@ -95,10 +97,10 @@ namespace FileStorageAPI.Tests
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
             var actual = JsonConvert.DeserializeObject<List<Models.Chat>>(responseString);
-            actual.Should().BeEquivalentTo(new List<Models.Chat> {_chatConverter.ConvertToChatInApi(chatInDb)});
+            actual.Should().BeEquivalentTo(new List<Models.Chat> {ChatConverter.ConvertToChatInApi(chatInDb)});
         }
 
-        [Fact]
+        [Test]
         public async Task SearchChat_ReturnZeroArray_ThenCalledWithNotExistingName()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
