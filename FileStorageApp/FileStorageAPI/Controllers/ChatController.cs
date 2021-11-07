@@ -6,6 +6,7 @@ using FileStorageAPI.Models;
 using FileStorageAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
 {
@@ -14,6 +15,7 @@ namespace FileStorageAPI.Controllers
     /// </summary>
     [ApiController]
     [Route("api/chats")]
+    [SwaggerTag("Информация о чатах из Telegram")]
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
@@ -28,11 +30,10 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает весь список чатов.
+        /// Возвращает список чатов.
         /// </summary>
-        /// <response code="200">Возвращает список чатов</response>
         [HttpGet]
-        [ProducesResponseType(typeof(List<Chat>), StatusCodes.Status200OK)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов", typeof(List<Chat>))]
         public async Task<IActionResult> GetChats()
         {
             var chats = await _chatService.GetAllChats();
@@ -44,11 +45,9 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о чате по идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор чата</param>
-        /// <response code="200">Возвращает чат по заданному идентификатору</response>
-        /// <response code="404">Если чат с таким идентификатором не найден</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(Chat), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает чат по заданному идентификатору", typeof(Chat))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если чат с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetChat(Guid id)
         {
             var chat = await _chatService.GetChatByIdAsync(id);
@@ -62,11 +61,9 @@ namespace FileStorageAPI.Controllers
         /// Возвращает чаты, в названии которых содержится подстрока названия чата.
         /// </summary>
         /// <param name="chatNameSubstring">Название чата</param>
-        /// <response code="200">Возвращает список чатов по совпадению с chatNameSubstring</response>
-        /// <response code="400">Если query-параметр "chatNameSubstring" пуст</response>
         [HttpGet("search")]
-        [ProducesResponseType(typeof(List<Chat>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов по совпадению с chatNameSubstring", typeof(List<Chat>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если query-параметр \"chatNameSubstring\" пуст", typeof(string))]
         public async Task<IActionResult> SearchChat([FromQuery(Name = "chatNameSubstring"), Required]
             string chatNameSubstring)
         {

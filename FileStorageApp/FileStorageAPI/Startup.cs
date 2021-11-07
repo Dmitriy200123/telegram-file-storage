@@ -26,7 +26,11 @@ namespace FileStorageAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"}); });
+            services.AddSwaggerGen(c =>
+            {
+                c.EnableAnnotations();
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"});
+            });
             services.ConfigureSwaggerGen(options =>
             {
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
