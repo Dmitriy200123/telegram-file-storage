@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using FileStorageAPI.Converters;
+using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -37,6 +38,7 @@ namespace FileStorageAPI
                 options.IncludeXmlComments(xmlPath);
             });
             services.AddSingleton(Configuration);
+            RegisterProviders(services);
             RegisterDtoConverters(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
@@ -63,6 +65,8 @@ namespace FileStorageAPI
         private static void RegisterDtoConverters(IServiceCollection services)
         {
             services.AddSingleton<IChatConverter, ChatConverter>();
+            services.AddSingleton<ISenderConverter, SenderConverter>();
+            services.AddSingleton<IFileConverter, FileConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -84,6 +88,13 @@ namespace FileStorageAPI
         private static void RegisterApiServices(IServiceCollection services)
         {
             services.AddSingleton<IChatService, ChatService>();
+            services.AddSingleton<ISenderService, SenderService>();
+            services.AddSingleton<IFileService, FileService>();
+        }
+
+        private static void RegisterProviders(IServiceCollection services)
+        {
+            services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
         }
     }
 #pragma warning restore CS1591

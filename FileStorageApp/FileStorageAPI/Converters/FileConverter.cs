@@ -24,7 +24,7 @@ namespace FileStorageAPI.Converters
                 FileType = file.Type,
                 Sender = senderConverter.ConvertFileSender(file.FileSender),
                 UploadDate = file.UploadDate,
-                Chat = chatConverter.ConvertChat(file.Chat),
+                Chat = chatConverter.ConvertToChatInApi(file.Chat),
                 DownloadLink = downloadLinkProvider.GetDownloadLink()
             };
         }

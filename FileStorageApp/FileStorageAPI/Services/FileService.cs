@@ -9,12 +9,12 @@ using FileStorageApp.Data.InfoStorage.Storages.Files;
 
 namespace FileStorageAPI.Services
 {
-    public class FilesService : IFilesService
+    public class FileService : IFileService
     {
         private readonly IFilesStorage filesStorage;
         private readonly IFileConverter fileConverter;
 
-        public FilesService(IInfoStorageFactory infoStorageFactory, IFileConverter fileConverter)
+        public FileService(IInfoStorageFactory infoStorageFactory, IFileConverter fileConverter)
         {
             this.fileConverter = fileConverter;
             filesStorage = infoStorageFactory.CreateFileStorage();

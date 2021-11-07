@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 using FileStorageAPI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
 {
@@ -16,29 +20,43 @@ namespace FileStorageAPI.Controllers
         }
 
         [HttpGet("senders/{id:guid}")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданному идентификатору", typeof(List<Sender>))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если отправитель с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetSenderById(Guid id)
         {
-            var sender = await senderService.GetSenderById(id);
-            if (sender is null)
+            var result = await senderService.GetSenderByIdAsync(id);
+            return result.ResponseCode switch
             {
-                return NotFound($"User with identifier {id} not found");
-            }
-
-            return Json(sender);
+                HttpStatusCode.NotFound => NotFound(result.Message),
+                HttpStatusCode.OK => Ok(result.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpPost("senders")]
-        public async Task<IActionResult> PostSender(Sender sender)
+        [HttpGet("senders")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает всех доступных отправителей для текущего пользователя", typeof(List<Sender>))]
+        public async Task<IActionResult> GetSenders()
         {
-            var result = await senderService.CreateSender(sender);
-            return Created(string.Empty, result);
+            var result = await senderService.GetSendersAsync();
+            return result.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(result.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpPut("senders/{id:guid}")]
-        public async Task<IActionResult> PutSender(Sender sender, Guid id)
+        [HttpGet("senders/search")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданной подстроке, если заданы обе подстроки, возвращает их пересечение", typeof(List<Sender>))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если оба параметра не были заданы", typeof(string))]
+        public async Task<IActionResult> GetSendersByTelegramNameSubstring(string? telegramName, string? fullName)
         {
-            var result = await senderService.UpdateSender(id, sender);
-            return Created(string.Empty, result);
+            var senders = await senderService.GetSendersByUserNameAndTelegramNameSubstringAsync(fullName, telegramName);
+            return senders.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(senders.Value),
+                HttpStatusCode.NotFound => NotFound(senders.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
     }
 }

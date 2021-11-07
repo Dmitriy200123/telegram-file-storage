@@ -1,4 +1,5 @@
 ﻿using System;
+using FileStorageApp.Data.InfoStorage.Enums;
 
 namespace FileStorageAPI.Models
 {
@@ -6,7 +7,7 @@ namespace FileStorageAPI.Models
     {
         public Guid FileId { get; set; }
         public string FileName { get; set; }
-        public string FileType { get; set; }
+        public FileType FileType { get; set; }
         public string SenderName { get; set; }
         public DateTime CreatedDate { get; set; }
     }

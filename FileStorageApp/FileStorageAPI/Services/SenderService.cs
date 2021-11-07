@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
-using FileStorageApp.Data.InfoStorage.Models;
 using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FileStorageAPI.Services
 {
@@ -21,31 +21,51 @@ namespace FileStorageAPI.Services
             fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
         }
 
-        public async Task<Sender> GetSenderById(Guid id)
+        public async Task<RequestResult<Sender>> GetSenderByIdAsync(Guid id)
         {
             var fileSender = await fileSenderStorage.GetByIdAsync(id);
-            return fileSender is null ? null : senderConverter.ConvertFileSender(fileSender);
+            if (fileSender != null)
+                return RequestResult.Ok(senderConverter.ConvertFileSender(fileSender));
+
+            return RequestResult.NotFound<Sender>("User with identifier {id} not found");
         }
 
-        public async Task<Sender> CreateSender([FromBody] Sender sender)
+        public async Task<RequestResult<List<Sender>>> GetSendersAsync()
         {
-            var fileSender = new FileSender
-            {
-                TelegramUserName = sender.TelegramName,
-                FullName = sender.FullName,
-            };
-            await fileSenderStorage.AddAsync(fileSender);
-            var result = await fileSenderStorage.GetByTelegramNameSubstringAsync(sender.TelegramName);
-            return senderConverter.ConvertFileSender(result.First(x => x.FullName == sender.FullName));
+            var fileSenders = await fileSenderStorage.GetAllAsync();
+            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
         }
 
-        public async Task<Sender> UpdateSender(Guid id, [FromBody] Sender sender)
+        public async Task<RequestResult<List<Sender>>> GetSendersByUserNameSubstringAsync(string? fullName)
         {
-            var fileSender = await fileSenderStorage.GetByIdAsync(id);
-            if (sender.FullName != null) fileSender.FullName = sender.FullName;
-            if (sender.TelegramName != null) fileSender.TelegramUserName = sender.TelegramName;
-            await fileSenderStorage.UpdateAsync(fileSender);
-            return senderConverter.ConvertFileSender(fileSender);
+            if (fullName == null)
+                return RequestResult.NotFound<List<Sender>>("fullName is empty");
+
+            var fileSenders = await fileSenderStorage.GetBySenderNameSubstringAsync(fullName);
+            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
+        }
+
+        public async Task<RequestResult<List<Sender>>> GetSendersByTelegramNameSubstringAsync(string? telegramName)
+        {
+            if (telegramName == null)
+                return RequestResult.NotFound<List<Sender>>("telegramName is empty");
+
+            var fileSenders = await fileSenderStorage.GetByTelegramNameSubstringAsync(telegramName);
+            return RequestResult.Ok(senderConverter.ConvertFileSenders(fileSenders));
+        }
+
+        public async Task<RequestResult<List<Sender>>> GetSendersByUserNameAndTelegramNameSubstringAsync(
+            string? fullName, string? telegramName)
+        {
+            var sendersByTelegramName = await GetSendersByUserNameSubstringAsync(telegramName);
+            var sendersByFullName = await GetSendersByTelegramNameSubstringAsync(fullName);
+            if (sendersByFullName.ResponseCode == HttpStatusCode.OK && sendersByTelegramName.ResponseCode == HttpStatusCode.OK)
+                return RequestResult.Ok(sendersByFullName.Value!.Intersect(sendersByTelegramName.Value!).ToList());
+            if (sendersByFullName.ResponseCode == HttpStatusCode.OK)
+                return sendersByFullName;
+            if (sendersByTelegramName.ResponseCode == HttpStatusCode.OK)
+                return sendersByTelegramName;
+            return RequestResult.NotFound<List<Sender>>($"{sendersByFullName.Message} and {sendersByTelegramName.Message}");
         }
     }
 }

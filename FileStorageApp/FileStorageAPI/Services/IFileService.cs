@@ -6,7 +6,7 @@ using File = FileStorageAPI.Models.File;
 
 namespace FileStorageAPI.Services
 {
-    public interface IFilesService
+    public interface IFileService
     {
         Task<List<File>> GetFiles();
         Task<File> GetFileById(Guid id);

@@ -16,6 +16,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         public Task<List<T>> GetAllAsync();
 
-        public Task<T> GetByIdAsync(Guid id);
+        public Task<T?> GetByIdAsync(Guid id);
     }
 }

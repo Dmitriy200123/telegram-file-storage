@@ -86,7 +86,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             return DbSet.ToListAsync();
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
         }
