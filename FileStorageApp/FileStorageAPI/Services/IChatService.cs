@@ -7,6 +7,8 @@ namespace FileStorageAPI.Services
 {
     public interface IChatService
     {
+        Task<List<Chat>> GetAllChats();
+
         Task<Chat> GetChatByIdAsync(Guid id);
 
         Task<List<Chat>> GetByChatNameSubstringAsync(string chatName);

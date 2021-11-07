@@ -19,6 +19,14 @@ namespace FileStorageAPI.Services
             _chatConverter = chatConverter ?? throw new ArgumentNullException(nameof(chatConverter));
         }
 
+        public async Task<List<Chat>> GetAllChats()
+        {
+            using var chatStorage = _infoStorageFactory.CreateChatStorage();
+            var chatsInDb = await chatStorage.GetAllAsync();
+
+            return chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList();
+        }
+
         public async Task<Chat> GetChatByIdAsync(Guid id)
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
