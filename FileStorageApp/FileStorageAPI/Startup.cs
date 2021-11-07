@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -12,27 +13,47 @@ using Microsoft.OpenApi.Models;
 
 namespace FileStorageAPI
 {
+    /// <summary>
+    /// Startup
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Configuration.
+        /// </summary>
         public IConfiguration Configuration { get; }
 
+        /// <summary>
+        /// Create new instance <see cref="Startup"/>
+        /// </summary>
+        /// <param name="configuration">Configuration</param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"}); });
+            services.ConfigureSwaggerGen(options =>
+            {
+                var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
+                options.IncludeXmlComments(xmlPath);
+            });
             services.AddSingleton(Configuration);
             RegisterDtoConverters(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

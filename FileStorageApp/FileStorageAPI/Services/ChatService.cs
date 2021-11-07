@@ -8,17 +8,24 @@ using FileStorageAPI.Models;
 
 namespace FileStorageAPI.Services
 {
+    /// <inheritdoc/>
     public class ChatService : IChatService
     {
         private readonly IInfoStorageFactory _infoStorageFactory;
         private readonly IChatConverter _chatConverter;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="ChatService"/>
+        /// </summary>
+        /// <param name="infoStorageFactory">Фабрика для получения доступа к хранилищу чатов</param>
+        /// <param name="chatConverter">Конвертор для преобразования чатов в API-контракты</param>>
         public ChatService(IInfoStorageFactory infoStorageFactory, IChatConverter chatConverter)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _chatConverter = chatConverter ?? throw new ArgumentNullException(nameof(chatConverter));
         }
 
+        /// <inheritdoc/>
         public async Task<List<Chat>> GetAllChats()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
@@ -27,6 +34,7 @@ namespace FileStorageAPI.Services
             return chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList();
         }
 
+        /// <inheritdoc/>
         public async Task<Chat> GetChatByIdAsync(Guid id)
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
@@ -35,10 +43,11 @@ namespace FileStorageAPI.Services
             return chatInDb is null ? null : _chatConverter.ConvertToChatInApi(chatInDb);
         }
 
-        public async Task<List<Chat>> GetByChatNameSubstringAsync(string chatName)
+        /// <inheritdoc/>
+        public async Task<List<Chat>> GetByChatNameSubstringAsync(string chatNameSubstring)
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
-            var chatsInDb = await chatStorage.GetByChatNameSubstringAsync(chatName);
+            var chatsInDb = await chatStorage.GetByChatNameSubstringAsync(chatNameSubstring);
 
             return chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList();
         }
