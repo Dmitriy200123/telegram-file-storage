@@ -1,10 +1,11 @@
 import asyncio
 import functools
 import logging
+import uuid
 
 import peewee
 from peewee_async import AsyncPostgresqlMixin, Manager
-from playhouse.postgres_ext import IntegerField, Model
+from playhouse.postgres_ext import IntegerField, Model, UUIDField
 from playhouse.shortcuts import model_to_dict
 
 __all__ = ['pg_db', 'manager', 'BaseModel', 'EnumField', 'atomic']
@@ -72,6 +73,7 @@ class BaseModel(Model):
 
     В отличии от синхронной модели методы `create` и `get` являются асинхронными
     """
+    Id = UUIDField(primary_key=True, default=uuid.uuid4)
 
     class Meta:
         database = pg_db
@@ -106,9 +108,18 @@ class BaseModel(Model):
         return changed
 
     @classmethod
+    async def find_by_name(cls, substring_name) -> list:
+        if not substring_name:
+            raise ValueError(f'Invalid name. Got {substring_name=}')
+        query = cls.select().order_by(cls.Name, cls.Id).where(
+            cls.Name.contains(substring_name))
+        res = await manager.execute(query)
+        return list(res)
+
+    @classmethod
     async def create(cls, **kwargs):
         """
-        Фунция создания экземпляра модели с перехватом исключений и обработкой их в jsonrpc исключения
+        Фунция создания экземпляра модели
         """
         async with manager.atomic():
             return await manager.create(cls, **kwargs)
@@ -116,7 +127,7 @@ class BaseModel(Model):
     @classmethod
     async def get(cls, *args, **kwargs):
         """
-        Фунция получения экземпляра модели с перехватом исключений и обработкой их в jsonrpc исключения
+        Фунция получения экземпляра модели
         """
         return await manager.get(cls, *args, **kwargs)
 

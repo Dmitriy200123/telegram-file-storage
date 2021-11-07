@@ -1,7 +1,6 @@
 from enum import Enum
 
-from common.postgres.basic import EnumField, manager
-from models.base_model import BaseModel
+from common.db.basic import BaseModel, EnumField, manager
 from peewee import (
     BigIntegerField,
     CharField,
