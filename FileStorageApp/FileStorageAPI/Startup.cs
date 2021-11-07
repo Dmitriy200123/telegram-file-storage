@@ -1,3 +1,4 @@
+using System;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -13,19 +14,19 @@ namespace FileStorageAPI
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"}); });
-
+            services.AddSingleton(Configuration);
             RegisterDtoConverters(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
@@ -57,14 +58,17 @@ namespace FileStorageAPI
 
         private static void RegisterInfoStorage(IServiceCollection services)
         {
-            var config = new ConfigurationBuilder().AddJsonFile("appsettings.test.json").Build();
-            var connectionString = $"Server={config["DbHost"]};" +
-                                   $"Username={config["DbUser"]};" +
-                                   $"Database={config["DbName"]};" +
-                                   $"Port={config["DbPort"]};" +
-                                   $"Password={config["DbPassword"]};" +
-                                   "SSLMode=Prefer";
-            services.AddSingleton<IDataBaseConfig>(new DataBaseConfig(connectionString));
+            services.AddSingleton<IDataBaseConfig>(provider =>
+            {
+                var config = provider.GetRequiredService<IConfiguration>();
+                var connectionString = $"Server={config["DbHost"]};" +
+                                       $"Username={config["DbUser"]};" +
+                                       $"Database={config["DbName"]};" +
+                                       $"Port={config["DbPort"]};" +
+                                       $"Password={config["DbPassword"]};" +
+                                       "SSLMode=Prefer";
+                return new DataBaseConfig(connectionString);
+            });
             services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
         }
 
