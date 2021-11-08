@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FileStorageAPI.Models
 {
@@ -8,16 +9,21 @@ namespace FileStorageAPI.Models
     public class Sender
     {
         /// <summary>
-        /// Идентификатор отправителя
+        /// Идентификатор отправителя.
         /// </summary>
-        public Guid? UserId { get; set; }
+        [Required]
+        public Guid UserId { get; set; }
+
         /// <summary>
-        /// Ник отправителя в телеграме
+        /// Ник отправителя в телеграме.
         /// </summary>
-        public string? TelegramName { get; set; }
+        [Required]
+        public string TelegramName { get; set; }
+
         /// <summary>
-        /// Полное имя отправителя
+        /// Полное имя отправителя.
         /// </summary>
-        public string? FullName { get; set; }
+        [Required]
+        public string FullName { get; set; }
     }
 }

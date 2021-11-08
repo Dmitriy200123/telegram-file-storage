@@ -10,16 +10,15 @@ namespace FileStorageAPI.Converters
     public interface ISenderConverter
     {
         /// <summary>
-        /// Конвертирует информацию об отправителе в API-контракт
+        /// Конвертирует информацию об отправителе в API-контракт.
         /// </summary>
         /// <param name="fileSender">Информация об отправителе из базы данных</param>
-        /// <returns></returns>
         Sender ConvertFileSender(FileSender fileSender);
+
         /// <summary>
-        /// Конвертирует информацию об отправителях в API-контракты
+        /// Конвертирует информацию об отправителях в API-контракты.
         /// </summary>
         /// <param name="fileSender">Информация об отправителях из базы данных</param>
-        /// <returns></returns>
         List<Sender> ConvertFileSenders(List<FileSender> fileSender);
     }
 }

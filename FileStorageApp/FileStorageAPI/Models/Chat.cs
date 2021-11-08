@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FileStorageAPI.Models
 {
@@ -10,11 +11,13 @@ namespace FileStorageAPI.Models
         /// <summary>
         /// Идентификатор чата.
         /// </summary>
+        [Required]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Название чата.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>

@@ -14,15 +14,15 @@ namespace FileStorageAPI.Controllers
     /// <summary>
     /// API информации об отправителях из Telegram.
     /// </summary>
-    /// [ApiController]
+    [ApiController]
     [Route("api/senders")]
-    [SwaggerTag("Информация информации об отправителях из Telegram")]
+    [SwaggerTag("Информация об отправителях из Telegram")]
     public class SendersController : Controller
     {
         private readonly ISenderService _senderService;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="SendersController"/>
+        /// Инициализирует новый экземпляр класса <see cref="SendersController"/>.
         /// </summary>
         /// <param name="senderService">Сервис для взаимодействия с информацией об отправителях</param>
         public SendersController(ISenderService senderService)
@@ -31,16 +31,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по id
+        /// Возвращает отправителя по id.
         /// </summary>
         /// <param name="id">Идентификатор отправителя</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданному идентификатору",
-            typeof(List<Sender>))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если отправитель с таким идентификатором не найден",
-            typeof(string))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителя по заданному идентификатору", typeof(Sender))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если отправитель с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetSenderById(Guid id)
         {
             var sender = await _senderService.GetSenderByIdAsync(id);
@@ -53,13 +50,11 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает список отправителей, к которым пользователь имеет доступ
+        /// Возвращает список отправителей, к которым пользователь имеет доступ.
         /// </summary>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает всех доступных отправителей для текущего пользователя",
-            typeof(List<Sender>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает всех доступных отправителей для текущего пользователя", typeof(List<Sender>))]
         public async Task<IActionResult> GetSenders()
         {
             var senders = await _senderService.GetSendersAsync();
@@ -71,23 +66,19 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        ///  Возвращает отправителя по заданной подстроке. Проверяет телеграм ник
+        ///  Возвращает отправителя по заданной подстроке. Проверяет телеграм ник.
         /// </summary>
         /// <param name="telegramName">Подстрока для поиска по телеграм нику</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("search/telegramname")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке",
-            typeof(List<Sender>))]
-        public async Task<IActionResult> GetSendersByTelegramNameSubstring(
-            [FromQuery(Name = "telegramName")] [Required]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке", typeof(List<Sender>))]
+        public async Task<IActionResult> GetSendersByTelegramNameSubstring([FromQuery(Name = "telegramName"), Required]
             string telegramName)
         {
             var senders = await _senderService.GetSendersByTelegramNameSubstringAsync(telegramName);
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
-                HttpStatusCode.NotFound => NotFound(senders.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -96,13 +87,10 @@ namespace FileStorageAPI.Controllers
         /// Возвращает отправителя по заданной подстроке. Проверяет имя пользователя
         /// </summary>
         /// <param name="fullName">Подстрока для поиска по имени отправителя</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("search/fullname")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке",
-            typeof(List<Sender>))]
-        public async Task<IActionResult> GetSendersByFullNameSubstring(
-            [FromQuery(Name = "fullName")] [Required]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке", typeof(List<Sender>))]
+        public async Task<IActionResult> GetSendersByFullNameSubstring([FromQuery(Name = "fullName"), Required]
             string fullName)
         {
             var senders = await _senderService.GetSendersByUserNameSubstringAsync(fullName);

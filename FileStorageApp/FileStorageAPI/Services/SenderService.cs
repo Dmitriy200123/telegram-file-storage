@@ -1,36 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
-using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
 
 namespace FileStorageAPI.Services
 {
     /// <inheritdoc />
     public class SenderService : ISenderService
     {
+        private readonly IInfoStorageFactory _infoStorageFactory;
         private readonly ISenderConverter _senderConverter;
-        private readonly IFileSenderStorage _fileSenderStorage;
 
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="SenderService"/>
         /// </summary>
-        /// <param name="infoStorageFactory"></param>
-        /// <param name="senderConverter"></param>
-        public SenderService(IInfoStorageFactory infoStorageFactory, ISenderConverter senderConverter)
+        /// <param name="infoStorageFactoryFactory">Фабрика для создания хранилища данных</param>
+        /// <param name="senderConverter">Конвертер, для перобразования отправителей в API-контракты</param>
+        public SenderService(IInfoStorageFactory infoStorageFactoryFactory, ISenderConverter senderConverter)
         {
-            _senderConverter = senderConverter;
-            _fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
+            _infoStorageFactory = infoStorageFactoryFactory ?? throw new ArgumentNullException(nameof(infoStorageFactoryFactory));
+            _senderConverter = senderConverter ?? throw new ArgumentNullException(nameof(senderConverter));
         }
 
         /// <inheritdoc />
         public async Task<RequestResult<Sender>> GetSenderByIdAsync(Guid id)
         {
-            var fileSender = await _fileSenderStorage.GetByIdAsync(id);
+            using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSender = await senderStorage.GetByIdAsync(id);
             if (fileSender != null)
                 return RequestResult.Ok(_senderConverter.ConvertFileSender(fileSender));
 
@@ -40,21 +38,24 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<List<Sender>>> GetSendersAsync()
         {
-            var fileSenders = await _fileSenderStorage.GetAllAsync();
+            using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSenders = await senderStorage.GetAllAsync();
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<Sender>>> GetSendersByUserNameSubstringAsync(string? fullName)
+        public async Task<RequestResult<List<Sender>>> GetSendersByUserNameSubstringAsync(string fullName)
         {
-            var fileSenders = await _fileSenderStorage.GetBySenderNameSubstringAsync(fullName);
+            using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSenders = await senderStorage.GetBySenderNameSubstringAsync(fullName);
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<Sender>>> GetSendersByTelegramNameSubstringAsync(string? telegramName)
+        public async Task<RequestResult<List<Sender>>> GetSendersByTelegramNameSubstringAsync(string telegramName)
         {
-            var fileSenders = await _fileSenderStorage.GetByTelegramNameSubstringAsync(telegramName);
+            using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSenders = await senderStorage.GetByTelegramNameSubstringAsync(telegramName);
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
     }
