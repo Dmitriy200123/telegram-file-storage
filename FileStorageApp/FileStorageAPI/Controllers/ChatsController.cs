@@ -16,15 +16,15 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("api/chats")]
     [SwaggerTag("Информация о чатах из Telegram")]
-    public class ChatController : ControllerBase
+    public class ChatsController : ControllerBase
     {
         private readonly IChatService _chatService;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ChatController"/>
+        /// Инициализирует новый экземпляр класса <see cref="ChatsController"/>
         /// </summary>
         /// <param name="chatService">Сервис для взаимодействия с информацией о чатах</param>
-        public ChatController(IChatService chatService)
+        public ChatsController(IChatService chatService)
         {
             _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
         }
@@ -60,14 +60,14 @@ namespace FileStorageAPI.Controllers
         /// <summary>
         /// Возвращает чаты, в названии которых содержится подстрока названия чата.
         /// </summary>
-        /// <param name="chatNameSubstring">Название чата</param>
+        /// <param name="chatName">Название чата</param>
         [HttpGet("search")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов по совпадению с chatNameSubstring", typeof(List<Chat>))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если query-параметр \"chatNameSubstring\" пуст", typeof(string))]
-        public async Task<IActionResult> SearchChat([FromQuery(Name = "chatNameSubstring"), Required]
-            string chatNameSubstring)
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов по совпадению с chatName", typeof(List<Chat>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если query-параметр \"chatName\" пуст", typeof(string))]
+        public async Task<IActionResult> SearchChat([FromQuery(Name = "chatName"), Required]
+            string chatName)
         {
-            var chats = await _chatService.GetByChatNameSubstringAsync(chatNameSubstring);
+            var chats = await _chatService.GetByChatNameSubstringAsync(chatName);
             return Ok(chats);
         }
     }
