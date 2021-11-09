@@ -38,6 +38,7 @@ namespace FileStorageAPI
                 options.IncludeXmlComments(xmlPath);
             });
             services.AddSingleton(Configuration);
+            services.AddCors();
             RegisterProviders(services);
             RegisterDtoConverters(services);
             RegisterInfoStorage(services);
@@ -56,6 +57,8 @@ namespace FileStorageAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseAuthorization();
 
