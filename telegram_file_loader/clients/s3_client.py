@@ -25,7 +25,7 @@ class S3Client(aioboto3.session.Session):
         self.bucket_name = bucket_name
         super().__init__(**kwargs)
 
-    async def upload_file(self, file: BytesIO, key: str) -> bool:
+    async def upload_file(self, key: str, file: BytesIO) -> bool:
         """Загружает файлик в с3
 
         :param file: read-like байты файла
@@ -65,7 +65,7 @@ class S3Client(aioboto3.session.Session):
                 raise FileNotFoundError(
                     f'No file with {key=} in bucket {self.bucket_name}')
 
-    async def get_objects(self):
+    async def get_files(self):
         """Возвращает все объекты из корзины
 
         :return: объекты из Bucket
