@@ -10,3 +10,9 @@ export type File = {
     chatId:number,
     downloadLink: string
 }
+
+export type Chat = {
+    id: string,
+    name: string,
+    imageId: string,
+}

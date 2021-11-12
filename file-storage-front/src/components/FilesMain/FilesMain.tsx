@@ -9,19 +9,21 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
+import {Api} from "../../services/Api";
+import {fetchChats} from "../../redux/ActionsCreators";
 
 const actions = filesSlice.actions;
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
     const form = filesReducer.form;
-
     const dispatch = useAppDispatch();
     const history = useHistory();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true);
+        dispatch(fetchChats());
         const urlSearchParams = new URLSearchParams(history.location.search);
         //#region todo: Instead of this do thunk request to api
         let fileName = urlSearchParams.get("fileName")?.split("&");

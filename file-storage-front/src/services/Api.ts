@@ -1,12 +1,12 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 
 export const Api = createApi({
-    reducerPath: "postApi123",
-    baseQuery: fetchBaseQuery({baseUrl: "https://jsonplaceholder.typicode.com"}),
+    reducerPath: "filesApi",
+    baseQuery: fetchBaseQuery({baseUrl: "https://localhost:5001/api"}),
     endpoints: (builder) => ({
-        fetchAllPosts: builder.query({
+        getChats: builder.query({
             query: () => ({
-                url: `/posts`
+                url: `/chats`
             })
         })
     })

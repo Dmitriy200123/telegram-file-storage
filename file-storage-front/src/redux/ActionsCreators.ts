@@ -1,9 +1,12 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
+import {Chat} from "../models/File";
 
-export const fetchFiles = createAsyncThunk("files/filter", async (_, thunkAPI) => {
-    const response = await fetch("https://jsonplaceholder.typicode.com/pos2ts");
+const baseUrl = "https://localhost:5001/api";
+
+export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) => {
+    const response = await fetch(baseUrl + "/chats");
     if (!response.ok)
         return thunkAPI.rejectWithValue("Не удалось загрузить");
-    return response.json();
-
+    const data:Array<Chat> = await response.json();
+    return data;
 })

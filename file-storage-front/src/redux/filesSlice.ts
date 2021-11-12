@@ -1,9 +1,12 @@
-import {Category, File} from "../models/File";
+import {Category, Chat, File} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchFiles} from "./ActionsCreators";
+import {fetchChats} from "./ActionsCreators";
 
 
 const initialState = {
+    chats: null as null | Array<Chat>,
+    loading: false,
+    error: null as string | null,
     files: [
         {
             fileName: "Файл",
@@ -43,9 +46,6 @@ const initialState = {
     some: null as any
 }
 
-// export type InitialStateType = typeof initialState;
-// type ActionsTypes = InferActionsTypes<typeof actions>;
-
 export const filesSlice = createSlice({
     name: "files",
     initialState,
@@ -70,20 +70,20 @@ export const filesSlice = createSlice({
             date: string | null | undefined,
             categories: Array<Category> | null | undefined,
             senders: Array<number> | null | undefined,
-            chats:Array<number> | null | undefined,
+            chats: Array<number> | null | undefined,
         }>) {
             state.form = action.payload;
         },
     },
     extraReducers: {
-        [fetchFiles.fulfilled.type]:(state, action:PayloadAction) => {
-            state.some = action.payload;
+        [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.chats = action.payload;
         },
-        [fetchFiles.pending.type]:(state, action:PayloadAction) => {
-            state.some = action.payload;
+        [fetchChats.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
         },
-        [fetchFiles.rejected.type]:(state, action:PayloadAction) => {
-            state.some = action.payload
+        [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
         },
     }
 });
