@@ -17,6 +17,7 @@ const actions = filesSlice.actions;
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
+    const chats = filesReducer.chats;
     const form = filesReducer.form;
     const dispatch = useAppDispatch();
     const history = useHistory();
@@ -75,8 +76,7 @@ const FilesMain = () => {
         })
     }, [form])
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat, optionsDate} = configFilters(filesData);
-
+    const {optionsName, optionsCategory, optionsSender, optionsChat, optionsDate} = configFilters(filesData, chats);
 
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();

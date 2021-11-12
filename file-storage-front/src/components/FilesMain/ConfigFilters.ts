@@ -1,4 +1,4 @@
-import {Category, File} from "../../models/File";
+import {Category, Chat, File} from "../../models/File";
 
 const optionsCategory: Array<{ value: Category, label: Category }> = [
     {value: 'images', label: 'images'},
@@ -15,10 +15,10 @@ const optionsDate = [
     {value: '1', label: 'Другой период...'}
 ];
 
-export const configFilters = (filesData: File[]) => {
+export const configFilters = (filesData: File[], chats:Chat[] | null) => {
     const optionsName = filesData.map((f) => ({label: f.fileName, value: f.fileName}));
     const optionsSender = filesData.map((f) => ({label: f.senderId.toString(), value: f.senderId}));
-    const optionsChat = filesData.map((f) => ({label: f.chatId.toString(), value: f.chatId}));
+    const optionsChat = chats ? chats.map((f) => ({label: f.id, value: f.name})) : [];
     return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
 }
 
