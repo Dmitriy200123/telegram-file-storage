@@ -1,7 +1,7 @@
 export type Category = "images" | "video" | "links" | "documents";
 export type FormType<TValue> = { label: string, value: TValue };
 
-export type File = {
+export type TypeFile = {
     fileId: string,
     fileName: string,
     fileType: Category,

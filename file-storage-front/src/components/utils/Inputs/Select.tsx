@@ -46,7 +46,7 @@ export const Select: React.FC<Props> = ({
             }
 
             const values = getValues(name);
-            return <li
+            return <li key={elem.value}
                 className={"select__option " + (values && (values.includes(elem.value)) ? "select__option_active" : "")}
                 onClick={onChange}>{elem.label}</li>;
         })

@@ -1,7 +1,7 @@
 import React from 'react';
 import "./FilesMain.scss"
-import {Category, File} from "../../models/File";
-import { Link } from 'react-router-dom';
+import {TypeFile} from "../../models/File";
+import {Link} from 'react-router-dom';
 
 const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, senderId, chatId}) => {
     return <React.Fragment key={fileId}>
@@ -13,7 +13,7 @@ const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileTy
     </React.Fragment>
 };
 
-type PropsType = File;
+type PropsType = TypeFile;
 
 export default FragmentFile;
 

@@ -1,4 +1,4 @@
-import {Category, Chat, File} from "../models/File";
+import {Category, Chat, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats} from "./ActionsCreators";
 
@@ -35,7 +35,7 @@ const initialState = {
             downloadLink: "asdasdasd",
             senderId: "айдикАБАН"
         },
-    ] as Array<File>,
+    ] as Array<TypeFile>,
     form: {
         fileName: null as Array<string> | null | undefined,
         date: null as string | null | undefined,
