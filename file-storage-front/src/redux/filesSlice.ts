@@ -11,37 +11,37 @@ const initialState = {
         {
             fileName: "Файл",
             fileType: "video",
-            chatId: 1,
-            fileId: 2,
+            chatId: "Я АЙДИШНИК ТУТУТУТУТУ",
+            fileId: "айди3",
             uploadDate: "12.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 3
+            senderId: "айдиSender"
         },
         {
             fileName: "Файл2",
             fileType: "images",
-            chatId: 2,
-            fileId: 3,
+            chatId: "айди",
+            fileId: "айди2",
             uploadDate: "13.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 4
+            senderId: "айдиJOJO"
         },
         {
             fileName: "Файл3",
             fileType: "links",
-            chatId: 5,
-            fileId: 5,
+            chatId: "айди1",
+            fileId: "айди1",
             uploadDate: "14.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 5
+            senderId: "айдикАБАН"
         },
     ] as Array<File>,
     form: {
         fileName: null as Array<string> | null | undefined,
         date: null as string | null | undefined,
         categories: null as Array<Category> | null | undefined,
-        senders: null as Array<number> | null | undefined,
-        chats: null as Array<number> | null | undefined,
+        senders: null as Array<string> | null | undefined,
+        chats: null as Array<string> | null | undefined,
     },
     some: null as any
 }
@@ -59,18 +59,18 @@ export const filesSlice = createSlice({
         changeFilterCategories(state, action: PayloadAction<Array<Category> | null | undefined>) {
             state.form.categories = action.payload;
         },
-        changeFilterChats(state, action: PayloadAction<Array<number> | null | undefined>) {
+        changeFilterChats(state, action: PayloadAction<Array<string> | null | undefined>) {
             state.form.chats = action.payload;
         },
-        changeFilterSenders(state, action: PayloadAction<Array<number> | null | undefined>) {
+        changeFilterSenders(state, action: PayloadAction<Array<string> | null | undefined>) {
             state.form.senders = action.payload;
         },
         changeFilters(state, action: PayloadAction<{
             fileName: Array<string> | null | undefined,
             date: string | null | undefined,
             categories: Array<Category> | null | undefined,
-            senders: Array<number> | null | undefined,
-            chats: Array<number> | null | undefined,
+            senders: Array<string> | null | undefined,
+            chats: Array<string> | null | undefined,
         }>) {
             state.form = action.payload;
         },

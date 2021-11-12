@@ -11,6 +11,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {Api} from "../../services/Api";
 import {fetchChats} from "../../redux/ActionsCreators";
+import {Category} from "../../models/File";
 
 const actions = filesSlice.actions;
 const FilesMain = () => {
@@ -22,15 +23,15 @@ const FilesMain = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
         dispatch(fetchChats());
+        setLoading(true);
         const urlSearchParams = new URLSearchParams(history.location.search);
         //#region todo: Instead of this do thunk request to api
         let fileName = urlSearchParams.get("fileName")?.split("&");
-        let senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => +e);
-        let categories = urlSearchParams.get("categories")?.split("&") as any;
+        let senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => e);
+        let categories = urlSearchParams.get("categories")?.split("&") as Array<Category>;
         let date = urlSearchParams.get("date");
-        let chats = urlSearchParams.get("chats")?.split("&")?.map((e) => +e);
+        let chats = urlSearchParams.get("chats")?.split("&")?.map((e) => e);
         dispatch(actions.changeFilters({
             fileName: fileName,
             senders: senderId,
