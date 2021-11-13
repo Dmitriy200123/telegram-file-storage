@@ -5,18 +5,17 @@ from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 from postgres.models.external_models import Chat as chat_ext_model
 
 
-async def create_chat(image_id=None, telegram_id=None, chat_name=None):
+async def create_chat(image_id=None, telegram_id=None, chat_name=None) -> Chat:
     chat_model = chat_ext_model(
         name=chat_name or 'test',
         image_id=image_id or uuid.uuid4(),
         telegram_id=telegram_id or 123
     )
     chat = await Chat.create(**chat_model.dict(by_alias=True))
-    # эта штука для Вани. Вот так лего pydantic модель разваливается на kwargs. И точно также может собираться из kwargs
     return chat
 
 
-async def create_sender(name=None, telegram_id=None, telegram_username=None):
+async def create_sender(name=None, telegram_id=None, telegram_username=None) -> FileSender:
     sender = await FileSender.create(
         TelegramId=telegram_id or 123,
         TelegramUserName=telegram_username or 'tele user name',

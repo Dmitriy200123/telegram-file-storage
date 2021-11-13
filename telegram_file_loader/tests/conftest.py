@@ -2,6 +2,7 @@ import asyncio
 
 import postgres
 import pytest
+from pg_adapter import Adapter
 from postgres.models.db_models import Chat, File, FileSender
 
 
@@ -19,7 +20,14 @@ def init_db():
     FileSender.create_table()
     File.create_table()
 
-    return postgres
+    return postgres.basic.manager
+
+
+@pytest.fixture
+def db_manager(init_db):
+    adapter = Adapter(init_db)
+
+    return adapter
 
 
 @pytest.fixture(autouse=True)
