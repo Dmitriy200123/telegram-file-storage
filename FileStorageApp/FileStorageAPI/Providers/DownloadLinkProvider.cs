@@ -7,20 +7,22 @@ namespace FileStorageAPI.Providers
     /// <inheritdoc />
     public class DownloadLinkProvider : IDownloadLinkProvider
     {
-        private readonly FilesStorage.Interfaces.IFilesStorage _physicalFilesStorage;
+        private readonly IFilesStorageFactory _physicalFilesStorage;
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="physicalFilesStorage"></param>
-        public DownloadLinkProvider(IFilesStorage physicalFilesStorage)
+        /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
+        public DownloadLinkProvider(IFilesStorageFactory filesStorageFactory)
         {
-            _physicalFilesStorage = physicalFilesStorage;
+            _physicalFilesStorage = filesStorageFactory;
         }
         
         /// <inheritdoc />
         public async Task<string> GetDownloadLink(Guid id)
         {
-            var file = await _physicalFilesStorage.GetFileAsync(id.ToString());
+            var fileStorage = await _physicalFilesStorage.CreateAsync();
+            var file = await fileStorage.GetFileAsync(id.ToString());
             return file.DownloadLink;
         }
     }

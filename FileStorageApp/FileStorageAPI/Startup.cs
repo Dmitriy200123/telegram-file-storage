@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
+using Unchase.Swashbuckle.AspNetCore.Extensions.Options;
 
 namespace FileStorageAPI
 {
@@ -34,6 +36,18 @@ namespace FileStorageAPI
             {
                 c.EnableAnnotations();
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"});
+                c.AddEnumsWithValuesFixFilters(services, o =>
+                {
+                    o.ApplySchemaFilter = true;
+                    o.XEnumNamesAlias = "x-enum-varnames";
+                    o.XEnumDescriptionsAlias = "x-enum-descriptions";
+                    o.ApplyParameterFilter = true;
+                    o.ApplyDocumentFilter = true;
+                    o.IncludeDescriptions = true;
+                    o.IncludeXEnumRemarks = true;
+                    o.DescriptionSource = DescriptionSources.DescriptionAttributesThenXmlComments;
+                });
+
             });
             services.ConfigureSwaggerGen(options =>
             {
@@ -56,6 +70,7 @@ namespace FileStorageAPI
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
+                
             }
 
             app.UseHttpsRedirection();

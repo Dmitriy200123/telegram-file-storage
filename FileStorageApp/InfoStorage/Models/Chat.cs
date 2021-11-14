@@ -20,6 +20,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
         public Guid ImageId { get; set; }
 
-        public virtual ICollection<File> Files { get; set; }
+        public virtual ICollection<File>? Files { get; set; }
     }
 }

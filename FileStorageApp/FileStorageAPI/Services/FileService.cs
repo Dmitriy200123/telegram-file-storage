@@ -8,10 +8,7 @@ using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
-using FileStorageApp.Data.InfoStorage.Storages.Chats;
-using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
 using Microsoft.AspNetCore.Http;
-using IFilesStorage = FileStorageApp.Data.InfoStorage.Storages.Files.IFilesStorage;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
 using File = FileStorageAPI.Models.File;
 
@@ -20,35 +17,32 @@ namespace FileStorageAPI.Services
     /// <inheritdoc />
     public class FileService : IFileService
     {
-        private readonly IFilesStorage _filesStorage;
         private readonly IFileConverter _fileConverter;
-        private readonly IFileSenderStorage _fileSenderStorage;
-        private readonly IChatStorage _chatStorage;
         private readonly IFileTypeProvider _fileTypeProvider;
-        private readonly FilesStorage.Interfaces.IFilesStorage _physicalFilesStorage;
+        private readonly IFilesStorageFactory _filesStorageFactory;
+        private readonly IInfoStorageFactory _infoStorageFactory;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="infoStorageFactory"></param>
-        /// <param name="fileConverter"></param>
-        /// <param name="filesStorageFactory"></param>
-        /// <param name="fileTypeProvider"></param>
+        /// <param name="infoStorageFactory">Фабрика для получения доступа к хранилищу файлов</param>
+        /// <param name="fileConverter">Конвертор для преобразования файлов в API-контракты</param>
+        /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
+        /// <param name="fileTypeProvider">Поставщик типа файла</param>
         public FileService(IInfoStorageFactory infoStorageFactory, IFileConverter fileConverter,
             IFilesStorageFactory filesStorageFactory, IFileTypeProvider fileTypeProvider)
         {
+            _infoStorageFactory = infoStorageFactory;
             _fileConverter = fileConverter;
+            _filesStorageFactory = filesStorageFactory;
             _fileTypeProvider = fileTypeProvider;
-            _filesStorage = infoStorageFactory.CreateFileStorage();
-            _chatStorage = infoStorageFactory.CreateChatStorage();
-            _fileSenderStorage = infoStorageFactory.CreateFileSenderStorage();
-            _physicalFilesStorage = filesStorageFactory.CreateAsync().Result;
         }
 
         /// <inheritdoc />
         public async Task<RequestResult<List<File>>> GetFiles()
         {
-            var filesFromDataBase = await _filesStorage.GetAllAsync();
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var filesFromDataBase = await filesStorage.GetAllAsync();
             var convertedFiles = filesFromDataBase
                 .Select(_fileConverter.ConvertFile)
                 .ToList();
@@ -58,7 +52,8 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<File>> GetFileById(Guid id)
         {
-            var file = await _filesStorage.GetByIdAsync(id);
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
             if (file is null)
                 return RequestResult.NotFound<File>($"File with identifier {id} not found");
             return RequestResult.Ok(_fileConverter.ConvertFile(file));
@@ -74,17 +69,24 @@ namespace FileStorageAPI.Services
                 Extension = Path.GetExtension(uploadFile.FileName),
                 Type = _fileTypeProvider.GetFileType(uploadFile.Headers["Content-Type"]),
                 UploadDate = DateTime.Now,
-                FileSenderId = Guid.Empty,
-                ChatId = Guid.Empty,
+                FileSenderId = null,
+                ChatId = null,
             };
 
-            var chat = await _chatStorage.GetByIdAsync(file.ChatId) ?? new Chat {Id = Guid.Empty};
-            var sender = await _fileSenderStorage.GetByIdAsync(file.FileSenderId) ?? new FileSender {Id = Guid.Empty};
-            file.Chat = chat;
-            file.FileSender = sender;
             var memoryStream = new MemoryStream();
             await uploadFile.CopyToAsync(memoryStream);
-            await _physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);
+            
+            using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
+            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);
+            
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            await filesStorage.AddAsync(file);
+            
+            var chat = new Chat {Id = Guid.Empty};
+            var sender = new FileSender {Id = Guid.Empty};
+            file.Chat = chat;
+            file.FileSender = sender;
+
             return RequestResult.Created(_fileConverter.ConvertFile(file));
         }
 
@@ -92,18 +94,20 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<File>> UpdateFile(Guid id, string fileName)
         {
-            var file = await _filesStorage.GetByIdAsync(id);
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
             if (file is null)
                 return RequestResult.NotFound<File>($"File with identifier {id} not found");
             file.Name = fileName;
-            await _filesStorage.UpdateAsync(file);
+            await filesStorage.UpdateAsync(file);
             return RequestResult.Created(_fileConverter.ConvertFile(file));
         }
 
         /// <inheritdoc />
         public async Task<RequestResult<File>> DeleteFile(Guid id)
         {
-            var file = await _filesStorage.DeleteAsync(id);
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.DeleteAsync(id);
             return file
                 ? RequestResult.NoContent<File>()
                 : RequestResult.NotFound<File>($"File with identifier {id} not found");

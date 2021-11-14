@@ -11,6 +11,8 @@ namespace FileStorageAPI.Converters
         /// <inheritdoc />
         public Sender ConvertFileSender(FileSender fileSender)
         {
+            if (fileSender == null)
+                return null;
             return new Sender
             {
                 UserId = fileSender.Id,

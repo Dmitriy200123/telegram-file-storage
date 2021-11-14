@@ -79,9 +79,9 @@ namespace FileStorageAPI
         }
 
         /// <summary>
-        /// 
+        /// Следует использовать, когда что-то было удалено
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Тип, который был удален</typeparam>
         /// <returns></returns>
         public static RequestResult<T> NoContent<T>()
         {
@@ -89,10 +89,10 @@ namespace FileStorageAPI
         }
 
         /// <summary>
-        /// 
+        /// Следует использовать, когда что-то было создано
         /// </summary>
-        /// <param name="value"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="value">То, что было создано</param>
+        /// <typeparam name="T">Тип, который был создан</typeparam>
         /// <returns></returns>
         public static RequestResult<T> Created<T>(T value)
         {
