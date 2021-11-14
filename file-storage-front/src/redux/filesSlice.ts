@@ -1,10 +1,11 @@
-import {Category, Chat, TypeFile} from "../models/File";
+import {Chat, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats} from "./ActionsCreators";
+import {fetchChats, fetchFilters} from "./ActionsCreators";
 
 
 const initialState = {
     chats: null as null | Array<Chat>,
+    senders: null as null | Array<string>,
     loading: false,
     error: null as string | null,
     files: [
@@ -36,13 +37,6 @@ const initialState = {
             senderId: "айдикАБАН"
         },
     ] as Array<TypeFile>,
-    form: {
-        fileName: null as Array<string> | null | undefined,
-        date: null as string | null | undefined,
-        categories: null as Array<Category> | null | undefined,
-        senders: null as Array<string> | null | undefined,
-        chats: null as Array<string> | null | undefined,
-    },
     some: null as any
 }
 
@@ -50,29 +44,8 @@ export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        changeFilterFileName(state, action: PayloadAction<Array<string> | null | undefined>) {
-            state.form.fileName = action.payload;
-        },
-        changeFilterDate(state, action: PayloadAction<string | null | undefined>) {
-            state.form.date = action.payload;
-        },
-        changeFilterCategories(state, action: PayloadAction<Array<Category> | null | undefined>) {
-            state.form.categories = action.payload;
-        },
-        changeFilterChats(state, action: PayloadAction<Array<string> | null | undefined>) {
-            state.form.chats = action.payload;
-        },
-        changeFilterSenders(state, action: PayloadAction<Array<string> | null | undefined>) {
-            state.form.senders = action.payload;
-        },
-        changeFilters(state, action: PayloadAction<{
-            fileName: Array<string> | null | undefined,
-            date: string | null | undefined,
-            categories: Array<Category> | null | undefined,
-            senders: Array<string> | null | undefined,
-            chats: Array<string> | null | undefined,
-        }>) {
-            state.form = action.payload;
+        clearError(state) {
+            state.error = null;
         },
     },
     extraReducers: {
@@ -83,6 +56,18 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<string> }>) => {
+            state.loading = true;
+            state.chats = action.payload.chats;
+            state.senders = action.payload.senders;
+        },
+        [fetchFilters.pending.type]: (state, action: PayloadAction) => {
+            state.loading = false;
+        },
+        [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }

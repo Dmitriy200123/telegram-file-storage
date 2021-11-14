@@ -2,32 +2,35 @@ import React, {FC} from 'react';
 import './App.css';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider} from "react-redux";
-import File from "./components/File/File";
 import {setupStore} from "./redux/redux-store";
+import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 
 const App: FC = () => {
     return (<div className="App">
         <Switch>
             <Route path={"/files"} exact component={FilesMain}/>
-            <Route path={"/file"} component={File}/>
+            <Route path={"/file"} component={OpenedFile}/>
             <Redirect to={"/files"}/>
         </Switch>
     </div>)
 }
 
-// const TestApp:FC = () => {
-//     const { isLoading, isError, error, } = Api.useFetchAllPostsQuery("");
-//     const dispatch = useAppDispatch();
-//     useEffect(() =>{
-//         dispatch(fetchFiles());
-//     },[])
-//     const some = useAppSelector((state) => state.filesReducer.some);
+// const TestApp: FC = () => {
+//     const a = {asd: "123"};
+//     var file = new File([JSON.stringify(a)], 'foobar.txt');
+//
+//     let link = document.createElement('a');
+//     link.text = "123";
+//     link.download = file.name;
+//
+//     link.href = URL.createObjectURL(file);
+//     link.click();
+//     URL.revokeObjectURL(link.href);
+//
 //     return <div className="App">
-//         {/*{isLoading ? "Загрузка" : ""}*/}
-//         {/*{isError ? JSON.stringify(error) : ""}*/}
-//         {JSON.stringify(some)}
-//         {/*{!isError &&data?.map((elem:any) => <>{elem.id} {elem.title}</>)}*/}
+//         <input type={"text"}/>
+//
 //     </div>
 // }
 
