@@ -12,75 +12,73 @@ namespace FilesStorageTests
 {
     public class S3FilesStorageShould
     {
-        private const string serviceUrl = "http://localhost:4566";
-        private IFilesStorage _sut;
+        private const string ServiceUrl = "http://localhost:4566";
+        private IFilesStorageFactory _sutFactory;
 
         [SetUp]
         public void Setup()
         {
-            var config = new AmazonS3Config();
-            config.ServiceURL = serviceUrl;
-            config.ForcePathStyle = true;
+            var config = new AmazonS3Config {ServiceURL = ServiceUrl, ForcePathStyle = true};
 
-            _sut = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
-                    "test", config, S3CannedACL.PublicReadWrite,
-                    TimeSpan.FromHours(1))).CreateAsync().GetAwaiter()
-                .GetResult();
+            _sutFactory = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
+                "test", config, S3CannedACL.PublicReadWrite,
+                TimeSpan.FromHours(1)));
         }
 
         [TearDown]
-        public void TearDown()
+        public async Task TearDown()
         {
-            var files = _sut.GetFilesAsync().GetAwaiter().GetResult();
+            using var sut = await _sutFactory.CreateAsync();
+
+            var files = await sut.GetFilesAsync();
 
             foreach (var file in files)
-            {
-                _sut.DeleteFileAsync(file.Key);
-            }
+                await sut.DeleteFileAsync(file.Key);
         }
 
         [Test]
         public async Task SaveFile_HaveFile_WhenCalled()
         {
-            using (FileStream fileStream = new FileStream(Path.GetTempFileName(),
+            await using var fileStream = new FileStream(Path.GetTempFileName(),
                 FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None,
-                4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose))
-            {
-                var key = fileStream.Name;
-                fileStream.Write(new byte[8]);
+                4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose);
+            using var sut = await _sutFactory.CreateAsync();
+            var key = fileStream.Name;
+            fileStream.Write(new byte[8]);
 
-                await _sut.SaveFileAsync(key, fileStream);
+            await sut.SaveFileAsync(key, fileStream);
 
-                var result = await _sut.GetFilesAsync();
+            var result = await sut.GetFilesAsync();
 
-                result.Should().HaveCount(1).And.Subject.First().Key.Should().Be(key);
-            }
+            result.Should().HaveCount(1).And.Subject.First().Key.Should().Be(key);
         }
 
         [Test]
         public async Task DeleteFileAsync_NoFile_AfterCalled()
         {
-            using (FileStream fileStream = new FileStream(Path.GetTempFileName(),
+            await using var fileStream = new FileStream(Path.GetTempFileName(),
                 FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None,
-                4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose))
-            {
-                var key = fileStream.Name;
-                fileStream.Write(new byte[8]);
+                4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose);
+            using var sut = await _sutFactory.CreateAsync();
+            var key = fileStream.Name;
+            fileStream.Write(new byte[8]);
 
-                await _sut.SaveFileAsync(key, fileStream);
+            await sut.SaveFileAsync(key, fileStream);
 
-                await _sut.DeleteFileAsync(key);
-                var result = await _sut.GetFilesAsync();
+            await sut.DeleteFileAsync(key);
+            var result = await sut.GetFilesAsync();
 
-                result.Should().HaveCount(0);
-            }
+            result.Should().HaveCount(0);
         }
 
         [Test]
         public async Task GetFileAsync_ThrowNorFoundExc_ThenCalledToUnknownFile()
         {
-            var key = "smth";
-            Func<Task> act = _sut.Awaiting(x => x.GetFileAsync(key));
+            using var sut = await _sutFactory.CreateAsync();
+            const string key = "smth";
+
+            Func<Task> act = sut.Awaiting(x => x.GetFileAsync(key));
+
             await act.Should().ThrowAsync<FileNotFoundException>()
                 .WithMessage("Not found file with key=smth in bucket=test");
         }
