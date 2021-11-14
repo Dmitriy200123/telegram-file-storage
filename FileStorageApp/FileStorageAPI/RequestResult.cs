@@ -12,12 +12,14 @@ namespace FileStorageAPI
         /// Значение, которое есть, если сервис смог успешно отработать
         /// </summary>
         public readonly T? Value;
+
         /// <summary>
         /// Код ответа, который стоит вернуть контроллеру
         /// </summary>
         public readonly HttpStatusCode ResponseCode;
+
         /// <summary>
-        /// Сообщение которое должен веронуть контроллер
+        /// Сообщение которое должен вернуть контроллер
         /// </summary>
         public readonly string Message;
 
@@ -33,13 +35,14 @@ namespace FileStorageAPI
             Message = message;
             Value = value;
         }
+
         /// <summary>
         /// Конструктор, когда сервис успешно выполнил действия
         /// </summary>
         /// <param name="responseCode"></param>
         /// <param name="value"></param>
         /// <param name="message"></param>
-        public RequestResult(HttpStatusCode responseCode,T value, string message = "Success")
+        public RequestResult(HttpStatusCode responseCode, T value, string message = "Success")
         {
             ResponseCode = responseCode;
             Message = message;
@@ -73,6 +76,27 @@ namespace FileStorageAPI
         public static RequestResult<T> Ok<T>(T value)
         {
             return new RequestResult<T>(HttpStatusCode.OK, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static RequestResult<T> NoContent<T>()
+        {
+            return new RequestResult<T>(HttpStatusCode.NoContent, value: default!);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static RequestResult<T> Created<T>(T value)
+        {
+            return new RequestResult<T>(HttpStatusCode.Created, value);
         }
     }
 }

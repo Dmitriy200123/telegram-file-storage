@@ -1,58 +1,114 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
-using FileStorageAPI.Models;
 using FileStorageAPI.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileStorageAPI.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    [Route("files")]
     public class FilesController : Controller
     {
-        private readonly IFileService fileService;
+        private readonly IFileService _fileService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileService"></param>
         public FilesController(IFileService fileService)
         {
-            this.fileService = fileService;
+            _fileService = fileService;
         }
 
-        [HttpGet("files")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpGet]
         public async Task<IActionResult> GetFiles()
         {
-            var files = await fileService.GetFiles();
-            return Ok(files);
+            var files = await _fileService.GetFiles();
+            return files.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(files.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpGet("files/{id:guid}")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetFileById(Guid id)
         {
-            var file = await fileService.GetFileById(id);
-            if (file is null)
+            var file = await _fileService.GetFileById(id);
+            return file.ResponseCode switch
             {
-                return NotFound($"File with identifier {id} not found");
-            }
-
-            return Ok(file);
+                HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpPost("files")]
-        public async Task<IActionResult> PostFile([FromForm] UploadFile uploadFile)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpPost]
+        public async Task<IActionResult> PostFile(IFormFile file)
         {
-            var file = await fileService.CreateFile(uploadFile);
-            return Created(string.Empty, file);
+            var uploadedFile = await _fileService.CreateFile(file);
+            return uploadedFile.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(uploadedFile.Value!.DownloadLink, uploadedFile.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpPut("files/{id:guid}")]
-        public async Task<IActionResult> PutFile(UpdateFile updateFile)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> PutFile(Guid id, [FromBody]string fileName)
         {
-            var file = await fileService.UpdateFile(updateFile);
-            return Created(string.Empty, file);
+            var file = await _fileService.UpdateFile(id, fileName);
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(file.Value!.DownloadLink, file.Value),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
-        [HttpDelete("files/{id:guid}")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteFile(Guid id)
         {
-            await fileService.DeleteFile(id);
-            return NoContent();
+            var file = await _fileService.DeleteFile(id);
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.NoContent => NoContent(),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
     }
 }

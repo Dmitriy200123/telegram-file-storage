@@ -58,7 +58,7 @@ namespace FileStorageAPI.Controllers
             return chat.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(chat.Value),
-                HttpStatusCode.NotFound => NotFound(chat),
+                HttpStatusCode.NotFound => NotFound(chat.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

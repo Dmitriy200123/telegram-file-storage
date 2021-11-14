@@ -1,18 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using FileStorageApp.Data.InfoStorage.Enums;
 
 namespace FileStorageAPI.Providers
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IDownloadLinkProvider
+    public interface IFileTypeProvider
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="extension"></param>
         /// <returns></returns>
-        Task<string> GetDownloadLink(Guid id);
+        FileType GetFileType(string extension);
     }
 }

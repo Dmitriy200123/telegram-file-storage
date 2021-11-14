@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using Amazon.S3;
+using FilesStorage;
+using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
@@ -41,6 +44,7 @@ namespace FileStorageAPI
             services.AddCors();
             RegisterProviders(services);
             RegisterDtoConverters(services);
+            RegisterFileStorage(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
         }
@@ -88,6 +92,21 @@ namespace FileStorageAPI
             services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
         }
 
+        private static void RegisterFileStorage(IServiceCollection services)
+        {
+            services.AddSingleton<IS3FilesStorageOptions>(provider =>
+            {
+                var config = provider.GetRequiredService<IConfiguration>();
+                var configS3 = new AmazonS3Config();
+                configS3.ServiceURL = config["S3serviceUrl"];
+                configS3.ForcePathStyle = true;
+                return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
+                    config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
+                    TimeSpan.FromHours(1));
+            });
+            services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
+        }
+
         private static void RegisterApiServices(IServiceCollection services)
         {
             services.AddSingleton<IChatService, ChatService>();
@@ -98,6 +117,7 @@ namespace FileStorageAPI
         private static void RegisterProviders(IServiceCollection services)
         {
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
+            services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
         }
     }
 #pragma warning restore CS1591
