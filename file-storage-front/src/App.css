@@ -1,4 +1,9 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
+.header {
+  background: #1976D3;
+  min-height: 56px;
+  width: 100%;
+}

@@ -8,6 +8,7 @@ import FilesMain from "./components/FilesMain/FilesMain";
 
 const App: FC = () => {
     return (<div className="App">
+        <header className="header"/>
         <Switch>
             <Route path={"/files"} exact component={FilesMain}/>
             <Route path={"/file"} component={OpenedFile}/>

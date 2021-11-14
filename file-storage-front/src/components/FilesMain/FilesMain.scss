@@ -1,7 +1,7 @@
 .files-main {
   &__content {
     background: #E5E5E5;
-    padding: 25px;
+    padding: 28px;
   }
 
   &__title {
@@ -17,8 +17,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   background: white;
-  padding-left: 20px;
-  padding-right: 20px;
   text-align: left;
 
   &__item:not(:nth-last-child(-n + 5)), &__filter {
@@ -31,10 +29,6 @@
   }
 
   &__filter {
-    &:not(:nth-of-type(5)) {
-      padding-right: 20px;
-    }
-
     &_text {
       & input {
         width: 100%;
@@ -47,14 +41,31 @@
     }
 
     padding-bottom: 25px;
+
+  }
+
+  &__title{
+    color: white;
+  }
+  &__title, &__filter {
+    background: #1976D3;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  &__title:first-of-type, &__filter:first-of-type {
+    padding-left: 20px;
+  }
+
+  &__title:last-of-type, &__filter_last {
+    padding-right: 20px;
   }
 
   &__item {
-    padding-top: 25px;
-    padding-bottom: 25px;
-    padding-left: 10px;
-    &_name{
-      &:hover{
+    padding: 25px 30px;
+
+    &_name {
+      &:hover {
         color: blue;
         cursor: pointer;
       }

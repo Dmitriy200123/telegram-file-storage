@@ -10,6 +10,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {fetchChats} from "../../redux/ActionsCreators";
 import {Category} from "../../models/File";
+import {SelectTime} from "../utils/Inputs/SelectDate";
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
@@ -28,7 +29,7 @@ const FilesMain = () => {
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat, optionsDate} = configFilters(filesData, chats);
+    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
@@ -53,19 +54,20 @@ const FilesMain = () => {
                     <h3 className={"files__title"}>Чаты</h3>
                     <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsName} isMulti={true}/>
-                    <Select name={"date"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsDate} placeholder={"Выберите дату"}/>
+                            values={getValues("fileName")} options={optionsName} isMulti={true}/>
+                    <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
+                                onChangeForm={onChangeForm} setValue={setValue}
+                                values={getValues("date")} placeholder={"Выберите дату"}/>
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsCategory} isMulti={true}/>
+                            values={getValues("categories")} options={optionsCategory} isMulti={true}/>
                     <Select name={"senders"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsSender} isMulti={true}/>
-                    <Select name={"chats"} className={"files__filter files__filter_select"} register={register}
+                            values={getValues("senders")} options={optionsSender} isMulti={true}/>
+                    <Select name={"chats"} className={"files__filter files__filter_last files__filter_select"}
+                            register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            getValues={getValues} options={optionsChat} isMulti={true}/>
+                            values={getValues("chats")} options={optionsChat} isMulti={true}/>
                     {FragmentsFiles}
                 </form>
             </div>

@@ -82,4 +82,20 @@
       }
     }
   }
+
+  &__input-date{
+    //position: absolute;
+    //z-index: 1;
+  }
+}
+
+.input-date{
+  &__label{
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+  &__btns{
+    margin-top: 21px;
+    display: flex;
+  }
 }
