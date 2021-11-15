@@ -15,7 +15,7 @@ namespace FileStorageAPI.Services
         /// Возвращает весь список файлов.
         /// </summary>
         /// <returns></returns>
-        Task<RequestResult<List<File>>> GetFiles();
+        Task<RequestResult<List<File>>> GetFiles(FileSearchParameters fileSearchParameters);
         
         /// <summary>
         /// Возвращает файл по его идентификатору.

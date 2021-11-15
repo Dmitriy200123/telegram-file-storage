@@ -21,6 +21,7 @@ namespace FileStorageAPI.Services
         private readonly IFileTypeProvider _fileTypeProvider;
         private readonly IFilesStorageFactory _filesStorageFactory;
         private readonly IInfoStorageFactory _infoStorageFactory;
+        private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
 
         /// <summary>
         /// 
@@ -30,19 +31,21 @@ namespace FileStorageAPI.Services
         /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
         /// <param name="fileTypeProvider">Поставщик типа файла</param>
         public FileService(IInfoStorageFactory infoStorageFactory, IFileConverter fileConverter,
-            IFilesStorageFactory filesStorageFactory, IFileTypeProvider fileTypeProvider)
+            IFilesStorageFactory filesStorageFactory, IFileTypeProvider fileTypeProvider, IExpressionFileFilterProvider expressionFileFilterProvider)
         {
             _infoStorageFactory = infoStorageFactory;
             _fileConverter = fileConverter;
             _filesStorageFactory = filesStorageFactory;
             _fileTypeProvider = fileTypeProvider;
+            _expressionFileFilterProvider = expressionFileFilterProvider;
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<File>>> GetFiles()
+        public async Task<RequestResult<List<File>>> GetFiles(FileSearchParameters fileSearchParameters)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var filesFromDataBase = await filesStorage.GetAllAsync();
+            var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters);
+            var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression);
             var convertedFiles = filesFromDataBase
                 .Select(_fileConverter.ConvertFile)
                 .ToList();

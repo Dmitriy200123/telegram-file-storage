@@ -133,6 +133,7 @@ namespace FileStorageAPI
         {
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
+            services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
         }
     }
 #pragma warning restore CS1591

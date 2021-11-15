@@ -34,9 +34,9 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает все доступные файлы для текущего пользователя", typeof(File))]
-        public async Task<IActionResult> GetFiles()
+        public async Task<IActionResult> GetFiles([FromQuery]FileSearchParameters fileSearchParameters)
         {
-            var files = await _fileService.GetFiles();
+            var files = await _fileService.GetFiles(fileSearchParameters);
             return files.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(files.Value),
