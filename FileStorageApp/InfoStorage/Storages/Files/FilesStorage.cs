@@ -17,11 +17,20 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public new async Task<List<File>> GetAllAsync()
         {
-            var list = await base.GetAllAsync();
+            var list = await DbSet.Include(x => x.Chat)
+                .Include(x => x.FileSender)
+                .ToListAsync();
             return list
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToList();
+        }
+        public override async Task<File> GetByIdAsync(Guid id)
+        {
+            return await DbSet
+                .Include(x => x.FileSender)
+                .Include(x => x.Chat)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression)
@@ -30,6 +39,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 throw new ArgumentNullException(nameof(expression));
             return DbSet
                 .Where(expression)
+                .Include(x => x.Chat)
+                .Include(x => x.FileSender)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
@@ -41,6 +52,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 throw new ArgumentNullException(nameof(subString));
             return DbSet
                 .Where(x => x.Name.Contains(subString))
+                .Include(x => x.Chat)
+                .Include(x => x.FileSender)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToListAsync();

@@ -72,23 +72,24 @@ namespace FileStorageAPI.Services
                 Extension = Path.GetExtension(uploadFile.FileName),
                 Type = _fileTypeProvider.GetFileType(uploadFile.Headers["Content-Type"]),
                 UploadDate = DateTime.Now,
-                FileSenderId = null,
-                ChatId = null,
+                FileSenderId = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                ChatId = null
             };
 
             var memoryStream = new MemoryStream();
             await uploadFile.CopyToAsync(memoryStream);
             
-            using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
-            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);
+            /*using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
+            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);*/
             
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            await filesStorage.AddAsync(file);
+            if(!await filesStorage.AddAsync(file))
+                return RequestResult.InternalServerError<File>("Can't add to database");
             
             var chat = new Chat {Id = Guid.Empty};
-            var sender = new FileSender {Id = Guid.Empty};
             file.Chat = chat;
-            file.FileSender = sender;
+            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            file.FileSender = await fileSenderStorage.GetByIdAsync(Guid.Parse("00000000-0000-0000-0000-000000000003"));
 
             return RequestResult.Created(_fileConverter.ConvertFile(file));
         }

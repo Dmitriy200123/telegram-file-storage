@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 {
@@ -21,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 
         public new async Task<List<FileSender>> GetAllAsync()
         {
-            var list = await base.GetAllAsync();
+            var list = await DbSet.Include(x => x.Files).ToListAsync();
             return list
                 .OrderBy(x => x.FullName)
                 .ThenBy(x => x.Id)
@@ -48,6 +49,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .OrderBy(x => x.FullName)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
+        }
+
+        public override async Task<FileSender> GetByIdAsync(Guid id)
+        {
+            return await DbSet
+                .Include(x => x.Files)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Task<bool> ContainsByTelegramIdAsync(long id)

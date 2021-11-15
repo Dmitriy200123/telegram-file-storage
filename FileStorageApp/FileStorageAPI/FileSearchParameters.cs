@@ -9,6 +9,7 @@ namespace FileStorageAPI
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
         public Guid[]? SenderIds { get; set; }
+        public Guid[]? ChatIds { get; set; }
         public FileType[]? Categories { get; set; }
     }
 }

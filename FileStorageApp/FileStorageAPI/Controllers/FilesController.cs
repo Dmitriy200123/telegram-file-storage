@@ -5,6 +5,7 @@ using FileStorageAPI.Models;
 using FileStorageAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
@@ -12,7 +13,7 @@ namespace FileStorageAPI.Controllers
     /// <summary>
     /// API информации о файлах из Telegram.
     /// </summary>
-    [Route("files")]
+    [Route("api/files")]
     [SwaggerTag("Информация об файлах из Telegram")]
     public class FilesController : Controller
     {
@@ -72,13 +73,15 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(File))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile(IFormFile file)
         {
             var uploadedFile = await _fileService.CreateFile(file);
             return uploadedFile.ResponseCode switch
             {
                 HttpStatusCode.Created => Created(uploadedFile.Value!.DownloadLink, uploadedFile.Value),
-                _ => throw new ArgumentException("Unknown response code")
+                HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
+                    _ => throw new ArgumentException("Unknown response code")
             };
         }
 
@@ -92,7 +95,7 @@ namespace FileStorageAPI.Controllers
         [HttpPut("{id:guid}")]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(File))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
-        public async Task<IActionResult> PutFile(Guid id, [FromBody]string fileName)
+        public async Task<IActionResult> PutFile(Guid id, string fileName)
         {
             var file = await _fileService.UpdateFile(id, fileName);
             return file.ResponseCode switch

@@ -10,5 +10,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         public Task<List<Chat>> GetByChatNameSubstringAsync(string subString);
 
         public Task<bool> ContainsByTelegramIdAsync(long id);
+        public Task<List<Chat>> GetAllAsync();
+        public new Task<Chat> GetByIdAsync(Guid id);
     }
 }

@@ -98,5 +98,16 @@ namespace FileStorageAPI
         {
             return new RequestResult<T>(HttpStatusCode.Created, value);
         }
+
+        /// <summary>
+        /// Следует использовать, когда на беке что-то пошло не так
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static RequestResult<T> InternalServerError<T>(string message)
+        {
+            return new RequestResult<T>(HttpStatusCode.InternalServerError, message);
+        }
     }
 }

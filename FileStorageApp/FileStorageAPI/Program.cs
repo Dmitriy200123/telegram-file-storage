@@ -1,3 +1,6 @@
+using System;
+using FileStorageApp.Data.InfoStorage.Factories;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -8,7 +11,21 @@ namespace FileStorageAPI
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            var service = (IInfoStorageFactory)host.Services.GetService(typeof(IInfoStorageFactory))!;
+            var storage = service.CreateFileSenderStorage();
+            if (!storage.ContainsAsync(Guid.Parse("00000000-0000-0000-0000-000000000003")).Result)
+            {//todo временный костыль, пока не научусь добавлять отправителей при заходе через телегу
+                var res = storage.AddAsync(new FileSender
+                {
+                    Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                    TelegramId = 1,
+                    TelegramUserName = "temp value",
+                    FullName = "Пользователь загрузивший файл с сайта",
+                }).Result;
+            }
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
