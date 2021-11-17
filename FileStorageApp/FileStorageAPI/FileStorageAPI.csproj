@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <Configurations>Debug;Release;Docker</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -30,6 +32,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <Content Remove="appsettings.json" />
+      <None Include="appsettings.Docker.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Include="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

@@ -26,6 +26,37 @@ services:
     ports:
       - "5432:5432"
 
+  dotnet_backend:
+    container_name: dotnet_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - '5001:5001'
+  
+  front:
+    container_name: front
+    build:
+      context: file-storage-front/
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+
+
+  telegram_loader:
+    container_name: telegram_loader
+    build:
+      context: telegram_file_loader/
+      dockerfile: Dockerfile
+    environment:
+      - Test="true"
+    ports:
+      - '8080:8080'
+    depends_on:
+      - postgres
 
 volumes:
   localstack-vol:

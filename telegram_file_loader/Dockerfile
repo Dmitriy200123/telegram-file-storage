@@ -1,6 +1,6 @@
-FROM registry.tech.bank24.int/devexp/k8s-baseimage-python:3.8
+FROM python:3.9
 
-ARG Test='false'
+ARG Test="false"
 
 
 RUN mkdir -m 777 -p /app
