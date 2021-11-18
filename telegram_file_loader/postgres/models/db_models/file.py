@@ -18,8 +18,8 @@ class File(BaseModel):
     Extension = CharField()
     TypeId = EnumField(enum=FileTypeEnum, null=False)
     UploadDate = TimestampField()
-    FileSenderId = ForeignKeyField(model=FileSender)
-    ChatId = ForeignKeyField(model=Chat)
+    FileSenderId = ForeignKeyField(model=FileSender, db_column='FileSenderId')
+    ChatId = ForeignKeyField(model=Chat, db_column='ChatId')
 
     class Meta:
         table_name = 'Files'
