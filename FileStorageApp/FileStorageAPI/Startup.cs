@@ -15,7 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
-using Unchase.Swashbuckle.AspNetCore.Extensions.Options;
 
 namespace FileStorageAPI
 {

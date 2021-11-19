@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -81,7 +80,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             return entity is not null;
         }
 
-        public virtual async Task<T> GetByIdAsync(Guid id)
+        protected virtual async Task<T> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
         }

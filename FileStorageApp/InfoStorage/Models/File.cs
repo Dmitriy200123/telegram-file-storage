@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using FileStorageApp.Data.InfoStorage.Enums;
 
 namespace FileStorageApp.Data.InfoStorage.Models
@@ -44,6 +42,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public virtual FileSender FileSender { get; set; }
 
         [ForeignKey("ChatId")]
-        public virtual Chat? Chat { get; set; }//если сделать не nullable - при создании таблички не дает создать nullable столбец
+        public virtual Chat Chat { get; set; }
     }
 }

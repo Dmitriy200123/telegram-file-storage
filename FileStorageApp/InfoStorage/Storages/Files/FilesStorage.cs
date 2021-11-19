@@ -15,48 +15,63 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         {
         }
 
-        public new async Task<List<File>> GetAllAsync()
+        public Task<List<File>> GetAllAsync(bool useInclude = false, int? skip = null, int? take = null)
         {
-            var list = await DbSet.Include(x => x.Chat)
-                .Include(x => x.FileSender)
-                .ToListAsync();
-            return list
+            var query = DbSet.AsQueryable();
+
+            return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
-                .ToList();
-        }
-        public override async Task<File> GetByIdAsync(Guid id)
-        {
-            return await DbSet
-                .Include(x => x.FileSender)
-                .Include(x => x.Chat)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .ToListAsync();
         }
 
-        public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression)
+        public Task<File> GetByIdAsync(Guid id, bool useInclude = false)
+        {
+            var query = DbSet.AsQueryable();
+
+            return AddOptionsInQuery(query, useInclude).FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression, bool useInclude = false, int? skip = null, int? take = null)
         {
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
-            return DbSet
-                .Where(expression)
-                .Include(x => x.Chat)
-                .Include(x => x.FileSender)
+
+            var query = DbSet.Where(expression);
+
+            return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
-        public Task<List<File>> GetByFileNameSubstringAsync(string subString)
+        public Task<List<File>> GetByFileNameSubstringAsync(string subString, bool useInclude = false, int? skip = null, int? take = null)
         {
             if (subString == null)
                 throw new ArgumentNullException(nameof(subString));
-            return DbSet
-                .Where(x => x.Name.Contains(subString))
-                .Include(x => x.Chat)
-                .Include(x => x.FileSender)
+
+            var query = DbSet.Where(x => x.Name.Contains(subString));
+
+            return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
+        }
+
+        private static IQueryable<File> AddOptionsInQuery(IQueryable<File> query, bool useInclude = false, int? skip = null, int? take = null)
+        {
+            if (useInclude)
+                query = query
+                    .Include(x => x.Chat)
+                    .Include(x => x.FileSender);
+
+            if (skip != null)
+                query = query.Skip(skip.Value);
+
+            if (take != null)
+                query = query.Take(take.Value);
+
+            return query;
         }
     }
 }

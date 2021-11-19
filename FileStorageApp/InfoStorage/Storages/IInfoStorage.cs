@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FileStorageApp.Data.InfoStorage.Storages
@@ -13,7 +12,5 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public Task<bool> DeleteAsync(Guid id);
 
         public Task<bool> ContainsAsync(Guid id);
-
-        public Task<T> GetByIdAsync(Guid id);
     }
 }

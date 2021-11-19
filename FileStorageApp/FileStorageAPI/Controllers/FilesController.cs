@@ -5,7 +5,6 @@ using FileStorageAPI.Models;
 using FileStorageAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
