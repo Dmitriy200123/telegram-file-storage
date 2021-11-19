@@ -1,4 +1,8 @@
 import dataclasses
+import uuid
+from datetime import datetime
+from postgres.models.db_models import FileSender, FileTypeEnum
+from postgres.models.external_models import File
 
 
 @dataclasses.dataclass
@@ -8,3 +12,27 @@ class TelegramFile:
     filename: str
     extension: str
     file_type: str
+
+    def to_file(self, chat_id: uuid.UUID, file_sender_id: uuid.UUID) -> File:
+        return File(
+            name=self.filename,
+            extension=self.extension,
+            type=self.get_type(),
+            upload_date=datetime.now(),
+            file_sender_id=file_sender_id,
+            chat_id=chat_id,
+        )
+
+    def get_type(self):
+        if self.file_type == 'document':
+            return FileTypeEnum.Document
+
+        if self.file_type == 'image':
+            return FileTypeEnum.Image
+
+        if self.file_type == 'video':
+            return FileTypeEnum.Video
+
+        if self.file_type == 'audio':
+            return FileTypeEnum.Audio
+
