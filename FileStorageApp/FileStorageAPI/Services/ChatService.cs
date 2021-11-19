@@ -26,7 +26,7 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc/>
-        public async Task<RequestResult<List<Chat>>> GetAllChats()
+        public async Task<RequestResult<List<Chat>>> GetAllChatsAsync()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatsInDb = await chatStorage.GetAllAsync();

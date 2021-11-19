@@ -13,7 +13,7 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Возвращает весь список чатов.
         /// </summary>
-        Task<RequestResult<List<Chat>>> GetAllChats();
+        Task<RequestResult<List<Chat>>> GetAllChatsAsync();
 
         /// <summary>
         /// Возвращает чат по его идентификатору.

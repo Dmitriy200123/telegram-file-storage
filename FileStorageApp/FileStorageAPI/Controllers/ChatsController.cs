@@ -37,7 +37,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов", typeof(List<Chat>))]
         public async Task<IActionResult> GetChats()
         {
-            var chats = await _chatService.GetAllChats();
+            var chats = await _chatService.GetAllChatsAsync();
 
             return chats.ResponseCode switch
             {

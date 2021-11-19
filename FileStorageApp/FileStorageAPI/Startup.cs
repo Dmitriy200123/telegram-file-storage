@@ -87,7 +87,7 @@ namespace FileStorageAPI
         {
             services.AddSingleton<IChatConverter, ChatConverter>();
             services.AddSingleton<ISenderConverter, SenderConverter>();
-            services.AddSingleton<IFileConverter, FileConverter>();
+            services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)

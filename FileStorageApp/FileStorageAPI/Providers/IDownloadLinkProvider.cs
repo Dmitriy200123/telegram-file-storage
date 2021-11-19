@@ -13,6 +13,6 @@ namespace FileStorageAPI.Providers
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <returns></returns>
-        Task<string> GetDownloadLink(Guid id);
+        Task<string> GetDownloadLinkAsync(Guid id);
     }
 }

@@ -6,7 +6,7 @@ namespace FileStorageAPI.Models
     /// <summary>
     /// Информация о файлах
     /// </summary>
-    public class File
+    public class FileInfo
     {
         /// <summary>
         /// Идентификатор файла.
@@ -37,10 +37,5 @@ namespace FileStorageAPI.Models
         /// Чат из которого был отправлен файл
         /// </summary>
         public Chat Chat { get; set; }
-
-        /// <summary>
-        /// Ссылка на скачивание файла
-        /// </summary>
-        public string DownloadLink { get; set; }
     }
 }

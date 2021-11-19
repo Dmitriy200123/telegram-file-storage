@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FileStorageAPI.Models;
 using Microsoft.AspNetCore.Http;
-using File = FileStorageAPI.Models.File;
 
 namespace FileStorageAPI.Services
 {
@@ -14,36 +14,37 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Возвращает весь список файлов.
         /// </summary>
-        /// <returns></returns>
-        Task<RequestResult<List<File>>> GetFiles(FileSearchParameters fileSearchParameters);
-        
+        Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters, int skip, int take);
+
         /// <summary>
-        /// Возвращает файл по его идентификатору.
+        /// Возвращает информацию о файле по его идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
-        /// <returns></returns>
-        Task<RequestResult<File>> GetFileById(Guid id);
-        
+        Task<RequestResult<FileInfo>> GetFileInfoByIdAsync(Guid id);
+
         /// <summary>
-        /// Создает файл, сохраняет его в хранилище и возвращает информацию о нем
+        /// Возвращает ссылку для скачивания файла.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        Task<RequestResult<File>> CreateFile(IFormFile model);
-        
+        /// <param name="id">Идентификатор файла</param>
+        Task<RequestResult<string>> GetFileDownloadLinkByIdAsync(Guid id);
+
+        /// <summary>
+        /// Создает файл, сохраняет его в хранилище и возвращает информацию о нем.
+        /// </summary>
+        /// <param name="model">Файл</param>
+        Task<RequestResult<(string uri, FileInfo info)>> CreateFileAsync(IFormFile model);
+
         /// <summary>
         /// Обновляет имся файла и возвращает информацию о нем
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        Task<RequestResult<File>> UpdateFile(Guid id, string fileName);
-        
+        /// <param name="id">Идентификатор файла</param>
+        /// <param name="fileName">Имя файла</param>
+        Task<RequestResult<(string uri, FileInfo info)>> UpdateFileAsync(Guid id, string fileName);
+
         /// <summary>
         /// Удаляет чат и возвращает информацию об удаленном файле
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        Task<RequestResult<File>> DeleteFile(Guid id);
+        /// <param name="id">Идентификатор файла</param>
+        Task<RequestResult<FileInfo>> DeleteFileAsync(Guid id);
     }
 }

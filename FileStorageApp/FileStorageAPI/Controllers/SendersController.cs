@@ -31,7 +31,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по id.
+        /// Возвращает отправителя по идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор отправителя</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -51,7 +51,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает список отправителей, к которым пользователь имеет доступ.
+        /// Возвращает список отправителей.
         /// </summary>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
@@ -68,7 +68,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        ///  Возвращает отправителя по заданной подстроке. Проверяет телеграм ник.
+        ///  Возвращает отправителей по заданной подстроке username пользователя в телеграм.
         /// </summary>
         /// <param name="telegramName">Подстрока для поиска по телеграм нику</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -87,7 +87,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по заданной подстроке. Проверяет имя пользователя
+        /// Возвращает отправителя по заданной подстроке имени пользователя в телеграм.
         /// </summary>
         /// <param name="fullName">Подстрока для поиска по имени отправителя</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>

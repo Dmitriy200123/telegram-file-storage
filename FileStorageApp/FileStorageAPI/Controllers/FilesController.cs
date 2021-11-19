@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
@@ -24,38 +25,43 @@ namespace FileStorageAPI.Controllers
         /// <param name="fileService">Сервис для взаимодействия с информацией о файлах</param>
         public FilesController(IFileService fileService)
         {
-            _fileService = fileService;
+            _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         }
 
         /// <summary>
-        /// Возвращает список файлов, к которым пользователь имеет доступ
+        /// Возвращает список файлов, к которым пользователь имеет доступ.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="fileSearchParameters">Параметры поиска файлов</param>
+        /// <param name="skip">Количество пропускаемых элементов</param>
+        /// <param name="take">Количество возвращаемых элементов</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает все доступные файлы для текущего пользователя", typeof(File))]
-        public async Task<IActionResult> GetFiles([FromQuery]FileSearchParameters fileSearchParameters)
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает все доступные файлы для текущего пользователя", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(FileInfo))]
+        public async Task<IActionResult> GetFileInfos([FromQuery] FileSearchParameters fileSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
-            var files = await _fileService.GetFiles(fileSearchParameters);
+            var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take);
+
             return files.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(files.Value),
+                HttpStatusCode.BadRequest => BadRequest(files.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
 
         /// <summary>
-        /// Возвращает файл по id.
+        /// Возвращает информацию о файле по идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает файл по заданному идентификатору", typeof(File))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает информацию о файле по заданному идентификатору", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
-        public async Task<IActionResult> GetFileById(Guid id)
+        public async Task<IActionResult> GetFileInfoById(Guid id)
         {
-            var file = await _fileService.GetFileById(id);
+            var file = await _fileService.GetFileInfoByIdAsync(id);
+
             return file.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(file.Value),
@@ -65,58 +71,78 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление файла в базу данныых и физическое хранилище
-        /// </summary>
-        /// <param name="file">Файл</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpPost]
-        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(File))]
-        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
-        public async Task<IActionResult> PostFile(IFormFile file)
-        {
-            var uploadedFile = await _fileService.CreateFile(file);
-            return uploadedFile.ResponseCode switch
-            {
-                HttpStatusCode.Created => Created(uploadedFile.Value!.DownloadLink, uploadedFile.Value),
-                HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
-                    _ => throw new ArgumentException("Unknown response code")
-            };
-        }
-
-        /// <summary>
-        /// Обновление название файла
+        /// Возвращает ссылку для скачивания файла.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
-        /// <param name="fileName">Новое имя файла</param>
-        /// <returns></returns>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpPut("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(File))]
+        [HttpGet("{id:guid}/downloadlink")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает ссылку для скачивания файла по заданному идентификатору", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
-        public async Task<IActionResult> PutFile(Guid id, string fileName)
+        public async Task<IActionResult> GetFileDownloadLink(Guid id)
         {
-            var file = await _fileService.UpdateFile(id, fileName);
+            var file = await _fileService.GetFileDownloadLinkByIdAsync(id);
+
             return file.ResponseCode switch
             {
-                HttpStatusCode.Created => Created(file.Value!.DownloadLink, file.Value),
+                HttpStatusCode.OK => Ok(file.Value),
                 HttpStatusCode.NotFound => NotFound(file.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
 
         /// <summary>
-        /// Удаление файла
+        /// Добавление файла в хранилище.
+        /// </summary>
+        /// <param name="file">Файл</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpPost]
+        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
+        public async Task<IActionResult> PostFile(IFormFile file)
+        {
+            var uploadedFile = await _fileService.CreateFileAsync(file);
+
+            return uploadedFile.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(uploadedFile.Value.uri, uploadedFile.Value.info),
+                HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Обновление названия файла.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
-        /// <returns></returns>
+        /// <param name="fileName">Новое имя файла</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpPut("{id:guid}")]
+        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
+        public async Task<IActionResult> PutFile(Guid id, string fileName)
+        {
+            var file = await _fileService.UpdateFileAsync(id, fileName);
+
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(file.Value.uri, file.Value.info),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Удаление файла.
+        /// </summary>
+        /// <param name="id">Идентификатор файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpDelete("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об удаленном файле", typeof(File))]
+        [SwaggerResponse(StatusCodes.Status204NoContent, "Возвращает информацию об удаленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> DeleteFile(Guid id)
         {
-            var file = await _fileService.DeleteFile(id);
+            var file = await _fileService.DeleteFileAsync(id);
+
             return file.ResponseCode switch
             {
                 HttpStatusCode.NoContent => NoContent(),
