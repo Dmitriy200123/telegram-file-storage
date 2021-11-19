@@ -41,6 +41,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetSenderById(Guid id)
         {
             var sender = await _senderService.GetSenderByIdAsync(id);
+
             return sender.ResponseCode switch
             {
                 HttpStatusCode.NotFound => NotFound(sender.Message),
@@ -58,6 +59,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetSenders()
         {
             var senders = await _senderService.GetSendersAsync();
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
@@ -76,6 +78,7 @@ namespace FileStorageAPI.Controllers
             string telegramName)
         {
             var senders = await _senderService.GetSendersByTelegramNameSubstringAsync(telegramName);
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
@@ -94,6 +97,7 @@ namespace FileStorageAPI.Controllers
             string fullName)
         {
             var senders = await _senderService.GetSendersByUserNameSubstringAsync(fullName);
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),

@@ -39,9 +39,10 @@ namespace FileStorageAPI.Services
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatInDb = await chatStorage.GetByIdAsync(id);
-            return chatInDb is null ? 
-                RequestResult.NotFound<Chat>($"Chat with identifier {id} not found") : 
-                RequestResult.Ok(_chatConverter.ConvertToChatInApi(chatInDb));
+
+            return chatInDb is null 
+                ? RequestResult.NotFound<Chat>($"Chat with identifier {id} not found") 
+                : RequestResult.Ok(_chatConverter.ConvertToChatInApi(chatInDb));
         }
 
         /// <inheritdoc/>

@@ -38,6 +38,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetChats()
         {
             var chats = await _chatService.GetAllChats();
+
             return chats.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(chats.Value),
@@ -55,6 +56,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetChat(Guid id)
         {
             var chat = await _chatService.GetChatByIdAsync(id);
+
             return chat.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(chat.Value),
@@ -74,6 +76,7 @@ namespace FileStorageAPI.Controllers
             string chatName)
         {
             var chats = await _chatService.GetByChatNameSubstringAsync(chatName);
+
             return chats.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(chats.Value),

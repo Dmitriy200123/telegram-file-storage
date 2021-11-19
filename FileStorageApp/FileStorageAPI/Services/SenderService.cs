@@ -29,7 +29,7 @@ namespace FileStorageAPI.Services
         {
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSender = await senderStorage.GetByIdAsync(id);
-            if (fileSender != null)
+            if (fileSender is not null)
                 return RequestResult.Ok(_senderConverter.ConvertFileSender(fileSender));
 
             return RequestResult.NotFound<Sender>("User with identifier {id} not found");
@@ -40,6 +40,7 @@ namespace FileStorageAPI.Services
         {
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSenders = await senderStorage.GetAllAsync();
+
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
 
@@ -48,6 +49,7 @@ namespace FileStorageAPI.Services
         {
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSenders = await senderStorage.GetBySenderNameSubstringAsync(fullName);
+
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
 
@@ -56,6 +58,7 @@ namespace FileStorageAPI.Services
         {
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var fileSenders = await senderStorage.GetByTelegramNameSubstringAsync(telegramName);
+
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
     }
