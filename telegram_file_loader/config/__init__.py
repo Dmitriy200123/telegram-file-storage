@@ -2,6 +2,7 @@
 import ast
 
 from .base import *
+from os import getenv
 
 try:
     from .local import *
@@ -10,7 +11,7 @@ except ImportError:
 
 # Override config variables from environment
 for var in list(locals()):
-    value = os.getenv(var)
+    value = getenv(var)
     if value is None:
         continue
     try:
