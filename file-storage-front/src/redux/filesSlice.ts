@@ -37,6 +37,10 @@ const initialState = {
             senderId: "айдикАБАН"
         },
     ] as Array<TypeFile>,
+    modalDelete: {
+        isOpen: true,
+        id: null as null | string,
+    },
     some: null as any
 }
 
@@ -46,6 +50,9 @@ export const filesSlice = createSlice({
     reducers: {
         clearError(state) {
             state.error = null;
+        },
+        changeModal(state, payload:PayloadAction<boolean>) {
+            state.modalDelete.isOpen = payload.payload;
         },
     },
     extraReducers: {

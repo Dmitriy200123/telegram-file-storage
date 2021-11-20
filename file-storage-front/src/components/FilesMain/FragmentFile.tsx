@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import "./FilesMain.scss"
 import {TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
@@ -17,7 +17,7 @@ const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileTy
     </React.Fragment>
 };
 
-const Controls = () => {
+const Controls = memo(() => {
     const [isOpen, changeIsOpen] = useState(false);
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
         <div className={"file-controls"}>
@@ -35,7 +35,7 @@ const Controls = () => {
             </section>}
         </div>
     </OutsideAlerter>
-}
+});
 
 type PropsType = TypeFile;
 

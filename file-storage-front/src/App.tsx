@@ -1,12 +1,16 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import './App.css';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
+import {useAppSelector} from "./utils/hooks/reduxHooks";
+import {Button} from "./components/utils/Button/Button";
+import {ModalConfirm} from "./components/utils/Modal/Modal";
 
 const App: FC = () => {
+    const {isOpen, id} = useAppSelector((state) => state.filesReducer.modalDelete)
     return (<div className="App">
         <header className="header"/>
         <Switch>
@@ -14,6 +18,8 @@ const App: FC = () => {
             <Route path={"/file"} component={OpenedFile}/>
             <Redirect to={"/files"}/>
         </Switch>
+        {isOpen && <ModalConfirm>
+        </ModalConfirm>}
     </div>)
 }
 
