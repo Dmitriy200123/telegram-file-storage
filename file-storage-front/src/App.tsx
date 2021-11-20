@@ -10,7 +10,7 @@ import {Button} from "./components/utils/Button/Button";
 import {ModalConfirm} from "./components/utils/Modal/Modal";
 
 const App: FC = () => {
-    const {isOpen, id} = useAppSelector((state) => state.filesReducer.modalDelete)
+    const {isOpen, id} = useAppSelector((state) => state.filesReducer.modalConfirm)
     return (<div className="App">
         <header className="header"/>
         <Switch>

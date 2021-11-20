@@ -37,8 +37,8 @@ const initialState = {
             senderId: "айдикАБАН"
         },
     ] as Array<TypeFile>,
-    modalDelete: {
-        isOpen: true,
+    modalConfirm: {
+        isOpen: false,
         id: null as null | string,
     },
     some: null as any
@@ -51,8 +51,12 @@ export const filesSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
-        changeModal(state, payload:PayloadAction<boolean>) {
-            state.modalDelete.isOpen = payload.payload;
+        closeModal(state) {
+            state.modalConfirm.isOpen = false;
+        },
+        openModalConfirm(state, payload:PayloadAction<{ id:string }>) {
+            state.modalConfirm.isOpen = true;
+            state.modalConfirm.id = payload.payload.id;
         },
     },
     extraReducers: {

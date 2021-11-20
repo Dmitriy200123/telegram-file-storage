@@ -5,7 +5,7 @@ import Modal from "./ModalConfirm";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../../redux/filesSlice";
 
-const {changeModal} = filesSlice.actions;
+const {closeModal} = filesSlice.actions;
 
 export const ModalConfirm: React.FC = () => {
     const dispatch = useDispatch();
@@ -16,7 +16,7 @@ export const ModalConfirm: React.FC = () => {
                 <p className={"modal-confirm__p"}>Вы действительно хотите удалить это файл?</p>
                 <div className={"modal-confirm__btns"}>
                     <Button>Да</Button>
-                    <Button onClick={() => dispatch(changeModal(false))} type={"transparent"} >Нет</Button>
+                    <Button onClick={() => dispatch(closeModal())} type={"transparent"} >Нет</Button>
                 </div>
             </div>
         </Modal>
