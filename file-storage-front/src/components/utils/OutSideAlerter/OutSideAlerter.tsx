@@ -6,7 +6,7 @@ function useOutsideAlerter(ref:RefObject<HTMLInputElement>, onOutsideClick:() =>
         const handleClickOutside = (event: any) =>  {
             if (ref.current && !ref.current.contains(event.target)) {
                 // @ts-ignore
-                onOutsideClick();
+                onOutsideClick(event);
             }
         }
 
