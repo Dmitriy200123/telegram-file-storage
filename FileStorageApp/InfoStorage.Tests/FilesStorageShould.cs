@@ -8,6 +8,7 @@ using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
 using NUnit.Framework;
+using Microsoft.Extensions.Configuration;
 
 namespace InfoStorage.Tests
 {
@@ -18,9 +19,18 @@ namespace InfoStorage.Tests
         private Chat _chat;
         private FileSender _fileSender;
 
+        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.test.json")
+            .Build();
+
         public FilesStorageShould()
         {
-            var config = new DataBaseConfig(Settings.SetupString);
+            var config = new DataBaseConfig($"Server={Config["DbHost"]};" +
+                                            $"Username={Config["DbUser"]};" +
+                                            $"Database={Config["DbName"]};" +
+                                            $"Port={Config["DbPort"]};" +
+                                            $"Password={Config["DbPassword"]};" +
+                                            "SSLMode=Prefer");
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 
