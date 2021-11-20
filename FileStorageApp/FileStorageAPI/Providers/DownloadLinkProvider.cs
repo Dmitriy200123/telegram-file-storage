@@ -17,13 +17,20 @@ namespace FileStorageAPI.Providers
         {
             _physicalFilesStorage = filesStorageFactory;
         }
-        
+
         /// <inheritdoc />
         public async Task<string> GetDownloadLinkAsync(Guid id)
         {
             var fileStorage = await _physicalFilesStorage.CreateAsync();
-            var file = await fileStorage.GetFileAsync(id.ToString());
-            return file.DownloadLink;
+            try
+            {
+                var file = await fileStorage.GetFileAsync(id.ToString());
+                return file.DownloadLink;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

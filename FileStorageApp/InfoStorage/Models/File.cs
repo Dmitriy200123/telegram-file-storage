@@ -42,6 +42,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public virtual FileSender FileSender { get; set; }
 
         [ForeignKey("ChatId")]
-        public virtual Chat Chat { get; set; }
+        public virtual Chat? Chat { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 {
     public interface IInfoStorage<T>
     {
-        public Task<bool> AddAsync(T entity);
+        public Task<bool> AddAsync(T entity, bool writeException = true);
 
         public Task<bool> UpdateAsync(T entity);
 

@@ -19,7 +19,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected DbSet<T> DbSet { get; set; }
 
-        public async Task<bool> AddAsync(T entity)
+        public async Task<bool> AddAsync(T entity, bool writeException = true)
         {
             if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
@@ -32,7 +32,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                if(writeException)
+                    Console.WriteLine(e);
                 return false;
             }
         }

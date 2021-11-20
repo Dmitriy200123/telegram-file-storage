@@ -32,14 +32,14 @@ namespace FileStorageAPI.Services
         /// Создает файл, сохраняет его в хранилище и возвращает информацию о нем.
         /// </summary>
         /// <param name="model">Файл</param>
-        Task<RequestResult<(string uri, FileInfo info)>> CreateFileAsync(IFormFile model);
+        Task<RequestResult<(string Uri, FileInfo Info)>> CreateFileAsync(IFormFile model);
 
         /// <summary>
         /// Обновляет имся файла и возвращает информацию о нем
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <param name="fileName">Имя файла</param>
-        Task<RequestResult<(string uri, FileInfo info)>> UpdateFileAsync(Guid id, string fileName);
+        Task<RequestResult<(string Uri, FileInfo Info)>> UpdateFileAsync(Guid id, string fileName);
 
         /// <summary>
         /// Удаляет чат и возвращает информацию об удаленном файле

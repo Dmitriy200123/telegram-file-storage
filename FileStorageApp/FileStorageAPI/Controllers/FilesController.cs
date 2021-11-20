@@ -104,7 +104,7 @@ namespace FileStorageAPI.Controllers
 
             return uploadedFile.ResponseCode switch
             {
-                HttpStatusCode.Created => Created(uploadedFile.Value.uri, uploadedFile.Value.info),
+                HttpStatusCode.Created => Created(uploadedFile.Value.Uri, uploadedFile.Value.Info),
                 HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
                 _ => throw new ArgumentException("Unknown response code")
             };
@@ -119,13 +119,13 @@ namespace FileStorageAPI.Controllers
         [HttpPut("{id:guid}")]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
-        public async Task<IActionResult> PutFile(Guid id, string fileName)
+        public async Task<IActionResult> PutFile(Guid id, [FromBody]UpdateFile fileName)
         {
-            var file = await _fileService.UpdateFileAsync(id, fileName);
+            var file = await _fileService.UpdateFileAsync(id, fileName.FileName);
 
             return file.ResponseCode switch
             {
-                HttpStatusCode.Created => Created(file.Value.uri, file.Value.info),
+                HttpStatusCode.Created => Created(file.Value.Uri, file.Value.Info),
                 HttpStatusCode.NotFound => NotFound(file.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };

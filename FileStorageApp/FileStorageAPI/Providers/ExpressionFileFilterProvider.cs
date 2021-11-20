@@ -11,7 +11,7 @@ namespace FileStorageAPI.Providers
         /// <inheritdoc />
         public Expression<Func<File, bool>> GetExpression(FileSearchParameters parameters)
         {
-            var categories = parameters.Categories?.Select(x => (int) x).ToList();
+            var categories = parameters.Categories?.Cast<int>().ToList();
             return x => (parameters.FileName == null || x.Name == parameters.FileName) &&
                         (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                         (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
