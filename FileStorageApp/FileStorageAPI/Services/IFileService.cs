@@ -35,14 +35,14 @@ namespace FileStorageAPI.Services
         Task<RequestResult<(string Uri, FileInfo Info)>> CreateFileAsync(IFormFile model);
 
         /// <summary>
-        /// Обновляет имся файла и возвращает информацию о нем
+        /// Обновляет имя файла и возвращает информацию о нем.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <param name="fileName">Имя файла</param>
         Task<RequestResult<(string Uri, FileInfo Info)>> UpdateFileAsync(Guid id, string fileName);
 
         /// <summary>
-        /// Удаляет чат и возвращает информацию об удаленном файле
+        /// Удаляет чат и возвращает информацию об удаленном файле.
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         Task<RequestResult<FileInfo>> DeleteFileAsync(Guid id);

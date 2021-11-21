@@ -111,9 +111,7 @@ namespace FileStorageAPI
             services.AddSingleton<IS3FilesStorageOptions>(provider =>
             {
                 var config = provider.GetRequiredService<IConfiguration>();
-                var configS3 = new AmazonS3Config();
-                configS3.ServiceURL = config["S3serviceUrl"];
-                configS3.ForcePathStyle = true;
+                var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
                 return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
                     config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
                     TimeSpan.FromHours(1));

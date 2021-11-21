@@ -10,12 +10,12 @@ namespace FileStorageAPI.Providers
         private readonly IFilesStorageFactory _physicalFilesStorage;
 
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="DownloadLinkProvider"/>.
         /// </summary>
         /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
         public DownloadLinkProvider(IFilesStorageFactory filesStorageFactory)
         {
-            _physicalFilesStorage = filesStorageFactory;
+            _physicalFilesStorage = filesStorageFactory ?? throw new ArgumentNullException(nameof(filesStorageFactory));
         }
 
         /// <inheritdoc />

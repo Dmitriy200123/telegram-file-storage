@@ -230,7 +230,7 @@ namespace FileStorageAPI.Tests
             };
 
             var response = await _apiClient.PostAsync("/api/files/", form);
-            var fileInfo = fileStorage.GetAllAsync().Result.First();
+            var fileInfo = (await fileStorage.GetAllAsync()).First();
             fileInfo.Chat = chat;
             fileInfo.FileSender = sender;
             var expected = FilesConverter.ConvertFileInfo(fileInfo);
@@ -327,8 +327,7 @@ namespace FileStorageAPI.Tests
         private static MultipartFormDataContent CreateMultipartFormDataContent(string fileName, string contentType)
         {
             var stream = System.IO.File.OpenRead($"{Directory.GetCurrentDirectory()}/FilesForTests/{fileName}");
-            var form = new MultipartFormDataContent();
-            form.Add(new StreamContent(stream), "file", fileName);
+            var form = new MultipartFormDataContent {{new StreamContent(stream), "file", fileName}};
             form.First().Headers.ContentType = new MediaTypeHeaderValue(contentType);
             return form;
         }

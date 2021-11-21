@@ -37,7 +37,7 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает все доступные файлы для текущего пользователя", typeof(FileInfo))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetFileInfos([FromQuery] FileSearchParameters fileSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
             var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take);
@@ -98,7 +98,7 @@ namespace FileStorageAPI.Controllers
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
-        public async Task<IActionResult> PostFile(IFormFile file)
+        public async Task<IActionResult> PostFile([FromForm]IFormFile file)
         {
             var uploadedFile = await _fileService.CreateFileAsync(file);
 
