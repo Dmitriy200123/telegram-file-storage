@@ -1,89 +1,85 @@
-import {Category, File} from "../models/File";
+import {Chat, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchFiles} from "./ActionsCreators";
+import {fetchChats, fetchFilters} from "./ActionsCreators";
 
 
 const initialState = {
+    chats: null as null | Array<Chat>,
+    senders: null as null | Array<string>,
+    loading: false,
+    error: null as string | null,
     files: [
         {
             fileName: "Файл",
             fileType: "video",
-            chatId: 1,
-            fileId: 2,
+            chatId: "Я АЙДИШНИК ТУТУТУТУТУ",
+            fileId: "айди3",
             uploadDate: "12.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 3
+            senderId: "айдиSender"
         },
         {
             fileName: "Файл2",
             fileType: "images",
-            chatId: 2,
-            fileId: 3,
+            chatId: "айди",
+            fileId: "айди2",
             uploadDate: "13.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 4
+            senderId: "айдиJOJO"
         },
         {
             fileName: "Файл3",
             fileType: "links",
-            chatId: 5,
-            fileId: 5,
+            chatId: "айди1",
+            fileId: "айди1",
             uploadDate: "14.10.2020",
             downloadLink: "asdasdasd",
-            senderId: 5
+            senderId: "айдикАБАН"
         },
-    ] as Array<File>,
-    form: {
-        fileName: null as Array<string> | null | undefined,
-        date: null as string | null | undefined,
-        categories: null as Array<Category> | null | undefined,
-        senders: null as Array<number> | null | undefined,
-        chats: null as Array<number> | null | undefined,
+    ] as Array<TypeFile>,
+    modalConfirm: {
+        isOpen: false,
+        id: null as null | string,
     },
     some: null as any
 }
-
-// export type InitialStateType = typeof initialState;
-// type ActionsTypes = InferActionsTypes<typeof actions>;
 
 export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        changeFilterFileName(state, action: PayloadAction<Array<string> | null | undefined>) {
-            state.form.fileName = action.payload;
+        clearError(state) {
+            state.error = null;
         },
-        changeFilterDate(state, action: PayloadAction<string | null | undefined>) {
-            state.form.date = action.payload;
+        closeModal(state) {
+            state.modalConfirm.isOpen = false;
         },
-        changeFilterCategories(state, action: PayloadAction<Array<Category> | null | undefined>) {
-            state.form.categories = action.payload;
-        },
-        changeFilterChats(state, action: PayloadAction<Array<number> | null | undefined>) {
-            state.form.chats = action.payload;
-        },
-        changeFilterSenders(state, action: PayloadAction<Array<number> | null | undefined>) {
-            state.form.senders = action.payload;
-        },
-        changeFilters(state, action: PayloadAction<{
-            fileName: Array<string> | null | undefined,
-            date: string | null | undefined,
-            categories: Array<Category> | null | undefined,
-            senders: Array<number> | null | undefined,
-            chats:Array<number> | null | undefined,
-        }>) {
-            state.form = action.payload;
+        openModalConfirm(state, payload:PayloadAction<{ id:string }>) {
+            state.modalConfirm.isOpen = true;
+            state.modalConfirm.id = payload.payload.id;
         },
     },
     extraReducers: {
-        [fetchFiles.fulfilled.type]:(state, action:PayloadAction) => {
-            state.some = action.payload;
+        [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.chats = action.payload;
         },
-        [fetchFiles.pending.type]:(state, action:PayloadAction) => {
-            state.some = action.payload;
+        [fetchChats.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
         },
-        [fetchFiles.rejected.type]:(state, action:PayloadAction) => {
-            state.some = action.payload
+        [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<string> }>) => {
+            state.loading = true;
+            state.chats = action.payload.chats;
+            state.senders = action.payload.senders;
+        },
+        [fetchFilters.pending.type]: (state, action: PayloadAction) => {
+            state.loading = false;
+        },
+        [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
         },
     }
 });

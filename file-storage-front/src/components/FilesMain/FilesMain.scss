@@ -1,7 +1,7 @@
 .files-main {
   &__content {
     background: #E5E5E5;
-    padding: 25px;
+    padding: 28px;
   }
 
   &__title {
@@ -17,8 +17,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   background: white;
-  padding-left: 20px;
-  padding-right: 20px;
   text-align: left;
 
   &__item:not(:nth-last-child(-n + 5)), &__filter {
@@ -31,10 +29,6 @@
   }
 
   &__filter {
-    &:not(:nth-of-type(5)) {
-      padding-right: 20px;
-    }
-
     &_text {
       & input {
         width: 100%;
@@ -47,17 +41,108 @@
     }
 
     padding-bottom: 25px;
+
+  }
+
+  &__title {
+    color: white;
+  }
+
+  &__title, &__filter {
+    background: #1976D3;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  &__title:first-of-type, &__filter:first-of-type {
+    padding-left: 20px;
+  }
+
+  &__title:last-of-type, &__filter_last {
+    padding-right: 20px;
   }
 
   &__item {
-    padding-top: 25px;
-    padding-bottom: 25px;
-    padding-left: 10px;
-    &_name{
-      &:hover{
+    padding: 25px 30px;
+
+    &_name {
+      &:hover {
         color: blue;
         cursor: pointer;
       }
     }
+    &_relative{
+      position: relative;
+    }
   }
+}
+
+.file-controls {
+
+  &__btn{
+    position: absolute;
+    right: 10px;
+    top:10px;
+
+    background: none;
+    border: none;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 5px;
+    padding: 5px 5px;
+
+    &:before, &:after, .file-controls__circle {
+
+      background: black;
+      border-radius: 50%;
+      width: 5px;
+      height: 5px;
+    }
+
+    &:before, &:after {
+      display: block;
+      content: "";
+    }
+
+    &__circle {
+    }
+
+    &:hover {
+      cursor: pointer;
+      &:before, &:after, & .file-controls__circle {
+        background: #1976D3;
+      }
+    }
+  }
+
+  &__modal{
+    position: absolute;
+    z-index: 2;
+    right: 15px;
+    width: 90%;
+    top: 30px;
+    background: white;
+    padding: 10px;
+    border: 1px solid #CFD8E1;
+    box-shadow: 0px 8px 8px rgba(34, 40, 53, 0.04);
+  }
+
+  &__modal-item{
+    display: flex;
+    align-items: center;
+    &:not(:last-of-type){
+      margin-bottom: 10px;
+    }
+    & svg{
+      margin: 5px;
+    }
+
+    &:hover{
+      cursor: pointer;
+    }
+    &_delete{
+      color: #EB3235;
+    }
+  }
+
 }

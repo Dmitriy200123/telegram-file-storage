@@ -1,26 +1,26 @@
-import React, {useState} from 'react';
+import React, {memo, useState} from 'react';
 import {Category} from "../../../models/File";
 import "./Select.scss";
 import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 
-
+//todo: fix updates redraw
 type Props = {
     name: string, onChangeForm: any,
-    className?: string, register: any, getValues: any, setValue: any, options: Array<{ value: any, label: string }>,
+    className?: string, register: any, values: any, setValue: any, options: Array<{ value: any, label: string }>,
     placeholder?: string, isMulti?: boolean
 }
 
-export const Select: React.FC<Props> = ({
-                                             name,
-                                             onChangeForm,
-                                             className,
-                                             register,
-                                             getValues,
-                                             setValue,
-                                             options,
-                                             placeholder,
-                                             isMulti
-                                         }) => {
+export const Select: React.FC<Props> = memo(({
+                                                 name,
+                                                 onChangeForm,
+                                                 className,
+                                                 register,
+                                                 values,
+                                                 setValue,
+                                                 options,
+                                                 placeholder,
+                                                 isMulti
+                                             }) => {
     if (!placeholder)
         placeholder = "Введите текст";
     const [isOpen, changeOpen] = useState(false);
@@ -30,7 +30,6 @@ export const Select: React.FC<Props> = ({
         .map((elem) => {
             const onChange = () => {
                 if (isMulti) {
-                    const values = getValues(name);
                     if (values?.includes(elem.value)) {
                         setValue(name, values.filter((v: Category) => v !== elem.value));
                     } else if (values) {
@@ -45,10 +44,9 @@ export const Select: React.FC<Props> = ({
                 onChangeForm();
             }
 
-            const values = getValues(name);
-            return <li
-                className={"select__option " + (values && (values.includes(elem.value)) ? "select__option_active" : "")}
-                onClick={onChange}>{elem.label}</li>;
+            return <li key={elem.value}
+                       className={"select__option " + (values && (values.includes(elem.value)) ? "select__option_active" : "")}
+                       onClick={onChange}>{elem.label}</li>;
         })
 
     return (
@@ -68,6 +66,5 @@ export const Select: React.FC<Props> = ({
             </div>
         </OutsideAlerter>
     )
-}
-
+})
 

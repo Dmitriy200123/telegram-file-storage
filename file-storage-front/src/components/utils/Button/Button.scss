@@ -1,0 +1,16 @@
+.transparent {
+  background: none;
+  color: black;
+  &:hover, &:active{
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+}
+
+.danger {
+  background: #EB3235;
+  color: white;
+  &:hover, &:active{
+    background: #EB3235;
+  }
+}
