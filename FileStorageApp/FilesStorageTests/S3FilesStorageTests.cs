@@ -7,21 +7,26 @@ using Amazon.S3;
 using FilesStorage;
 using FluentAssertions;
 using FilesStorage.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace FilesStorageTests
 {
     public class S3FilesStorageShould
     {
-        private const string ServiceUrl = "http://localhost:4566";
         private IFilesStorageFactory _sutFactory;
+
+        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.test.json")
+            .Build();
 
         [SetUp]
         public void Setup()
         {
-            var config = new AmazonS3Config {ServiceURL = ServiceUrl, ForcePathStyle = true};
+            var config = new AmazonS3Config {ServiceURL = Config["ServiceUrl"], ForcePathStyle = true};
 
-            _sutFactory = new S3FilesStorageFactory(new S3FilesStorageOptions("123", "123",
-                "test", config, S3CannedACL.PublicReadWrite,
+            _sutFactory = new S3FilesStorageFactory(new S3FilesStorageOptions(Config["AccessKey"]
+                , Config["SecretKey"],
+                Config["BucketName"], config, S3CannedACL.PublicReadWrite,
                 TimeSpan.FromHours(1)));
         }
 
