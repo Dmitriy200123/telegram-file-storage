@@ -33,7 +33,7 @@ namespace FileStorageAPI.Tests
         {
             var server = new TestServer(new WebHostBuilder()
                 .UseConfiguration(Config)
-                .UseEnvironment("Development")
+                .UseEnvironment("Debug")
                 .UseStartup<Startup>());
             _apiClient = server.CreateClient();
             _apiClient.DefaultRequestHeaders

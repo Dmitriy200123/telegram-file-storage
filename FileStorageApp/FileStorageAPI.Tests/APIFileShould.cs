@@ -46,7 +46,7 @@ namespace FileStorageAPI.Tests
         {
             var server = new TestServer(new WebHostBuilder()
                 .UseConfiguration(Config)
-                .UseEnvironment("Development")
+                .UseEnvironment("Debug")
                 .UseStartup<Startup>());
             _apiClient = server.CreateClient();
             _apiClient.DefaultRequestHeaders
@@ -84,10 +84,14 @@ namespace FileStorageAPI.Tests
             foreach (var chat in chats)
                 await chatStorage.DeleteAsync(chat.Id);
 
-            using var fileStorage = _infoStorageFactory.CreateFileStorage();
-            var files = await chatStorage.GetAllAsync();
-            foreach (var file in files)
-                await fileStorage.DeleteAsync(file.Id);
+            using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
+            var fileInfos = await chatStorage.GetAllAsync();
+            foreach (var fileInfo in fileInfos)
+                await fileInfoStorage.DeleteAsync(fileInfo.Id);
+
+            using var filesStorage = await _filesStorageFactory.CreateAsync();
+            foreach (var file in await filesStorage.GetFilesAsync())
+                await filesStorage.DeleteFileAsync(file.Key);
         }
 
         [Test]
