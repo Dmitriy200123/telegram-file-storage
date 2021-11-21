@@ -19,6 +19,15 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected DbSet<T> DbSet { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<FileSender>()
+                .HasMany(sender => sender.Chats)
+                .WithMany(chat => chat.Senders)
+                .UsingEntity(builder => builder.ToTable("SenderAndChat"));
+        }
+
         public async Task<bool> AddAsync(T entity, bool writeException = true)
         {
             if (entity is null)

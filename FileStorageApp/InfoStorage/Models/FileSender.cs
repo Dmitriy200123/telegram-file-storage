@@ -22,6 +22,8 @@ namespace FileStorageApp.Data.InfoStorage.Models
         [MaxLength(255)]
         public string FullName { get; set; }
 
-        public virtual ICollection<File> Files { get; set; }
+        public virtual ICollection<File> Files { get; set; } = new List<File>();
+
+        public virtual ICollection<Chat> Chats { get; set; } = new List<Chat>();
     }
 }
