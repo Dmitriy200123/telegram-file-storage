@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 import postgres
 import pytest
@@ -8,6 +9,9 @@ from postgres.models.db_models import Chat, File, FileSender
 
 @pytest.fixture(scope='session', autouse=True)
 def loop():
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     loop = asyncio.get_event_loop()
     yield loop
     loop.close()
