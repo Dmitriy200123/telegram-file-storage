@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{D3098C21-0BFD-47AB-9998-FF9345F5C4C2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TelegramDataLoader", "TelegramDataLoader", "{5FC911E7-024F-4F02-83C2-FBEC63787D3D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfoStorage", "InfoStorage\InfoStorage.csproj", "{5E9344F5-B34C-4115-93D8-EFB699FF5910}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilesStorage", "FilesStorage\FilesStorage.csproj", "{121E9F2C-A69E-4F71-A7C7-928EA122337D}"
