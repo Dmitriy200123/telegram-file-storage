@@ -1,10 +1,10 @@
 import asyncio
 import sys
-import telegram_loader
+import telegram_client_loader
 
 
 async def init():
-    await telegram_loader.start()
+    await telegram_client_loader.start()
 
 
 def main():

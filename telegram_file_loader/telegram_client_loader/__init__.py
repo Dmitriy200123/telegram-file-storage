@@ -3,12 +3,12 @@ import postgres
 from clients.s3_client import S3Client
 from pg_adapter import Adapter
 from telethon import TelegramClient
-from telegram_loader.loader.TelegramLoader import TelegramLoader
-from telegram_loader.loader.TelegramSetting import TelegramSetting
+from telegram_client_loader.loader.telegram_loader import TelegramLoader
+from telegram_client_loader.loader.telegram_setting import TelegramSetting
 
 
 async def start():
-    client = TelegramClient('telegram_loader', config.API_ID, config.API_HASH)
+    client = TelegramClient('telegram_client_loader', config.API_ID, config.API_HASH)
     await TelegramSetting.configure_telegram_client(client, config.NUMBER)
 
     db_manager = postgres.start(max_connections=config.MAX_DB_CONNECTION)
