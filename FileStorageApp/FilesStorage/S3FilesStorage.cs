@@ -22,7 +22,7 @@ namespace FilesStorage
             _s3Client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task SaveFileAsync(string key, FileStream stream)
+        public async Task SaveFileAsync(string key, Stream stream)
         {
             var request = new PutObjectRequest
             {

@@ -19,19 +19,19 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
             modelBuilder.Entity<FileSender>().HasAlternateKey(sender => sender.TelegramId);
         }
 
-        public new async Task<List<FileSender>> GetAllAsync()
+        public Task<List<FileSender>> GetAllAsync()
         {
-            var list = await base.GetAllAsync();
-            return list
+            return DbSet
                 .OrderBy(x => x.FullName)
                 .ThenBy(x => x.Id)
-                .ToList();
+                .ToListAsync();
         }
 
         public Task<List<FileSender>> GetBySenderNameSubstringAsync(string subString)
         {
             if (subString == null)
                 throw new ArgumentNullException(nameof(subString));
+
             return DbSet
                 .Where(x => x.FullName.Contains(subString))
                 .OrderBy(x => x.FullName)
@@ -43,11 +43,17 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
         {
             if (userName == null)
                 throw new ArgumentNullException(nameof(userName));
+
             return DbSet
                 .Where(x => x.TelegramUserName.Contains(userName))
                 .OrderBy(x => x.FullName)
                 .ThenBy(x => x.Id)
                 .ToListAsync();
+        }
+
+        public new Task<FileSender> GetByIdAsync(Guid id)
+        {
+            return base.GetByIdAsync(id);
         }
 
         public Task<bool> ContainsByTelegramIdAsync(long id)

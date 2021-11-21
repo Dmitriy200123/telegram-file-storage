@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 using FileStorageAPI.Services;
@@ -36,9 +37,13 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов", typeof(List<Chat>))]
         public async Task<IActionResult> GetChats()
         {
-            var chats = await _chatService.GetAllChats();
+            var chats = await _chatService.GetAllChatsAsync();
 
-            return Ok(chats);
+            return chats.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(chats.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
         /// <summary>
@@ -51,10 +56,13 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetChat(Guid id)
         {
             var chat = await _chatService.GetChatByIdAsync(id);
-            if (chat is null)
-                return NotFound($"Chat with identifier: {id} not found");
 
-            return Ok(chat);
+            return chat.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(chat.Value),
+                HttpStatusCode.NotFound => NotFound(chat.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
         /// <summary>
@@ -68,7 +76,12 @@ namespace FileStorageAPI.Controllers
             string chatName)
         {
             var chats = await _chatService.GetByChatNameSubstringAsync(chatName);
-            return Ok(chats);
+
+            return chats.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(chats.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -20,7 +19,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected DbSet<T> DbSet { get; set; }
 
-        public async Task<bool> AddAsync(T entity)
+        public async Task<bool> AddAsync(T entity, bool writeException = true)
         {
             if (entity is null)
                 throw new ArgumentNullException(nameof(entity));
@@ -33,7 +32,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                if(writeException)
+                    Console.WriteLine(e);
                 return false;
             }
         }
@@ -81,12 +81,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             return entity is not null;
         }
 
-        public Task<List<T>> GetAllAsync()
-        {
-            return DbSet.ToListAsync();
-        }
-
-        public async Task<T> GetByIdAsync(Guid id)
+        protected virtual async Task<T> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
         }

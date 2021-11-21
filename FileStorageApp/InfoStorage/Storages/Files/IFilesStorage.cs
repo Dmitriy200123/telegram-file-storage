@@ -8,7 +8,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 {
     public interface IFilesStorage : IDisposable, IInfoStorage<File>
     {
-        public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression);
-        public Task<List<File>> GetByFileNameSubstringAsync(string subString);
+        public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression, bool useInclude = false, int? skip = null, int? take = null);
+
+        public Task<List<File>> GetByFileNameSubstringAsync(string subString, bool useInclude = false, int? skip = null, int? take = null);
+
+        public Task<List<File>> GetAllAsync(bool useInclude = false, int? skip = null, int? take = null);
+
+        public Task<File> GetByIdAsync(Guid id, bool useInclude = false);
     }
 }

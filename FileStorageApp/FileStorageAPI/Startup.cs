@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using Amazon.S3;
+using FilesStorage;
+using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
@@ -11,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 namespace FileStorageAPI
 {
@@ -31,6 +35,18 @@ namespace FileStorageAPI
             {
                 c.EnableAnnotations();
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "FileStorageAPI", Version = "v1"});
+                c.AddEnumsWithValuesFixFilters(services, o =>
+                {
+                    o.ApplySchemaFilter = true;
+                    o.XEnumNamesAlias = "x-enum-varnames";
+                    o.XEnumDescriptionsAlias = "x-enum-descriptions";
+                    o.ApplyParameterFilter = true;
+                    o.ApplyDocumentFilter = true;
+                    o.IncludeDescriptions = true;
+                    o.IncludeXEnumRemarks = true;
+                    o.DescriptionSource = DescriptionSources.DescriptionAttributesThenXmlComments;
+                });
+
             });
             services.ConfigureSwaggerGen(options =>
             {
@@ -41,6 +57,7 @@ namespace FileStorageAPI
             services.AddCors();
             RegisterProviders(services);
             RegisterDtoConverters(services);
+            RegisterFileStorage(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
         }
@@ -52,6 +69,7 @@ namespace FileStorageAPI
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
+                
             }
 
             app.UseHttpsRedirection();
@@ -69,7 +87,7 @@ namespace FileStorageAPI
         {
             services.AddSingleton<IChatConverter, ChatConverter>();
             services.AddSingleton<ISenderConverter, SenderConverter>();
-            services.AddSingleton<IFileConverter, FileConverter>();
+            services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -88,6 +106,19 @@ namespace FileStorageAPI
             services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
         }
 
+        private static void RegisterFileStorage(IServiceCollection services)
+        {
+            services.AddSingleton<IS3FilesStorageOptions>(provider =>
+            {
+                var config = provider.GetRequiredService<IConfiguration>();
+                var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
+                return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
+                    config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
+                    TimeSpan.FromHours(1));
+            });
+            services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
+        }
+
         private static void RegisterApiServices(IServiceCollection services)
         {
             services.AddSingleton<IChatService, ChatService>();
@@ -98,6 +129,8 @@ namespace FileStorageAPI
         private static void RegisterProviders(IServiceCollection services)
         {
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
+            services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
+            services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
         }
     }
 #pragma warning restore CS1591

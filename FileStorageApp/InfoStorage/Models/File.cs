@@ -35,14 +35,13 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
         [Required]
         public Guid FileSenderId { get; set; }
-
-        [Required]
-        public Guid ChatId { get; set; }
+        
+        public Guid? ChatId { get; set; }
 
         [ForeignKey("FileSenderId")]
         public virtual FileSender FileSender { get; set; }
 
         [ForeignKey("ChatId")]
-        public virtual Chat Chat { get; set; }
+        public virtual Chat? Chat { get; set; }
     }
 }

@@ -19,19 +19,24 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             modelBuilder.Entity<Chat>().HasAlternateKey(chat => chat.TelegramId);
         }
 
-        public new async Task<List<Chat>> GetAllAsync()
+        public Task<List<Chat>> GetAllAsync()
         {
-            var list = await base.GetAllAsync();
-            return list
+            return DbSet
                 .OrderBy(x => x.Name)
                 .ThenBy(x => x.Id)
-                .ToList();
+                .ToListAsync();
+        }
+
+        public new Task<Chat> GetByIdAsync(Guid id)
+        {
+            return base.GetByIdAsync(id);
         }
 
         public Task<List<Chat>> GetByChatNameSubstringAsync(string subString)
         {
             if (subString == null)
                 throw new ArgumentNullException(nameof(subString));
+
             return DbSet
                 .Where(x => x.Name.Contains(subString))
                 .OrderBy(x => x.Name)

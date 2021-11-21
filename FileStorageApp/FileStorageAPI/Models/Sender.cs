@@ -12,13 +12,13 @@ namespace FileStorageAPI.Models
         /// Идентификатор отправителя.
         /// </summary>
         [Required]
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Ник отправителя в телеграме.
         /// </summary>
         [Required]
-        public string TelegramName { get; set; }
+        public string TelegramUserName { get; set; }
 
         /// <summary>
         /// Полное имя отправителя.

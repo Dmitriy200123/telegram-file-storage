@@ -26,30 +26,32 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<Chat>> GetAllChats()
+        public async Task<RequestResult<List<Chat>>> GetAllChatsAsync()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatsInDb = await chatStorage.GetAllAsync();
 
-            return chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList();
+            return RequestResult.Ok(chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList());
         }
 
         /// <inheritdoc/>
-        public async Task<Chat> GetChatByIdAsync(Guid id)
+        public async Task<RequestResult<Chat>> GetChatByIdAsync(Guid id)
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatInDb = await chatStorage.GetByIdAsync(id);
 
-            return chatInDb is null ? null : _chatConverter.ConvertToChatInApi(chatInDb);
+            return chatInDb is null 
+                ? RequestResult.NotFound<Chat>($"Chat with identifier {id} not found") 
+                : RequestResult.Ok(_chatConverter.ConvertToChatInApi(chatInDb));
         }
 
         /// <inheritdoc/>
-        public async Task<List<Chat>> GetByChatNameSubstringAsync(string chatNameSubstring)
+        public async Task<RequestResult<List<Chat>>> GetByChatNameSubstringAsync(string chatNameSubstring)
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatsInDb = await chatStorage.GetByChatNameSubstringAsync(chatNameSubstring);
 
-            return chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList();
+            return RequestResult.Ok(chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList());
         }
     }
 }

@@ -31,7 +31,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по id.
+        /// Возвращает отправителя по идентификатору.
         /// </summary>
         /// <param name="id">Идентификатор отправителя</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -41,6 +41,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetSenderById(Guid id)
         {
             var sender = await _senderService.GetSenderByIdAsync(id);
+
             return sender.ResponseCode switch
             {
                 HttpStatusCode.NotFound => NotFound(sender.Message),
@@ -50,7 +51,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает список отправителей, к которым пользователь имеет доступ.
+        /// Возвращает список отправителей.
         /// </summary>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
@@ -58,6 +59,7 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> GetSenders()
         {
             var senders = await _senderService.GetSendersAsync();
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
@@ -66,7 +68,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        ///  Возвращает отправителя по заданной подстроке. Проверяет телеграм ник.
+        ///  Возвращает отправителей по заданной подстроке username пользователя в телеграм.
         /// </summary>
         /// <param name="telegramName">Подстрока для поиска по телеграм нику</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -76,6 +78,7 @@ namespace FileStorageAPI.Controllers
             string telegramName)
         {
             var senders = await _senderService.GetSendersByTelegramNameSubstringAsync(telegramName);
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),
@@ -84,7 +87,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по заданной подстроке. Проверяет имя пользователя
+        /// Возвращает отправителя по заданной подстроке имени пользователя в телеграм.
         /// </summary>
         /// <param name="fullName">Подстрока для поиска по имени отправителя</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -94,6 +97,7 @@ namespace FileStorageAPI.Controllers
             string fullName)
         {
             var senders = await _senderService.GetSendersByUserNameSubstringAsync(fullName);
+
             return senders.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(senders.Value),

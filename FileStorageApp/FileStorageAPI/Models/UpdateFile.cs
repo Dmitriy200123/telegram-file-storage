@@ -1,14 +1,16 @@
-﻿using System;
-using FileStorageApp.Data.InfoStorage.Enums;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FileStorageAPI.Models
 {
+    /// <summary>
+    /// Обновление данных о файле.
+    /// </summary>
     public class UpdateFile
     {
-        public Guid FileId { get; set; }
+        /// <summary>
+        /// Имя файла.
+        /// </summary>
+        [Required]
         public string FileName { get; set; }
-        public FileType FileType { get; set; }
-        public string SenderName { get; set; }
-        public DateTime CreatedDate { get; set; }
     }
 }
