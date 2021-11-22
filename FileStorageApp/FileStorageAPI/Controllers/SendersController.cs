@@ -104,5 +104,24 @@ namespace FileStorageAPI.Controllers
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
+
+        /// <summary>
+        /// Добавлет отправителя в базу
+        /// </summary>
+        /// <param name="telegramUser">Данныее о пользователе</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpPost]
+        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном пользователе", typeof(Sender))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Если такой пользователь уже есть", typeof(Sender))]
+        public async Task<IActionResult> PostTelegramUser([FromBody] TelegramUser telegramUser)
+        {
+            var sender = await _senderService.AddSender(telegramUser);
+            return sender.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(sender.Value),
+                HttpStatusCode.Created => Created("",sender.Value),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
     }
 }

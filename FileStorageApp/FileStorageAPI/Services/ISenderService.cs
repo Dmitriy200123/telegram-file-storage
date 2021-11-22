@@ -32,5 +32,11 @@ namespace FileStorageAPI.Services
         /// </summary>
         /// <param name="telegramName">подстрока телеграм ника</param>
         Task<RequestResult<List<Sender>>> GetSendersByTelegramNameSubstringAsync(string telegramName);
+
+        /// <summary>
+        /// Добавление нового пользователя
+        /// </summary>
+        /// <param name="sender">Данные пользователя</param>
+        Task<RequestResult<Sender>> AddSender(TelegramUser sender);
     }
 }
