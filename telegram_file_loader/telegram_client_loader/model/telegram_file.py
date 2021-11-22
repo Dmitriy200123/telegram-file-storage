@@ -1,6 +1,7 @@
 import dataclasses
-from uuid import UUID
 from datetime import datetime
+from uuid import UUID
+
 from postgres.models.db_models import FileTypeEnum
 from postgres.models.external_models import File
 
@@ -35,4 +36,3 @@ class TelegramFile:
 
         if self.file_type == 'audio':
             return FileTypeEnum.Audio
-

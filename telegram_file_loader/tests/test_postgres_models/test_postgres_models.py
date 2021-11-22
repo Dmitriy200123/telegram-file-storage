@@ -15,7 +15,7 @@ async def test_create_chat(db_manager):
 
 
 async def test_contains_chat(db_manager):
-    chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
+    chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     await create_chat(chat_name='mysupername')
 
     result = await db_manager.contains(chat)
@@ -56,7 +56,7 @@ async def test_update_chat_information(db_manager):
 
 
 async def test_get_all_chats(db_manager):
-    chat1 = await create_chat()
+    chat1 = await create_chat(telegram_id=33212)
     chat2 = await create_chat(chat_name='abcd')
 
     result = await db_manager.get_all(Chat)

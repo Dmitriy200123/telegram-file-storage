@@ -1,15 +1,16 @@
 import typing
 from io import BytesIO
 from uuid import UUID
+
+from clients.s3_client import S3Client
+from common.file_util import FileUtil
+from pg_adapter import Adapter
+from postgres.models.db_models import Chat, File, FileSender
+from telegram_client_loader.model.telegram_file import TelegramFile
 from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
 from telethon.tl.types import MessageMediaDocument
-from clients.s3_client import S3Client
-from common.file_util import FileUtil
-from pg_adapter import Adapter
-from postgres.models.db_models import Chat, FileSender, File
-from telegram_client_loader.model.telegram_file import TelegramFile
 
 
 class TelegramLoader:
@@ -24,7 +25,8 @@ class TelegramLoader:
 
     async def run(self):
         message: NewMessage = NewMessage()
-        self.telegram_client.add_event_handler(self.__handle_new_message, message)
+        self.telegram_client.add_event_handler(
+            self.__handle_new_message, message)
 
     async def __handle_new_message(self, event: NewMessage.Event):
         message: Message = event.message

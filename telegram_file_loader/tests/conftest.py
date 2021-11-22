@@ -4,7 +4,7 @@ import sys
 import postgres
 import pytest
 from pg_adapter import Adapter
-from postgres.models.db_models import Chat, File, FileSender
+from postgres.models.db_models import Chat, File, FileSender, SenderToChat
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -23,6 +23,7 @@ def init_db():
     Chat.create_table()
     FileSender.create_table()
     File.create_table()
+    SenderToChat.create_table()
 
     return postgres.basic.manager
 
@@ -40,3 +41,4 @@ def clean_db(init_db):
     Chat.truncate_table(cascade=True)
     File.truncate_table(cascade=True)
     FileSender.truncate_table(cascade=True)
+    SenderToChat.truncate_table(cascade=True)

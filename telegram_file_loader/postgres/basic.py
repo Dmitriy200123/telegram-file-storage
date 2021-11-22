@@ -1,11 +1,10 @@
 import asyncio
 import functools
 import logging
-import uuid
 
 import peewee
 from peewee_async import AsyncPostgresqlMixin, Manager
-from playhouse.postgres_ext import IntegerField, Model, UUIDField
+from playhouse.postgres_ext import IntegerField, Model
 from playhouse.shortcuts import model_to_dict
 
 __all__ = ['pg_db', 'manager', 'BaseModel', 'EnumField', 'atomic']
@@ -73,7 +72,6 @@ class BaseModel(Model):
 
     В отличии от синхронной модели методы `create` и `get` являются асинхронными
     """
-    Id = UUIDField(primary_key=True, default=uuid.uuid4)
 
     class Meta:
         database = pg_db

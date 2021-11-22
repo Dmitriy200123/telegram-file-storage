@@ -1,8 +1,8 @@
 # flake8: noqa
 import ast
+from os import getenv
 
 from .base import *
-from os import getenv
 
 try:
     from .local import *
