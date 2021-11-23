@@ -23,10 +23,10 @@ class Adapter:
 
         return list(result)
 
-    async def contains(self, model: BaseModel) -> bool:
-        result = await self.manager.execute(model.select().filter(**model.as_dict()))
+    async def contains(self, model: BaseModel, **params) -> bool:
+        result = list(await self.manager.execute(model.select().filter(**params)))
 
-        return model in result
+        return len(result) != 0
 
     async def update(self, model: BaseModel, **new_params):
         new_param = {fld: val for fld, val in new_params.items()
