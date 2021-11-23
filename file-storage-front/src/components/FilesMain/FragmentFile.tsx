@@ -9,13 +9,13 @@ import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 
-const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, senderId, chatId}) => {
+const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, sender, chat}) => {
     return <React.Fragment key={fileId}>
         <Link className={"files__item files__item_name"} to={"/file"} replace>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{fileType}</div>
-        <div className={"files__item"}>{senderId}</div>
-        <div className={"files__item files__item_relative"}>{chatId} <Controls/></div>
+        <div className={"files__item"}>{sender.fullName}</div>
+        <div className={"files__item files__item_relative"}>{chat.name} <Controls/></div>
     </React.Fragment>
 };
 

@@ -8,7 +8,7 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchChats} from "../../redux/ActionsCreators";
+import {fetchChats, fetchFiles, fetchFilters} from "../../redux/ActionsCreators";
 import {Category} from "../../models/File";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 
@@ -16,11 +16,13 @@ const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
     const chats = filesReducer.chats;
+    const senders = filesReducer.senders;
     const dispatch = useAppDispatch();
     const history = useHistory();
 
     useEffect(() => {
-        dispatch(fetchChats());
+        dispatch(fetchFilters());
+        dispatch(fetchFiles());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         setValue("fileName", fileName);
         setValue("senders", senderId);
@@ -29,7 +31,7 @@ const FilesMain = () => {
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats);
+    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
@@ -37,9 +39,11 @@ const FilesMain = () => {
         //todo: thunk request files width formData
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} fileType={f.fileType} fileId={f.fileId}
-                                                              fileName={f.fileName} chatId={f.chatId}
-                                                              senderId={f.senderId} uploadDate={f.uploadDate}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}
+                                                              // fileType={f.fileType} fileId={f.fileId}
+                                                              // fileName={f.fileName} chatId={f.chatId}
+                                                              // senderId={f.senderId} uploadDate={f.uploadDate}
+    />);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     return (
