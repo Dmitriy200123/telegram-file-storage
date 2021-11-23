@@ -1,16 +1,17 @@
-from telethon.tl.types import MessageMediaDocument, Message, DocumentAttributeFilename
+from telethon.tl.types import DocumentAttributeFilename, Message, MessageMediaDocument
 
 
 class FileUtil:
     PHOTO_DATE_FORMAT = '%m-%d-%Y_%H-%M-%S'
     DEFAULT_PHOTO_EXTENSION = 'jpg'
-    DEFAULT_PHOTO_MIME_TYPE = "image"
+    DEFAULT_PHOTO_MIME_TYPE = 'image'
 
     @staticmethod
     def get_document_file_info(media: MessageMediaDocument) -> (str, str, str):
         document = media.document
         file_type = FileUtil.__get_file_type(document.mime_type)
-        filename_attribute = FileUtil.__find_filename_attribute(document.attributes)
+        filename_attribute = FileUtil.__find_filename_attribute(
+            document.attributes)
         filename = filename_attribute.file_name
         extension = filename.split('.')[-1]
 

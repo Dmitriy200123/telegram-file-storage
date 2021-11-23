@@ -14,7 +14,7 @@ class File(BaseModel):
     upload_date: datetime.datetime = Field(...,
                                            title='Дата загрузки', alias='UploadDate')
     file_sender_id: uuid.UUID = Field(...,
-                                title='Телеграм id отправителя', alias='FileSenderId')
+                                      title='Телеграм id отправителя', alias='FileSenderId')
     chat_id: uuid.UUID = Field(..., title='Телеграм id чата', alias='ChatId')
 
     class Config:

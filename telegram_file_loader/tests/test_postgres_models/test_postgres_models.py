@@ -15,17 +15,17 @@ async def test_create_chat(db_manager):
 
 
 async def test_contains_chat(db_manager):
-    chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
+    chat: Chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     await create_chat(chat_name='mysupername')
 
-    result = await db_manager.contains(chat)
+    result = await db_manager.contains(Chat, TelegramId=chat.TelegramId)
 
     assert result
 
 
 async def test_false_contains_chat(db_manager):
-    chat = Chat(Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
-    result = await db_manager.contains(chat)
+    await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
+    result = await db_manager.contains(Chat, TelegramId=000000000)
 
     assert not result
 
@@ -56,7 +56,7 @@ async def test_update_chat_information(db_manager):
 
 
 async def test_get_all_chats(db_manager):
-    chat1 = await create_chat()
+    chat1 = await create_chat(telegram_id=33212)
     chat2 = await create_chat(chat_name='abcd')
 
     result = await db_manager.get_all(Chat)
@@ -74,18 +74,18 @@ async def test_create_sender(db_manager):
 
 
 async def test_contains_sender(db_manager):
-    sender = await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
+    sender: FileSender = await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name',
+                                                 FullName='full name')
     await create_sender(name='mysupername')
 
-    result = await db_manager.contains(sender)
+    result = await db_manager.contains(FileSender, TelegramId=sender.TelegramId)
 
     assert result
 
 
-async def test_false_contains_sende(db_manager):
-    sender = FileSender(
-        TelegramId=123, TelegramUserName='my name', FullName='full name')
-    result = await db_manager.contains(sender)
+async def test_false_contains_sender(db_manager):
+    await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
+    result = await db_manager.contains(FileSender, TelegramId=0000)
 
     assert not result
 
