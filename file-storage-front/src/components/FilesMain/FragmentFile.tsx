@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react';
 import "./FilesMain.scss"
-import {TypeFile} from "../../models/File";
+import {Category, TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
 import {ReactComponent as Edit} from "./../../assets/edit.svg";
@@ -13,7 +13,7 @@ const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileTy
     return <React.Fragment key={fileId}>
         <Link className={"files__item files__item_name"} to={"/file"} replace>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
-        <div className={"files__item"}>{fileType}</div>
+        <div className={"files__item"}>{Category[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
         <div className={"files__item files__item_relative"}>{chat.name} <Controls/></div>
     </React.Fragment>

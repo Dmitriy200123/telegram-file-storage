@@ -1,6 +1,6 @@
-import {Chat, Sender, TypeFile} from "../models/File";
+import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters} from "./ActionsCreators";
+import {fetchChats, fetchFiles, fetchFilters} from "./actionsCreators";
 
 
 const initialState = {
@@ -11,7 +11,7 @@ const initialState = {
     files: [
         {
             fileName: "Файл",
-            fileType: "video",
+            fileType: Category.documents,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
                 "name": "фуллы",
@@ -28,7 +28,7 @@ const initialState = {
         },
         {
             fileName: "Файл2",
-            fileType: "images",
+            fileType: Category.images,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
                 "name": "фуллы2",
@@ -45,7 +45,7 @@ const initialState = {
         },
         {
             fileName: "Файл3",
-            fileType: "links",
+            fileType: Category.links,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
                 "name": "фуллы3",

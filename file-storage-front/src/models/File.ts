@@ -1,4 +1,9 @@
-export type Category = "images" | "video" | "links" | "documents";
+export enum Category {
+    "documents",
+    "video",
+    "links",
+    "images",
+}
 export type FormType<TValue> = { label: string, value: TValue };
 
 export type TypeFile = {

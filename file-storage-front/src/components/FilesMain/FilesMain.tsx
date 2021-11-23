@@ -8,7 +8,7 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchChats, fetchFiles, fetchFilters} from "../../redux/ActionsCreators";
+import {fetchFiles, fetchFilters} from "../../redux/actionsCreators";
 import {Category} from "../../models/File";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 
@@ -24,10 +24,11 @@ const FilesMain = () => {
         dispatch(fetchFilters());
         // dispatch(fetchFiles({skip:0, take: 5}));
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
+        console.log(chats);
         setValue("fileName", fileName);
-        setValue("senders", senderId);
+        setValue("sendersIds", senderId);
         setValue("categories", categories);
-        setValue("chats", chats);
+        setValue("chatIds", chats);
         setValue("date", date);
     }, []);
 
@@ -36,6 +37,8 @@ const FilesMain = () => {
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
+        dispatch(fetchFiles({skip:0, take: 5, ...formData}));
+
         //todo: thunk request files width formData
     };
 
@@ -61,13 +64,13 @@ const FilesMain = () => {
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
-                    <Select name={"senders"} className={"files__filter files__filter_select"} register={register}
+                    <Select name={"sendersIds"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("senders")} options={optionsSender} isMulti={true}/>
-                    <Select name={"chats"} className={"files__filter files__filter_last files__filter_select"}
+                            values={getValues("sendersIds")} options={optionsSender} isMulti={true}/>
+                    <Select name={"chatIds"} className={"files__filter files__filter_last files__filter_select"}
                             register={register}
                             onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("chats")} options={optionsChat} isMulti={true}/>
+                            values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
                     {FragmentsFiles}
                 </form>
             </div>
@@ -97,17 +100,17 @@ const AddToUrlQueryParams = (history: any, values: Object) => {
     })
 
     history.push({
-        search: queryString.stringify(urlParams)
+        search: queryString.stringify(urlParams),
     })
 };
 
 const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
-    const fileName = urlSearchParams.get("fileName")?.split("&");
-    const senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&") as Array<Category>;
+    const fileName = urlSearchParams.get("fileName");
+    const senderId = urlSearchParams.get("sendersIds")?.split("&")?.map((e) => e);
+    const categories = urlSearchParams.get("categories")?.split("&") as any;
     const date = urlSearchParams.get("date");
-    const chats = urlSearchParams.get("chats")?.split("&")?.map((e) => e);
+    const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};
 }
 //#endregion

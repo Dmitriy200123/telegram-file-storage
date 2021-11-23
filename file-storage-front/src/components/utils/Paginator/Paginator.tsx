@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import "./Paginator.scss"
-import {fetchFiles} from "../../../redux/ActionsCreators";
+import {fetchFiles} from "../../../redux/actionsCreators";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
+import {Category} from "../../../models/File";
 
 const Paginator = ({count}: { count: number }) => {
     const [currentPage, changePage] = useState(1);
@@ -14,7 +15,7 @@ const Paginator = ({count}: { count: number }) => {
         pages.push(i);
     }
     useEffect(() => {
-        dispatch(fetchFiles({skip:(currentPage - 1) * 5, take: 5}));
+        dispatch(fetchFiles({skip:(currentPage - 1) * 5, take: 5, categories: Category.documents}));
     },[currentPage])
 
     return (
