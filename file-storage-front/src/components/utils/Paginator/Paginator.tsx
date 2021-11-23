@@ -15,7 +15,7 @@ const Paginator = ({count}: { count: number }) => {
         pages.push(i);
     }
     useEffect(() => {
-        dispatch(fetchFiles({skip:(currentPage - 1) * 5, take: 5, categories: Category.documents}));
+        dispatch(fetchFiles({skip:(currentPage - 1) * 5, take: 5}));
     },[currentPage])
 
     return (

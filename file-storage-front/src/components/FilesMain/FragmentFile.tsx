@@ -15,13 +15,13 @@ const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileTy
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{Category[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
-        <div className={"files__item files__item_relative"}>{chat.name} <Controls/></div>
+        <div className={"files__item files__item_relative"}>{chat.name} <Controls id={fileId}/></div>
     </React.Fragment>
 };
 
 
 const {openModalConfirm} = filesSlice.actions
-const Controls = memo(() => {
+const Controls = memo(({id}:{id: string}) => {
     const [isOpen, changeIsOpen] = useState(false);
     const dispatch = useDispatch();
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
@@ -36,7 +36,7 @@ const Controls = memo(() => {
                 <div className={"file-controls__modal-item"}><Edit/><span>Переименовать</span></div>
                 <div className={"file-controls__modal-item"}><Download/><span>Скачать</span></div>
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
-                     onClick={() => dispatch(openModalConfirm({id: "123"}))}>
+                     onClick={() => dispatch(openModalConfirm({id}))}>
                     <Delete/><span>Удалить</span></div>
             </section>}
         </div>

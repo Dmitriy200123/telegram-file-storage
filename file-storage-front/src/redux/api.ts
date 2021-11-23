@@ -9,9 +9,24 @@ export const fetchData = async (url: string) => {
 
 export const fetchConfigData = async (url: string, config?: any) => {
     const params = queryParams(config.params);
-    const response = await fetch(baseUrl + url + ("?" + params));
+    const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
+    const response = await fetch(respUrl, {
+        method: config.method ?? "GET"
+    });
+    const res = await response.json()
+    return res;
+};
+
+
+export const fetchConfig = async (url: string, config?: any) => {
+    const params = queryParams(config.params);
+    const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
+    const response = await fetch(respUrl, {
+        method: config.method ?? "GET"
+    });
     return await response.json();
 };
+
 
 export type ConfigType<T> = {
     params?: T

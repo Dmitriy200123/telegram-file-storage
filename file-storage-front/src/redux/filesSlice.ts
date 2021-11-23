@@ -1,6 +1,6 @@
 import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters} from "./actionsCreators";
+import {fetchChats, fetchFiles, fetchFilters, fetchRemoveFile} from "./actionsCreators";
 
 
 const initialState = {
@@ -115,6 +115,17 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+            state.loading = false;
+            state.modalConfirm.isOpen = false;
+        },
+        [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }

@@ -22,9 +22,7 @@ const FilesMain = () => {
 
     useEffect(() => {
         dispatch(fetchFilters());
-        // dispatch(fetchFiles({skip:0, take: 5}));
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
-        console.log(chats);
         setValue("fileName", fileName);
         setValue("sendersIds", senderId);
         setValue("categories", categories);
