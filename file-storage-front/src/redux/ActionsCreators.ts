@@ -39,10 +39,13 @@ export const fetchFilters = createAsyncThunk("files/filters", async (_, thunkAPI
     }
 })
 
-export const fetchFiles = createAsyncThunk("files/files", async (_, thunkAPI) => {
+type TypeFilesFetchFilters = {
+    skip: number,
+    take: number,
+}
+export const fetchFiles = createAsyncThunk("files/files", async (args:TypeFilesFetchFilters, thunkAPI) => {
     try {
-        const files = await fetchGetDataFiles("/files?skip=0&take=5");
-
+        const files = await fetchGetDataFiles(`/files?skip=${args.skip}&take=${args.take}`);
         return files;
 
     } catch (err) {

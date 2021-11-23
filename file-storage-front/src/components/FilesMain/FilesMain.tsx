@@ -22,7 +22,7 @@ const FilesMain = () => {
 
     useEffect(() => {
         dispatch(fetchFilters());
-        dispatch(fetchFiles());
+        // dispatch(fetchFiles({skip:0, take: 5}));
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         setValue("fileName", fileName);
         setValue("senders", senderId);
@@ -39,11 +39,7 @@ const FilesMain = () => {
         //todo: thunk request files width formData
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}
-                                                              // fileType={f.fileType} fileId={f.fileId}
-                                                              // fileName={f.fileName} chatId={f.chatId}
-                                                              // senderId={f.senderId} uploadDate={f.uploadDate}
-    />);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     return (
