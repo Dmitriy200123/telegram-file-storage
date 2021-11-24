@@ -150,5 +150,22 @@ namespace FileStorageAPI.Controllers
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
+
+        /// <summary>
+        /// Возвращает количество файлов, содержащихся в хранилище.
+        /// </summary>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("count")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов, содержащихся в хранилище", typeof(int))]
+        public async Task<IActionResult> GetFilesCount()
+        {
+            var count = await _fileService.GetFilesCountAsync();
+
+            return count.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(count),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
     }
 }

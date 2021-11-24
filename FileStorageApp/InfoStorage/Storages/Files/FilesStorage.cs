@@ -58,6 +58,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 .ToListAsync();
         }
 
+        public Task<int> GetFilesCountAsync() => DbSet.CountAsync();
+
         private static IQueryable<File> AddOptionsInQuery(IQueryable<File> query, bool useInclude = false, int? skip = null, int? take = null)
         {
             if (useInclude)

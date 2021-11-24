@@ -170,5 +170,13 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<FileInfo>($"File with identifier {id} not found");
             }
         }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<int>> GetFilesCountAsync()
+        {
+            using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
+
+            return RequestResult.Ok(await fileInfoStorage.GetFilesCountAsync());
+        }
     }
 }

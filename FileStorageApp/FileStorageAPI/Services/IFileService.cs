@@ -46,5 +46,10 @@ namespace FileStorageAPI.Services
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         Task<RequestResult<FileInfo>> DeleteFileAsync(Guid id);
+
+        /// <summary>
+        /// Возвращает количество файлов, содержащихся в хранилище.
+        /// </summary>
+        Task<RequestResult<int>> GetFilesCountAsync();
     }
 }
