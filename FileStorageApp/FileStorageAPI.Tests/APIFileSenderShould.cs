@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
+using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -224,6 +226,31 @@ namespace FileStorageAPI.Tests
             var responseString = await response.Content.ReadAsStringAsync();
             var actual = JsonConvert.DeserializeObject<List<Models.Sender>>(responseString);
             actual.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task PostTelegramUser_ReturnCorrectUser_ThenCalled()
+        {
+            var telegramUser = new TelegramUser
+            {
+                TelegramUserName = "Test",
+                FullName = "Test",
+                TelegramId = 100
+            };
+            var expected = new Sender
+            {
+                Id = default,
+                TelegramUserName = "Test",
+                FullName = "Test"
+            };
+            var stringContent = new StringContent(JsonConvert.SerializeObject(telegramUser), Encoding.UTF8, "application/json");
+
+            var response = await _apiClient.PostAsync("/api/senders/", stringContent);
+
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            var actual = JsonConvert.DeserializeObject<Models.Sender>(responseString);
+            actual.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.Id));
         }
     }
 }

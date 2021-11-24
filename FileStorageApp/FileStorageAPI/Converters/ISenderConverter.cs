@@ -20,5 +20,11 @@ namespace FileStorageAPI.Converters
         /// </summary>
         /// <param name="fileSender">Информация об отправителях из базы данных</param>
         List<Sender> ConvertFileSenders(List<FileSender> fileSender);
+
+        /// <summary>
+        /// Конвертирует информацию из API-контракта в модель базы данных
+        /// </summary>
+        /// <param name="sender">Информация об отправителях из базы данных</param>
+        FileSender ConvertSenderAdd(TelegramUser sender);
     }
 }

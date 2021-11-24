@@ -61,5 +61,16 @@ namespace FileStorageAPI.Services
 
             return RequestResult.Ok(_senderConverter.ConvertFileSenders(fileSenders));
         }
+
+        public async Task<RequestResult<Sender>> AddSender(TelegramUser sender)
+        {
+            using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSender = _senderConverter.ConvertSenderAdd(sender);
+            var isExist = await senderStorage.ContainsByTelegramIdAsync(sender.TelegramId);
+            if(isExist)
+                return RequestResult.Ok(_senderConverter.ConvertFileSender(fileSender));
+            await senderStorage.AddAsync(fileSender);
+            return RequestResult.Created(_senderConverter.ConvertFileSender(fileSender));
+        }
     }
 }

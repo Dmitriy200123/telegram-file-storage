@@ -23,5 +23,17 @@ namespace FileStorageAPI.Converters
         {
             return fileSender.Select(ConvertFileSender).ToList();
         }
+        
+        /// <inheritdoc />
+        public FileSender ConvertSenderAdd(TelegramUser sender)
+        {
+            return new FileSender
+            {
+                Id = default,
+                TelegramId = sender.TelegramId,
+                TelegramUserName = sender.TelegramUserName,
+                FullName = sender.FullName,
+            };
+        }
     }
 }
