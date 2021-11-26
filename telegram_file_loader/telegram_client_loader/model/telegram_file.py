@@ -9,7 +9,7 @@ from postgres.models.external_models import File
 @dataclasses.dataclass
 class TelegramFile:
     chat_id: int
-    sender_id: str
+    sender_id: int
     filename: str
     extension: str
     file_type: str
