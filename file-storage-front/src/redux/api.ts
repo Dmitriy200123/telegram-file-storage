@@ -6,18 +6,6 @@ export const fetchData = async (url: string) => {
     return await response.json();
 };
 
-
-export const fetchConfigData = async (url: string, config?: any) => {
-    const params = queryParams(config.params);
-    const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
-    const response = await fetch(respUrl, {
-        method: config.method ?? "GET"
-    });
-    const res = await response.json()
-    return res;
-};
-
-
 export const fetchConfig = async (url: string, config?: any) => {
     const params = queryParams(config.params);
     const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
@@ -28,8 +16,13 @@ export const fetchConfig = async (url: string, config?: any) => {
 };
 
 
-export type ConfigType<T> = {
-    params?: T
+export const fetchConfigText = async (url: string, config?: any) => {
+    const params = queryParams(config.params);
+    const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
+    const response = await fetch(respUrl, {
+        method: config.method ?? "GET"
+    });
+    return await response.text();
 };
 
 function queryParams(obj: any) {
@@ -46,13 +39,7 @@ function queryParams(obj: any) {
     return res.slice(1);
 }
 
+export type ConfigType<T> = {
+    params?: T
+};
 
-function clean(obj: any) {
-    for (let propName in obj) {
-        if (obj[propName] === null || obj[propName] === undefined || obj[propName]?.length === 0) {
-            delete obj[propName];
-        }
-    }
-
-    return obj;
-}

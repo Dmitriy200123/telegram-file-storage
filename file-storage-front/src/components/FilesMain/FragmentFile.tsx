@@ -8,10 +8,11 @@ import {ReactComponent as Download} from "./../../assets/download_2.svg";
 import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
+import {fetchDownloadLink} from "../../redux/actionsCreators";
 
 const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, sender, chat}) => {
     return <React.Fragment key={fileId}>
-        <Link className={"files__item files__item_name"} to={"/file"} replace>{fileName}</Link>
+        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{Category[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
@@ -34,7 +35,8 @@ const Controls = memo(({id}:{id: string}) => {
             </button>
             {isOpen && <section className={"file-controls__modal"}>
                 <div className={"file-controls__modal-item"}><Edit/><span>Переименовать</span></div>
-                <div className={"file-controls__modal-item"}><Download/><span>Скачать</span></div>
+                <div className={"file-controls__modal-item"} onClick={() => fetchDownloadLink(id)}>
+                    <Download/><span>Скачать</span></div>
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
                      onClick={() => dispatch(openModalConfirm({id}))}>
                     <Delete/><span>Удалить</span></div>

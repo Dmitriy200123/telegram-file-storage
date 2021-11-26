@@ -18,8 +18,8 @@ const App: FC = () => {
         {loading && "Загрузочка"}
         <Switch>
             <Route path={"/files"} exact component={FilesMain}/>
-            <Route path={"/file"} component={OpenedFile}/>
-            <Redirect to={"/files"}/>
+            <Route path={"/file/:id"} component={OpenedFile}/>
+            {/*<Redirect to={"/files"}/>*/}
         </Switch>
         {isOpen && id && <ModalConfirm id={id} />}
     </div>)

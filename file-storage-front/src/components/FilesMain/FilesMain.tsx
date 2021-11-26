@@ -9,8 +9,8 @@ import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/actionsCreators";
-import {Category} from "../../models/File";
 import {SelectTime} from "../utils/Inputs/SelectDate";
+import {Button} from '../utils/Button/Button';
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
@@ -35,40 +35,45 @@ const FilesMain = () => {
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        dispatch(fetchFiles({skip:0, take: 5, ...formData}));
-
-        //todo: thunk request files width formData
+        dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
+    const setValueForm = (name: any, value: any) => {
+        setValue(name, value, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+    }
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
             <div className={"files-main__content"}>
-                <form className={"files"}>
+                <form className={"files"} onSubmit={onChangeForm}>
                     <h3 className={"files__title"}>Название</h3>
                     <h3 className={"files__title"}>Дата</h3>
                     <h3 className={"files__title"}>Формат</h3>
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
                     <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("fileName")} options={optionsName} isMulti={true}/>
+                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            values={getValues("fileName")} options={optionsName} isMulti={false}/>
                     <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
-                                onChangeForm={onChangeForm} setValue={setValue}
+                                onChangeForm={onChangeForm} setValue={setValueForm}
                                 values={getValues("date")} placeholder={"Выберите дату"}/>
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
+                            onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
                     <Select name={"sendersIds"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
+                            onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("sendersIds")} options={optionsSender} isMulti={true}/>
                     <Select name={"chatIds"} className={"files__filter files__filter_last files__filter_select"}
                             register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
+                            onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
+                    <Button style={{gridColumn: "1/6"}} className={"files__filter"}>Спросить Хохлов</Button>
                     {FragmentsFiles}
                 </form>
             </div>

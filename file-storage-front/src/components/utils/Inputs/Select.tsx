@@ -38,10 +38,13 @@ export const Select: React.FC<Props> = memo(({
                         setValue(name, [elem.value])
                     }
                 } else {
+                    if (values)
+                        setValue(name, null)
+                    else
                     setValue(name, elem.value)
                 }
 
-                onChangeForm();
+                // onChangeForm();
             }
 
             return <li key={elem.value}
