@@ -34,9 +34,17 @@ export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFiles
     }
 })
 
-export const fetchRemoveFile = createAsyncThunk("files/remove", async (id: string, thunkAPI) => {
+export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string, thunkAPI) => {
     try {
         return await fetchConfig(`/files/${id}`, {method: "DELETE"});
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить");
+    }
+});
+
+export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAPI) => {
+    try {
+        return await fetchConfig(`/files/${id}`, {method: "GET"});
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить");
     }

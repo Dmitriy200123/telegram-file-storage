@@ -1,6 +1,6 @@
 import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters, fetchRemoveFile} from "./actionsCreators";
+import {fetchChats, fetchFile, fetchFiles, fetchFilters, fetchRemoveFile} from "./actionsCreators";
 
 
 const initialState = {
@@ -61,6 +61,7 @@ const initialState = {
             }
         },
     ] as Array<TypeFile>,
+    openFile: null as null | TypeFile,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -81,6 +82,10 @@ export const filesSlice = createSlice({
         openModalConfirm(state, payload:PayloadAction<{ id:string }>) {
             state.modalConfirm.isOpen = true;
             state.modalConfirm.id = payload.payload.id;
+        },
+        setOpenFile(state, payload:PayloadAction<TypeFile>) {
+            state.modalConfirm.isOpen = true;
+            state.openFile = payload.payload;
         },
     },
     extraReducers: {
@@ -126,6 +131,17 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
+            state.loading = false;
+            state.openFile = action.payload;
+        },
+        [fetchFile.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }
