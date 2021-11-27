@@ -87,5 +87,26 @@ namespace FilesStorageTests
             await act.Should().ThrowAsync<FileNotFoundException>()
                 .WithMessage("Not found file with key=smth in bucket=test");
         }
+
+        [Test]
+        public async Task GetFile_ReturnValidStream_AfterCalled()
+        {
+            await using var fileStream = new FileStream(Path.GetTempFileName(),
+                FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite,
+                4096, FileOptions.RandomAccess);
+            using var sut = await _sutFactory.CreateAsync();
+            var key = fileStream.Name;
+            var data = new byte[8];
+            data[1] = 15;
+            fileStream.Write(data);
+
+            await sut.SaveFileAsync(key, fileStream);
+
+            var response = await sut.GetFile(key);
+            var dataResponse = new byte[response.Length];
+            response.Read(dataResponse);
+
+            dataResponse.Should().Equal(data);
+        }
     }
 }

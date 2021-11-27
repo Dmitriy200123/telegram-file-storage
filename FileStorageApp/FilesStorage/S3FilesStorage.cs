@@ -29,7 +29,7 @@ namespace FilesStorage
                 BucketName = _options.BucketName,
                 CannedACL = _options.Permission,
                 Key = key,
-                InputStream = stream
+                InputStream = stream,
             };
 
             await _s3Client.PutObjectAsync(request);
@@ -43,6 +43,17 @@ namespace FilesStorage
 
 
             return new File(this.GetDownloadStringFromKey(key), key);
+        }
+
+        public async Task<Stream> GetFile(string key)
+        {
+            var request = new GetObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = key
+            };
+            var response = await _s3Client.GetObjectAsync(request);
+            return response.ResponseStream;
         }
 
         private string GetDownloadStringFromKey(string key)
