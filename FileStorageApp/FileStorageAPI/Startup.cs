@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Amazon.S3;
+using AspNet.Security.OAuth.GitLab.Tests.Data;
 using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -8,8 +11,12 @@ using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +37,12 @@ namespace FileStorageAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -48,10 +61,38 @@ namespace FileStorageAPI
                 });
 
             });
-            services.ConfigureSwaggerGen(options =>
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseInMemoryDatabase("InMemoryDb"));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+            /*services.ConfigureSwaggerGen(options =>
             {
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
+            });*/
+            services.AddAuthentication().AddGitLab(options =>
+            {
+                // Provide the GitLab Client ID
+                options.ClientId = Configuration["Authentication:GitLab:ClientId"];
+                // Provide the GitLab Secret
+                options.ClientSecret = Configuration["Authentication:GitLab:ClientSecret"];
+                options.AuthorizationEndpoint = "https://git.66bit.ru/oauth/authorize";
+                options.TokenEndpoint = "https://git.66bit.ru/oauth/token";
+                options.UserInformationEndpoint = "https://git.66bit.ru/api/v4/user";
+                options.SaveTokens = true;
+                options.Events.OnCreatingTicket = ctx =>
+                {
+                    var tokens = ctx.Properties.GetTokens() as List<AuthenticationToken>;
+                    tokens.Add(new AuthenticationToken()
+                    {
+                        Name = "TicketCreated",
+                        Value = DateTime.UtcNow.ToString()
+                    });
+                    ctx.Properties.StoreTokens(tokens);
+                    return Task.CompletedTask;
+                };
             });
             services.AddSingleton(Configuration);
             services.AddCors();
@@ -73,12 +114,14 @@ namespace FileStorageAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
             app.UseRouting();
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
-            app.UseAuthorization();
+            
+            app.UseAuthentication();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
