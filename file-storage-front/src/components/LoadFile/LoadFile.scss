@@ -1,3 +1,32 @@
-.load-file{
+@import "src/Variables";
 
+.load-file{
+  padding: 28px;
+  background: $background;
+  &__content{
+    padding: 50px 42px;
+    background: white;
+  }
+  &__h2{
+    background: $menu-color;
+    color: white;
+    text-align: left;
+    padding: 17px 42px;
+  }
+
+  &__drop-area{
+    border: 2px dashed #CED4DA;
+    height: 270px;
+    display: grid;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    &:hover{
+      border: 2px dashed black;
+    }
+  }
+  &__btn-load{
+    justify-self: center;
+  }
 }
