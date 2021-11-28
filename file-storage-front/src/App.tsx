@@ -7,6 +7,7 @@ import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppSelector} from "./utils/hooks/reduxHooks";
 import {ModalConfirm} from "./components/utils/Modal/Modal";
+import {LoadFile} from "./components/LoadFile/LoadFile";
 
 const App: FC = () => {
     const {error,loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
@@ -19,6 +20,7 @@ const App: FC = () => {
         <Switch>
             <Route path={"/files"} exact component={FilesMain}/>
             <Route path={"/file/:id"} component={OpenedFile}/>
+            <Route path={"/load"} component={LoadFile}/>
             <Redirect to={"/files"}/>
         </Switch>
         {isOpen && id && <ModalConfirm id={id} />}
