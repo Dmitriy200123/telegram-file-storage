@@ -10,7 +10,9 @@ namespace FilesStorage.Interfaces
     {
         Task SaveFileAsync(string key, Stream stream);
 
-        Task<File> GetFileAsync(string key);
+        Task<File> GetFileAsync(string key, string fileName = null);
+        
+        Task<Stream> GetFile(string key);
 
         Task DeleteFileAsync(string key);
 
