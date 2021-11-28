@@ -9,22 +9,26 @@ import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {fetchDownloadLink} from "../../redux/actionsCreators";
+import {Dispatch} from "@reduxjs/toolkit";
+
+const {openModalConfirm, setOpenFileById} = filesSlice.actions
 
 const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, sender, chat}) => {
+    const dispatch = useDispatch();
     return <React.Fragment key={fileId}>
-        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace>{fileName}</Link>
+        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace onClick={() => {
+            dispatch(setOpenFileById(fileId));
+        }}>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{Category[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
-        <div className={"files__item files__item_relative"}>{chat.name} <Controls id={fileId}/></div>
+        <div className={"files__item files__item_relative"}>{chat.name} <Controls id={fileId} dispatch={dispatch}/></div>
     </React.Fragment>
 };
 
 
-const {openModalConfirm} = filesSlice.actions
-const Controls = memo(({id}:{id: string}) => {
+const Controls = memo(({id, dispatch}:{id: string,  dispatch: Dispatch<any>}) => {
     const [isOpen, changeIsOpen] = useState(false);
-    const dispatch = useDispatch();
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
         <div className={"file-controls"}>
             <button onClick={(e) => {

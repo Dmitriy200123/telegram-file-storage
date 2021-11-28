@@ -61,7 +61,7 @@ const initialState = {
             }
         },
     ] as Array<TypeFile>,
-    openFile: null as null | TypeFile,
+    openFile: null as null | TypeFile | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -86,6 +86,10 @@ export const filesSlice = createSlice({
         setOpenFile(state, payload:PayloadAction<TypeFile>) {
             state.modalConfirm.isOpen = true;
             state.openFile = payload.payload;
+        },
+        setOpenFileById(state, payload:PayloadAction<string>) {
+            state.modalConfirm.isOpen = true;
+            state.openFile = state.files.find((e) => e.fileId === payload.payload);
         },
     },
     extraReducers: {

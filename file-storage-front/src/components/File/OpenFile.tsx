@@ -9,11 +9,13 @@ import {useDispatch} from "react-redux";
 
 export const OpenedFile:React.FC<any> = memo(({match}) => {
     const id = match.params["id"];
+    const file = useAppSelector((state) => state.filesReducer.openFile);
     const dispatch = useDispatch();
     useEffect(() => {
+        if (file && id === fileId)
+            return;
         dispatch(fetchFile(id));
     }, [id])
-    const file = useAppSelector((state) => state.filesReducer.openFile);
     if (!file)
         return  null;
     const {fileName, fileId, fileType, sender, chat, uploadDate, downloadLink} = file;
