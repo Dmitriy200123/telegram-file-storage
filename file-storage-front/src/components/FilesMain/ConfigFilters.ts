@@ -1,10 +1,10 @@
-import {Category, Chat, TypeFile} from "../../models/File";
+import {Category, Chat, Sender, TypeFile} from "../../models/File";
 
-const optionsCategory: Array<{ value: Category, label: Category }> = [
-    {value: 'images', label: 'images'},
-    {value: 'links', label: 'links'},
-    {value: 'video', label: 'video'},
-    {value: 'documents', label: 'documents'},
+const optionsCategory: Array<{ value: Category, label: string }> = [
+    {value: Category.images, label: 'images'},
+    {value: Category.links, label: 'links'},
+    {value: Category.video, label: 'video'},
+    {value:Category.documents, label: 'documents'},
 ];
 const optionsDate = [
     {value: 'За все время', label: 'За все время'},
@@ -15,10 +15,10 @@ const optionsDate = [
     {value: '1', label: 'Другой период...'}
 ];
 
-export const configFilters = (filesData: TypeFile[], chats:Chat[] | null) => {
+export const configFilters = (filesData: TypeFile[], chats:Chat[] | null, senders:Sender[] | null) => {
     const optionsName = filesData.map((f) => ({label: f.fileName, value: f.fileName}));
-    const optionsSender = filesData.map((f) => ({label: f.senderId.toString(), value: f.senderId}));
-    const optionsChat = chats ? chats.map((f) => ({label: f.id, value: f.name})) : [];
+    const optionsSender = senders?.map((f) => ({label: f.fullName, value: f.id}));
+    const optionsChat = chats ? chats.map((f) => ({label: f.name, value: f.id})) : [];
     return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
 }
 

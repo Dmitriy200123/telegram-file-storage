@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC} from 'react';
 import './App.css';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider} from "react-redux";
@@ -6,20 +6,22 @@ import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppSelector} from "./utils/hooks/reduxHooks";
-import {Button} from "./components/utils/Button/Button";
 import {ModalConfirm} from "./components/utils/Modal/Modal";
 
 const App: FC = () => {
-    const {isOpen, id} = useAppSelector((state) => state.filesReducer.modalConfirm)
+    const {error,loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
+    const {isOpen, id} = modalConfirm;
+
     return (<div className="App">
         <header className="header"/>
+        {!!error && error}
+        {loading && "Загрузочка"}
         <Switch>
             <Route path={"/files"} exact component={FilesMain}/>
-            <Route path={"/file"} component={OpenedFile}/>
+            <Route path={"/file/:id"} component={OpenedFile}/>
             <Redirect to={"/files"}/>
         </Switch>
-        {isOpen && <ModalConfirm>
-        </ModalConfirm>}
+        {isOpen && id && <ModalConfirm id={id} />}
     </div>)
 }
 

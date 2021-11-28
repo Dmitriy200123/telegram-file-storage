@@ -8,66 +8,72 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchChats} from "../../redux/ActionsCreators";
-import {Category} from "../../models/File";
+import {fetchFiles, fetchFilters} from "../../redux/actionsCreators";
 import {SelectTime} from "../utils/Inputs/SelectDate";
+import {Button} from '../utils/Button/Button';
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
     const chats = filesReducer.chats;
+    const senders = filesReducer.senders;
     const dispatch = useAppDispatch();
     const history = useHistory();
 
     useEffect(() => {
-        dispatch(fetchChats());
+        dispatch(fetchFilters());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         setValue("fileName", fileName);
-        setValue("senders", senderId);
+        setValue("sendersIds", senderId);
         setValue("categories", categories);
-        setValue("chats", chats);
+        setValue("chatIds", chats);
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats);
+    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        //todo: thunk request files width formData
+        dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} fileType={f.fileType} fileId={f.fileId}
-                                                              fileName={f.fileName} chatId={f.chatId}
-                                                              senderId={f.senderId} uploadDate={f.uploadDate}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
+    const setValueForm = (name: any, value: any) => {
+        setValue(name, value, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+    }
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
             <div className={"files-main__content"}>
-                <form className={"files"}>
+                <form className={"files"} onSubmit={onChangeForm}>
                     <h3 className={"files__title"}>Название</h3>
                     <h3 className={"files__title"}>Дата</h3>
                     <h3 className={"files__title"}>Формат</h3>
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
                     <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("fileName")} options={optionsName} isMulti={true}/>
+                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            values={getValues("fileName")} options={optionsName} isMulti={false}/>
                     <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
-                                onChangeForm={onChangeForm} setValue={setValue}
+                                onChangeForm={onChangeForm} setValue={setValueForm}
                                 values={getValues("date")} placeholder={"Выберите дату"}/>
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
+                            onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
-                    <Select name={"senders"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("senders")} options={optionsSender} isMulti={true}/>
-                    <Select name={"chats"} className={"files__filter files__filter_last files__filter_select"}
+                    <Select name={"sendersIds"} className={"files__filter files__filter_select"} register={register}
+                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            values={getValues("sendersIds")} options={optionsSender} isMulti={true}/>
+                    <Select name={"chatIds"} className={"files__filter files__filter_last files__filter_select"}
                             register={register}
-                            onChangeForm={onChangeForm} setValue={setValue}
-                            values={getValues("chats")} options={optionsChat} isMulti={true}/>
+                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
+                    <Button style={{gridColumn: "1/6"}} className={"files__filter"}>Спросить Хохлов</Button>
                     {FragmentsFiles}
                 </form>
             </div>
@@ -97,17 +103,17 @@ const AddToUrlQueryParams = (history: any, values: Object) => {
     })
 
     history.push({
-        search: queryString.stringify(urlParams)
+        search: queryString.stringify(urlParams),
     })
 };
 
 const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
-    const fileName = urlSearchParams.get("fileName")?.split("&");
-    const senderId = urlSearchParams.get("senders")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&") as Array<Category>;
+    const fileName = urlSearchParams.get("fileName");
+    const senderId = urlSearchParams.get("sendersIds")?.split("&")?.map((e) => e);
+    const categories = urlSearchParams.get("categories")?.split("&") as any;
     const date = urlSearchParams.get("date");
-    const chats = urlSearchParams.get("chats")?.split("&")?.map((e) => e);
+    const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};
 }
 //#endregion

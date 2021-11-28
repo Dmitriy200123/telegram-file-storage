@@ -6,7 +6,7 @@ import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 //todo: fix updates redraw
 type Props = {
     name: string, onChangeForm: any,
-    className?: string, register: any, values: any, setValue: any, options: Array<{ value: any, label: string }>,
+    className?: string, register: any, values: any, setValue: any, options: Array<{ value: any, label: string }> | undefined,
     placeholder?: string, isMulti?: boolean
 }
 
@@ -26,7 +26,7 @@ export const Select: React.FC<Props> = memo(({
     const [isOpen, changeOpen] = useState(false);
     const [text, changeText] = useState("");
     const regexp = new RegExp(`${text}`, 'i');
-    const ui = options.filter((elem) => !!elem.label.match(regexp))
+    const ui = options?.filter((elem) => !!elem.label.match(regexp))
         .map((elem) => {
             const onChange = () => {
                 if (isMulti) {
@@ -38,10 +38,13 @@ export const Select: React.FC<Props> = memo(({
                         setValue(name, [elem.value])
                     }
                 } else {
+                    if (values)
+                        setValue(name, null)
+                    else
                     setValue(name, elem.value)
                 }
 
-                onChangeForm();
+                // onChangeForm();
             }
 
             return <li key={elem.value}
@@ -62,7 +65,7 @@ export const Select: React.FC<Props> = memo(({
                         {ui}
                     </div>
                 </ul>
-                <select multiple={true} {...register(name, {onChange: () => onChangeForm})}/>
+                <select multiple={isMulti} {...register(name, {onChange: () => onChangeForm})}/>
             </div>
         </OutsideAlerter>
     )

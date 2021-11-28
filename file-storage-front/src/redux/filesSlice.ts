@@ -1,42 +1,67 @@
-import {Chat, TypeFile} from "../models/File";
+import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFilters} from "./ActionsCreators";
+import {fetchChats, fetchFile, fetchFiles, fetchFilters, fetchRemoveFile} from "./actionsCreators";
 
 
 const initialState = {
     chats: null as null | Array<Chat>,
-    senders: null as null | Array<string>,
+    senders: null as null | Array<Sender>,
     loading: false,
     error: null as string | null,
     files: [
         {
             fileName: "Файл",
-            fileType: "video",
-            chatId: "Я АЙДИШНИК ТУТУТУТУТУ",
+            fileType: Category.documents,
+            chat: {
+                "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
+                "name": "фуллы",
+                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+            },
             fileId: "айди3",
             uploadDate: "12.10.2020",
             downloadLink: "asdasdasd",
-            senderId: "айдиSender"
+            sender: {
+                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130003",
+                "telegramUserName": "asdasd",
+                "fullName": "Кабанщие"
+            }
         },
         {
             fileName: "Файл2",
-            fileType: "images",
-            chatId: "айди",
+            fileType: Category.images,
+            chat: {
+                "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
+                "name": "фуллы2",
+                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+            },
             fileId: "айди2",
             uploadDate: "13.10.2020",
             downloadLink: "asdasdasd",
-            senderId: "айдиJOJO"
+            sender: {
+                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130004",
+                "telegramUserName": "asdasd",
+                "fullName": "1"
+            }
         },
         {
             fileName: "Файл3",
-            fileType: "links",
-            chatId: "айди1",
+            fileType: Category.links,
+            chat: {
+                "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
+                "name": "фуллы3",
+                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+            },
             fileId: "айди1",
             uploadDate: "14.10.2020",
             downloadLink: "asdasdasd",
-            senderId: "айдикАБАН"
+            sender: {
+                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130005",
+                "telegramUserName": "asdasd",
+                "fullName": "2"
+            }
         },
     ] as Array<TypeFile>,
+    openFile: null as null | TypeFile,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -58,10 +83,15 @@ export const filesSlice = createSlice({
             state.modalConfirm.isOpen = true;
             state.modalConfirm.id = payload.payload.id;
         },
+        setOpenFile(state, payload:PayloadAction<TypeFile>) {
+            state.modalConfirm.isOpen = true;
+            state.openFile = payload.payload;
+        },
     },
     extraReducers: {
         [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
             state.chats = action.payload;
+            state.loading =false;
         },
         [fetchChats.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
@@ -70,15 +100,48 @@ export const filesSlice = createSlice({
             state.error = action.payload
         },
 
-        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<string> }>) => {
-            state.loading = true;
+        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<Sender> }>) => {
+            state.loading = false;
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
         },
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
-            state.loading = false;
+            state.loading = true;
         },
         [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+            state.loading = false;
+            state.files = action.payload;
+        },
+        [fetchFiles.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+            state.loading = false;
+            state.modalConfirm.isOpen = false;
+        },
+        [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
+            state.loading = false;
+            state.openFile = action.payload;
+        },
+        [fetchFile.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }
