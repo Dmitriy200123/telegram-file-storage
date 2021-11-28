@@ -3,7 +3,7 @@ import sys
 
 import postgres
 import pytest
-from pg_adapter import Adapter
+from postgres.pg_adapter import Adapter
 from postgres.models.db_models import Chat, File, FileSender, SenderToChat
 
 
