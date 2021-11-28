@@ -35,14 +35,14 @@ namespace FilesStorage
             await _s3Client.PutObjectAsync(request);
         }
 
-        public async Task<File> GetFileAsync(string key)
+        public async Task<File> GetFileAsync(string key, string fileName = null)
         {
             var existingFiles = await this.GetFilesAsync();
             if (existingFiles.All(x => x.Key != key))
                 throw new FileNotFoundException($"Not found file with key={key} in bucket={_options.BucketName}");
 
 
-            return new File(this.GetDownloadStringFromKey(key), key);
+            return new File(this.GetDownloadStringFromKey(key, fileName), key);
         }
 
         public async Task<Stream> GetFile(string key)
@@ -56,7 +56,7 @@ namespace FilesStorage
             return response.ResponseStream;
         }
 
-        private string GetDownloadStringFromKey(string key)
+        private string GetDownloadStringFromKey(string key, string fileName = null)
         {
             var request = new GetPreSignedUrlRequest
             {
@@ -64,6 +64,12 @@ namespace FilesStorage
                 Key = key,
                 Expires = DateTime.UtcNow.Add(_options.FileDownloadLinkTtl)
             };
+            if (fileName != null)
+            {
+                request.ResponseHeaderOverrides.ContentDisposition = $"attachment; filename={fileName}";
+            }
+
+
             return _s3Client.GetPreSignedURL(request);
         }
 

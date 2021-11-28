@@ -108,5 +108,24 @@ namespace FilesStorageTests
 
             dataResponse.Should().Equal(data);
         }
+        
+        [Test]
+        public async Task GetFileAsync_ReturnFile_ThenCalled()
+        {
+            await using var fileStream = new FileStream(Path.GetTempFileName(),
+                FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None,
+                4096, FileOptions.RandomAccess | FileOptions.DeleteOnClose);
+            using var sut = await _sutFactory.CreateAsync();
+            var key = fileStream.Name;
+            var fileName = "superName";
+            fileStream.Write(new byte[8]);
+
+            await sut.SaveFileAsync(key, fileStream);
+
+            var result = await sut.GetFileAsync(key, fileName);
+
+            result.Key.Should().Be(key);
+            result.DownloadLink.Should().Contain(fileName);
+        }
     }
 }
