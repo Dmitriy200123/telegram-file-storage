@@ -26,7 +26,7 @@ class S3Client(aioboto3.session.Session):
         super().__init__(**kwargs)
 
     async def create_or_get_bucket(self, bucket_name=None):
-        """Создает корзину, если такая такой нет, и возвращет ее
+        """Создает корзину, если такая такой нет, и возвращает ее
 
         :param bucket_name: имя корзины
 
