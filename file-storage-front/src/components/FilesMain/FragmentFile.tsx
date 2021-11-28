@@ -11,13 +11,14 @@ import {filesSlice} from "../../redux/filesSlice";
 import {fetchDownloadLink} from "../../redux/actionsCreators";
 import {Dispatch} from "@reduxjs/toolkit";
 
-const {openModalConfirm, setOpenFileById} = filesSlice.actions
+const {openModalConfirm, setOpenFile} = filesSlice.actions
 
-const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, sender, chat}) => {
+const FragmentFile: React.FC<PropsType> = ({file}) => {
+    const {fileId, fileName, uploadDate, fileType, sender, chat} = file;
     const dispatch = useDispatch();
     return <React.Fragment key={fileId}>
         <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace onClick={() => {
-            dispatch(setOpenFileById(fileId));
+            dispatch(setOpenFile(file));
         }}>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{Category[fileType]}</div>
@@ -49,7 +50,7 @@ const Controls = memo(({id, dispatch}:{id: string,  dispatch: Dispatch<any>}) =>
     </OutsideAlerter>
 });
 
-type PropsType = TypeFile;
+type PropsType = { file:TypeFile };
 
 export default FragmentFile;
 

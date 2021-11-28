@@ -38,7 +38,7 @@ const FilesMain = () => {
         dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     const setValueForm = (name: any, value: any) => {
