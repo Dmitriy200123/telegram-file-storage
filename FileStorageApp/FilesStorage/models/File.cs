@@ -8,7 +8,7 @@ namespace FilesStorage.models
         public string Key { get; }
 
 
-        public File(string downloadLink, string key, string name = "")
+        public File(string downloadLink, string key)
         {
             DownloadLink = downloadLink ?? throw new ArgumentNullException(nameof(downloadLink));
             Key = key ?? throw new ArgumentNullException(nameof(key));
