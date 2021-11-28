@@ -73,7 +73,12 @@ const FilesMain = () => {
                             register={register}
                             onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
-                    <Button style={{gridColumn: "1/6"}} className={"files__filter"}>Спросить Хохлов</Button>
+                    <div style={{gridColumn: "1/5", borderBottom: "1px #E9E9E9 solid"}} className={"files__filter"}/>
+                    <div style={{gridColumn: "5/6", borderBottom: "1px #E9E9E9 solid", display:"flex"}} className={"files__filter"}>
+                        <Button type={"danger"} style={{flex:"1 1 auto", marginRight:"10px"}}>
+                            Запросить файлы &#128269;
+                        </Button>
+                    </div>
                     {FragmentsFiles}
                 </form>
             </div>

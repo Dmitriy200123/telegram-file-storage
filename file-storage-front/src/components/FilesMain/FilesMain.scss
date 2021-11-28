@@ -19,9 +19,9 @@
   background: white;
   text-align: left;
 
-  &__item:not(:nth-last-child(-n + 5)), &__filter {
-    border-bottom: 1px #E9E9E9 solid;
-  }
+  //&__item:not(:nth-last-child(-n + 5)), &__filter {
+  //  border-bottom: 1px #E9E9E9 solid;
+  //}
 
   &__title {
     padding: 23px 0;
