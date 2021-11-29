@@ -9,7 +9,7 @@ export const editorSlice = createSlice({
     name: "editor",
     initialState,
     reducers: {
-        setFile(state, payload:PayloadAction<File>) {
+        setFile(state, payload:PayloadAction<File | null>) {
             state.file = payload.payload;
         },
     },
