@@ -8,8 +8,8 @@ import {ReactComponent as Download} from "./../../assets/download_2.svg";
 import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
-import {fetchDownloadLink} from "../../redux/actionsCreators";
 import {Dispatch} from "@reduxjs/toolkit";
+import {fetchDownloadLink} from "../../redux/fileThunks";
 
 const {openModalConfirm, setOpenFile} = filesSlice.actions
 

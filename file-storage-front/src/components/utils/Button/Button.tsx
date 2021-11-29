@@ -18,10 +18,3 @@ export const Button: React.FC<Props> = ({
     return <button onClick={onClick} style={style} className={styles.button + " " + (className ? className : "") + (type ? " " + type : "")}>{children}</button>
 }
 
-export const InputFile: React.FC<Props> = ({
-                                            children,
-                                            className, style, type,
-                                            onClick
-                                        }) => {
-    return <input type={"file"} onClick={onClick} style={style} className={styles.button + " " + (className ? className : "") + (type ? " " + type : "")}>{children}</input>
-}

@@ -1,22 +1,10 @@
 @import "src/Variables";
 
-.load-file{
-  padding: 28px;
-  background: $background;
-  &__content{
-    padding: 50px 42px;
-    background: white;
-  }
-  &__h2{
-    background: $menu-color;
-    color: white;
-    text-align: left;
-    padding: 17px 42px;
-  }
+.load{
 
   &__drop-area{
     border: 2px dashed #CED4DA;
-    height: 270px;
+    height: 100%;
     display: grid;
     gap: 20px;
     align-items: center;
@@ -28,5 +16,19 @@
   }
   &__btn-load{
     justify-self: center;
+  }
+  &__input-file{
+    position: relative;
+    color: $menu-color;
+    &:hover{
+      cursor: pointer;
+      color: $menu-color-hover;
+    }
+    & input{
+      opacity: 0;
+      left: 0;
+      visibility: hidden;
+      position: absolute;
+    }
   }
 }

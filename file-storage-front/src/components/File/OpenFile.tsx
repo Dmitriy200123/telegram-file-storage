@@ -3,9 +3,9 @@ import "./File.scss"
 import {ReactComponent as Svg} from "../../assets/download.svg";
 import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {Category} from "../../models/File";
-import {fetchFile} from "../../redux/actionsCreators";
 import { Link } from 'react-router-dom';
 import {useDispatch} from "react-redux";
+import {fetchFile} from "../../redux/fileThunks";
 
 export const OpenedFile:React.FC<any> = memo(({match}) => {
     const id = match.params["id"];

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import "./Paginator.scss"
-import {fetchFiles} from "../../../redux/actionsCreators";
+import {fetchFiles} from "../../../redux/mainThunks";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
 import {Category} from "../../../models/File";
 
