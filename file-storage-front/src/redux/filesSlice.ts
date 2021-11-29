@@ -1,6 +1,7 @@
 import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFile, fetchFiles, fetchFilters, fetchRemoveFile} from "./actionsCreators";
+import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
+import {fetchFile, fetchRemoveFile} from "./fileThunks";
 
 
 const initialState = {
@@ -66,7 +67,6 @@ const initialState = {
         isOpen: false,
         id: null as null | string,
     },
-    some: null as any
 }
 
 export const filesSlice = createSlice({

@@ -1,17 +1,25 @@
 import {combineReducers} from "redux";
 import {configureStore} from "@reduxjs/toolkit";
 import filesReducer from "./filesSlice";
+import profileReducer from "./profileSlice";
+import editorReducer from "./editorSlice";
 import {Api} from "../services/Api";
 
 let rootReducer = combineReducers({
     filesReducer: filesReducer,
-    [Api.reducerPath]: Api.reducer
+    profile: profileReducer,
+    editor: editorReducer,
+    [Api.reducerPath]: Api.reducer,
 });
 
 export const setupStore = () => {
     return configureStore({
         reducer: rootReducer,
-        middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(Api.middleware)
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions:["editor/setFile"]
+            }
+        }).concat(Api.middleware)
     })
 }
 
