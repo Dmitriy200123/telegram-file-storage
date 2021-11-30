@@ -74,13 +74,11 @@ namespace FileStorageAPI
             });*/
             services.AddAuthentication().AddGitLab(options =>
             {
-                // Provide the GitLab Client ID
                 options.ClientId = Configuration["Authentication:GitLab:ClientId"];
-                // Provide the GitLab Secret
                 options.ClientSecret = Configuration["Authentication:GitLab:ClientSecret"];
-                options.AuthorizationEndpoint = "https://git.66bit.ru/oauth/authorize";
-                options.TokenEndpoint = "https://git.66bit.ru/oauth/token";
-                options.UserInformationEndpoint = "https://git.66bit.ru/api/v4/user";
+                options.AuthorizationEndpoint = Configuration["Authentication:GitLab:AuthorizationEndpoint"];
+                options.TokenEndpoint = Configuration["Authentication:GitLab:TokenEndpoint"];
+                options.UserInformationEndpoint = Configuration["Authentication:GitLab:UserInformationEndpoint"];
                 options.SaveTokens = true;
                 options.Events.OnCreatingTicket = ctx =>
                 {
