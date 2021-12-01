@@ -34,7 +34,7 @@ const App: FC = () => {
                 <Route path={"/files"} exact component={FilesMain}/>
                 <Route path={"/file/:id"} component={OpenedFile}/>
                 <Route path={"/load/"} component={LoadFileMain}/>
-                {/*<Redirect to={"/files"}/>*/}
+                <Redirect to={"/files"}/>
             </Switch>
         </div>
         {isOpen && id && <ModalConfirm id={id}/>}

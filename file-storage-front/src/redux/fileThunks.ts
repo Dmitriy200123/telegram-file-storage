@@ -18,8 +18,6 @@ export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAP
     }
 });
 
-
-
 export const fetchDownloadLink = createAsyncThunk("file/remove", async (id: string, thunkAPI) => {
     try {
         const link = await fetchConfigText(`/files/${id}/downloadlink`, {method: "GET"});

@@ -38,15 +38,14 @@ export const Select: React.FC<Props> = memo(({
                         setValue(name, [elem.value])
                     }
                 } else {
-                    if (values)
+                    if (values === elem.value)
                         setValue(name, null)
                     else
-                    setValue(name, elem.value)
+                        setValue(name, elem.value)
                 }
 
                 // onChangeForm();
             }
-
             return <li key={elem.value}
                        className={"select__option " + (isMulti ? (values && (values?.includes(elem.value))) : (values === elem.value) ? "select__option_active" : "")}
                        onClick={onChange}>{elem.label}</li>;

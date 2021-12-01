@@ -4,7 +4,7 @@ export const optionsCategory: Array<{ value: Category, label: string }> = [
     {value: Category.images, label: 'Картинки'},
     {value: Category.links, label: 'Ссылки'},
     {value: Category.video, label: 'Видео'},
-    {value:Category.documents, label: 'Документы'},
+    {value: Category.documents, label: 'Документы'},
 ];
 const optionsDate = [
     {value: 'За все время', label: 'За все время'},
