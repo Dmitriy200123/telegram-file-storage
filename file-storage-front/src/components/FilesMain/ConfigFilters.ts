@@ -1,11 +1,13 @@
 import {Category, Chat, Sender, TypeFile} from "../../models/File";
 
-export const optionsCategory: Array<{ value: Category, label: string }> = [
-    {value: Category.images, label: 'Картинки'},
-    {value: Category.links, label: 'Ссылки'},
-    {value: Category.video, label: 'Видео'},
-    {value: Category.documents, label: 'Документы'},
+export const optionsCategory: Array<{ value: any, label: string }> = [
+    {value: Category.документы, label: 'Документы'},
+    {value: Category.аудио, label: 'Аудио'},
+    {value: Category.видео, label: 'Видео'},
+    {value: Category.картинки, label: 'Картинки'},
+
 ];
+
 const optionsDate = [
     {value: 'За все время', label: 'За все время'},
     {value: 'Сегодня', label: 'Сегодня'},

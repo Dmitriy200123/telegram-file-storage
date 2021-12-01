@@ -5,7 +5,7 @@ import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import * as queryString from "querystring";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
-import {configFilters} from "./ConfigFilters";
+import {configFilters, optionsCategory} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/mainThunks";
@@ -21,7 +21,7 @@ const FilesMain = () => {
     const history = useHistory();
 
     useEffect(() => {
-        dispatch(fetchFilters());
+        // dispatch(fetchFilters());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         setValue("fileName", fileName);
         setValue("sendersIds", senderId);
@@ -30,12 +30,12 @@ const FilesMain = () => {
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats, senders);
+    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesData, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
+        // dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);

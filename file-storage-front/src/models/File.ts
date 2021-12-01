@@ -1,8 +1,8 @@
 export enum Category {
-    "documents",
-    "video",
-    "links",
-    "images",
+    "документы",
+    "аудио",
+    "видео",
+    "картинки",
 }
 export type FormType<TValue> = { label: string, value: TValue };
 

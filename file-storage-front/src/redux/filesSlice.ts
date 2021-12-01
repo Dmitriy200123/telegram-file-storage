@@ -12,7 +12,7 @@ const initialState = {
     files: [
         {
             fileName: "Файл",
-            fileType: Category.documents,
+            fileType: Category.документы,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
                 "name": "фуллы",
@@ -29,7 +29,7 @@ const initialState = {
         },
         {
             fileName: "Файл2",
-            fileType: Category.images,
+            fileType: Category.картинки,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
                 "name": "фуллы2",
@@ -46,7 +46,7 @@ const initialState = {
         },
         {
             fileName: "Файл3",
-            fileType: Category.links,
+            fileType: Category.аудио,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
                 "name": "фуллы3",

@@ -46,8 +46,9 @@ export const Select: React.FC<Props> = memo(({
 
                 // onChangeForm();
             }
+            const isActive = (isMulti ? (values?.includes(elem.value)) : (values === elem.value));
             return <li key={elem.value}
-                       className={"select__option " + (isMulti ? (values && (values?.includes(elem.value))) : (values === elem.value) ? "select__option_active" : "")}
+                       className={"select__option " + (isActive ? "select__option_active" : "")}
                        onClick={onChange}>{elem.label}</li>;
         })
 
