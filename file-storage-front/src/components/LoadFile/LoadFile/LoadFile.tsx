@@ -3,6 +3,7 @@ import React, {memo, useState} from "react";
 import {Button} from "../../utils/Button/Button";
 import {Dispatch} from "@reduxjs/toolkit";
 import "./LoadFile.scss"
+import { Link, NavLink } from "react-router-dom";
 
 const {setFile} = editorSlice.actions;
 export const LoadFile: React.FC<{ dispatch: Dispatch, className?:string }> = memo(({dispatch, className}) => {
@@ -46,7 +47,7 @@ export const LoadFile: React.FC<{ dispatch: Dispatch, className?:string }> = mem
                     </h3>
                 }
                 <div>ИЛИ</div>
-                <Button>Кнопка</Button>
+                <NavLink to={"ВСТАВЬ-СЮДА-УРЛ"} ><Button>Добавить ссылку или текст</Button></NavLink>
             </div>
         </div>
 

@@ -40,7 +40,7 @@ const Controls = memo(({id, dispatch}:{id: string,  dispatch: Dispatch<any>}) =>
             </button>
             {isOpen && <section className={"file-controls__modal"}>
                 <div className={"file-controls__modal-item"}><Edit/><span>Переименовать</span></div>
-                <div className={"file-controls__modal-item"} onClick={() => fetchDownloadLink(id)}>
+                <div className={"file-controls__modal-item"} onClick={() => dispatch(fetchDownloadLink(id))}>
                     <Download/><span>Скачать</span></div>
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
                      onClick={() => dispatch(openModalConfirm({id}))}>

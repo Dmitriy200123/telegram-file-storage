@@ -1,7 +1,7 @@
 import {Category, Chat, Sender, TypeFile} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
-import {fetchFile, fetchRemoveFile} from "./fileThunks";
+import {fetchDownloadLink, fetchFile, fetchRemoveFile} from "./fileThunks";
 
 
 const initialState = {
@@ -127,14 +127,16 @@ export const filesSlice = createSlice({
             state.error = action.payload
         },
 
-        [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+        [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
+            state.files = state.files.filter(e => e.fileId !== action.payload);
             state.modalConfirm.isOpen = false;
         },
         [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.modalConfirm.isOpen = false;
             state.error = action.payload
         },
 
@@ -146,6 +148,16 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
+            state.loading = false;
+        },
+        [fetchDownloadLink.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }

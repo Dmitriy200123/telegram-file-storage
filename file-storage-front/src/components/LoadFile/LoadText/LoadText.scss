@@ -1,0 +1,24 @@
+@import "src/Variables";
+
+.load-text{
+  padding: 45px 42px;
+  text-align: left;
+  &__form{
+  }
+  &__form-inputes{
+    display: grid;
+    gap: 30px;
+    margin-bottom: 50px;
+
+  }
+
+  &__btns{
+    display: grid;
+    grid-auto-flow: column;
+    justify-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(100px,130px));
+  }
+  & input {
+    height: 59px;
+  }
+}

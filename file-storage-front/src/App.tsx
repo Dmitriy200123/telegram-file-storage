@@ -16,7 +16,7 @@ const App: FC = () => {
     return (<div className="App" style={{display:"flex", flexDirection: "column", minHeight:"100vh"}}>
         <header className="header"/>
         <div style={{display: "grid", gap: 10}}>
-            <Link to={"/load"}>Загрузить файл</Link>
+            <Link to={"/load/"}>Загрузить файл</Link>
             <Link to={"/files"}>Искать файлы</Link>
         </div>
         {!!error && <div style={{
@@ -33,8 +33,8 @@ const App: FC = () => {
             <Switch>
                 <Route path={"/files"} exact component={FilesMain}/>
                 <Route path={"/file/:id"} component={OpenedFile}/>
-                <Route path={"/load"} component={LoadFileMain}/>
-                <Redirect to={"/files"}/>
+                <Route path={"/load/"} component={LoadFileMain}/>
+                {/*<Redirect to={"/files"}/>*/}
             </Switch>
         </div>
         {isOpen && id && <ModalConfirm id={id}/>}
@@ -46,7 +46,7 @@ const App: FC = () => {
 //     var file = new File([JSON.stringify(a)], 'foobar.txt');
 //
 //     let link = document.createElement('a');
-//     link.text = "123";
+//     link.Text = "123";
 //     link.download = file.name;
 //
 //     link.href = URL.createObjectURL(file);
@@ -54,7 +54,7 @@ const App: FC = () => {
 //     URL.revokeObjectURL(link.href);
 //
 //     return <div className="App">
-//         <input type={"text"}/>
+//         <input type={"Text"}/>
 //
 //     </div>
 // }
