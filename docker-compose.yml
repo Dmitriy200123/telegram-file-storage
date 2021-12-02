@@ -4,7 +4,6 @@ services:
   s3:
     image: localstack/localstack
     container_name: s3
-    network_mode: bridge
     ports:
       - 4566:4566
       - 9090:8080
