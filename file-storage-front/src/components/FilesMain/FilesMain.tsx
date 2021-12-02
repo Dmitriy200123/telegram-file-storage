@@ -21,7 +21,7 @@ const FilesMain = () => {
     const history = useHistory();
 
     useEffect(() => {
-        // dispatch(fetchFilters());
+        dispatch(fetchFilters());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         setValue("fileName", fileName);
         setValue("sendersIds", senderId);
@@ -35,7 +35,7 @@ const FilesMain = () => {
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        // dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
+        dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
