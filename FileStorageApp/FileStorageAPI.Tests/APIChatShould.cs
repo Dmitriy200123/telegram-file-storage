@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -12,8 +13,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FileStorageAPI.Tests
 {
@@ -105,7 +109,8 @@ namespace FileStorageAPI.Tests
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             const string chatName = "testName";
-            await chatStorage.AddAsync(new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "anotherChat"});
+            await chatStorage.AddAsync(new Chat
+                {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "anotherChat"});
 
             var response = await _apiClient.GetAsync($"/api/chats/search?chatName={chatName}");
 

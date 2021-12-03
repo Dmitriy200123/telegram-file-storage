@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FileStorageAPI.Converters;
+﻿using FileStorageAPI.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspNet.Security.OAuth.GitLab.Tests.Data
+namespace FileStorageAPI.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    /// <summary>
+    /// Контекст отвечающий за данные об аутентифицированных пользователях
+    /// </summary>
+    public sealed class AppDbContext : IdentityDbContext<ApplicationUser>
     {
+        /// <summary>
+        /// Конструктор для создания необходим таблиц
+        /// </summary>
+        /// <param name="options"></param>
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-        }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+            Database.EnsureCreated();
         }
     }
 }
