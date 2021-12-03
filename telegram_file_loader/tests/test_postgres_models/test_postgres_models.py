@@ -3,7 +3,7 @@ import uuid
 
 from conftest import create_chat, create_sender
 from postgres.basic import manager
-from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
+from postgres.models.db_models import Chat, FileSender, File, FileTypeEnum
 
 
 async def test_create_chat(db_manager):
@@ -75,8 +75,10 @@ async def test_create_sender(db_manager):
 
 
 async def test_contains_sender(db_manager):
-    sender: FileSender = await db_manager.create_or_get(model=FileSender, TelegramId=1233, TelegramUserName='my name',
-                                                        FullName='full name')
+    sender: FileSender = await db_manager.create_or_get(
+        model=FileSender, TelegramId=1233, TelegramUserName='my name',
+        FullName='full name'
+    )
     await create_sender(name='mysupername')
 
     result = await db_manager.contains(FileSender, TelegramId=sender.TelegramId)
@@ -150,3 +152,21 @@ async def test_create_existing_chat(db_manager):
 
     assert not is_created
     assert new_chat.Id == chat.Id
+
+
+async def test_update_chat(db_manager):
+    chat = await create_chat()
+    chat.TelegramId = 55555
+    chat_old = await db_manager.get(Chat, Id=chat.Id)
+
+    await db_manager.update(chat_old, **chat.as_dict())
+
+    chat_update = await db_manager.get(chat_old, Id=chat.Id)
+
+    assert chat_update.TelegramId == 55555
+
+
+async def test_create_chat_without_image(db_manager):
+    chat = await db_manager.create(model=Chat, TelegramId=15514, Name='test', ImageId=None)
+
+    assert chat

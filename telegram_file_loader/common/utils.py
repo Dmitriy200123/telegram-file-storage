@@ -2,6 +2,7 @@ import datetime
 import uuid
 
 import pytz
+from telethon.tl.types import User
 
 
 def uuid_str() -> str:
@@ -14,3 +15,7 @@ def now_utc() -> datetime.datetime:
 
 def now_date() -> datetime.date:
     return datetime.date.today()
+
+
+def full_name(user: User) -> str:
+    return f"{user.first_name or ''} {user.last_name or ''}"

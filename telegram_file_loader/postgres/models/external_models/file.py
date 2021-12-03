@@ -5,6 +5,13 @@ from typing import Optional
 from postgres.models.db_models import FileTypeEnum
 from pydantic import BaseModel, Field
 
+type_map = {
+    'document': FileTypeEnum.Document,
+    'image': FileTypeEnum.Image,
+    'video': FileTypeEnum.Video,
+    'audio': FileTypeEnum.Audio
+}
+
 
 class File(BaseModel):
     name: str = Field(..., title='Название файла',
@@ -14,9 +21,11 @@ class File(BaseModel):
     type: FileTypeEnum = Field(..., title='Тип', alias='TypeId')
     upload_date: datetime.datetime = Field(...,
                                            title='Дата загрузки', alias='UploadDate')
-    file_sender_id: uuid.UUID = Field(...,
-                                      title='Телеграм id отправителя', alias='FileSenderId')
-    chat_id: Optional[uuid.UUID] = Field(
+    sender_telegram_id: int
+    chat_telegram_id: int
+    # file_sender_id: uuid.UUID = Field(...,
+    #                                   title='Телеграм id отправителя', alias='FileSenderId')
+    # chat_id: Optional[uuid.UUID] = Field(
         title='Телеграм id чата', alias='ChatId')
 
     class Config:

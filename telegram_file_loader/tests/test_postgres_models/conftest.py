@@ -8,10 +8,9 @@ from postgres.models.external_models import Chat as chat_ext_model
 async def create_chat(image_id=None, telegram_id=None, chat_name=None) -> Chat:
     chat_model = chat_ext_model(
         name=chat_name or 'test',
-        image_id=image_id or uuid.uuid4(),
         telegram_id=telegram_id or 123
     )
-    chat = await Chat.create(**chat_model.dict(by_alias=True))
+    chat = await Chat.create(ImageId=image_id or uuid.uuid4(), **chat_model.dict(by_alias=True))
     return chat
 
 

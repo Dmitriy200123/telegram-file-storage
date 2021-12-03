@@ -1,50 +1,46 @@
-import typing
 from io import BytesIO
-
-from common.file_util import FileUtil
-from common.interactor.loader_interactor import LoaderInteractor
-from telegram_client_loader.model.telegram_file import TelegramFile
 from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
 from telethon.tl.types import MessageMediaDocument
+from common.file_util import FileUtil
+from common.interactor.loader_interactor import LoaderInteractor
+from postgres.models.external_models import File
+from postgres.models.external_models.file import type_map
+from telegram_client_loader.handler.base_handler import BaseHandler
 
 
-class TelegramLoader:
-    telegram_client: TelegramClient
-    loader_interactor: LoaderInteractor
+class TelegramLoader(BaseHandler):
 
     def __init__(
         self,
         telegram_client: TelegramClient,
         loader_interactor: LoaderInteractor
     ):
-        self.telegram_client = telegram_client
+        super(TelegramLoader, self).__init__(telegram_client, loader_interactor)
+
         self.loader_interactor = loader_interactor
         self.run()
 
     def run(self):
         message: NewMessage = NewMessage()
-        self.telegram_client.add_event_handler(
-            self.__handle_new_message, message)
+        self.telegram_client.add_event_handler(self.__handle_new_message, message)
 
     def stop(self):
         self.telegram_client.remove_event_handler(self.__handle_new_message)
 
     async def __handle_new_message(self, event: NewMessage.Event):
         message: Message = event.message
-        is_valid = await self.__is_valid_chat(message.chat_id)
+        # is_valid = await self.is_valid_chat(message.chat_id)
 
-        if is_valid and message.media:
-            telegram_file: TelegramFile = self.__get_telegram_file(message)
-            file: BytesIO = await self.__download_file(message)
+        # if is_valid and message.media:
+        if message.media:
+            telegram_file: File = self.__get_telegram_file(message)
+            file: BytesIO = await self.download_file(message)
             await self.loader_interactor.save_file(telegram_file, file)
 
-    async def __is_valid_chat(self, chat_id: int) -> bool:
-        return await self.loader_interactor.is_valid_chat(chat_id)
-
     @staticmethod
-    def __get_telegram_file(message: Message):
+    def __get_telegram_file(message: Message) -> File:
         chat_id = message.chat_id
         sender_id = message.sender.id
 
@@ -52,16 +48,13 @@ class TelegramLoader:
             if isinstance(message.media, MessageMediaDocument) \
             else FileUtil.get_photo_file_info(message)
 
-        telegram_file = TelegramFile(
-            chat_id=chat_id,
-            sender_id=sender_id,
-            filename=filename,
+        telegram_file = File(
+            name=filename,
             extension=extension,
-            file_type=file_type
+            type=type_map[file_type],
+            upload_date=message.date,
+            sender_telegram_id=sender_id,
+            chat_telegram_id=chat_id,
         )
 
         return telegram_file
-
-    async def __download_file(self, message: Message) -> BytesIO:
-        file: BytesIO = typing.cast(BytesIO, await self.telegram_client.download_media(message, file=BytesIO()))
-        return BytesIO(file.getvalue())
