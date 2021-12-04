@@ -22,3 +22,5 @@ COPY . .
 RUN if [ "$Test" == "true" ]; then \
         cp  config/local.py; \
     fi;
+
+ENTRYPOINT python3 /app/server.py
