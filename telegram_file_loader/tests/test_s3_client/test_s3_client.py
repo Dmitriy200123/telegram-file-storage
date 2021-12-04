@@ -12,7 +12,7 @@ async def test_s3_upload_file(s3_client):
 
 
 async def test_s3_get_file(s3_client):
-    file = b'\x01' * 128
+    file = b'\x01' * 12
     await s3_client.upload_file(file=BytesIO(file), key='test_file')
     result = await s3_client.download_file('test_file')
     res = await result.read()

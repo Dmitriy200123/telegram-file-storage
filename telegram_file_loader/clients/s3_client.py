@@ -25,11 +25,26 @@ class S3Client(aioboto3.session.Session):
         self.bucket_name = bucket_name
         super().__init__(**kwargs)
 
+    async def create_or_get_bucket(self, bucket_name=None):
+        """Создает корзину, если такая такой нет, и возвращает ее
+
+        :param bucket_name: имя корзины
+
+        :return: Bucket из S3
+        """
+        async with self.resource(
+                service_name='s3',
+                endpoint_url=self.url,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key
+        ) as s3:
+            return await s3.create_bucket(Bucket=bucket_name or self.bucket_name)
+
     async def upload_file(self, key: str, file: BytesIO) -> bool:
-        """Загружает файлик в с3
+        """Загружает файлик в S3
 
         :param file: read-like байты файла
-        :param key: имя файла в с3
+        :param key: имя файла в S3
         :return: Удачно или нет загружен
         """
 
@@ -47,9 +62,9 @@ class S3Client(aioboto3.session.Session):
         return True
 
     async def download_file(self, key: str) -> StreamReader:
-        """Загружает файлик из s3  в aiohttp стрим
+        """Загружает файлик из S3  в aiohttp стрим
 
-        :param key: имя файла в с3
+        :param key: имя файла в S3
         :return: Стрим с файлом
         """
         async with self.client(
@@ -82,7 +97,7 @@ class S3Client(aioboto3.session.Session):
     async def get_download_link(self, key: str, expires=config.S3_URL_EXPIRES_IN_SECONDS) -> str:
         """Возвращает урл для загрузки файла
 
-        :param key: имя файла в с3
+        :param key: имя файла в S3
         :param expires: Время жизни ссылки в секундах
         :return: объекты из Bucket
         """
