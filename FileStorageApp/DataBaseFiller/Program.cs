@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
@@ -20,13 +21,13 @@ namespace DataBaseFiller
             .Build();
 
 
-        public static void Main()
+        public static async Task Main()
         {
             CreateConfig();
             Console.WriteLine("Should clean up data base? If yes enter any symbol or press enter to skip");
             var cleanUp = Console.ReadLine();
             if(cleanUp!.Length != 0)
-                DataBaseCleaner.CleanUp(_infoStorageFactory, _filesStorageFactory).ConfigureAwait(true);
+                await DataBaseCleaner.CleanUpAsync(_infoStorageFactory, _filesStorageFactory).ConfigureAwait(true);
             var helpString = HelpInfoProvider.GetHelpInfo();
             Console.WriteLine(helpString);
             while (true)
@@ -34,7 +35,7 @@ namespace DataBaseFiller
                 var command = Console.ReadLine();
                 var action = ActionProvider.ChooseAction(command!);
                 if (action != null)
-                    action.DoAction(_infoStorageFactory);
+                    await action.DoActionAsync(_infoStorageFactory);
                 else
                     Console.WriteLine("Unknown command");
             }

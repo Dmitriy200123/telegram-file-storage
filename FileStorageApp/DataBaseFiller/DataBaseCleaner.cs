@@ -6,16 +6,16 @@ namespace DataBaseFiller
 {
     public static class DataBaseCleaner
     {
-        public static async Task CleanUp(IInfoStorageFactory infoStorageFactory, IFilesStorageFactory filesStorageFactory)
+        public static async Task CleanUpAsync(IInfoStorageFactory infoStorageFactory, IFilesStorageFactory filesStorageFactory)
         {
             using var filesStorage = infoStorageFactory.CreateFileStorage();
             using var chatStorage = infoStorageFactory.CreateChatStorage();
             using var senderStorage = infoStorageFactory.CreateFileSenderStorage();
-            foreach (var element in senderStorage.GetAllAsync().Result)
+            foreach (var element in await senderStorage.GetAllAsync())
                 await senderStorage.DeleteAsync(element.Id);
-            foreach (var element in chatStorage.GetAllAsync().Result)
+            foreach (var element in await chatStorage.GetAllAsync())
                 await chatStorage.DeleteAsync(element.Id);
-            foreach (var element in filesStorage.GetAllAsync().Result)
+            foreach (var element in await filesStorage.GetAllAsync())
                 await filesStorage.DeleteAsync(element.Id);
 
             using var physicalFilesStorage = await filesStorageFactory.CreateAsync();

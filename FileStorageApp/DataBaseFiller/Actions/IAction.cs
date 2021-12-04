@@ -1,9 +1,10 @@
-﻿using FileStorageApp.Data.InfoStorage.Factories;
+﻿using System.Threading.Tasks;
+using FileStorageApp.Data.InfoStorage.Factories;
 
 namespace DataBaseFiller.Actions
 {
     public interface IAction
     {
-        void DoAction(IInfoStorageFactory infoStorageFactory);
+        Task DoActionAsync(IInfoStorageFactory infoStorageFactory);
     }
 }
