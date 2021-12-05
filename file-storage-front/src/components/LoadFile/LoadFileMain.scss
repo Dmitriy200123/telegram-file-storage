@@ -1,0 +1,22 @@
+@import "src/Variables";
+
+.load-file{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  background: $background;
+  &__content{
+    flex: 1 1 auto;
+    display: grid;
+    padding: 50px 42px;
+    background: white;
+  }
+  &__h2{
+    background: $menu-color;
+    color: white;
+    text-align: left;
+    padding: 17px 42px;
+  }
+
+
+}

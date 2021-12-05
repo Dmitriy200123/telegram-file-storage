@@ -8,13 +8,15 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchFiles, fetchFilters} from "../../redux/actionsCreators";
+import {fetchFiles, fetchFilters} from "../../redux/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {Button} from '../utils/Button/Button';
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
+    const filesNames = filesReducer.filesNames;
+    const paginator = useAppSelector((state) => state.filesReducer.paginator)
     const chats = filesReducer.chats;
     const senders = filesReducer.senders;
     const dispatch = useAppDispatch();
@@ -30,7 +32,7 @@ const FilesMain = () => {
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsCategory, optionsSender, optionsChat} = configFilters(filesData, chats, senders);
+    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
@@ -38,7 +40,7 @@ const FilesMain = () => {
         dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} {...f}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     const setValueForm = (name: any, value: any) => {
@@ -82,7 +84,7 @@ const FilesMain = () => {
                     {FragmentsFiles}
                 </form>
             </div>
-            <Paginator count={filesData.length}/>
+            <Paginator paginator={paginator}/>
         </div>
     );
 };

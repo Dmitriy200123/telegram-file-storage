@@ -21,7 +21,7 @@ export const Select: React.FC<Props> = memo(({
                                                  placeholder,
                                                  isMulti
                                              }) => {
-    if (!placeholder)
+    if (placeholder === undefined || placeholder === null)
         placeholder = "Введите текст";
     const [isOpen, changeOpen] = useState(false);
     const [text, changeText] = useState("");
@@ -38,17 +38,17 @@ export const Select: React.FC<Props> = memo(({
                         setValue(name, [elem.value])
                     }
                 } else {
-                    if (values)
+                    if (values === elem.value)
                         setValue(name, null)
                     else
-                    setValue(name, elem.value)
+                        setValue(name, elem.value)
                 }
 
                 // onChangeForm();
             }
-
+            const isActive = (isMulti ? (values?.includes(elem.value)) : (values === elem.value));
             return <li key={elem.value}
-                       className={"select__option " + (values && (values.includes(elem.value)) ? "select__option_active" : "")}
+                       className={"select__option " + (isActive ? "select__option_active" : "")}
                        onClick={onChange}>{elem.label}</li>;
         })
 

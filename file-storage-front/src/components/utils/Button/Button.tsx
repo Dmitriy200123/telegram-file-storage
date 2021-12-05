@@ -6,7 +6,7 @@ import CSS from 'csstype';
 type Props = {
     className?: string | null,
     style?: CSS.Properties,
-    type?: string,
+    type?: "transparent" | "danger",
     onClick?: () => void
 }
 
@@ -17,3 +17,4 @@ export const Button: React.FC<Props> = ({
                                         }) => {
     return <button onClick={onClick} style={style} className={styles.button + " " + (className ? className : "") + (type ? " " + type : "")}>{children}</button>
 }
+

@@ -3,20 +3,23 @@ import "./File.scss"
 import {ReactComponent as Svg} from "../../assets/download.svg";
 import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {Category} from "../../models/File";
-import {fetchFile} from "../../redux/actionsCreators";
 import { Link } from 'react-router-dom';
 import {useDispatch} from "react-redux";
+import {fetchDownloadLink, fetchFile} from "../../redux/fileThunks";
+import {filesSlice} from "../../redux/filesSlice";
 
 export const OpenedFile:React.FC<any> = memo(({match}) => {
     const id = match.params["id"];
+    const file = useAppSelector((state) => state.filesReducer.openFile);
     const dispatch = useDispatch();
     useEffect(() => {
+        if (file && id === fileId)
+            return;
         dispatch(fetchFile(id));
     }, [id])
-    const file = useAppSelector((state) => state.filesReducer.openFile);
     if (!file)
         return  null;
-    const {fileName, fileId, fileType, sender, chat, uploadDate, downloadLink} = file;
+    const {fileName, fileId, fileType, sender, chat, uploadDate} = file;
 
     return (
         <div className={"file"}>
@@ -31,7 +34,7 @@ export const OpenedFile:React.FC<any> = memo(({match}) => {
                 <div className="file__item"><span>Чат: </span><a>{chat.name}</a></div>
                 <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>
                 <button className="file__btn"  onClick={() => {
-                    window.open(downloadLink);
+                    dispatch(fetchDownloadLink(id))
                 }}>
                     <div>Скачать</div>
                     <Svg/></button>

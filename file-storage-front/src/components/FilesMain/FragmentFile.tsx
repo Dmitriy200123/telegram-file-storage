@@ -8,23 +8,28 @@ import {ReactComponent as Download} from "./../../assets/download_2.svg";
 import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
-import {fetchDownloadLink} from "../../redux/actionsCreators";
+import {Dispatch} from "@reduxjs/toolkit";
+import {fetchDownloadLink} from "../../redux/fileThunks";
 
-const FragmentFile: React.FC<PropsType> = ({fileId, fileName, uploadDate, fileType, sender, chat}) => {
+const {openModalConfirm, setOpenFile} = filesSlice.actions
+
+const FragmentFile: React.FC<PropsType> = ({file}) => {
+    const {fileId, fileName, uploadDate, fileType, sender, chat} = file;
+    const dispatch = useDispatch();
     return <React.Fragment key={fileId}>
-        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace>{fileName}</Link>
+        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace onClick={() => {
+            dispatch(setOpenFile(file));
+        }}>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{Category[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
-        <div className={"files__item files__item_relative"}>{chat.name} <Controls id={fileId}/></div>
+        <div className={"files__item files__item_relative"}>{chat.name} <Controls id={fileId} dispatch={dispatch}/></div>
     </React.Fragment>
 };
 
 
-const {openModalConfirm} = filesSlice.actions
-const Controls = memo(({id}:{id: string}) => {
+const Controls = memo(({id, dispatch}:{id: string,  dispatch: Dispatch<any>}) => {
     const [isOpen, changeIsOpen] = useState(false);
-    const dispatch = useDispatch();
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
         <div className={"file-controls"}>
             <button onClick={(e) => {
@@ -35,7 +40,7 @@ const Controls = memo(({id}:{id: string}) => {
             </button>
             {isOpen && <section className={"file-controls__modal"}>
                 <div className={"file-controls__modal-item"}><Edit/><span>Переименовать</span></div>
-                <div className={"file-controls__modal-item"} onClick={() => fetchDownloadLink(id)}>
+                <div className={"file-controls__modal-item"} onClick={() => dispatch(fetchDownloadLink(id))}>
                     <Download/><span>Скачать</span></div>
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
                      onClick={() => dispatch(openModalConfirm({id}))}>
@@ -45,7 +50,7 @@ const Controls = memo(({id}:{id: string}) => {
     </OutsideAlerter>
 });
 
-type PropsType = TypeFile;
+type PropsType = { file:TypeFile };
 
 export default FragmentFile;
 

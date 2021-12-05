@@ -1,8 +1,8 @@
 export enum Category {
-    "documents",
-    "video",
-    "links",
-    "images",
+    "документы",
+    "аудио",
+    "видео",
+    "картинки",
 }
 export type FormType<TValue> = { label: string, value: TValue };
 
@@ -34,4 +34,10 @@ export type Sender = {
     id: string,
     fullName: string,
     telegramUserName: string,
+}
+
+export type TypePaginator = {
+    count: number,
+    currentPage: number,
+    filesInPage: number
 }
