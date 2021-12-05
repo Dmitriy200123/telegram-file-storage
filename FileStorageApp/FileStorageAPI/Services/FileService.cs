@@ -178,5 +178,13 @@ namespace FileStorageAPI.Services
 
             return RequestResult.Ok(await fileInfoStorage.GetFilesCountAsync());
         }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<List<string>>> GetFileNamesAsync()
+        {
+            using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
+
+            return RequestResult.Ok(await fileInfoStorage.GetFileNamesAsync());
+        }
     }
 }

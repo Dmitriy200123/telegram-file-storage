@@ -51,5 +51,10 @@ namespace FileStorageAPI.Services
         /// Возвращает количество файлов, содержащихся в хранилище.
         /// </summary>
         Task<RequestResult<int>> GetFilesCountAsync();
+
+        /// <summary>
+        /// Возвращает список названий файлов.
+        /// </summary>
+        Task<RequestResult<List<string>>> GetFileNamesAsync();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
@@ -46,6 +47,23 @@ namespace FileStorageAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(files.Value),
                 HttpStatusCode.BadRequest => BadRequest(files.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Возвращает список названий файлов, к которым пользователь имеет доступ.
+        /// </summary>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("names")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список названия файлов для поиска", typeof(IEnumerable<string>))]
+        public async Task<IActionResult> GetFileNames()
+        {
+            var fileNames = await _fileService.GetFileNamesAsync();
+
+            return fileNames.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(fileNames.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
