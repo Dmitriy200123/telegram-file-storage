@@ -181,7 +181,7 @@ namespace FileStorageAPI.Controllers
 
             return count.ResponseCode switch
             {
-                HttpStatusCode.OK => Ok(count),
+                HttpStatusCode.OK => Ok(count.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
