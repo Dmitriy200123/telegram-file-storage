@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
@@ -13,6 +14,7 @@ using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -41,14 +43,13 @@ namespace FileStorageAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
-           
             services.AddControllers();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             services.AddAuthentication().AddGitLab(options =>
             {
                 options.ClientId = Configuration["Authentication:GitLab:ClientId"];
@@ -70,7 +71,7 @@ namespace FileStorageAPI
                     return Task.CompletedTask;
                 };
             });
-            
+
             services.AddSingleton(Configuration);
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -80,8 +81,8 @@ namespace FileStorageAPI
             });
             services.ConfigureApplicationCookie(options =>
                 {
-                    options.LoginPath = new PathString("/auth/gitlab");
-                    options.AccessDeniedPath = new PathString("/auth/gitlab/unauthorized");
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized);
                 }
             );
             services.AddCors();
@@ -123,14 +124,14 @@ namespace FileStorageAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
             }
 
-            
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseRouting();
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -167,12 +168,12 @@ namespace FileStorageAPI
 
         private string CreateConnectionString()
         {
-          return $"Server={Configuration["DbHost"]};" +
-                                   $"Username={Configuration["DbUser"]};" +
-                                   $"Database={Configuration["UsersDbName"]};" +
-                                   $"Port={Configuration["DbPort"]};" +
-                                   $"Password={Configuration["DbPassword"]};" +
-                                   "SSLMode=Prefer";
+            return $"Server={Configuration["DbHost"]};" +
+                   $"Username={Configuration["DbUser"]};" +
+                   $"Database={Configuration["UsersDbName"]};" +
+                   $"Port={Configuration["DbPort"]};" +
+                   $"Password={Configuration["DbPassword"]};" +
+                   "SSLMode=Prefer";
         }
 
         private static void RegisterFileStorage(IServiceCollection services)
@@ -202,6 +203,16 @@ namespace FileStorageAPI
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
         }
+
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
+            context =>
+            {
+                if (statusCode != HttpStatusCode.Forbidden && statusCode != HttpStatusCode.Unauthorized)
+                    return Task.CompletedTask;
+                context.Response.Clear();
+                context.Response.StatusCode = (int)statusCode;
+                return Task.CompletedTask;
+            };
     }
 #pragma warning restore CS1591
 }
