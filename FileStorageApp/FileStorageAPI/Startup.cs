@@ -43,8 +43,7 @@ namespace FileStorageAPI
         {
            
             services.AddControllers();
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(CreateConnectionString()));
+            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -77,11 +76,11 @@ namespace FileStorageAPI
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
             services.ConfigureApplicationCookie(options =>
                 {
-                    options.LoginPath = new PathString("/auth/gitlab/unauthorized");
+                    options.LoginPath = new PathString("/auth/gitlab");
                     options.AccessDeniedPath = new PathString("/auth/gitlab/unauthorized");
                 }
             );

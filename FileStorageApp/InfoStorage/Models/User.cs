@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,6 +14,5 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
         [ForeignKey("TelegramId")]
         public virtual FileSender FileSenders { get; set; }
-        
     }
 }

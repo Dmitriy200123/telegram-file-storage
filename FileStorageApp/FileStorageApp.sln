@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{1DB70A01-80B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAPI", "FileStorageAPI\FileStorageAPI.csproj", "{9BF5E69D-4518-406D-B641-CE3374F3BB49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAPI.Tests", "FileStorageAPI.Tests\FileStorageAPI.Tests.csproj", "{DC390ABC-CB95-4BC9-BD01-4D004BAE59A1}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseFiller", "DataBaseFiller\DataBaseFiller.csproj", "{AD4DC541-1EDB-47FD-96A8-4FA91A550E20}"
 EndProject
 Global

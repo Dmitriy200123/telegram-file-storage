@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AspNet.Security.OAuth.GitLabTests\AspNet.Security.OAuth.GitLabTests.csproj" />
       <ProjectReference Include="..\FileStorageAPI\FileStorageAPI.csproj" />
     </ItemGroup>
 
