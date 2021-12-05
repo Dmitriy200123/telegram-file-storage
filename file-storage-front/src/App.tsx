@@ -41,23 +41,6 @@ const App: FC = () => {
     </div>)
 }
 
-// const TestApp: FC = () => {
-//     const a = {asd: "123"};
-//     var file = new File([JSON.stringify(a)], 'foobar.txt');
-//
-//     let link = document.createElement('a');
-//     link.Text = "123";
-//     link.download = file.name;
-//
-//     link.href = URL.createObjectURL(file);
-//     link.click();
-//     URL.revokeObjectURL(link.href);
-//
-//     return <div className="App">
-//         <input type={"Text"}/>
-//
-//     </div>
-// }
 
 const store = setupStore();
 

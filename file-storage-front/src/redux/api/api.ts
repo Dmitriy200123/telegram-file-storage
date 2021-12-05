@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:5001/api";
+const baseUrl = "https://localhost:5001/api";
 
 
 export const fetchData = async (url: string) => {
@@ -17,10 +17,10 @@ export const fetchConfig = async (url: string, config?: any) => {
 
 
 export const fetchConfigText = async (url: string, config?: any) => {
-    const params = queryParams(config.params);
-    const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
+    const params = queryParams(config?.params);
+    const respUrl = baseUrl + url + (params?.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
-        method: config.method ?? "GET"
+        method: config?.method ?? "GET"
     });
     return await response.text();
 };

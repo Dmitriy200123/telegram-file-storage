@@ -1,4 +1,4 @@
-import {Category, Chat, Sender, TypeFile} from "../models/File";
+import {Category, Chat, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchFile, fetchRemoveFile} from "./fileThunks";
@@ -67,6 +67,11 @@ const initialState = {
         isOpen: false,
         id: null as null | string,
     },
+    paginator: {
+        count: 3,
+        filesInPage: 10,
+        currentPage:1
+    } as TypePaginator
 }
 
 export const filesSlice = createSlice({
@@ -91,6 +96,9 @@ export const filesSlice = createSlice({
             state.modalConfirm.isOpen = true;
             state.openFile = state.files.find((e) => e.fileId === payload.payload);
         },
+        changePaginatorPage(state, action:PayloadAction<number>) {
+            state.paginator.currentPage = action.payload;
+        },
     },
     extraReducers: {
         [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
@@ -104,10 +112,13 @@ export const filesSlice = createSlice({
             state.error = action.payload
         },
 
-        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<Sender> }>) => {
+        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<Sender>, countFiles: string | number }>) => {
             state.loading = false;
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
+            const pagesCount = (+action.payload.countFiles / state.paginator.filesInPage);
+            console.log(pagesCount);
+            state.paginator.count = isNaN(pagesCount) ? 3 : pagesCount;
         },
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;

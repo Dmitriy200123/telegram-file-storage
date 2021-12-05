@@ -35,3 +35,9 @@ export type Sender = {
     fullName: string,
     telegramUserName: string,
 }
+
+export type TypePaginator = {
+    count: number,
+    currentPage: number,
+    filesInPage: number
+}

@@ -5,7 +5,7 @@ import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import * as queryString from "querystring";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
-import {configFilters, optionsCategory} from "./ConfigFilters";
+import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/mainThunks";
@@ -15,6 +15,7 @@ import {Button} from '../utils/Button/Button';
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
+    const paginator = useAppSelector((state) => state.filesReducer.paginator)
     const chats = filesReducer.chats;
     const senders = filesReducer.senders;
     const dispatch = useAppDispatch();
@@ -82,7 +83,7 @@ const FilesMain = () => {
                     {FragmentsFiles}
                 </form>
             </div>
-            <Paginator count={filesData.length}/>
+            <Paginator paginator={paginator}/>
         </div>
     );
 };
