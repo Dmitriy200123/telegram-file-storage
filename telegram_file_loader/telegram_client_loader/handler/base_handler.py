@@ -2,7 +2,6 @@ import typing
 from io import BytesIO
 from telethon import TelegramClient
 from telethon.tl.custom import Message
-from telethon.tl.types import Chat
 from common.interactor.base_interactor import BaseInteractor
 
 
@@ -23,9 +22,9 @@ class BaseHandler:
         file: BytesIO = typing.cast(BytesIO, await self.telegram_client.download_media(message, file=BytesIO()))
         return BytesIO(file.getvalue())
 
-    async def download_chat_photo(self, chat: Chat) -> BytesIO:
+    async def download_chat_photo(self, channel_id: int) -> BytesIO:
         photo_bytes = typing.cast(
             BytesIO,
-            await self.telegram_client.download_profile_photo(entity=chat, file=BytesIO())
+            await self.telegram_client.download_profile_photo(entity=channel_id, file=BytesIO())
         )
         return BytesIO(photo_bytes.getvalue())

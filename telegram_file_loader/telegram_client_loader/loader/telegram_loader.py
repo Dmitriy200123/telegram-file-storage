@@ -35,6 +35,7 @@ class TelegramLoader(BaseHandler):
 
         # if is_valid and message.media:
         if message.media:
+            # MessageMediaWebPage
             telegram_file: File = self.__get_telegram_file(message)
             file: BytesIO = await self.download_file(message)
             await self.loader_interactor.save_file(telegram_file, file)
