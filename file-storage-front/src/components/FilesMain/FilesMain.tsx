@@ -15,6 +15,7 @@ import {Button} from '../utils/Button/Button';
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
     const filesData = filesReducer.files;
+    const filesNames = filesReducer.filesNames;
     const paginator = useAppSelector((state) => state.filesReducer.paginator)
     const chats = filesReducer.chats;
     const senders = filesReducer.senders;
@@ -31,7 +32,7 @@ const FilesMain = () => {
         setValue("date", date);
     }, []);
 
-    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesData, chats, senders);
+    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {

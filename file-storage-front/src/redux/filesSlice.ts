@@ -7,6 +7,7 @@ import {fetchDownloadLink, fetchFile, fetchRemoveFile} from "./fileThunks";
 const initialState = {
     chats: null as null | Array<Chat>,
     senders: null as null | Array<Sender>,
+    filesNames: null as string[] | null,
     loading: false,
     error: null as string | null,
     files: [
@@ -112,13 +113,13 @@ export const filesSlice = createSlice({
             state.error = action.payload
         },
 
-        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<Sender>, countFiles: string | number }>) => {
+        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats:Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) => {
             state.loading = false;
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
             const pagesCount = (+action.payload.countFiles / state.paginator.filesInPage);
-            console.log(pagesCount);
             state.paginator.count = isNaN(pagesCount) ? 3 : pagesCount;
+            state.filesNames = action.payload.filesNames;
         },
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;

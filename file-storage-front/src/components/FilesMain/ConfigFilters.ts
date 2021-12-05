@@ -17,8 +17,8 @@ const optionsDate = [
     {value: '1', label: 'Другой период...'}
 ];
 
-export const configFilters = (filesData: TypeFile[], chats:Chat[] | null, senders:Sender[] | null) => {
-    const optionsName = filesData.map((f) => ({label: f.fileName, value: f.fileName}));
+export const configFilters = (filesNames: string[] | null, chats:Chat[] | null, senders:Sender[] | null) => {
+    const optionsName = filesNames?.map((f) => ({label: f, value: f}));
     const optionsSender = senders?.map((f) => ({label: f.fullName, value: f.id}));
     const optionsChat = chats ? chats.map((f) => ({label: f.name, value: f.id})) : [];
     return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
