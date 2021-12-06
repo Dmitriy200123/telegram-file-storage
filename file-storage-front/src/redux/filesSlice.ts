@@ -84,6 +84,7 @@ export const filesSlice = createSlice({
         },
         closeModal(state) {
             state.modalConfirm.isOpen = false;
+            state.modalConfirm.id = null
         },
         openModalConfirm(state, payload:PayloadAction<{ id:string }>) {
             state.modalConfirm.isOpen = true;
@@ -148,7 +149,9 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            console.log("reject");
             state.modalConfirm.isOpen = false;
+            state.modalConfirm.id = null
             state.error = action.payload
         },
 
