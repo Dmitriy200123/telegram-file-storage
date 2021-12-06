@@ -1,6 +1,24 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {fetchConfig, fetchConfigText} from "./api/api";
 
+export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAPI) => {
+    try {
+        return await fetchConfig(`/files/${id}`, {method: "GET"});
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить");
+    }
+});
+
+export const fetchEditFileName = createAsyncThunk("file/edit", async (args: {id: string, fileName: string }, thunkAPI) => {
+    const {id, fileName} = args;
+    try {
+        // await fetchConfig(`/files/${id}`, {method: "PUT"});
+        return args;
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось удалить файл");
+    }
+});
+
 export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string, thunkAPI) => {
     try {
         await fetchConfig(`/files/${id}`, {method: "DELETE"});
@@ -10,13 +28,8 @@ export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string
     }
 });
 
-export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAPI) => {
-    try {
-        return await fetchConfig(`/files/${id}`, {method: "GET"});
-    } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить");
-    }
-});
+
+
 
 export const fetchDownloadLink = createAsyncThunk("file/download", async (id: string, thunkAPI) => {
     try {

@@ -4,6 +4,12 @@ export enum Category {
     "видео",
     "картинки",
 }
+
+export enum ModalContent {
+    Remove,
+    Edit
+}
+
 export type FormType<TValue> = { label: string, value: TValue };
 
 export type TypeFile = {

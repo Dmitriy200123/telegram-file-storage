@@ -14,7 +14,7 @@ export const profileSlice = createSlice({
     name: "profile",
     initialState,
     reducers: {
-        // openModalConfirm(state, payload:PayloadAction<{ id:string }>) {
+        // openModal(state, payload:PayloadAction<{ id:string }>) {
         //     state.modalConfirm.isOpen = true;
         //     state.modalConfirm.id = payload.payload.id;
         // },

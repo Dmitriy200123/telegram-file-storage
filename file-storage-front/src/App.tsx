@@ -6,12 +6,13 @@ import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppSelector} from "./utils/hooks/reduxHooks";
-import {ModalConfirm} from "./components/utils/Modal/Modal";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
+import {modalContents} from "./components/utils/Modal/Modal";
 
 const App: FC = () => {
     const {error, loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
-    const {isOpen, id} = modalConfirm;
+    const {isOpen, id, content} = modalConfirm;
+    const Content = modalContents[content || 0];
 
     return (<div className="App" style={{display:"flex", flexDirection: "column", minHeight:"100vh"}}>
         <header className="header"/>
@@ -37,7 +38,7 @@ const App: FC = () => {
                 <Redirect to={"/files"}/>
             </Switch>
         </div>
-        {isOpen && id && <ModalConfirm id={id}/>}
+        {isOpen && id && <Content id={id} /> }
     </div>)
 }
 
