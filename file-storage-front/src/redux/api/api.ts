@@ -22,7 +22,8 @@ export const fetchConfigText = async (url: string, config?: any) => {
     const params = queryParams(config?.params);
     const respUrl = baseUrl + url + (params?.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
-        method: config?.method ?? "GET"
+        method: config?.method ?? "GET",
+        body: JSON.stringify(config.body)
     });
     return await response.text();
 };
