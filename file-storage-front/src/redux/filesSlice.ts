@@ -70,7 +70,7 @@ const initialState = {
         content: null as null | ModalContent,
     },
     paginator: {
-        count: 10,
+        count: 1,
         filesInPage: 10,
         currentPage: 1
     } as TypePaginator
@@ -120,8 +120,8 @@ export const filesSlice = createSlice({
             state.loading = false;
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
-            const pagesCount = (+action.payload.countFiles / state.paginator.filesInPage);
-            state.paginator.count = isNaN(pagesCount) ? 3 : pagesCount;
+            const pagesCount = Math.ceil((+action.payload.countFiles / state.paginator.filesInPage));
+            state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
             state.filesNames = action.payload.filesNames;
         },
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
