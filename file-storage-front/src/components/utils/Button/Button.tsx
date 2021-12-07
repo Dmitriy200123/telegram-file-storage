@@ -6,7 +6,7 @@ import CSS from 'csstype';
 type Props = {
     className?: string | null,
     style?: CSS.Properties,
-    type?: "transparent" | "danger",
+    type?: "transparent" | "danger" | "white",
     onClick?: () => void
 }
 

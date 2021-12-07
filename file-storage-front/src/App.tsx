@@ -8,6 +8,7 @@ import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
+import {StartPage} from "./components/StartPage/StartPage";
 
 const App: FC = () => {
     const {error, loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
@@ -19,6 +20,7 @@ const App: FC = () => {
         <div style={{display: "grid", gap: 10}}>
             <Link to={"/load/"}>Загрузить файл</Link>
             <Link to={"/files"}>Искать файлы</Link>
+            <Link to={"/login"}>логин</Link>
         </div>
         {!!error && <div style={{
             position: "fixed",
@@ -35,6 +37,7 @@ const App: FC = () => {
                 <Route path={"/files"} exact component={FilesMain}/>
                 <Route path={"/file/:id"} component={OpenedFile}/>
                 <Route path={"/load/"} component={LoadFileMain}/>
+                <Route path={"/login"} component={StartPage}/>
                 <Redirect to={"/files"}/>
             </Switch>
         </div>
