@@ -70,7 +70,7 @@ const initialState = {
         content: null as null | ModalContent,
     },
     paginator: {
-        count: 1,
+        count: 10,
         filesInPage: 10,
         currentPage: 1
     } as TypePaginator
