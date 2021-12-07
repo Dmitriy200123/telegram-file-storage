@@ -3,7 +3,7 @@ from common.interactor.chat_interactor import ChatInteractor
 from postgres.models.external_models import Chat, FileSender
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
-from telethon.events import ChatAction, NewMessage, Raw
+from telethon.events import ChatAction, Raw
 from telethon.tl.patched import Message, MessageService
 from telethon.tl.types import Chat as TelegramChat
 from telethon.tl.types import (
@@ -31,13 +31,12 @@ class ChatHandler(BaseHandler):
         self.run()
 
     def run(self):
-        new_message_event = NewMessage()
+        super(ChatHandler, self).run()
+
         chat_action_event = ChatAction()
         chat_migrate_event = Raw(types=[UpdateNewMessage])
         chat_client_joined_event = Raw(types=[UpdateChannel])
 
-        self.telegram_client.add_event_handler(
-            self.__handle_change_sender_info_event, new_message_event)
         self.telegram_client.add_event_handler(
             self.__handle_chat_event, chat_action_event)
         self.telegram_client.add_event_handler(
@@ -46,6 +45,11 @@ class ChatHandler(BaseHandler):
             self.__handle_joined_client_event,
             chat_client_joined_event
         )
+
+    async def _handle_new_message_with_media(self, message: Message):
+        if isinstance(message.sender, User):
+            telegram_sender = self.__get_telegram_sender(message.sender)
+            await self.chat_interactor.update_file_sender(telegram_sender, message.chat_id)
 
     async def __handle_migrate_chat_event(self, event: UpdateNewMessage):
         message: MessageService = event.message
@@ -56,15 +60,6 @@ class ChatHandler(BaseHandler):
             old_id = message.chat_id
             new_id = get_peer_id(PeerChannel(message.action.channel_id))
             await self.chat_interactor.migrate_chat(old_id, new_id)
-
-    async def __handle_change_sender_info_event(self, event: NewMessage.Event):
-        message: Message = event.message
-        # is_valid = await self.is_valid_chat(message.chat_id)
-
-        # if is_valid and message.media and isinstance(message.sender, User):
-        if message.media and isinstance(message.sender, User):
-            telegram_sender = self.__get_telegram_sender(message.sender)
-            await self.chat_interactor.update_file_sender(telegram_sender, event.chat_id)
 
     @staticmethod
     def __get_telegram_sender(user: User) -> FileSender:
@@ -127,16 +122,13 @@ class ChatHandler(BaseHandler):
         await self.__add_new_chat(chat, chat_id, me.id)
 
     async def __add_new_chat(self, telegram_chat: TelegramChat, chat_id: int, me_id: int):
-        users: list[User] = await self.telegram_client.get_participants(telegram_chat)
-        filtered_users: list[User] = list(
-            filter(lambda user: user.id != me_id, users)
-        )
+        filtered_users: list[User] = await self._get_users_without_me(telegram_chat, me_id)
 
         chat = Chat(name=telegram_chat.title, telegram_id=chat_id)
         chat_photo = None
 
         if not isinstance(telegram_chat.photo, ChatPhotoEmpty):
-            chat_photo = await self.download_chat_photo(telegram_chat.id)
+            chat_photo = await self._download_chat_photo(telegram_chat.id)
 
         await self.chat_interactor.add_chat(chat, chat_photo, filtered_users)
 
@@ -152,7 +144,7 @@ class ChatHandler(BaseHandler):
         await self.chat_interactor.update_chat_name(action.title, chat_id)
 
     async def __handle_edit_chat_photo(self, channel_id: int, chat_id: int):
-        photo = await self.download_chat_photo(channel_id)
+        photo = await self._download_chat_photo(channel_id)
         await self.chat_interactor.update_chat_photo(photo, chat_id)
 
     async def __get_users_by_telegram_ids(self, users_ids: list[int]) -> list[User]:

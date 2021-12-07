@@ -7,9 +7,8 @@ from postgres.models.external_models import File
 from postgres.models.external_models.file import type_map
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
-from telethon.events import NewMessage
 from telethon.tl.custom import Message
-from telethon.tl.types import MessageMediaDocument
+from telethon.tl.types import MessageMediaDocument, User
 
 
 class TelegramLoader(BaseHandler):
@@ -27,26 +26,15 @@ class TelegramLoader(BaseHandler):
         self.chat_interactor = chat_interactor
         self.run()
 
-    def run(self):
-        message: NewMessage = NewMessage()
-        self.telegram_client.add_event_handler(
-            self.__handle_new_message, message)
+    async def _handle_new_message_with_media(self, message: Message):
+        telegram_file: File = self.__get_telegram_file(message)
 
-    def stop(self):
-        self.telegram_client.remove_event_handler(self.__handle_new_message)
+        me = await self.telegram_client.get_me()
+        filtered_users: list[User] = await self._get_users_without_me(message.chat, me.id)
+        await self.chat_interactor.add_new_users(filtered_users, telegram_file.chat_telegram_id)
 
-    async def __handle_new_message(self, event: NewMessage.Event):
-        message: Message = event.message
-        # is_valid = await self.is_valid_chat(message.chat_id)
-
-        # if is_valid and message.media:
-        if message.media:
-            # MessageMediaWebPage
-            telegram_file: File = self.__get_telegram_file(message)
-            file: BytesIO = await self.download_file(message)
-            user = await self.telegram_client.get_entity(telegram_file.sender_telegram_id)
-            await self.chat_interactor.add_new_users([user], telegram_file.chat_telegram_id)
-            await self.loader_interactor.save_file(telegram_file, file)
+        file: BytesIO = await self._download_file(message)
+        await self.loader_interactor.save_file(telegram_file, file)
 
     @staticmethod
     def __get_telegram_file(message: Message) -> File:
