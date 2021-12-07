@@ -9,10 +9,10 @@ export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAP
     }
 });
 
-export const fetchEditFileName = createAsyncThunk("file/edit", async (args: {id: string, fileName: string }, thunkAPI) => {
+export const fetchEditFileName = createAsyncThunk("file/edit", async (args: { id: string, fileName: string }, thunkAPI) => {
     const {id, fileName} = args;
     try {
-        // await fetchConfig(`/files/${id}`, {method: "PUT"});
+        await fetchConfig(`/files/${id}`, {method: "PUT", body: {fileName: fileName}});
         return args;
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось удалить файл");
@@ -27,8 +27,6 @@ export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string
         return thunkAPI.rejectWithValue("Не удалось удалить файл");
     }
 });
-
-
 
 
 export const fetchDownloadLink = createAsyncThunk("file/download", async (id: string, thunkAPI) => {
