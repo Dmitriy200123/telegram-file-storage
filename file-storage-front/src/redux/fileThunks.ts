@@ -12,7 +12,7 @@ export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAP
 export const fetchEditFileName = createAsyncThunk("file/edit", async (args: { id: string, fileName: string }, thunkAPI) => {
     const {id, fileName} = args;
     try {
-        await fetchConfig(`/files/${id}`, {method: "PUT", body: {fileName: fileName}});
+        await fetchConfigText(`/files/${id}`, {method: "PUT", body: {fileName: fileName}});
         return args;
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось переименовать файл");
@@ -21,7 +21,7 @@ export const fetchEditFileName = createAsyncThunk("file/edit", async (args: { id
 
 export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string, thunkAPI) => {
     try {
-        await fetchConfig(`/files/${id}`, {method: "DELETE"});
+        await fetchConfigText(`/files/${id}`, {method: "DELETE"});
         return id;
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось удалить файл");

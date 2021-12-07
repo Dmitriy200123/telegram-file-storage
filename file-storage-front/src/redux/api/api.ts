@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:5001/api";
+const baseUrl = "https://localhost:5001/api";
 
 
 export const fetchData = async (url: string) => {
@@ -13,6 +13,7 @@ export const fetchConfig = async (url: string, config?: any) => {
         method: config.method ?? "GET",
         body: JSON.stringify(config.body)
     });
+
     return await response.json();
 };
 
