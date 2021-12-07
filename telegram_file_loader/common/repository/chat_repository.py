@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from common.repository.base_repository import BaseRepository
 from postgres.models.db_models import Chat
 from postgres.models.external_models import Chat as ChatExternal
-from common.repository.base_repository import BaseRepository
 
 
 class ChatRepository(BaseRepository):

@@ -1,5 +1,5 @@
 from io import BytesIO
-from telethon.tl.types import User
+
 from common.file_util import FileUtil
 from common.interactor.base_interactor import BaseInteractor
 from common.repository.chat_repository import ChatRepository
@@ -7,7 +7,9 @@ from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
 from common.repository.sender_to_chat_repository import SenderToChatRepository
 from common.utils import full_name
-from postgres.models.external_models import FileSender as FileSenderExternal, Chat
+from postgres.models.external_models import Chat
+from postgres.models.external_models import FileSender as FileSenderExternal
+from telethon.tl.types import User
 
 
 class ChatInteractor(BaseInteractor):
@@ -25,8 +27,15 @@ class ChatInteractor(BaseInteractor):
         self.file_repository = file_repository
         self.sender_to_chat_repository = sender_to_chat_repository
 
-    async def update_file_sender(self, telegram_sender: FileSenderExternal):
-        await self.file_sender_repository.update_file_sender(telegram_sender)
+    async def update_file_sender(self, telegram_sender: FileSenderExternal, chat_id: int):
+        sender = await self.file_sender_repository.update_file_sender(telegram_sender)
+        chat = await self.chat_repository.find_chat_by_telegram_id(chat_id)
+
+        if sender is not None:
+            await self.sender_to_chat_repository.create_sender_to_chat(sender.Id, chat.Id)
+        else:
+            sender = await self.file_sender_repository.find_file_sender_by_id(telegram_sender.telegram_id)
+            await self.sender_to_chat_repository.create_sender_to_chat(sender.Id, chat.Id)
 
     async def migrate_chat(self, old_telegram_id: int, new_telegram_id: int):
         chat = await self.chat_repository.find_chat_by_telegram_id(old_telegram_id)

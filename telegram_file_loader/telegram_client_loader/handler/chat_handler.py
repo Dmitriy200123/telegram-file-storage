@@ -1,15 +1,26 @@
-from telethon import TelegramClient
-from telethon.events import ChatAction, Raw, NewMessage
-from telethon.tl.patched import MessageService, Message
-from telethon.tl.types import Chat as TelegramChat, ChatPhotoEmpty
-from telethon.tl.types import User
 from common import utils
 from common.interactor.chat_interactor import ChatInteractor
-from postgres.models.external_models import FileSender, Chat
+from postgres.models.external_models import Chat, FileSender
 from telegram_client_loader.handler.base_handler import BaseHandler
-from telethon.tl.types import (UpdateNewMessage, MessageActionChatMigrateTo, MessageActionChatCreate,
-                               MessageActionChatAddUser, MessageActionChatDeleteUser, MessageActionChatEditTitle,
-                               MessageActionChatEditPhoto, MessageActionChatJoinedByLink)
+from telethon import TelegramClient
+from telethon.events import ChatAction, NewMessage, Raw
+from telethon.tl.patched import Message, MessageService
+from telethon.tl.types import Chat as TelegramChat
+from telethon.tl.types import (
+    ChatPhotoEmpty,
+    MessageActionChatAddUser,
+    MessageActionChatCreate,
+    MessageActionChatDeleteUser,
+    MessageActionChatEditPhoto,
+    MessageActionChatEditTitle,
+    MessageActionChatJoinedByLink,
+    MessageActionChatMigrateTo,
+    PeerChannel,
+    UpdateChannel,
+    UpdateNewMessage,
+    User,
+)
+from telethon.utils import get_peer_id
 
 class ChatHandler(BaseHandler):
 
@@ -21,14 +32,20 @@ class ChatHandler(BaseHandler):
 
     def run(self):
         new_message_event = NewMessage()
-        chat_event = ChatAction()
+        chat_action_event = ChatAction()
         chat_migrate_event = Raw(types=[UpdateNewMessage])
+        chat_client_joined_event = Raw(types=[UpdateChannel])
 
-        self.telegram_client.add_event_handler(self.__handle_change_sender_info_event, new_message_event)
         self.telegram_client.add_event_handler(
-            self.__handle_chat_event, chat_event)
+            self.__handle_change_sender_info_event, new_message_event)
+        self.telegram_client.add_event_handler(
+            self.__handle_chat_event, chat_action_event)
         self.telegram_client.add_event_handler(
             self.__handle_migrate_chat_event, chat_migrate_event)
+        self.telegram_client.add_event_handler(
+            self.__handle_joined_client_event,
+            chat_client_joined_event
+        )
 
     async def __handle_migrate_chat_event(self, event: UpdateNewMessage):
         message: MessageService = event.message
@@ -37,7 +54,7 @@ class ChatHandler(BaseHandler):
         # if is_valid and isinstance(message.action, MessageActionChatMigrateTo):
         if isinstance(message.action, MessageActionChatMigrateTo):
             old_id = message.chat_id
-            new_id = int(f'-100{message.action.channel_id}')
+            new_id = get_peer_id(PeerChannel(message.action.channel_id))
             await self.chat_interactor.migrate_chat(old_id, new_id)
 
     async def __handle_change_sender_info_event(self, event: NewMessage.Event):
@@ -47,7 +64,7 @@ class ChatHandler(BaseHandler):
         # if is_valid and message.media and isinstance(message.sender, User):
         if message.media and isinstance(message.sender, User):
             telegram_sender = self.__get_telegram_sender(message.sender)
-            await self.chat_interactor.update_file_sender(telegram_sender)
+            await self.chat_interactor.update_file_sender(telegram_sender, event.chat_id)
 
     @staticmethod
     def __get_telegram_sender(user: User) -> FileSender:
@@ -102,9 +119,18 @@ class ChatHandler(BaseHandler):
         else:
             await self.chat_interactor.add_new_users([user], chat_id)
 
+    async def __handle_joined_client_event(self, event: UpdateChannel):
+        chat = await self.telegram_client.get_entity(event.channel_id)
+        chat_id = get_peer_id(PeerChannel(event.channel_id))
+        me = await self.telegram_client.get_me()
+
+        await self.__add_new_chat(chat, chat_id, me.id)
+
     async def __add_new_chat(self, telegram_chat: TelegramChat, chat_id: int, me_id: int):
         users: list[User] = await self.telegram_client.get_participants(telegram_chat)
-        filtered_users: list[User] = list(filter(lambda user: user.id != me_id, users))
+        filtered_users: list[User] = list(
+            filter(lambda user: user.id != me_id, users)
+        )
 
         chat = Chat(name=telegram_chat.title, telegram_id=chat_id)
         chat_photo = None
@@ -118,6 +144,8 @@ class ChatHandler(BaseHandler):
         me = await self.telegram_client.get_me()
 
         if me.id != action.user_id:
+            user = await self.telegram_client.get_entity(action.user_id)
+            await self.chat_interactor.add_new_users([user], chat_id)
             await self.chat_interactor.delete_user_from_chat(action.user_id, chat_id)
 
     async def __handle_edit_chat_title(self, action: MessageActionChatEditTitle, chat_id: int):

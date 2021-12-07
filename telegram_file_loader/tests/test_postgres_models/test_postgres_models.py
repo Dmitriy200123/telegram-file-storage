@@ -3,7 +3,7 @@ import uuid
 
 from conftest import create_chat, create_sender
 from postgres.basic import manager
-from postgres.models.db_models import Chat, FileSender, File, FileTypeEnum
+from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 
 
 async def test_create_chat(db_manager):

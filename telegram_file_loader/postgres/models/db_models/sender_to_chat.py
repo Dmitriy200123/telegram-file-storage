@@ -1,6 +1,4 @@
-import uuid
-
-from peewee import ForeignKeyField, UUIDField, CompositeKey
+from peewee import CompositeKey, ForeignKeyField
 from postgres.basic import BaseModel
 from postgres.models.db_models import Chat, FileSender
 
@@ -12,4 +10,3 @@ class SenderToChat(BaseModel):
     class Meta:
         table_name = 'SenderAndChat'
         primary_key = CompositeKey('ChatId', 'SenderId')
-

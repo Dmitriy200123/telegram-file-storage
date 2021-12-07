@@ -1,8 +1,9 @@
 import typing
 from io import BytesIO
+
+from common.interactor.base_interactor import BaseInteractor
 from telethon import TelegramClient
 from telethon.tl.custom import Message
-from common.interactor.base_interactor import BaseInteractor
 
 
 class BaseHandler:

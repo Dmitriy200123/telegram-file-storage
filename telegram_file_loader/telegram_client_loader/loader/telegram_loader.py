@@ -1,13 +1,15 @@
 from io import BytesIO
-from telethon import TelegramClient
-from telethon.events import NewMessage
-from telethon.tl.custom import Message
-from telethon.tl.types import MessageMediaDocument
+
 from common.file_util import FileUtil
+from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
 from postgres.models.external_models import File
 from postgres.models.external_models.file import type_map
 from telegram_client_loader.handler.base_handler import BaseHandler
+from telethon import TelegramClient
+from telethon.events import NewMessage
+from telethon.tl.custom import Message
+from telethon.tl.types import MessageMediaDocument
 
 
 class TelegramLoader(BaseHandler):
@@ -15,16 +17,20 @@ class TelegramLoader(BaseHandler):
     def __init__(
         self,
         telegram_client: TelegramClient,
-        loader_interactor: LoaderInteractor
+        loader_interactor: LoaderInteractor,
+        chat_interactor: ChatInteractor
     ):
-        super(TelegramLoader, self).__init__(telegram_client, loader_interactor)
+        super(TelegramLoader, self).__init__(
+            telegram_client, loader_interactor)
 
         self.loader_interactor = loader_interactor
+        self.chat_interactor = chat_interactor
         self.run()
 
     def run(self):
         message: NewMessage = NewMessage()
-        self.telegram_client.add_event_handler(self.__handle_new_message, message)
+        self.telegram_client.add_event_handler(
+            self.__handle_new_message, message)
 
     def stop(self):
         self.telegram_client.remove_event_handler(self.__handle_new_message)
@@ -38,6 +44,8 @@ class TelegramLoader(BaseHandler):
             # MessageMediaWebPage
             telegram_file: File = self.__get_telegram_file(message)
             file: BytesIO = await self.download_file(message)
+            user = await self.telegram_client.get_entity(telegram_file.sender_telegram_id)
+            await self.chat_interactor.add_new_users([user], telegram_file.chat_telegram_id)
             await self.loader_interactor.save_file(telegram_file, file)
 
     @staticmethod
