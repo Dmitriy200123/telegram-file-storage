@@ -42,6 +42,23 @@
 
     padding-bottom: 25px;
 
+    &_search{
+      display: flex;
+      & div:first-child{
+        flex: 1 1 auto;
+      }
+      & button{
+        margin-left: 20px;
+        background: none;
+        border: none;
+        &:hover {
+          cursor: pointer;
+          & > svg path {
+            stroke: black;
+          }
+        }
+      }
+    }
   }
 
   &__title {

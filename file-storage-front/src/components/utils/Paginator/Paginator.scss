@@ -1,21 +1,34 @@
-.paginator{
+@import "src/Variables";
+
+.paginator {
   display: flex;
-  color: #67757C;
-  &__nothing, &__item{
-    color: #67757C;
+  color: $paginator-num;
+
+  &__nothing, &__item {
+    color: $paginator-num;
     padding: 12px 15px;
     border: 1px solid #E9E9E9;
     background: white;
   }
-  &__item{
+
+  &__item {
     transition: border 0.25s ease;
-    &:hover{
-      border: 1px solid #2684FF;
+
+    &:hover {
+      border: 1px solid $menu-color-hover;
       cursor: pointer;
     }
-    &_active{
-      color: #2684FF;
-      border: 1px solid #2684FF;
+
+    &_active {
+      color: $menu-color;
+      border: 1px solid $menu-color;
+    }
+
+    &_disabled {
+      &:hover {
+        border: 1px solid $disabled-btn;
+        background: $disabled-btn;
+      }
     }
   }
 }

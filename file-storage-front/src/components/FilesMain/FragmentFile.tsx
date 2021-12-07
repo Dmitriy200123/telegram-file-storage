@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react';
 import "./FilesMain.scss"
-import {Category, TypeFile} from "../../models/File";
+import {Category, ModalContent, TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
 import {ReactComponent as Edit} from "./../../assets/edit.svg";
@@ -11,7 +11,7 @@ import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
 import {fetchDownloadLink} from "../../redux/fileThunks";
 
-const {openModalConfirm, setOpenFile} = filesSlice.actions
+const {openModal, setOpenFile} = filesSlice.actions
 
 const FragmentFile: React.FC<PropsType> = ({file}) => {
     const {fileId, fileName, uploadDate, fileType, sender, chat} = file;
@@ -39,11 +39,12 @@ const Controls = memo(({id, dispatch}:{id: string,  dispatch: Dispatch<any>}) =>
                 <div className={"file-controls__circle"}/>
             </button>
             {isOpen && <section className={"file-controls__modal"}>
-                <div className={"file-controls__modal-item"}><Edit/><span>Переименовать</span></div>
+                <div className={"file-controls__modal-item"} onClick={() => dispatch(openModal({id, content: ModalContent.Edit}))}>
+                    <Edit/><span>Переименовать</span></div>
                 <div className={"file-controls__modal-item"} onClick={() => dispatch(fetchDownloadLink(id))}>
                     <Download/><span>Скачать</span></div>
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
-                     onClick={() => dispatch(openModalConfirm({id}))}>
+                     onClick={() => dispatch(openModal({id, content: ModalContent.Remove}))}>
                     <Delete/><span>Удалить</span></div>
             </section>}
         </div>

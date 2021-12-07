@@ -8,3 +8,10 @@
   min-height: 56px;
   width: 100%;
 }
+
+@font-face {
+    font-family: "Inter";
+    src: local("Akrobat"),
+    url("fonts/Inter/Inter-Regular.ttf");
+    font-weight: normal;
+}

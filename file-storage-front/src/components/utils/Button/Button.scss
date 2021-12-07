@@ -14,3 +14,10 @@
     background: #EB3235;
   }
 }
+
+.white {
+  background: white;
+  color: #1976D2;
+  &:hover, &:active{
+  }
+}
