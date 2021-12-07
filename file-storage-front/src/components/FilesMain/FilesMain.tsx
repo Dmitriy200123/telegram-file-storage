@@ -10,7 +10,7 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
-import {Button} from '../utils/Button/Button';
+import {ReactComponent as Search} from "./../../assets/search.svg";
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
@@ -71,15 +71,14 @@ const FilesMain = () => {
                     <Select name={"sendersIds"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("sendersIds")} options={optionsSender} isMulti={true}/>
-                    <Select name={"chatIds"} className={"files__filter files__filter_last files__filter_select"}
-                            register={register}
-                            onChangeForm={onChangeForm} setValue={setValueForm}
-                            values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
-                    <div style={{gridColumn: "1/5", borderBottom: "1px #E9E9E9 solid"}} className={"files__filter"}/>
-                    <div style={{gridColumn: "5/6", borderBottom: "1px #E9E9E9 solid", display:"flex"}} className={"files__filter"}>
-                        <Button type={"danger"} style={{flex:"1 1 auto", marginRight:"10px"}}>
-                            Запросить файлы &#128269;
-                        </Button>
+                    <div className={"files__filter files__filter_last files__filter_select files__filter_search"} >
+                        <Select name={"chatIds"}
+                                register={register}
+                                onChangeForm={onChangeForm} setValue={setValueForm}
+                                values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
+                        <button>
+                            <Search />
+                        </button>
                     </div>
                     {FragmentsFiles}
                 </form>
