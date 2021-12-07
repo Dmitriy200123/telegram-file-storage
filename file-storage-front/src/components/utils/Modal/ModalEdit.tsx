@@ -6,13 +6,20 @@ import {useDispatch} from "react-redux";
 import {filesSlice} from "../../../redux/filesSlice";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {fetchEditFileName} from "../../../redux/fileThunks";
+import {separateStringExtension} from "../../../utils/functions";
 
 const {closeModal} = filesSlice.actions;
 
 export const ModalEdit: React.FC<{ id: string }> = ({id}) => {
     const dispatch = useDispatch();
     const file = useAppSelector((state) => state.filesReducer.files.find((file) => file.fileId === id));
-    const [value, changeValue] = useState(file?.fileName);
+    //todo: переделать, тут что-то не очень
+    const separatedFile = separateStringExtension(file?.fileName || "")
+    const [fileName, extension] = separatedFile ? separatedFile : [file?.fileName, ""];
+    const [value, changeValue] = useState(fileName);
+    if (!file)
+        return null;
+
     return (
         <Modal>
             <div className={"modal-confirm"}>
@@ -22,7 +29,7 @@ export const ModalEdit: React.FC<{ id: string }> = ({id}) => {
                                                                                  style={{width: "100%"}} type={"text"}/>
                 </p>
                 <div className={"modal-confirm__btns"}>
-                    <Button onClick={() => {dispatch(fetchEditFileName({id, fileName: value || ""}))
+                    <Button onClick={() => {dispatch(fetchEditFileName({id, fileName: (value + extension) || ""}))
                     }}>Да</Button>
                     <Button onClick={() => dispatch(closeModal())} type={"transparent"}>Нет</Button>
                 </div>

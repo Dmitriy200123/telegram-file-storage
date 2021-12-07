@@ -12,7 +12,7 @@ const initialState = {
     error: null as string | null,
     files: [
         {
-            fileName: "Файл",
+            fileName: "Файл.12.123.sad.txt",
             fileType: Category.документы,
             chat: {
                 "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
