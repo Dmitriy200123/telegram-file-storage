@@ -15,7 +15,7 @@ export const fetchEditFileName = createAsyncThunk("file/edit", async (args: { id
         await fetchConfig(`/files/${id}`, {method: "PUT", body: {fileName: fileName}});
         return args;
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось удалить файл");
+        return thunkAPI.rejectWithValue("Не удалось переименовать файл");
     }
 });
 
