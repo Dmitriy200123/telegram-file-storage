@@ -1,5 +1,5 @@
-from postgres.models.db_models import FileSender
 from common.repository.base_repository import BaseRepository
+from postgres.models.db_models import FileSender
 
 
 class FileSenderRepository(BaseRepository):

@@ -1,5 +1,5 @@
-from postgres.models.db_models import Chat
 from common.repository.base_repository import BaseRepository
+from postgres.models.db_models import Chat
 
 
 class ChatRepository(BaseRepository):
@@ -11,5 +11,4 @@ class ChatRepository(BaseRepository):
         return await self.adapter.get(model=Chat, TelegramId=chat_id)
 
     async def create_chat(self) -> Chat:
-        raise NotImplemented()
-
+        raise NotImplementedError()

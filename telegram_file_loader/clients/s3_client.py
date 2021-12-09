@@ -1,18 +1,17 @@
 import logging
 from io import BytesIO
 
-import aioboto3
 import config
+from aiobotocore import get_session
 from aiohttp import StreamReader
 from botocore.exceptions import ClientError
 
 
-class S3Client(aioboto3.session.Session):
+class S3Client:
     """
-    https://aioboto3.readthedocs.io/en/latest/usage.html
+    https://aiobotocore.readthedocs.io/en/latest/
     """
 
-    session: aioboto3.Session
     aws_access_key_id: str
     aws_secret_access_key: str
     bucket_name: str
@@ -32,7 +31,9 @@ class S3Client(aioboto3.session.Session):
 
         :return: Bucket из S3
         """
-        async with self.resource(
+
+        session = get_session()
+        async with session.resource(
                 service_name='s3',
                 endpoint_url=self.url,
                 aws_access_key_id=self.aws_access_key_id,
@@ -48,14 +49,15 @@ class S3Client(aioboto3.session.Session):
         :return: Удачно или нет загружен
         """
 
-        async with self.client(
+        session = get_session()
+        async with session.create_client(
                 service_name='s3',
                 endpoint_url=self.url,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key
         ) as client:
             try:
-                await client.upload_fileobj(file, self.bucket_name, key)
+                await client.put_object(Body=file, Bucket=self.bucket_name, Key=key)
             except ClientError as e:
                 logging.error(e)
                 return False
@@ -67,7 +69,9 @@ class S3Client(aioboto3.session.Session):
         :param key: имя файла в S3
         :return: Стрим с файлом
         """
-        async with self.client(
+
+        session = get_session()
+        async with session.create_client(
                 service_name='s3',
                 endpoint_url=self.url,
                 aws_access_key_id=self.aws_access_key_id,
@@ -85,7 +89,9 @@ class S3Client(aioboto3.session.Session):
 
         :return: объекты из Bucket
         """
-        async with self.resource(
+
+        session = get_session()
+        async with session.resource(
                 service_name='s3',
                 endpoint_url=self.url,
                 aws_access_key_id=self.aws_access_key_id,
@@ -101,7 +107,9 @@ class S3Client(aioboto3.session.Session):
         :param expires: Время жизни ссылки в секундах
         :return: объекты из Bucket
         """
-        async with self.client(
+
+        session = get_session()
+        async with session.create_client(
                 service_name='s3',
                 endpoint_url=self.url,
                 aws_access_key_id=self.aws_access_key_id,

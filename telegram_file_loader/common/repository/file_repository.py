@@ -1,9 +1,10 @@
 from io import BytesIO
+
 from clients.s3_client import S3Client
+from common.repository.base_repository import BaseRepository
 from postgres.models.db_models import File
 from postgres.models.external_models import File as FileExternal
 from postgres.pg_adapter import Adapter
-from common.repository.base_repository import BaseRepository
 
 
 class FileRepository(BaseRepository):

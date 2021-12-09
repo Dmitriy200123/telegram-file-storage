@@ -1,12 +1,13 @@
 import typing
 from io import BytesIO
+
+from common.file_util import FileUtil
+from common.interactor.loader_interactor import LoaderInteractor
+from telegram_client_loader.model.telegram_file import TelegramFile
 from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
 from telethon.tl.types import MessageMediaDocument
-from common.file_util import FileUtil
-from common.interactor.loader_interactor import LoaderInteractor
-from telegram_client_loader.model.telegram_file import TelegramFile
 
 
 class TelegramLoader:
@@ -24,7 +25,8 @@ class TelegramLoader:
 
     def run(self):
         message: NewMessage = NewMessage()
-        self.telegram_client.add_event_handler(self.__handle_new_message, message)
+        self.telegram_client.add_event_handler(
+            self.__handle_new_message, message)
 
     def stop(self):
         self.telegram_client.remove_event_handler(self.__handle_new_message)
