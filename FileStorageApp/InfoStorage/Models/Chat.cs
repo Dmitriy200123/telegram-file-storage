@@ -17,7 +17,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         [Required]
         [MaxLength(255)]
         public string Name { get; set; }
-
+        
         public Guid? ImageId { get; set; }
 
         public virtual ICollection<File> Files { get; set; } = new List<File>();

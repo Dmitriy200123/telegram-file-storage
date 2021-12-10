@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
@@ -13,17 +14,21 @@ using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
+using JwtAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
@@ -43,34 +48,56 @@ namespace FileStorageAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var tokenKey = Configuration["TokenKey"];
+            var key = Encoding.ASCII.GetBytes(tokenKey);
             services.AddControllers();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
 
+            //подумать, а нужно ли это нам? 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication().AddGitLab(options =>
-            {
-                options.ClientId = Configuration["Authentication:GitLab:ClientId"];
-                options.ClientSecret = Configuration["Authentication:GitLab:ClientSecret"];
-                options.AuthorizationEndpoint = Configuration["Authentication:GitLab:AuthorizationEndpoint"];
-                options.TokenEndpoint = Configuration["Authentication:GitLab:TokenEndpoint"];
-                options.UserInformationEndpoint = Configuration["Authentication:GitLab:UserInformationEndpoint"];
-                options.SaveTokens = true;
-                options.AccessDeniedPath = "/auth/gitlab/unauthorized";
-                options.Events.OnCreatingTicket = ctx =>
+            services.AddAuthentication(x =>
                 {
-                    var tokens = ctx.Properties.GetTokens() as List<AuthenticationToken>;
-                    tokens!.Add(new AuthenticationToken()
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
                     {
-                        Name = "TicketCreated",
-                        Value = DateTime.UtcNow.ToString()
-                    });
-                    ctx.Properties.StoreTokens(tokens);
-                    return Task.CompletedTask;
-                };
-            });
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                    };
+                })
+                .AddGitLab(options =>
+                {
+                    options.ClientId = Configuration["Authentication:GitLab:ClientId"];
+                    options.ClientSecret = Configuration["Authentication:GitLab:ClientSecret"];
+                    options.AuthorizationEndpoint = Configuration["Authentication:GitLab:AuthorizationEndpoint"];
+                    options.TokenEndpoint = Configuration["Authentication:GitLab:TokenEndpoint"];
+                    options.UserInformationEndpoint = Configuration["Authentication:GitLab:UserInformationEndpoint"];
+                    options.SaveTokens = true;
+                    options.AccessDeniedPath = "/auth/gitlab/unauthorized";
+                    options.Events.OnCreatingTicket = ctx =>
+                    {
+                        var tokens = ctx.Properties.GetTokens() as List<AuthenticationToken>;
+                        tokens!.Add(new AuthenticationToken()
+                        {
+                            Name = "TicketCreated",
+                            Value = DateTime.UtcNow.ToString()
+                        });
+                        ctx.Properties.StoreTokens(tokens);
+                        return Task.CompletedTask;
+                    };
+                });
 
             services.AddSingleton(Configuration);
             services.Configure<CookiePolicyOptions>(options =>
@@ -87,6 +114,7 @@ namespace FileStorageAPI
             );
             services.AddCors();
             RegisterProviders(services);
+            RegisterAuth(services, tokenKey, key);
             RegisterDtoConverters(services);
             RegisterFileStorage(services);
             RegisterInfoStorage(services);
@@ -202,6 +230,18 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
+
+        }
+
+        private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
+        {
+            serviceCollection.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            serviceCollection.AddSingleton<ITokenRefresher>(x => 
+                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!));
+            serviceCollection.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x => 
+                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!));
+            
         }
 
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
@@ -210,7 +250,7 @@ namespace FileStorageAPI
                 if (statusCode != HttpStatusCode.Forbidden && statusCode != HttpStatusCode.Unauthorized)
                     return Task.CompletedTask;
                 context.Response.Clear();
-                context.Response.StatusCode = (int)statusCode;
+                context.Response.StatusCode = (int) statusCode;
                 return Task.CompletedTask;
             };
     }

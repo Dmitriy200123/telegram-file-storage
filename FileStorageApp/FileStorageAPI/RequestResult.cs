@@ -114,5 +114,16 @@ namespace FileStorageAPI
         {
             return new RequestResult<T>(HttpStatusCode.BadRequest, message);
         }
+
+        /// <summary>
+        /// Следует использовать, когда пользователь не авторизован
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static RequestResult<T> Unauthorized<T>(string message)
+        {
+            return new RequestResult<T>(HttpStatusCode.Unauthorized, message);
+        }
     }
 }

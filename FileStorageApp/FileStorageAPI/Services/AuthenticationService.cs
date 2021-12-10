@@ -1,70 +1,99 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
-using FileStorageApp.Data.InfoStorage.Factories;
-using Microsoft.AspNetCore.Authentication;
+using JwtAuth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
 
 namespace FileStorageAPI.Services
 {
-    /// <summary>
-    /// Сервис отвечающий за аутентификацию
-    /// </summary>
+    /// <inheritdoc />
     public class AuthenticationService : IAuthenticationService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIntToGuidConverter _intToGuidConverter;
-        private readonly IInfoStorageFactory _infoStorageFactory;
+        private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
+        private readonly ITokenRefresher _tokenRefresher;
+        private readonly IActionContextAccessor _accessor;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// 
+        /// Конструктор сервиса
         /// </summary>
         /// <param name="signInManager">Менеджер входа</param>
-        /// <param name="userManager">Менеджер пользователей</param>
         /// <param name="intToGuidConverter">Конвертер, который превращает int в Guid</param>
-        /// <param name="infoStorageFactory">Фабрика для работы с базой данных</param>
+        /// <param name="jwtAuthenticationManager">Менеджер токенов</param>
+        /// <param name="tokenRefresher">Обновлятель токена</param>
+        /// <param name="accessor">Изменятель ответа</param>
+        /// <param name="configuration">Конфигурация приложения</param>
         public AuthenticationService(SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager, IIntToGuidConverter intToGuidConverter,
-            IInfoStorageFactory infoStorageFactory)
+            IIntToGuidConverter intToGuidConverter, IJwtAuthenticationManager jwtAuthenticationManager,
+            ITokenRefresher tokenRefresher, IActionContextAccessor accessor, IConfiguration configuration)
         {
             _signInManager = signInManager;
-            _userManager = userManager;
             _intToGuidConverter = intToGuidConverter;
-            _infoStorageFactory = infoStorageFactory;
+            _jwtAuthenticationManager = jwtAuthenticationManager;
+            _tokenRefresher = tokenRefresher;
+            _accessor = accessor;
+            _configuration = configuration;
         }
 
-        /// <summary>
-        /// Метод, который отвечает за аутентификацию пользователя и добавление его в менеджера пользователей
-        /// </summary>
-        /// <param name="remoteError">Возможная ошибка от GitLab</param>
-        /// <returns></returns>
-        public async Task<RequestResult<AuthenticationProperties>> LogIn(string? remoteError)
+        /// <inheritdoc />
+        public async Task<RequestResult<RedirectResult>> LogIn(string? remoteError)
         {
             if (remoteError != null)
-                return RequestResult.BadRequest<AuthenticationProperties>("Произошла ошибка у GitLab");
+                return RequestResult.BadRequest<RedirectResult>("Произошла ошибка у GitLab");
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
-                return RequestResult.BadRequest<AuthenticationProperties>("Почему-то пользователь пустой");
+                return RequestResult.BadRequest<RedirectResult>("Почему-то пользователь пустой");
             var providerKey = _intToGuidConverter.Convert(int.Parse(info.ProviderKey)).ToString();
-            await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, providerKey, true);
-            var user = await _userManager.FindByLoginAsync(info.LoginProvider, providerKey);
-            if (user == null)
+
+            var token = _jwtAuthenticationManager.Authenticate(providerKey);
+
+            return RequestResult.Ok(CreateRedirectResult(token));
+        }
+
+
+        /// <inheritdoc />
+        public RequestResult<RedirectResult> Refresh(RefreshCred refreshCred)
+        {
+            var token = _tokenRefresher.Refresh(refreshCred);
+            return token is null
+                ? RequestResult.Unauthorized<RedirectResult>("No such user")
+                : RequestResult.Ok(CreateRedirectResult(token));
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<string>> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RequestResult.Ok(_configuration["RedirectUrl"]);
+        }
+
+        private RedirectResult CreateRedirectResult(AuthenticationResponse token)
+        {
+            var result = new RedirectResult(_configuration["RedirectUrl"], true)
             {
-                using var sendersStorage = _infoStorageFactory.CreateFileSenderStorage();
-                var sender = await sendersStorage.GetByIdAsync(Guid.Parse(providerKey));
-                user = new ApplicationUser(providerKey, sender?.TelegramId);
-                var userInfo = new UserLoginInfo(info.LoginProvider, providerKey, info.ProviderDisplayName);
-                await _userManager.CreateAsync(user);
-                await _userManager.AddLoginAsync(user, userInfo);
-            }
+                UrlHelper = new UrlHelper(_accessor.ActionContext)
+            };
 
-            var props = new AuthenticationProperties();
-            props.StoreTokens(info.AuthenticationTokens);
+            result.UrlHelper
+                .ActionContext
+                .HttpContext
+                .Response.Redirect(_configuration["RedirectUrl"]);
 
-            await _signInManager.SignInAsync(user, props, info.LoginProvider);
-            return RequestResult.Ok(props);
+            result.UrlHelper
+                .ActionContext
+                .HttpContext
+                .Response.Headers.Add("token", $"{token.JwtToken}");
+            result.UrlHelper
+                .ActionContext
+                .HttpContext
+                .Response.Headers.Add("refreshToken", $"{token.RefreshToken}");
+            return result;
         }
     }
 }

@@ -2,10 +2,13 @@
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
+using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.Annotations;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
@@ -22,7 +25,6 @@ namespace FileStorageAPI.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAuthenticationService _authenticationService;
-        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>
@@ -30,12 +32,12 @@ namespace FileStorageAPI.Controllers
         /// <param name="signInManager">Менеджер входа</param>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
         /// <param name="configuration">Конфигурация приложения</param>
+        /// <param name="accessor"></param>
         public AuthenticationController(SignInManager<ApplicationUser> signInManager,
-            IAuthenticationService authenticationService, IConfiguration configuration)
+            IAuthenticationService authenticationService, IActionContextAccessor accessor)
         {
             _signInManager = signInManager;
             _authenticationService = authenticationService;
-            _configuration = configuration;
         }
 
         /// <summary>
@@ -67,12 +69,12 @@ namespace FileStorageAPI.Controllers
         public async Task<IActionResult> ExternalLoginCallback(string? remoteError)
         {
             var applicationUser = await _authenticationService.LogIn(remoteError);
-            return applicationUser.ResponseCode switch
+            return (applicationUser.ResponseCode switch
             {
-                HttpStatusCode.BadRequest => BadRequest(applicationUser.Message),
-                HttpStatusCode.OK => Redirect(_configuration["RedirectUrl"]),
+                HttpStatusCode.Unauthorized => Unauthorized(applicationUser.Message),
+                HttpStatusCode.OK => applicationUser.Value,
                 _ => throw new ArgumentException("Unknown response code")
-            };
+            })!;
         }
 
         /// <summary>
@@ -94,11 +96,31 @@ namespace FileStorageAPI.Controllers
         [Route("logout")]
         [HttpGet]
         [Authorize]
-        [SwaggerResponse(StatusCodes.Status204NoContent, "Пользователь успешно разлогинен")]
-        public async Task<IActionResult> LogOut()
+        [SwaggerResponse(StatusCodes.Status302Found, "Пользователь успешно разлогинен")]
+        public async Task LogOut()
         {
-            await _signInManager.SignOutAsync();
-            return Redirect(_configuration["RedirectUrl"]);
+            var result = await _authenticationService.LogOut();
+            Redirect(result.Value);
+        }
+
+        /// <summary>
+        /// Обновление токена
+        /// </summary>
+        /// <param name="refreshCred">Токен и рефреш токен</param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Невалидные токены")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Токен обновлен")]
+        public IActionResult Refresh([FromBody] RefreshCred refreshCred)
+        {
+            var refresh = _authenticationService.Refresh(refreshCred);
+            return (refresh.ResponseCode switch
+            {
+                HttpStatusCode.Unauthorized => Unauthorized(refresh.Message),
+                HttpStatusCode.OK => refresh.Value,
+                _ => throw new ArgumentException("Unknown response code")
+            })!;
         }
     }
 }

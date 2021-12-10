@@ -23,6 +23,7 @@
         <PackageReference Include="AspNet.Security.OAuth.GitLab" Version="5.0.18" />
         <PackageReference Include="AutoMapper" Version="10.1.1" />
         <PackageReference Include="AutoMapper.EF6" Version="2.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.12" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.12" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.12" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.12" />
@@ -34,6 +35,7 @@
     <ItemGroup>
       <ProjectReference Include="..\FilesStorage\FilesStorage.csproj" />
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
+      <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -48,6 +50,10 @@
       <None Include="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Auth" />
     </ItemGroup>
 
 </Project>
