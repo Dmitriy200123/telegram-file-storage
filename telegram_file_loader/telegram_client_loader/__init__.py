@@ -2,10 +2,10 @@ import config
 import postgres
 from clients.s3_client import S3Client
 from common.interactor.loader_interactor import LoaderInteractor
-from common.repository.file_repository import FileRepository
-from postgres.pg_adapter import Adapter
 from common.repository.chat_repository import ChatRepository
+from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
+from postgres.pg_adapter import Adapter
 from telegram_client_loader.handler.chat_handler import ChatHandler
 from telegram_client_loader.loader.telegram_loader import TelegramLoader
 from telegram_client_loader.setting.telegram_setting import TelegramSetting
@@ -13,7 +13,8 @@ from telethon import TelegramClient
 
 
 async def start():
-    telegram_client = TelegramClient('telegram_client_loader', config.API_ID, config.API_HASH)
+    telegram_client = TelegramClient(
+        'telegram_client_loader', config.API_ID, config.API_HASH)
     await TelegramSetting.configure_telegram_client(telegram_client, config.NUMBER)
 
     db_manager = postgres.start(max_connections=config.MAX_DB_CONNECTION)
@@ -30,5 +31,5 @@ async def start():
         file_sender_repository=file_sender_repository
     )
 
-    loader = TelegramLoader(telegram_client, loader_interactor)
-    chat_handler = ChatHandler(telegram_client)
+    loader = TelegramLoader(telegram_client, loader_interactor)  # noqa
+    chat_handler = ChatHandler(telegram_client)  # noqa
