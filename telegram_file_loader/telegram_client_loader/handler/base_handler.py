@@ -6,6 +6,7 @@ from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
 from telethon.tl.types import Chat, User
+from urlextract import URLExtract
 
 
 class BaseHandler:
@@ -34,11 +35,23 @@ class BaseHandler:
         message: Message = event.message
         # is_valid = await self.is_valid_chat(message.chat_id)
 
-        # if is_valid and message.media:
-        if message.chat_id < 0 and message.media:
-            await self._handle_new_message_with_media(message)
+        if message.chat_id < 0:
+            # TODO: Сделать фильтрацию типов медиа
+            if message.media:
+                await self._handle_new_message_with_media(message)
+
+            # TODO: Вынести в TelegramRepository и использовать его в BaseInteractor
+            extractor = URLExtract()
+
+            # TODO: В BaseInteractor метод должен называться has_urls
+            if extractor.has_urls(message.message):
+                urls = extractor.find_urls(message.message)
+                await self._handle_new_message_with_urls(message, urls)
 
     async def _handle_new_message_with_media(self, message: Message):
+        pass
+
+    async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
         pass
 
     async def _is_valid_chat(self, chat_id: int) -> bool:
