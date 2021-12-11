@@ -34,35 +34,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return user is not null;
         }
 
-        public async Task<User?> GetByGitLabIdAsync(int gitLabId)
+        public async Task<User> GetByGitLabIdAsync(int gitLabId)
         {
             return await DbSet.FirstOrDefaultAsync(x => x.GitLabId == gitLabId);
-        }
-
-        public async Task<bool> UpdateRefreshToken(Guid id, string refreshToken)
-        {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            if (user is null)
-                return false;
-            user.RefreshToken = refreshToken;
-            await SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> RemoveRefreshToken(Guid id)
-        {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            if (user == null)
-                return false;
-            user.RefreshToken = "";
-            await SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<string?> GetRefreshToken(Guid id)
-        {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return user?.RefreshToken;
         }
     }
 }
