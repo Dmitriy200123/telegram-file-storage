@@ -16,18 +16,16 @@ class FileRepository(BaseRepository):
         self.s3_client = s3_client
 
     async def create_file_info(self, file_info: FileExternal, chat_id: UUID, file_sender_id: UUID) -> File:
-        return await self.adapter.create(
+        file_tuple: (File, bool) = await self.adapter.create_or_get(
             model=File,
             ChatId=chat_id,
             FileSenderId=file_sender_id,
-            **file_info.dict(by_alias=True)
+            **file_info.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
         )
 
-    async def save_file(self, filename: str, file: BytesIO, key=None) -> UUID:
+        return file_tuple[0]
+
+    async def save_file(self, file: BytesIO, key=None) -> UUID:
         key = key or uuid4()
         await self.s3_client.upload_file(key=str(key), file=file)
-        # await self.s3_client.upload_file(key=str(key), filename=filename, file=file)
-
-        # print(await self.s3_client.get_download_link(str(key)))
-
         return key

@@ -1,11 +1,11 @@
 from io import BytesIO
 
-from common.file_util import FileUtil
 from common.interactor.base_interactor import BaseInteractor
 from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
 from common.repository.sender_to_chat_repository import SenderToChatRepository
+from common.repository.url_repository import UrlRepository
 from common.utils import full_name
 from postgres.models.external_models import Chat
 from postgres.models.external_models import FileSender as FileSenderExternal
@@ -19,9 +19,10 @@ class ChatInteractor(BaseInteractor):
         chat_repository: ChatRepository,
         file_sender_repository: FileSenderRepository,
         file_repository: FileRepository,
-        sender_to_chat_repository: SenderToChatRepository
+        sender_to_chat_repository: SenderToChatRepository,
+        url_repository: UrlRepository
     ):
-        super(ChatInteractor, self).__init__(chat_repository)
+        super(ChatInteractor, self).__init__(chat_repository, url_repository)
 
         self.file_sender_repository = file_sender_repository
         self.file_repository = file_repository
@@ -47,7 +48,7 @@ class ChatInteractor(BaseInteractor):
         photo_key = None
 
         if chat_photo is not None:
-            photo_key = await self.file_repository.save_file(FileUtil.get_photo_name(), chat_photo)
+            photo_key = await self.file_repository.save_file(chat_photo)
 
         chat_db = await self.chat_repository.create_chat(chat, photo_key)
 
@@ -79,7 +80,7 @@ class ChatInteractor(BaseInteractor):
         await self.chat_repository.update_chat(chat)
 
     async def update_chat_photo(self, photo: BytesIO, chat_id: int):
-        image_key = await self.file_repository.save_file(FileUtil.get_photo_name(), photo)
+        image_key = await self.file_repository.save_file(photo)
 
         chat = await self.chat_repository.find_chat_by_telegram_id(chat_id)
         chat.ImageId = image_key

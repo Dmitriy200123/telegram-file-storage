@@ -14,10 +14,13 @@ class ChatRepository(BaseRepository):
         return await self.adapter.get(model=Chat, TelegramId=telegram_id)
 
     async def create_chat(self, chat_external: ChatExternal, chat_photo_id: UUID) -> Chat:
-        if not await self.adapter.contains(model=Chat, TelegramId=chat_external.telegram_id):
-            return await self.adapter.create(model=Chat, ImageId=chat_photo_id, **chat_external.dict(by_alias=True))
-        else:
-            return await self.adapter.get(model=Chat, TelegramId=chat_external.telegram_id)
+        chat_tuple: (Chat, bool) = await self.adapter.create_or_get(
+            model=Chat,
+            ImageId=chat_photo_id,
+            **chat_external.dict(by_alias=True)
+        )
+
+        return chat_tuple[0]
 
     async def update_chat(self, updated_chat: Chat):
         chat = await self.adapter.get(model=Chat, Id=updated_chat.Id)

@@ -22,6 +22,7 @@ from telethon.tl.types import (
 )
 from telethon.utils import get_peer_id
 
+
 class ChatHandler(BaseHandler):
 
     def __init__(self, telegram_client: TelegramClient, chat_interactor: ChatInteractor):

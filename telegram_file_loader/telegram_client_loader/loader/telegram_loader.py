@@ -1,14 +1,8 @@
-import re
-from datetime import datetime
 from io import BytesIO
-from urllib.error import URLError
-from urllib.request import urlopen
 
-from bs4 import BeautifulSoup
 from common.file_util import FileUtil
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
-from postgres.models.db_models import FileTypeEnum
 from postgres.models.external_models import File
 from postgres.models.external_models.file import type_map
 from telegram_client_loader.handler.base_handler import BaseHandler
@@ -63,28 +57,6 @@ class TelegramLoader(BaseHandler):
 
         return telegram_file
 
-    # TODO: Перенести этот метод в новый класс UrlHandler, а этот переименовать в FileHandler
     async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
         for url in urls:
-            name = self.get_url_name(url)
-            file_info = File(
-                name=name,
-                extension='',
-                type=FileTypeEnum.Link,
-                upload_date=datetime.now(),
-                sender_telegram_id=message.sender_id,
-                chat_telegram_id=message.chat_id
-            )
-            file = BytesIO(bytes(url, encoding='utf-8'),)
-            await self.loader_interactor.save_file(file_info, file)
-
-    # TODO: Вынести в метод репозитория
-    @staticmethod
-    def get_url_name(url: str) -> str:
-        try:
-            html_data = urlopen(url)
-            soup = BeautifulSoup(html_data, 'lxml')
-            return soup.title.string
-        except URLError:
-            short_url = re.sub(r'(https?://)?(www\.)?', '', url)
-            return short_url
+            await self.loader_interactor.save_url(url, message.sender_id, message.chat_id)

@@ -18,12 +18,11 @@ class File(BaseModel):
     extension: Optional[str] = Field(
         title='Расширение', max_length=255, alias='Extension')
     type: FileTypeEnum = Field(..., title='Тип', alias='TypeId')
-    upload_date: datetime.datetime = Field(...,
-                                           title='Дата загрузки', alias='UploadDate')
-    sender_telegram_id: int = Field(...,
-                                    title='Телеграм id отправителя', alias='SenderTelegramId')
-    chat_telegram_id: int = Field(
-        title='Телеграм id чата', alias='ChatTelegramId')
+    upload_date: Optional[datetime.datetime] = Field(
+        title='Дата загрузки', alias='UploadDate')
+
+    sender_telegram_id: int
+    chat_telegram_id: int
 
     class Config:
         allow_population_by_field_name = True

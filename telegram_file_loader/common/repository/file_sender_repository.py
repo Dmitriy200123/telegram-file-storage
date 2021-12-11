@@ -20,10 +20,11 @@ class FileSenderRepository(BaseRepository):
             await self.adapter.update(model=file_sender, **file_sender_external.dict(by_alias=True))
 
     async def create_file_sender(self, file_sender_external: FileSenderExternal) -> FileSender:
-        if not await self.adapter.contains(model=FileSender, TelegramId=file_sender_external.telegram_id):
-            return await self.adapter.create(model=FileSender, **file_sender_external.dict(by_alias=True))
-        else:
-            return await self.adapter.get(model=FileSender, TelegramId=file_sender_external.telegram_id)
+        file_sender_tuple: (FileSender, bool) = await self.adapter.create_or_get(
+            model=FileSender,
+            **file_sender_external.dict(by_alias=True)
+        )
+        return file_sender_tuple[0]
 
     async def contains_by_telegram_id(self, telegram_id: int) -> bool:
         return await self.adapter.contains(model=FileSender, TelegramId=telegram_id)

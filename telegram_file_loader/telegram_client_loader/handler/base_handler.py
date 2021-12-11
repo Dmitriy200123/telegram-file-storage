@@ -6,7 +6,6 @@ from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
 from telethon.tl.types import Chat, User
-from urlextract import URLExtract
 
 
 class BaseHandler:
@@ -17,7 +16,7 @@ class BaseHandler:
         base_interactor: BaseInteractor
     ):
         self.telegram_client = telegram_client
-        self.loader_interactor = base_interactor
+        self.base_interactor = base_interactor
 
     def run(self):
         new_message_event = NewMessage()
@@ -40,12 +39,9 @@ class BaseHandler:
             if message.media:
                 await self._handle_new_message_with_media(message)
 
-            # TODO: Вынести в TelegramRepository и использовать его в BaseInteractor
-            extractor = URLExtract()
+            urls = self.base_interactor.find_urls(message.message)
 
-            # TODO: В BaseInteractor метод должен называться has_urls
-            if extractor.has_urls(message.message):
-                urls = extractor.find_urls(message.message)
+            if urls:
                 await self._handle_new_message_with_urls(message, urls)
 
     async def _handle_new_message_with_media(self, message: Message):
@@ -55,7 +51,7 @@ class BaseHandler:
         pass
 
     async def _is_valid_chat(self, chat_id: int) -> bool:
-        return await self.loader_interactor.is_valid_chat(chat_id)
+        return await self.base_interactor.is_valid_chat(chat_id)
 
     async def _download_file(self, message: Message) -> BytesIO:
         file: BytesIO = typing.cast(BytesIO, await self.telegram_client.download_media(message, file=BytesIO()))
