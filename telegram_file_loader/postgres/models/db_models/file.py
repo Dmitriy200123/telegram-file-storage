@@ -17,11 +17,11 @@ class FileTypeEnum(int, Enum):
 class File(BaseModel):
     Id = UUIDField(primary_key=True, default=uuid.uuid4)
     Name = CharField()
-    Extension = CharField()
+    Extension = CharField(null=True)
     TypeId = EnumField(enum=FileTypeEnum, null=False)
     UploadDate = DateTimeField()
     FileSenderId = ForeignKeyField(model=FileSender, db_column='FileSenderId')
-    ChatId = ForeignKeyField(model=Chat, db_column='ChatId')
+    ChatId = ForeignKeyField(model=Chat, null=True, db_column='ChatId')
 
     class Meta:
         table_name = 'Files'

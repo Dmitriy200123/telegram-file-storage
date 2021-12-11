@@ -7,7 +7,7 @@ from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 
 
 async def test_create_chat(db_manager):
-    chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
+    chat = await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
 
     result = list(await manager.execute(Chat.select()))
 
@@ -15,7 +15,7 @@ async def test_create_chat(db_manager):
 
 
 async def test_contains_chat(db_manager):
-    chat: Chat = await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
+    chat: Chat = await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     await create_chat(chat_name='mysupername')
 
     result = await db_manager.contains(Chat, TelegramId=chat.TelegramId)
@@ -24,7 +24,7 @@ async def test_contains_chat(db_manager):
 
 
 async def test_false_contains_chat(db_manager):
-    await db_manager.create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
+    await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     result = await db_manager.contains(Chat, TelegramId=000000000)
 
     assert not result
@@ -66,7 +66,8 @@ async def test_get_all_chats(db_manager):
 
 
 async def test_create_sender(db_manager):
-    sender = await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
+    sender = await db_manager.create_or_get(model=FileSender, TelegramId=123, TelegramUserName='my name',
+                                            FullName='full name')
 
     result = list(await manager.execute(FileSender.select()))
 
@@ -74,8 +75,8 @@ async def test_create_sender(db_manager):
 
 
 async def test_contains_sender(db_manager):
-    sender: FileSender = await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name',
-                                                 FullName='full name')
+    sender: FileSender = await db_manager.create_or_get(model=FileSender, TelegramId=1233, TelegramUserName='my name',
+                                                        FullName='full name')
     await create_sender(name='mysupername')
 
     result = await db_manager.contains(FileSender, TelegramId=sender.TelegramId)
@@ -84,7 +85,7 @@ async def test_contains_sender(db_manager):
 
 
 async def test_false_contains_sender(db_manager):
-    await db_manager.create(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
+    await db_manager.create_or_get(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
     result = await db_manager.contains(FileSender, TelegramId=0000)
 
     assert not result
@@ -117,7 +118,7 @@ async def test_update_sender_information(db_manager):
 
 async def test_get_all_senders(db_manager):
     sender1 = await create_sender()
-    sender2 = await create_sender(name='abcd')
+    sender2 = await create_sender(name='abcd', telegram_id=1111)
 
     result = await db_manager.get_all(FileSender)
 
@@ -128,7 +129,7 @@ async def test_get_all_senders(db_manager):
 async def test_create_file(db_manager):
     chat = await create_chat()
     sender = await create_sender()
-    file = await db_manager.create(
+    file = await db_manager.create_or_get(
         model=File,
         Name='name',
         Extension='extension',
@@ -141,3 +142,11 @@ async def test_create_file(db_manager):
     result = list(await manager.execute(File.select()))
 
     assert file in result
+
+
+async def test_create_existing_chat(db_manager):
+    chat: Chat = await create_chat()
+    new_chat, is_created = await db_manager.create_or_get(Chat, **chat.as_dict())
+
+    assert not is_created
+    assert new_chat.Id == chat.Id
