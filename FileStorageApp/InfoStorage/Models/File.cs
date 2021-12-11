@@ -15,7 +15,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
         [MaxLength(255)]
         public string Name { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string Extension { get; set; }
 
@@ -35,7 +34,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
         [Required]
         public Guid FileSenderId { get; set; }
-        
+
         public Guid? ChatId { get; set; }
 
         [ForeignKey("FileSenderId")]
