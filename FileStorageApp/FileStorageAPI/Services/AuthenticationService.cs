@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
+using FileStorageApp.Data.InfoStorage.Factories;
+using FileStorageApp.Data.InfoStorage.Models;
 using JwtAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Configuration;
 
 namespace FileStorageAPI.Services
 {
@@ -15,34 +15,32 @@ namespace FileStorageAPI.Services
     public class AuthenticationService : IAuthenticationService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IIntToGuidConverter _intToGuidConverter;
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
         private readonly ITokenRefresher _tokenRefresher;
         private readonly IActionContextAccessor _accessor;
-        private readonly IConfiguration _configuration;
+        private readonly ISettings _settings;
+        private readonly IInfoStorageFactory _infoStorageFactory;
 
         /// <summary>
-        /// Конструктор сервиса.
+        /// Конструктор сервиса
         /// </summary>
         /// <param name="signInManager">Менеджер входа</param>
-        /// <param name="intToGuidConverter">Конвертер, который превращает int в Guid</param>
         /// <param name="jwtAuthenticationManager">Менеджер токенов</param>
         /// <param name="tokenRefresher">Обновлятель токена</param>
         /// <param name="accessor">Изменятель ответа</param>
-        /// <param name="configuration">Конфигурация приложения</param>
+        /// <param name="settings"></param>
+        /// <param name="infoStorageFactory"></param>
         public AuthenticationService(SignInManager<ApplicationUser> signInManager,
-            IIntToGuidConverter intToGuidConverter,
             IJwtAuthenticationManager jwtAuthenticationManager,
-            ITokenRefresher tokenRefresher,
-            IActionContextAccessor accessor,
-            IConfiguration configuration)
+            ITokenRefresher tokenRefresher, IActionContextAccessor accessor, ISettings settings,
+            IInfoStorageFactory infoStorageFactory)
         {
-            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            _intToGuidConverter = intToGuidConverter ?? throw new ArgumentNullException(nameof(intToGuidConverter));
-            _jwtAuthenticationManager = jwtAuthenticationManager ?? throw new ArgumentNullException(nameof(jwtAuthenticationManager));
-            _tokenRefresher = tokenRefresher ?? throw new ArgumentNullException(nameof(tokenRefresher));
-            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _signInManager = signInManager;
+            _jwtAuthenticationManager = jwtAuthenticationManager;
+            _tokenRefresher = tokenRefresher;
+            _accessor = accessor;
+            _settings = settings;
+            _infoStorageFactory = infoStorageFactory;
         }
 
         /// <inheritdoc />
@@ -53,9 +51,10 @@ namespace FileStorageAPI.Services
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
                 return RequestResult.BadRequest<RedirectResult>("Почему-то пользователь пустой");
-            var providerKey = _intToGuidConverter.Convert(int.Parse(info.ProviderKey)).ToString();
+            var gitlabId = int.Parse(info.ProviderKey);
+            var user = await CreateOrGetUser(gitlabId);
 
-            var token = _jwtAuthenticationManager.Authenticate(providerKey);
+            var token = _jwtAuthenticationManager.Authenticate(user.Id.ToString());
 
             return RequestResult.Ok(CreateRedirectResult(token));
         }
@@ -74,12 +73,12 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<string>> LogOut()
         {
             await _signInManager.SignOutAsync();
-            return RequestResult.Ok(_configuration["RedirectUrl"]);
+            return RequestResult.Ok(_settings.Configuration["RedirectUrl"]);
         }
 
         private RedirectResult CreateRedirectResult(AuthenticationResponse token)
         {
-            var result = new RedirectResult(_configuration["RedirectUrl"], true)
+            var result = new RedirectResult(_settings.Configuration["RedirectUrl"], true)
             {
                 UrlHelper = new UrlHelper(_accessor.ActionContext)
             };
@@ -87,7 +86,7 @@ namespace FileStorageAPI.Services
             result.UrlHelper
                 .ActionContext
                 .HttpContext
-                .Response.Redirect(_configuration["RedirectUrl"]);
+                .Response.Redirect(_settings.Configuration["RedirectUrl"]);
 
             result.UrlHelper
                 .ActionContext
@@ -98,6 +97,24 @@ namespace FileStorageAPI.Services
                 .HttpContext
                 .Response.Headers.Add("refreshToken", $"{token.RefreshToken}");
             return result;
+        }
+
+        private async Task<User> CreateOrGetUser(int gitlabId)
+        {
+            using var usersStorage = _infoStorageFactory.CreateUsersStorage();
+            var isRegistered = await usersStorage.IsRegisteredAsync(gitlabId);
+            if (isRegistered)
+                return await usersStorage.GetByGitLabIdAsync(gitlabId);
+            var userId = Guid.NewGuid();
+            var user = new User
+            {
+                Id = userId,
+                TelegramId = null,
+                GitLabId = gitlabId
+            };
+            await usersStorage.AddAsync(user);
+
+            return user;
         }
     }
 }

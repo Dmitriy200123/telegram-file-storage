@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,21 +12,20 @@ namespace JwtAuth
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
         /// <inheritdoc />
-        public IDictionary<string, string> UsersRefreshTokens { get; set; }
-
+        public ConcurrentDictionary<string, string> UsersRefreshTokens { get; set; }
         private readonly string _tokenKey;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="JwtAuthenticationManager"/>.
+        /// 
         /// </summary>
         /// <param name="tokenKey"></param>
         /// <param name="refreshTokenGenerator"></param>
         public JwtAuthenticationManager(string tokenKey, IRefreshTokenGenerator refreshTokenGenerator)
         {
-            _tokenKey = tokenKey ?? throw new ArgumentNullException(nameof(tokenKey));
-            _refreshTokenGenerator = refreshTokenGenerator ?? throw new ArgumentNullException(nameof(refreshTokenGenerator));
-            UsersRefreshTokens = new Dictionary<string, string>();
+            _tokenKey = tokenKey;
+            _refreshTokenGenerator = refreshTokenGenerator;
+            UsersRefreshTokens = new ConcurrentDictionary<string, string>();
         }
 
         /// <inheritdoc />
@@ -34,14 +34,7 @@ namespace JwtAuth
             var token = GenerateTokenString(username, DateTime.UtcNow, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
 
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
+            UsersRefreshTokens[username] = refreshToken;
 
             return new AuthenticationResponse(token, refreshToken);
         }
@@ -49,22 +42,18 @@ namespace JwtAuth
         /// <inheritdoc />
         public AuthenticationResponse Authenticate(string username)
         {
-            var token = GenerateTokenString(username, DateTime.UtcNow);
+            var userNameClaim = new Claim(ClaimTypes.Name, username);
+            var claims = new[] {userNameClaim};
+            var token = GenerateTokenString(username, DateTime.UtcNow, claims);
+            
             var refreshToken = _refreshTokenGenerator.GenerateToken();
 
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
+            UsersRefreshTokens[username] = refreshToken;
 
             return new AuthenticationResponse(token, refreshToken);
         }
 
-        private string GenerateTokenString(string username, DateTime expires, Claim[] claims = null)
+        private string GenerateTokenString(string username, DateTime expires, Claim[] claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenKey);

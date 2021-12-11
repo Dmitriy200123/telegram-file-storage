@@ -7,12 +7,16 @@ namespace FileStorageAPI.Services
     /// <inheritdoc />
     public class TelegramService : ITelegramService
     {
-        private readonly byte[] _key;
+        private readonly ISettings _settings;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
 
-        public TelegramService(byte[] key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="settings"></param>
+        public TelegramService(ISettings settings)
         {
-            _key = key;
+            _settings = settings;
             _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
         }
 
@@ -24,7 +28,7 @@ namespace FileStorageAPI.Services
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(_key),
+                    IssuerSigningKey = new SymmetricSecurityKey(_settings.Key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = false,

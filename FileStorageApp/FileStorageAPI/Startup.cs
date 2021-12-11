@@ -50,15 +50,139 @@ namespace FileStorageAPI
         {
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
-            services.AddControllers();
+            var dataBaseConfig = CreateDataBaseConfig();
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
-
-            //подумать, а нужно ли это нам? 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication(x =>
+            RegisterAuthentication(services, key);
+            services.AddSingleton(Configuration);
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
+            services.ConfigureApplicationCookie(options =>
+                {
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized);
+                }
+            );
+            services.AddCors();
+            RegisterProviders(services);
+            RegisterAuth(services, tokenKey, key);
+            RegisterDtoConverters(services);
+            RegisterFileStorage(services);
+            RegisterInfoStorage(services, dataBaseConfig);
+            RegisterApiServices(services);
+            RegisterConverters(services);
+            CreateSettings(services, key, dataBaseConfig);
+            RegisterSwagger(services);
+            services.AddControllers();
+            
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment() || env.IsEnvironment("Docker"))
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
+            }
+
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseRouting();
+
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+
+        private static void RegisterDtoConverters(IServiceCollection services)
+        {
+            services.AddSingleton<IChatConverter, ChatConverter>();
+            services.AddSingleton<ISenderConverter, SenderConverter>();
+            services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
+        }
+
+        private static void RegisterConverters(IServiceCollection services)
+        {
+            services.AddSingleton<IIntToGuidConverter, IntToGuidConverter>();
+        }
+
+        private static void RegisterInfoStorage(IServiceCollection services, DataBaseConfig dataBaseConfig)
+        {
+            services.AddSingleton<IDataBaseConfig>(dataBaseConfig);
+            services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
+        }
+
+        private DataBaseConfig CreateDataBaseConfig()
+        {
+            var connectionString = $"Server={Configuration["DbHost"]};" +
+                                   $"Username={Configuration["DbUser"]};" +
+                                   $"Database={Configuration["UsersDbName"]};" +
+                                   $"Port={Configuration["DbPort"]};" +
+                                   $"Password={Configuration["DbPassword"]};" +
+                                   "SSLMode=Prefer";
+            return new DataBaseConfig(connectionString);
+        }
+
+        private static void RegisterFileStorage(IServiceCollection services)
+        {
+            services.AddSingleton<IS3FilesStorageOptions>(provider =>
+            {
+                var config = provider.GetRequiredService<IConfiguration>();
+                var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
+                return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
+                    config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
+                    TimeSpan.FromHours(1));
+            });
+            services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
+        }
+
+        private static void RegisterApiServices(IServiceCollection services)
+        {
+            services.TryAddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddSingleton<IChatService, ChatService>();
+            services.AddSingleton<ISenderService, SenderService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<ITelegramService, TelegramService>();
+        }
+
+        private static void RegisterProviders(IServiceCollection services)
+        {
+            services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
+            services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
+            services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
+        }
+
+        private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
+        {
+            serviceCollection.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            serviceCollection.AddSingleton<ITokenRefresher>(x =>
+                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!));
+            serviceCollection.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x =>
+                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!));
+        }
+
+        private void CreateSettings(IServiceCollection serviceCollection, byte[] bytes, DataBaseConfig dataBaseConfig)
+        {
+            var settings = new Settings(Configuration, bytes, dataBaseConfig);
+            serviceCollection.AddSingleton<ISettings>(settings);
+        }
+
+        private void RegisterAuthentication(IServiceCollection serviceCollection, byte[] key)
+        {
+            serviceCollection.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,28 +222,10 @@ namespace FileStorageAPI
                         return Task.CompletedTask;
                     };
                 });
+        }
 
-            services.AddSingleton(Configuration);
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
-            });
-            services.ConfigureApplicationCookie(options =>
-                {
-                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
-                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized);
-                }
-            );
-            services.AddCors();
-            RegisterProviders(services);
-            RegisterAuth(services, tokenKey, key);
-            RegisterDtoConverters(services);
-            RegisterFileStorage(services);
-            RegisterInfoStorage(services);
-            RegisterApiServices(services);
-            RegisterConverters(services);
+        private void RegisterSwagger(IServiceCollection services)
+        {
             services.AddSwaggerGen(c =>
             {
                 c.EnableAnnotations();
@@ -141,107 +247,6 @@ namespace FileStorageAPI
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
             });
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment() || env.IsEnvironment("Docker"))
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
-            }
-
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseRouting();
-
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        }
-
-        private static void RegisterDtoConverters(IServiceCollection services)
-        {
-            services.AddSingleton<IChatConverter, ChatConverter>();
-            services.AddSingleton<ISenderConverter, SenderConverter>();
-            services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
-        }
-
-        private static void RegisterConverters(IServiceCollection services)
-        {
-            services.AddSingleton<IIntToGuidConverter, IntToGuidConverter>();
-        }
-
-        private static void RegisterInfoStorage(IServiceCollection services)
-        {
-            services.AddSingleton<IDataBaseConfig>(provider =>
-            {
-                var config = provider.GetRequiredService<IConfiguration>();
-                var connectionString = $"Server={config["DbHost"]};" +
-                                       $"Username={config["DbUser"]};" +
-                                       $"Database={config["DbName"]};" +
-                                       $"Port={config["DbPort"]};" +
-                                       $"Password={config["DbPassword"]};" +
-                                       "SSLMode=Prefer";
-                return new DataBaseConfig(connectionString);
-            });
-            services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
-        }
-
-        private string CreateConnectionString()
-        {
-            return $"Server={Configuration["DbHost"]};" +
-                   $"Username={Configuration["DbUser"]};" +
-                   $"Database={Configuration["UsersDbName"]};" +
-                   $"Port={Configuration["DbPort"]};" +
-                   $"Password={Configuration["DbPassword"]};" +
-                   "SSLMode=Prefer";
-        }
-
-        private static void RegisterFileStorage(IServiceCollection services)
-        {
-            services.AddSingleton<IS3FilesStorageOptions>(provider =>
-            {
-                var config = provider.GetRequiredService<IConfiguration>();
-                var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
-                return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
-                    config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
-                    TimeSpan.FromHours(1));
-            });
-            services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
-        }
-
-        private static void RegisterApiServices(IServiceCollection services)
-        {
-            services.TryAddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddSingleton<IChatService, ChatService>();
-            services.AddSingleton<ISenderService, SenderService>();
-            services.AddSingleton<IFileService, FileService>();
-        }
-
-        private static void RegisterProviders(IServiceCollection services)
-        {
-            services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
-            services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
-            services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
-
-        }
-
-        private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
-        {
-            serviceCollection.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            serviceCollection.AddSingleton<ITokenRefresher>(x => 
-                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!));
-            serviceCollection.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
-            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x => 
-                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!));
-            
         }
 
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
