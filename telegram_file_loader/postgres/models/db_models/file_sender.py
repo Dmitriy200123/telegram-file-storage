@@ -6,7 +6,7 @@ from postgres.basic import BaseModel
 
 class FileSender(BaseModel):
     Id = UUIDField(primary_key=True, default=uuid.uuid4)
-    TelegramId = BigIntegerField()
+    TelegramId = BigIntegerField(unique=True)
     TelegramUserName = CharField()
     FullName = CharField()
 

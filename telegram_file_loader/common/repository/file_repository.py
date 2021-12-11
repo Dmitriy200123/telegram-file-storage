@@ -15,7 +15,7 @@ class FileRepository(BaseRepository):
         self.s3_client = s3_client
 
     async def create_file_info(self, file_info: FileExternal) -> File:
-        return await self.adapter.create(model=File, **file_info.dict(by_alias=True))
+        return await self.adapter.create_or_get(model=File, **file_info.dict(by_alias=True))
 
     async def save_file(self, file_info: File, file: BytesIO):
         await self.s3_client.upload_file(key=str(file_info.Id), file=file)

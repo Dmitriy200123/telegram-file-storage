@@ -1,5 +1,6 @@
-from typing import List
+from typing import Any, List
 
+from peewee import DoesNotExist
 from peewee_async import Manager
 from postgres.basic import BaseModel
 
@@ -10,12 +11,14 @@ class Adapter:
     def __init__(self, db_manager: Manager):
         self.manager = db_manager
 
-    async def create(self, model: BaseModel, **params) -> BaseModel:
-        async with self.manager.atomic():
-            return await self.manager.create(model, **params)
+    async def create_or_get(self, model: BaseModel, **params) -> (BaseModel, bool):
+        return await self.manager.create_or_get(model, **params)
 
-    async def get(self, model: BaseModel, **params) -> BaseModel:
-        return await self.manager.get(model, **params)
+    async def get(self, model: BaseModel, **params) -> Any:
+        try:
+            return await self.manager.get(model, **params)
+        except DoesNotExist:
+            return None
 
     async def get_all(self, model: BaseModel) -> List[BaseModel]:
         query = model.select().order_by(model.Id)
