@@ -1,7 +1,6 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Threading.Tasks;
-using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAuth
@@ -11,36 +10,45 @@ namespace JwtAuth
     {
         private readonly byte[] _key;
         private readonly IJwtAuthenticationManager _jWtAuthenticationManager;
-        private readonly IInfoStorageFactory _infoStorageFactory;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="key"></param>
         /// <param name="jWtAuthenticationManager"></param>
-        /// <param name="infoStorageFactory"></param>
-        public TokenRefresher(byte[] key, IJwtAuthenticationManager jWtAuthenticationManager,
-            IInfoStorageFactory infoStorageFactory)
+        public TokenRefresher(byte[] key, IJwtAuthenticationManager jWtAuthenticationManager)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
             _jWtAuthenticationManager = jWtAuthenticationManager ?? throw new ArgumentNullException(nameof(jWtAuthenticationManager));
-            _infoStorageFactory = infoStorageFactory;
         }
 
         /// <inheritdoc />
-        public async Task<AuthenticationResponse?> Refresh(RefreshCred refreshCred)
+        public AuthenticationResponse Refresh(RefreshCred refreshCred)
         {
-            var principal = TokenHelper.GetPrincipalFromToken(refreshCred.JwtToken, _key);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(refreshCred.JwtToken,
+                new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(_key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
+                }, out SecurityToken validatedToken);
+
+            if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token passed!");
+            }
 
             var userName = principal.Identity?.Name;
             if (userName == null)
-                return null;
-            using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var refreshToken = await usersStorage.GetRefreshToken(Guid.Parse(userName));
-            if (refreshCred.RefreshToken != refreshToken)
-                return null;
+                throw new InvalidOperationException("Doesn't contain name in Identity");
 
-            return await _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
+            if (refreshCred.RefreshToken != _jWtAuthenticationManager.UsersRefreshTokens[userName])
+                throw new SecurityTokenException("Invalid token passed!");
+
+            return _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
         }
     }
 }

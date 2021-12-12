@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using JwtAuth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,18 +12,18 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Метод, который отвечает за аутентификацию пользователя и добавление его в менеджера пользователей.
         /// </summary>
-        /// <param name="token"></param>
-        Task<RequestResult<AuthenticationResponse>> LogIn(string token);
+        /// <param name="remoteError">Возможная ошибка от GitLab</param>
+        Task<RequestResult<RedirectResult>> LogIn(string? remoteError);
 
         /// <summary>
         /// Метод обновления токена.
         /// </summary>
         /// <param name="refreshCred"></param>
-        Task<RequestResult<AuthenticationResponse>> Refresh(RefreshCred refreshCred);
+        RequestResult<RedirectResult> Refresh(RefreshCred refreshCred);
 
         /// <summary>
         /// Метод разлогировавния пользователя.
         /// </summary>
-        Task<RequestResult<string>> LogOut(Guid guid);
+        Task<RequestResult<string>> LogOut();
     }
 }
