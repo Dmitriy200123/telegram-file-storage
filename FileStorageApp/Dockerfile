@@ -8,6 +8,7 @@ COPY FileStorageAPI/*.csproj ./FileStorageAPI/
 COPY FilesStorage/*.csproj ./FilesStorage/
 COPY InfoStorage/*.csproj ./InfoStorage/
 COPY DataBaseFiller/*.csproj ./DataBaseFiller/
+COPY JwtAuth/*.csproj ./JwtAuth/
 
 COPY FileStorageAPI.Tests/*.csproj ./FileStorageAPI.Tests/
 COPY FilesStorageTests/*.csproj ./FilesStorageTests/
@@ -20,6 +21,7 @@ COPY FileStorageAPI/. ./FileStorageAPI/
 COPY FilesStorage/. ./FilesStorage/
 COPY InfoStorage/. ./InfoStorage/
 COPY DataBaseFiller/. ./DataBaseFiller
+COPY JwtAuth/. ./JwtAuth
 #
 WORKDIR /app/FileStorageAPI
 RUN dotnet publish -c Debug -o out -p:UseAppHost=false

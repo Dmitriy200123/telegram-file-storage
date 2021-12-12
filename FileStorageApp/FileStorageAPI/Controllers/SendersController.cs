@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 using FileStorageAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -17,6 +18,7 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("api/senders")]
     [SwaggerTag("Информация об отправителях из Telegram")]
+    [Authorize]
     public class SendersController : Controller
     {
         private readonly ISenderService _senderService;

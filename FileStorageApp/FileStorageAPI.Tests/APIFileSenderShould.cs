@@ -3,53 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
-using FileStorageApp.Data.InfoStorage.Config;
-using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace FileStorageAPI.Tests
 {
-    public class APIFileSenderShould
+    public class APIFileSenderShould : BaseShould
     {
-        private readonly HttpClient _apiClient;
-        private readonly IInfoStorageFactory _infoStorageFactory;
-
         private static readonly ISenderConverter SenderConverter = new SenderConverter();
-
-        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.test.json")
-            .Build();
-
-        public APIFileSenderShould()
-        {
-            var server = new TestServer(new WebHostBuilder()
-                .UseConfiguration(Config)
-                .UseEnvironment("Debug")
-                .UseStartup<Startup>());
-            _apiClient = server.CreateClient();
-            _apiClient.DefaultRequestHeaders
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var dbConfig = new DataBaseConfig($"Server={Config["DbHost"]};" +
-                                              $"Username={Config["DbUser"]};" +
-                                              $"Database={Config["DbName"]};" +
-                                              $"Port={Config["DbPort"]};" +
-                                              $"Password={Config["DbPassword"]};" +
-                                              "SSLMode=Prefer");
-            _infoStorageFactory = new InfoStorageFactory(dbConfig);
-        }
 
         [TearDown]
         public async Task TearDown()
@@ -63,6 +30,7 @@ namespace FileStorageAPI.Tests
         [Test]
         public async Task GetSenderById_ReturnCorrectSender_ThenCalled()
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
@@ -74,7 +42,7 @@ namespace FileStorageAPI.Tests
             };
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/{senderGuid}");
+            var response = await apiClient.GetAsync($"/api/senders/{senderGuid}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -85,6 +53,7 @@ namespace FileStorageAPI.Tests
         [Test]
         public async Task GetSenderById_ReturnNotFound_ThenCalledWithOtherId()
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderInDb = new FileSender
             {
@@ -95,7 +64,7 @@ namespace FileStorageAPI.Tests
             };
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/{Guid.NewGuid()}");
+            var response = await apiClient.GetAsync($"/api/senders/{Guid.NewGuid()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -103,6 +72,7 @@ namespace FileStorageAPI.Tests
         [Test]
         public async Task GetSendersById_ReturnCorrectSenders_ThenCalled()
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderInDb1 = new FileSender
             {
@@ -122,7 +92,7 @@ namespace FileStorageAPI.Tests
             await senderStorage.AddAsync(senderInDb1);
             await senderStorage.AddAsync(senderInDb2);
 
-            var response = await _apiClient.GetAsync("/api/senders/");
+            var response = await apiClient.GetAsync("/api/senders/");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -135,6 +105,7 @@ namespace FileStorageAPI.Tests
         [TestCase("t")]
         public async Task GetSenderByTelegramNameSubstring_ReturnCorrectSenders_ThenCalled(string substring)
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
@@ -147,7 +118,7 @@ namespace FileStorageAPI.Tests
             var expected = new List<Models.Sender> {SenderConverter.ConvertFileSender(senderInDb)};
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
+            var response = await apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -160,6 +131,7 @@ namespace FileStorageAPI.Tests
         [TestCase("z")]
         public async Task GetSenderByTelegramNameSubstring_ReturnEmptySenders_ThenNoMatching(string substring)
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
@@ -171,7 +143,7 @@ namespace FileStorageAPI.Tests
             };
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
+            var response = await apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -184,6 +156,7 @@ namespace FileStorageAPI.Tests
         [TestCase("t")]
         public async Task GetSenderByFullNameSubstring_ReturnCorrectSenders_ThenCalled(string substring)
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
@@ -196,7 +169,7 @@ namespace FileStorageAPI.Tests
             var expected = new List<Models.Sender> {SenderConverter.ConvertFileSender(senderInDb)};
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/search/fullname?fullname={substring}");
+            var response = await apiClient.GetAsync($"/api/senders/search/fullname?fullname={substring}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -209,6 +182,7 @@ namespace FileStorageAPI.Tests
         [TestCase("z")]
         public async Task GetSenderByFullNameSubstring_ReturnEmptySenders_ThenNoMatching(string substring)
         {
+            using var apiClient = CreateHttpClient();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
@@ -220,7 +194,7 @@ namespace FileStorageAPI.Tests
             };
             await senderStorage.AddAsync(senderInDb);
 
-            var response = await _apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
+            var response = await apiClient.GetAsync($"/api/senders/search/telegramname?telegramName={substring}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
@@ -231,6 +205,7 @@ namespace FileStorageAPI.Tests
         [Test]
         public async Task PostTelegramUser_ReturnCorrectUser_ThenCalled()
         {
+            using var apiClient = CreateHttpClient();
             var telegramUser = new TelegramUser
             {
                 TelegramUserName = "Test",
@@ -245,7 +220,7 @@ namespace FileStorageAPI.Tests
             };
             var stringContent = new StringContent(JsonConvert.SerializeObject(telegramUser), Encoding.UTF8, "application/json");
 
-            var response = await _apiClient.PostAsync("/api/senders/", stringContent);
+            var response = await apiClient.PostAsync("/api/senders/", stringContent);
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();

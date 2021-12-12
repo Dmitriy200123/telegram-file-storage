@@ -2,6 +2,9 @@
 
 namespace FileStorageAPI.Models
 {
+    /// <summary>
+    /// Пользователя телеграмма
+    /// </summary>
     public class TelegramUser
     {
         /// <summary>
