@@ -14,12 +14,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<FileSender>().HasAlternateKey(sender => sender.TelegramId);
-            base.OnModelCreating(modelBuilder);
-        }
-
         public Task<List<FileSender>> GetAllAsync()
         {
             return DbSet

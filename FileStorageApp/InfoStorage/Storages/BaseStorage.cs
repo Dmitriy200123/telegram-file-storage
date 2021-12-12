@@ -21,6 +21,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Chat>().HasAlternateKey(chat => chat.TelegramId);
+            modelBuilder.Entity<FileSender>().HasAlternateKey(sender => sender.TelegramId);
             modelBuilder
                 .Entity<FileSender>()
                 .HasMany(sender => sender.Chats)
