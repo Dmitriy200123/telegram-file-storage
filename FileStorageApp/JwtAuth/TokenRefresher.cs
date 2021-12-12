@@ -18,15 +18,14 @@ namespace JwtAuth
         /// <param name="jWtAuthenticationManager"></param>
         public TokenRefresher(byte[] key, IJwtAuthenticationManager jWtAuthenticationManager)
         {
-            _key = key;
-            _jWtAuthenticationManager = jWtAuthenticationManager;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
+            _jWtAuthenticationManager = jWtAuthenticationManager ?? throw new ArgumentNullException(nameof(jWtAuthenticationManager));
         }
 
         /// <inheritdoc />
         public AuthenticationResponse Refresh(RefreshCred refreshCred)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken;
             var principal = tokenHandler.ValidateToken(refreshCred.JwtToken,
                 new TokenValidationParameters
                 {
@@ -35,18 +34,19 @@ namespace JwtAuth
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
-                }, out validatedToken);
-            var jwtToken = validatedToken as JwtSecurityToken;
-            if(jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                }, out SecurityToken validatedToken);
+
+            if (validatedToken is not JwtSecurityToken jwtToken || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new SecurityTokenException("Invalid token passed!");
             }
 
-            var userName = principal.Identity.Name;
-            if(refreshCred.RefreshToken != _jWtAuthenticationManager.UsersRefreshTokens[userName])
-            {
+            var userName = principal.Identity?.Name;
+            if (userName == null)
+                throw new InvalidOperationException("Doesn't contain name in Identity");
+
+            if (refreshCred.RefreshToken != _jWtAuthenticationManager.UsersRefreshTokens[userName])
                 throw new SecurityTokenException("Invalid token passed!");
-            }
 
             return _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
         }

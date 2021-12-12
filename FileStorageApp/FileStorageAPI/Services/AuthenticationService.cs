@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
 using JwtAuth;
@@ -21,7 +22,7 @@ namespace FileStorageAPI.Services
         private readonly IConfiguration _configuration;
 
         /// <summary>
-        /// Конструктор сервиса
+        /// Конструктор сервиса.
         /// </summary>
         /// <param name="signInManager">Менеджер входа</param>
         /// <param name="intToGuidConverter">Конвертер, который превращает int в Guid</param>
@@ -30,15 +31,18 @@ namespace FileStorageAPI.Services
         /// <param name="accessor">Изменятель ответа</param>
         /// <param name="configuration">Конфигурация приложения</param>
         public AuthenticationService(SignInManager<ApplicationUser> signInManager,
-            IIntToGuidConverter intToGuidConverter, IJwtAuthenticationManager jwtAuthenticationManager,
-            ITokenRefresher tokenRefresher, IActionContextAccessor accessor, IConfiguration configuration)
+            IIntToGuidConverter intToGuidConverter,
+            IJwtAuthenticationManager jwtAuthenticationManager,
+            ITokenRefresher tokenRefresher,
+            IActionContextAccessor accessor,
+            IConfiguration configuration)
         {
-            _signInManager = signInManager;
-            _intToGuidConverter = intToGuidConverter;
-            _jwtAuthenticationManager = jwtAuthenticationManager;
-            _tokenRefresher = tokenRefresher;
-            _accessor = accessor;
-            _configuration = configuration;
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _intToGuidConverter = intToGuidConverter ?? throw new ArgumentNullException(nameof(intToGuidConverter));
+            _jwtAuthenticationManager = jwtAuthenticationManager ?? throw new ArgumentNullException(nameof(jwtAuthenticationManager));
+            _tokenRefresher = tokenRefresher ?? throw new ArgumentNullException(nameof(tokenRefresher));
+            _accessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <inheritdoc />

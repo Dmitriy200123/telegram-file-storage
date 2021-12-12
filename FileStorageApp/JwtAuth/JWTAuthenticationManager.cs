@@ -12,18 +12,19 @@ namespace JwtAuth
     {
         /// <inheritdoc />
         public IDictionary<string, string> UsersRefreshTokens { get; set; }
+
         private readonly string _tokenKey;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
 
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="JwtAuthenticationManager"/>.
         /// </summary>
         /// <param name="tokenKey"></param>
         /// <param name="refreshTokenGenerator"></param>
         public JwtAuthenticationManager(string tokenKey, IRefreshTokenGenerator refreshTokenGenerator)
         {
-            _tokenKey = tokenKey;
-            _refreshTokenGenerator = refreshTokenGenerator;
+            _tokenKey = tokenKey ?? throw new ArgumentNullException(nameof(tokenKey));
+            _refreshTokenGenerator = refreshTokenGenerator ?? throw new ArgumentNullException(nameof(refreshTokenGenerator));
             UsersRefreshTokens = new Dictionary<string, string>();
         }
 

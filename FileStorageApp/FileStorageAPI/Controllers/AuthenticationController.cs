@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Configuration;
 using Swashbuckle.AspNetCore.Annotations;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 
@@ -21,7 +18,7 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("auth/gitlab")]
     [SwaggerTag("Авторизация с помощью GitLab")]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : ControllerBase
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAuthenticationService _authenticationService;
@@ -32,12 +29,11 @@ namespace FileStorageAPI.Controllers
         /// <param name="signInManager">Менеджер входа</param>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
         /// <param name="configuration">Конфигурация приложения</param>
-        /// <param name="accessor"></param>
         public AuthenticationController(SignInManager<ApplicationUser> signInManager,
-            IAuthenticationService authenticationService, IActionContextAccessor accessor)
+            IAuthenticationService authenticationService)
         {
-            _signInManager = signInManager;
-            _authenticationService = authenticationService;
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
         }
 
         /// <summary>
