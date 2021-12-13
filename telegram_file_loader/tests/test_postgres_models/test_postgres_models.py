@@ -177,34 +177,38 @@ async def test_create_chat_without_image(db_manager):
 
 async def test_create_two_unique_file(db_manager):
     sender = await create_sender()
-    chat = await create_chat()
+    chat = await create_chat(telegram_id=-400)
 
     first_file_external = FileExternal(
         name='photo1212',
         extension='jpg',
         type=FileTypeEnum.Image,
         upload_date=datetime.datetime.now(),
-        sender_telegram_id=123,
-        chat_telegram_id=-400
+        sender_telegram_id=sender.TelegramId,
+        chat_telegram_id=chat.TelegramId
     )
     second_file_external = FileExternal(
         name='YouTube',
         type=FileTypeEnum.Link,
-        sender_telegram_id=123,
-        chat_telegram_id=-400
+        sender_telegram_id=sender.TelegramId,
+        chat_telegram_id=chat.TelegramId
     )
 
-    first_file_tuple = await db_manager.create_or_get(
+    first_file, is_created_first = await db_manager.create_or_get(
         model=File,
         ChatId=chat.Id,
         FileSenderId=sender.Id,
-        **first_file_external.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
+        **first_file_external.dict(by_alias=True, exclude_none=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
     )
-    second_file_tuple = await db_manager.create_or_get(
+    second_file, is_created_second = await db_manager.create_or_get(
         model=File,
         ChatId=chat.Id,
         FileSenderId=sender.Id,
-        **second_file_external.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
-    )
 
-    assert first_file_tuple[0].Id != second_file_tuple[0].Id
+        **second_file_external.dict(by_alias=True, exclude_none=True,
+                                    exclude={'sender_telegram_id', 'chat_telegram_id'})
+    )
+    assert is_created_first
+    assert is_created_second
+
+    assert first_file.Id != second_file.Id
