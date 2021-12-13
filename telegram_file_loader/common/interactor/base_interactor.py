@@ -11,7 +11,7 @@ class BaseInteractor:
         self.url_repository = url_repository
 
     async def is_valid_chat(self, chat_id: int) -> bool:
-        return await self.chat_repository.is_contains_chat(chat_id)
+        return await self.chat_repository.contains_by_telegram_id(chat_id)
 
     def find_urls(self, message: str) -> Any:
         if not self.url_repository.has_urls(message):
@@ -20,4 +20,4 @@ class BaseInteractor:
         return self.url_repository.find_urls(message)
 
     def get_url_name(self, url: str) -> str:
-        return self.url_repository.get_url_name(url)
+        return self.url_repository.get_name(url)
