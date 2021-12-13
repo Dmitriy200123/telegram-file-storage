@@ -24,7 +24,7 @@ class UrlRepository(BaseRepository):
         return self.url_extractor.find_urls(message)
 
     @staticmethod
-    def get_url_name(url: str) -> str:
+    def get_name(url: str) -> str:
         if not url.startswith('http'):
             url = f'{UrlRepository.HTTP}{url}'
 
