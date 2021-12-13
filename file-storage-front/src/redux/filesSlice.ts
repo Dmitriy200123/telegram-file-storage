@@ -73,7 +73,8 @@ const initialState = {
         count: 1,
         filesInPage: 10,
         currentPage: 1
-    } as TypePaginator
+    } as TypePaginator,
+    filesCount: 0,
 }
 
 export const filesSlice = createSlice({
@@ -121,6 +122,7 @@ export const filesSlice = createSlice({
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
             const pagesCount = Math.ceil((+action.payload.countFiles / state.paginator.filesInPage));
+            state.filesCount = +action.payload.countFiles;
             state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
             state.filesNames = action.payload.filesNames;
         },
@@ -128,7 +130,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+            state.error = action.payload;
         },
 
         //region FileThunks
@@ -146,6 +148,11 @@ export const filesSlice = createSlice({
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
+            state.filesCount--;
+            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage > state.filesCount) {
+                state.paginator.count--;
+                state.paginator.currentPage--;
+            }
             state.modalConfirm.isOpen = false;
         },
         [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
