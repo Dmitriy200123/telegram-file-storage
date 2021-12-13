@@ -1,13 +1,4 @@
-import {
-    Category,
-    Chat,
-    MessageType,
-    MessageTypeEnum,
-    ModalContent,
-    Sender,
-    TypeFile,
-    TypePaginator
-} from "../models/File";
+import {Category, Chat, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
@@ -18,7 +9,6 @@ const initialState = {
     senders: null as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
-    messages: [] as Array<MessageType>,
     files: [
         {
             fileName: "Файл.12.123.sad.txt",
@@ -90,9 +80,6 @@ export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        clearError(state, payload: PayloadAction<Number>) {
-            state.messages = state.messages.filter((e, i) => i !== payload.payload);
-        },
         closeModal(state) {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
@@ -122,9 +109,7 @@ export const filesSlice = createSlice({
         [fetchChats.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
 
         [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) => {
             state.loading = false;
@@ -138,9 +123,7 @@ export const filesSlice = createSlice({
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
 
         //region FileThunks
         [fetchFiles.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
@@ -150,9 +133,7 @@ export const filesSlice = createSlice({
         [fetchFiles.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
 
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -170,7 +151,6 @@ export const filesSlice = createSlice({
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         [fetchEditFileName.fulfilled.type]: (state, action: PayloadAction<{ id: string, fileName: string }>) => {
@@ -187,7 +167,6 @@ export const filesSlice = createSlice({
         [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
 
@@ -198,9 +177,7 @@ export const filesSlice = createSlice({
         [fetchFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
 
         [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
             state.loading = false;
@@ -208,9 +185,7 @@ export const filesSlice = createSlice({
         [fetchDownloadLink.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
         //endregion
     }
 });

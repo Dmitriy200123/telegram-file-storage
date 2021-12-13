@@ -1,11 +1,10 @@
 import React from 'react';
 import "./Messages.scss";
 import {MessageType, MessageTypeEnum} from "../../../models/File";
-import {useDispatch} from "react-redux";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
-import {filesSlice} from "../../../redux/filesSlice";
+import {profileSlice} from "../../../redux/profileSlice";
 
-const {clearError} = filesSlice.actions;
+const {clearMessage} = profileSlice.actions;
 export const Messages: React.FC<{ className?: string, messages: Array<MessageType> }> = ({messages, className}) => {
     const messagesUi = messages.map(({value, type}, index) => <Message key={index} type={type} value={value}
                                                                        index={index}/>);
@@ -31,7 +30,7 @@ const Message: React.FC<{ value: string, type: MessageTypeEnum, index: Number }>
     }
 
     function onClose() {
-        dispatch(clearError(index));
+        dispatch(clearMessage(index));
     }
 
     return (

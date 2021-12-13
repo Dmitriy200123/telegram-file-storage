@@ -12,7 +12,9 @@ import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
 
 const App: FC = () => {
-    const {messages, loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
+    const {filesReducer, profile} = useAppSelector((state) => state);
+    const {messages} = profile;
+    const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
 
