@@ -1,4 +1,13 @@
-import {Category, Chat, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
+import {
+    Category,
+    Chat,
+    MessageType,
+    MessageTypeEnum,
+    ModalContent,
+    Sender,
+    TypeFile,
+    TypePaginator
+} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
@@ -9,7 +18,7 @@ const initialState = {
     senders: null as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
-    error: null as string | null,
+    messages: [] as Array<MessageType>,
     files: [
         {
             fileName: "Файл.12.123.sad.txt",
@@ -81,8 +90,8 @@ export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        clearError(state) {
-            state.error = null;
+        clearError(state, payload: PayloadAction<Number>) {
+            state.messages = state.messages.filter((e, i) => i !== payload.payload);
         },
         closeModal(state) {
             state.modalConfirm.isOpen = false;
@@ -114,7 +123,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) => {
@@ -130,7 +139,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload;
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         //region FileThunks
@@ -142,7 +151,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
@@ -161,7 +170,7 @@ export const filesSlice = createSlice({
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         [fetchEditFileName.fulfilled.type]: (state, action: PayloadAction<{ id: string, fileName: string }>) => {
@@ -178,7 +187,7 @@ export const filesSlice = createSlice({
         [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
 
@@ -190,7 +199,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 
         [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
@@ -200,7 +209,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
         //endregion
     }

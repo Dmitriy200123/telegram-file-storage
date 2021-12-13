@@ -9,13 +9,15 @@ import {useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
 import {StartPage} from "./components/StartPage/StartPage";
+import {Messages} from "./components/utils/Messages/Messages";
 
 const App: FC = () => {
-    const {error, loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
+    const {messages, loading, modalConfirm} = useAppSelector((state) => state.filesReducer);
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
 
     return (<div className="App" style={{display: "flex", flexDirection: "column", minHeight: "100vh"}}>
+        {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
         <Switch>
             <Route path={"/login"} component={StartPage}/>
             <Route>
@@ -25,15 +27,6 @@ const App: FC = () => {
                     <Link to={"/files"}>Искать файлы</Link>
                     <Link to={"/login"}>логин</Link>
                 </div>
-                {!!error && <div style={{
-                    position: "fixed",
-                    right: 0,
-                    top: 100,
-                    background: "#ff061b",
-                    padding: 10,
-                    color: "white",
-                    borderRadius: 5
-                }}>{error}</div>}
                 {loading && <div>Загрузочка</div>}
                 <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                     <Switch>

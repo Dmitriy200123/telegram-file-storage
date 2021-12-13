@@ -10,6 +10,11 @@ export enum ModalContent {
     Edit
 }
 
+export enum MessageTypeEnum {
+    Error,
+    Message
+}
+
 export type FormType<TValue> = { label: string, value: TValue };
 
 export type TypeFile = {
@@ -46,4 +51,10 @@ export type TypePaginator = {
     count: number,
     currentPage: number,
     filesInPage: number
+}
+
+
+export type MessageType = {
+    type: MessageTypeEnum,
+    value: string
 }

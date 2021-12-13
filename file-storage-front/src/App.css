@@ -3,6 +3,12 @@
     font-size: 16px;
 }
 
+.app__messages{
+    position: fixed;
+    right: 1vw;
+    top: 5vh;
+}
+
 .header {
   background: #1976D3;
   min-height: 56px;
