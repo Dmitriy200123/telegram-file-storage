@@ -1,0 +1,9 @@
+@import "src/Variables";
+
+.navbar{
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  &__logo{
+    padding: 47px 66px;
+    border-bottom: 1px solid #F3F1F1;
+  }
+}

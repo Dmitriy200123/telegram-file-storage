@@ -10,6 +10,7 @@ import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
 import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
+import {Navbar} from "./components/Navbar/Navbar";
 
 const App: FC = () => {
     const {filesReducer, profile} = useAppSelector((state) => state);
@@ -18,28 +19,27 @@ const App: FC = () => {
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
 
-    return (<div className="App" style={{display: "flex", flexDirection: "column", minHeight: "100vh"}}>
+    return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
+
         <Switch>
             <Route path={"/login"} component={StartPage}/>
             <Route>
-                <header className="header"/>
-                <div style={{display: "grid", gap: 10}}>
-                    <Link to={"/load/"}>Загрузить файл</Link>
-                    <Link to={"/files"}>Искать файлы</Link>
-                    <Link to={"/login"}>логин</Link>
+                <Navbar className={"app__navbar"}/>
+                <div className={"app__content"}>
+                    <header className="header"/>
+                    {loading && <div>Загрузочка</div>}
+                    <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
+                        <Switch>
+                            <Route path={"/files"} exact component={FilesMain}/>
+                            <Route path={"/file/:id"} component={OpenedFile}/>
+                            <Route path={"/load/"} component={LoadFileMain}/>
+                            <Route path={"/login"} component={StartPage}/>
+                            <Redirect to={"/files"}/>
+                        </Switch>
+                    </div>
+                    {isOpen && id && <Content id={id}/>}
                 </div>
-                {loading && <div>Загрузочка</div>}
-                <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
-                    <Switch>
-                        <Route path={"/files"} exact component={FilesMain}/>
-                        <Route path={"/file/:id"} component={OpenedFile}/>
-                        <Route path={"/load/"} component={LoadFileMain}/>
-                        <Route path={"/login"} component={StartPage}/>
-                        <Redirect to={"/files"}/>
-                    </Switch>
-                </div>
-                {isOpen && id && <Content id={id}/>}
             </Route>
         </Switch>
     </div>)
