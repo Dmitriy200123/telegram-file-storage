@@ -24,6 +24,18 @@ export const profileSlice = createSlice({
 
     },
     extraReducers: {
+        [fetchRemoveFile.fulfilled.type]: (state) => {
+            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно удален файл"}];
+        },
+        [fetchEditFileName.fulfilled.type]: (state) => {
+            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
+        },
+        [fetchEditFileName.fulfilled.type]: (state) => {
+            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
+        },
+
+
+
         [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
             state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
