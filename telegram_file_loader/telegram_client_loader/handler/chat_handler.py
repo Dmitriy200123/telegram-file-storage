@@ -54,9 +54,7 @@ class ChatHandler(BaseHandler):
 
     async def __handle_migrate_chat_event(self, event: UpdateNewMessage):
         message: MessageService = event.message
-        # is_valid = await self.is_valid_chat(message.chat_id)
 
-        # if is_valid and isinstance(message.action, MessageActionChatMigrateTo):
         if isinstance(message.action, MessageActionChatMigrateTo):
             old_id = message.chat_id
             new_id = get_peer_id(PeerChannel(message.action.channel_id))
@@ -67,7 +65,6 @@ class ChatHandler(BaseHandler):
         return FileSender(telegram_id=user.id, telegram_username=user.username, full_name=utils.full_name(user))
 
     async def __handle_chat_event(self, event: ChatAction.Event):
-        # is_valid = await self.is_valid_chat(event.chat_id)
         message: MessageService = event.action_message
         action = message.action
         telegram_chat: TelegramChat = event.chat

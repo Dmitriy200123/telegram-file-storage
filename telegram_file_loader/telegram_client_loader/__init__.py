@@ -10,7 +10,7 @@ from common.repository.sender_to_chat_repository import SenderToChatRepository
 from common.repository.url_repository import UrlRepository
 from postgres.pg_adapter import Adapter
 from telegram_client_loader.handler.chat_handler import ChatHandler
-from telegram_client_loader.loader.telegram_loader import TelegramLoader
+from telegram_client_loader.handler.file_handler import FileHandler
 from telegram_client_loader.setting.telegram_setting import TelegramSetting
 from telethon import TelegramClient
 from urlextract import URLExtract
@@ -49,7 +49,7 @@ async def start():
         url_repository=url_repository
     )
 
-    loader = TelegramLoader(
+    loader = FileHandler(
         telegram_client,
         loader_interactor,
         chat_interactor

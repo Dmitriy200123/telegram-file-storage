@@ -11,7 +11,7 @@ from telethon.tl.custom import Message
 from telethon.tl.types import MessageMediaDocument, User
 
 
-class TelegramLoader(BaseHandler):
+class FileHandler(BaseHandler):
 
     def __init__(
         self,
@@ -19,7 +19,7 @@ class TelegramLoader(BaseHandler):
         loader_interactor: LoaderInteractor,
         chat_interactor: ChatInteractor
     ):
-        super(TelegramLoader, self).__init__(
+        super(FileHandler, self).__init__(
             telegram_client, loader_interactor
         )
 
