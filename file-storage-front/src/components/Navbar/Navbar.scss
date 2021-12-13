@@ -6,4 +6,31 @@
     padding: 47px 66px;
     border-bottom: 1px solid #F3F1F1;
   }
+
+  &__links{
+    display: grid;
+  }
+
+  &__link{
+    padding: 19px 22px;
+    color: black;
+    text-decoration: none;
+    transition: all .125s ease;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    &:hover{
+      color: $menu-color-hover;
+      & path{
+        stroke: $menu-color-hover;
+      }
+    }
+
+    & svg{
+      & path{
+        stroke: black;
+      }
+      margin-right: 12px;
+    }
+  }
 }
