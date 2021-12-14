@@ -6,7 +6,7 @@ const myHeaders = new Headers({
 });
 
 export const fetchTest = async (url: string) => {
-    const response = await fetch("https://localhost:5001/auth/gitlab", {
+    const response = await fetch("https://localhost:5001/auth/gitlab/confirm", {
         headers: myHeaders,
         credentials: "include"
     });
