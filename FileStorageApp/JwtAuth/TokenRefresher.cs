@@ -35,7 +35,7 @@ namespace JwtAuth
             if (userName == null)
                 return null;
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var refreshToken = await usersStorage.GetRefreshToken(Guid.Parse(userName));
+            var refreshToken = await usersStorage.GetRefreshTokenAsync(Guid.Parse(userName));
             if (refreshCred.RefreshToken != refreshToken)
                 return null;
 

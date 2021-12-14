@@ -38,7 +38,7 @@ namespace JwtAuth
             var refreshToken = _refreshTokenGenerator.GenerateToken();
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var userId = Guid.Parse(username);
-            await userStorage.UpdateRefreshToken(userId, refreshToken);
+            await userStorage.UpdateRefreshTokenAsync(userId, refreshToken);
 
             return new AuthenticationResponse(token, refreshToken);
         }

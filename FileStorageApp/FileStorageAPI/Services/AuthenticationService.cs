@@ -40,7 +40,7 @@ namespace FileStorageAPI.Services
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = client.GetAsync(url).Result;
+            var response = await client.GetAsync(url);
             var responseContent = await response.Content.ReadAsStringAsync();
             var gitLabUser = JsonConvert.DeserializeObject<GitLabUser>(responseContent);
             if (gitLabUser?.Id == null)
@@ -86,7 +86,7 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<string>> LogOut(Guid guid)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var result = await usersStorage.RemoveRefreshToken(guid);
+            var result = await usersStorage.RemoveRefreshTokenAsync(guid);
             return result 
                 ? RequestResult.NoContent<string>() 
                 : RequestResult.BadRequest<string>("No such user");

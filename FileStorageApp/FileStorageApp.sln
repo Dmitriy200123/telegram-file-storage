@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataBaseFiller", "DataBaseF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JwtAuth", "JwtAuth\JwtAuth.csproj", "{ED01955A-23A5-4107-8FDD-2E906B839FCC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramAuth", "TelegramAuth\TelegramAuth.csproj", "{E5E5DCA0-B799-4E0A-925C-36FB6231D336}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,7 @@ Global
 		{AD4DC541-1EDB-47FD-96A8-4FA91A550E20} = {1DB70A01-80B9-4F78-A0DA-E2DAB15BAAF6}
 		{ED01955A-23A5-4107-8FDD-2E906B839FCC} = {1DB70A01-80B9-4F78-A0DA-E2DAB15BAAF6}
 	
+		{E5E5DCA0-B799-4E0A-925C-36FB6231D336} = {1DB70A01-80B9-4F78-A0DA-E2DAB15BAAF6}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5E9344F5-B34C-4115-93D8-EFB699FF5910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -78,5 +81,9 @@ Global
 		{ED01955A-23A5-4107-8FDD-2E906B839FCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED01955A-23A5-4107-8FDD-2E906B839FCC}.Release|Any CPU.Build.0 = Release|Any CPU
 	
+		{E5E5DCA0-B799-4E0A-925C-36FB6231D336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5E5DCA0-B799-4E0A-925C-36FB6231D336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5E5DCA0-B799-4E0A-925C-36FB6231D336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5E5DCA0-B799-4E0A-925C-36FB6231D336}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

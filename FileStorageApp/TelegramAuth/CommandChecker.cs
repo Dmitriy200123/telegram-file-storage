@@ -6,9 +6,9 @@ namespace TelegramAuth
 {
     public static class CommandChecker
     {
-        public static bool IsCommandValid(Update update, out Guid guid)
+        public static bool IsCommandValid(Update update, out string? token)
         {
-            guid = Guid.Empty;
+            token = null;
             if (update.Type != UpdateType.Message || update.Message!.Type != MessageType.Text)
                 return false;
             var text = update.Message.Text;
@@ -19,7 +19,8 @@ namespace TelegramAuth
                 return false;
             if (splittedText[0] != "/start")
                 return false;
-            return Guid.TryParse(splittedText[1], out guid);
+            token = splittedText[1];
+            return true;
         }
     }
 }

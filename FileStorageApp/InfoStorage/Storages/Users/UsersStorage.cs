@@ -13,9 +13,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             Database.EnsureCreated();
         }
 
-        public async Task<bool> AddTelegramIdToUser(Guid id, long telegramId)
+        public async Task<bool> AddTelegramIdToGitLabUserAsync(long id, long telegramId)
         {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await DbSet.FirstOrDefaultAsync(x => x.GitLabId == id);
             if (user == null)
                 return false;
             user.TelegramId = telegramId;
@@ -23,7 +23,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return true;
         }
 
-        public async Task<bool> HasTelegramId(long telegramId)
+        public async Task<bool> HasTelegramIdAsync(long telegramId)
         {
             var user = await DbSet.FirstOrDefaultAsync(x => x.TelegramId == telegramId);
             return user is not null;
@@ -40,7 +40,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return await DbSet.FirstOrDefaultAsync(x => x.GitLabId == gitLabId);
         }
 
-        public async Task<bool> UpdateRefreshToken(Guid id, string refreshToken)
+        public async Task<bool> UpdateRefreshTokenAsync(Guid id, string refreshToken)
         {
             var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             if (user is null)
@@ -50,7 +50,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return true;
         }
 
-        public async Task<bool> RemoveRefreshToken(Guid id)
+        public async Task<bool> RemoveRefreshTokenAsync(Guid id)
         {
             var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)
@@ -60,10 +60,15 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return true;
         }
 
-        public async Task<string?> GetRefreshToken(Guid id)
+        public async Task<string?> GetRefreshTokenAsync(Guid id)
         {
             var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
             return user?.RefreshToken;
+        }
+
+        public new async Task<User?> GetByIdAsync(Guid id)
+        {
+            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
