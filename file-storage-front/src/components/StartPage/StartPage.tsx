@@ -17,20 +17,16 @@ export const StartPage: FC = memo(() => {
                     Telegram и сохранять в хранилище с информацией о файле.</p>
                 <Button type={"white"} className={"start-page__btn"} onClick={async () => {
                     try {
-                        //TODO: ЗАПРОС ГОВНА ТУТ, ИДИ СЮДА, ОН ЗДЕСЬ
-
-                        await fetch("https://localhost:5001/auth/gitlab", {
-                            mode: 'cors',
-                            credentials: "include",
-                        }).catch(() => {
-                        });
+                        document.location ="https://localhost:5001/auth/gitlab";
                     } catch {
 
                     }
-                }}>Войти через GitLab →</Button>
+                }}>Войти через GitLab →
+                </Button>
             </div>
         </div>
-    );
+    )
+        ;
 })
 
 
