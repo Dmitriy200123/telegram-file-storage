@@ -8,7 +8,7 @@ from postgres.models.external_models import File as FileExternal
 
 
 async def test_create_chat(db_manager):
-    chat = await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
+    chat = await db_manager.get_or_create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=123)
 
     result = list(await manager.execute(Chat.select()))
 
@@ -16,7 +16,7 @@ async def test_create_chat(db_manager):
 
 
 async def test_contains_chat(db_manager):
-    chat: Chat = await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
+    chat: Chat = await db_manager.get_or_create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     await create_chat(chat_name='mysupername')
 
     result = await db_manager.contains(Chat, TelegramId=chat.TelegramId)
@@ -25,7 +25,7 @@ async def test_contains_chat(db_manager):
 
 
 async def test_false_contains_chat(db_manager):
-    await db_manager.create_or_get(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
+    await db_manager.get_or_create(model=Chat, Name='test name', ImageId=uuid.uuid4(), TelegramId=122223)
     result = await db_manager.contains(Chat, TelegramId=000000000)
 
     assert not result
@@ -67,7 +67,7 @@ async def test_get_all_chats(db_manager):
 
 
 async def test_create_sender(db_manager):
-    sender = await db_manager.create_or_get(
+    sender = await db_manager.get_or_create(
         model=FileSender, TelegramId=123, TelegramUserName='my name',
         FullName='full name'
     )
@@ -78,7 +78,7 @@ async def test_create_sender(db_manager):
 
 
 async def test_contains_sender(db_manager):
-    sender: FileSender = await db_manager.create_or_get(
+    sender: FileSender = await db_manager.get_or_create(
         model=FileSender, TelegramId=1233, TelegramUserName='my name',
         FullName='full name'
     )
@@ -90,7 +90,7 @@ async def test_contains_sender(db_manager):
 
 
 async def test_false_contains_sender(db_manager):
-    await db_manager.create_or_get(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
+    await db_manager.get_or_create(model=FileSender, TelegramId=123, TelegramUserName='my name', FullName='full name')
     result = await db_manager.contains(FileSender, TelegramId=0000)
 
     assert not result
@@ -134,7 +134,7 @@ async def test_get_all_senders(db_manager):
 async def test_create_file(db_manager):
     chat = await create_chat()
     sender = await create_sender()
-    file = await db_manager.create_or_get(
+    file = await db_manager.get_or_create(
         model=File,
         Name='name',
         Extension='extension',
@@ -151,7 +151,7 @@ async def test_create_file(db_manager):
 
 async def test_create_existing_chat(db_manager):
     chat: Chat = await create_chat()
-    new_chat, is_created = await db_manager.create_or_get(Chat, **chat.as_dict())
+    new_chat, is_created = await db_manager.get_or_create(Chat, **chat.as_dict())
 
     assert not is_created
     assert new_chat.Id == chat.Id
@@ -181,7 +181,7 @@ async def test_create_two_unique_file(db_manager):
 
     first_file_external = FileExternal(
         name='photo1212',
-        extension='jpg',
+        # extension='jpg',
         type=FileTypeEnum.Image,
         upload_date=datetime.datetime.now(),
         sender_telegram_id=sender.TelegramId,
@@ -194,13 +194,13 @@ async def test_create_two_unique_file(db_manager):
         chat_telegram_id=chat.TelegramId
     )
 
-    first_file, is_created_first = await db_manager.create_or_get(
+    first_file, is_created_first = await db_manager.get_or_create(
         model=File,
         ChatId=chat.Id,
         FileSenderId=sender.Id,
         **first_file_external.dict(by_alias=True, exclude_none=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
     )
-    second_file, is_created_second = await db_manager.create_or_get(
+    second_file, is_created_second = await db_manager.get_or_create(
         model=File,
         ChatId=chat.Id,
         FileSenderId=sender.Id,

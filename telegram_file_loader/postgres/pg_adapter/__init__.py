@@ -11,8 +11,9 @@ class Adapter:
     def __init__(self, db_manager: Manager):
         self.manager = db_manager
 
-    async def create_or_get(self, model: BaseModel, **params) -> (BaseModel, bool):
-        return await self.manager.create_or_get(model, **params)
+    async def get_or_create(self, model: BaseModel, **params) -> (BaseModel, bool):
+        async with self.manager.atomic():
+            return await self.manager.get_or_create(model, **params)
 
     async def get(self, model: BaseModel, **params) -> Any:
         try:
