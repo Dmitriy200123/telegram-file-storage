@@ -16,7 +16,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public string Name { get; set; }
 
         [MaxLength(255)]
-        public string Extension { get; set; }
+        public string? Extension { get; set; }
 
         [Required]
         public int TypeId { get; set; }
