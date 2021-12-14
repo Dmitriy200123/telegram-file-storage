@@ -3,6 +3,7 @@ import Logo from "./../../assets/logos/grey.png";
 import {Button} from "../utils/Button/Button";
 import {FC, memo, useEffect} from "react";
 import {useHistory} from "react-router-dom";
+import {fetchTest} from "../../redux/api/api";
 
 export const StartPage: FC = memo(() => {
     const history = useHistory();
@@ -28,7 +29,8 @@ export const StartPage: FC = memo(() => {
                     Telegram и сохранять в хранилище с информацией о файле.</p>
                 <Button type={"white"} className={"start-page__btn"} onClick={async () => {
                     try {
-                        openAuthInNewWindow()
+                        fetchTest("");
+                        // openAuthInNewWindow()
                         // document.location ="https://localhost:5001/auth/gitlab";
                     } catch {
 

@@ -5,6 +5,14 @@ const myHeaders = new Headers({
     'Authorization': `Bearer ${localStorage.getItem("token")}`
 });
 
+export const fetchTest = async (url: string) => {
+    const response = await fetch("https://localhost:5001/auth/gitlab", {
+        headers: myHeaders,
+        credentials: "include"
+    });
+    // return await response.json();
+};
+
 export const fetchData = async (url: string) => {
     const response = await fetch(baseUrl + url, {
         headers: myHeaders
