@@ -103,11 +103,14 @@ export const filesSlice = createSlice({
     },
     extraReducers: {
         [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
-            state.chats = action.payload;
             state.loading = false;
+            state.chats = action.payload;
         },
         [fetchChats.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
+        },
+        [fetchChats.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
         },
 
 
@@ -123,6 +126,9 @@ export const filesSlice = createSlice({
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
+        [fetchFilters.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
+        },
 
 
         //region FileThunks
@@ -132,6 +138,9 @@ export const filesSlice = createSlice({
         },
         [fetchFiles.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
+        },
+        [fetchFiles.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
         },
 
 
@@ -149,6 +158,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
         },
@@ -165,6 +175,7 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
         },
@@ -177,6 +188,9 @@ export const filesSlice = createSlice({
         [fetchFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
+        [fetchFile.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
+        },
 
 
         [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
@@ -184,6 +198,9 @@ export const filesSlice = createSlice({
         },
         [fetchDownloadLink.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
+        },
+        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
         },
 
         //endregion

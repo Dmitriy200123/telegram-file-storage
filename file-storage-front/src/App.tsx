@@ -11,6 +11,7 @@ import {modalContents} from "./components/utils/Modal/Modal";
 import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
+import Loading from "./components/utils/Loading/Loading";
 
 const App: FC = () => {
     const {filesReducer, profile} = useAppSelector((state) => state);
@@ -26,9 +27,9 @@ const App: FC = () => {
             <Route path={"/login"} component={StartPage}/>
             <Route>
                 <Navbar className={"app__navbar"}/>
+                {loading && <Loading/>}
                 <div className={"app__content"}>
                     <header className="header"/>
-                    {loading && <div>Загрузочка</div>}
                     <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                         <Switch>
                             <Route path={"/files"} exact component={FilesMain}/>
