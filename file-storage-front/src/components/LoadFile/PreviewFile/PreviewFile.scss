@@ -7,6 +7,8 @@
     align-items: start;
   }
   &__file{
+    flex: 1 1 auto;
+    align-self: stretch;
     display: flex;
     align-items: center;
     margin-bottom: 96px;
@@ -14,17 +16,46 @@
   &__svg{
     margin: 0 5px;
   }
+
+  &__file-load{
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 16px;
+  }
   &__name{
+    justify-self: start;
     margin-right: 10px;
     font-style: normal;
     font-weight: normal;
-    font-size: 24 /$font-size em;
+    font-size: 24em /$font-size;
+  }
+  &__loading{
+    grid-column: 1/3;
+    position: relative;
+    height: 8px;
+    width: 100%;
+    background: rgba(55, 93, 229, 0.2);
+    overflow: hidden;
+    &:before{
+      content: "";
+      position: absolute;
+      display: block;
+      height: 100%;
+      width: 100%;
+      background:  #1976D2;
+      transform: translateX(-100%);
+      animation: flow 5s ease infinite;
+    }
   }
 
 
   &__close {
+    justify-self: end;
+    align-self: start;
     margin: 0 25px;
     color: transparent;
+    background: transparent;
     outline: none;
     border: none;
     width: 35px;
@@ -58,3 +89,14 @@
   }
 }
 
+@keyframes flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
