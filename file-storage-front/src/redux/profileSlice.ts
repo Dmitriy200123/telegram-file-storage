@@ -2,10 +2,11 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum} from "../models/File";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
+import {fetchIsAuth} from "./profileThunks";
 
 
 const initialState = {
-    key: "",
+    isAuth: false,
     name: "Берсерк Справедливович",
     login: "",
     email: "",
@@ -24,6 +25,17 @@ export const profileSlice = createSlice({
 
     },
     extraReducers: {
+        [fetchIsAuth.fulfilled.type]: (state) => {
+            state.isAuth = true;
+        },
+        [fetchIsAuth.pending.type]: (state) => {
+        },
+        [fetchIsAuth.rejected.type]: (state) => {
+            state.isAuth = false;
+        },
+
+
+
         [fetchRemoveFile.fulfilled.type]: (state) => {
             state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно удален файл"}];
         },

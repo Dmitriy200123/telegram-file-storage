@@ -169,6 +169,8 @@ export const filesSlice = createSlice({
                 ...e,
                 fileName: action.payload.fileName
             } : e);
+            if (state.openFile && state.openFile.fileId === action.payload.id)
+                state.openFile.fileName = action.payload.fileName;
             state.modalConfirm.isOpen = false;
         },
         [fetchEditFileName.pending.type]: (state, action: PayloadAction) => {

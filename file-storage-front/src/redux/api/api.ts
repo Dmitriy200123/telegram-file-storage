@@ -20,9 +20,10 @@ export const fetchConfig = async (url: string, config?: any) => {
         'Authorization': `Bearer ${localStorage.getItem("token")}`
     });
     const response = await fetch(respUrl, {
+        credentials: "same-origin",
         method: config.method ?? "GET",
         body: JSON.stringify(config.body),
-        headers: myHeaders
+        headers: myHeaders,
     });
 
     return await response.json();
@@ -33,6 +34,7 @@ export const fetchConfigText = async (url: string, config?: any) => {
     const params = queryParams(config?.params);
     const respUrl = baseUrl + url + (params?.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
+        credentials: "same-origin",
         method: config?.method ?? "GET",
         body: JSON.stringify(config?.body),
         headers: myHeaders

@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from 'react';
 import './App.css';
 import {BrowserRouter, Link, Redirect, Route, Switch, useLocation} from "react-router-dom";
-import {Provider} from "react-redux";
+import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
@@ -12,12 +12,17 @@ import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
+import {fetchIsAuth} from "./redux/profileThunks";
 
 
 const App: FC = () => {
+    const dispatch = useDispatch();
     const {profile} = useAppSelector((state) => state);
     const {messages} = profile;
     const location = useLocation();
+    useEffect(() => {
+        dispatch(fetchIsAuth());
+    },[])
     useEffect(() => {
         const token = new URLSearchParams(location.search).get('token');
         const refreshToken = new URLSearchParams(location.search).get('refreshToken');
