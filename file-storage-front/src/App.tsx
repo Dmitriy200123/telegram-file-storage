@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect} from 'react';
 import './App.css';
 import {BrowserRouter, Link, Redirect, Route, Switch, useLocation} from "react-router-dom";
 import {Provider} from "react-redux";
@@ -18,9 +18,15 @@ const App: FC = () => {
     const {profile} = useAppSelector((state) => state);
     const {messages} = profile;
     const location = useLocation();
-    console.log(location);
-    console.log(new URLSearchParams(location.search).get('token'));
-    console.log(new URLSearchParams(location.search).get('refreshToken'));
+    useEffect(() => {
+        const token = new URLSearchParams(location.search).get('token');
+        const refreshToken = new URLSearchParams(location.search).get('refreshToken');
+        if (token)
+            localStorage.setItem("token", token);
+        if (refreshToken)
+            localStorage.setItem("refreshToken", refreshToken);
+    }, [location]);
+
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
         <Switch>
