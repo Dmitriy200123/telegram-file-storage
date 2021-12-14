@@ -15,7 +15,19 @@ export const StartPage: FC = memo(() => {
                 <h1 className={"start-page__title"}>Хранилище файлов</h1>
                 <p className={"start-page__description"}>— Сервис, позволяющий автоматически собирать файлы из чатов
                     Telegram и сохранять в хранилище с информацией о файле.</p>
-                <Button type={"white"} className={"start-page__btn"} onClick={() => history.push("/")}>Войти через GitLab →</Button>
+                <Button type={"white"} className={"start-page__btn"} onClick={async () => {
+                    try {
+                        //TODO: ЗАПРОС ГОВНА ТУТ, ИДИ СЮДА, ОН ЗДЕСЬ
+
+                        await fetch("https://localhost:5001/auth/gitlab", {
+                            mode: 'cors',
+                            credentials: "include",
+                        }).catch(() => {
+                        });
+                    } catch {
+
+                    }
+                }}>Войти через GitLab →</Button>
             </div>
         </div>
     );
