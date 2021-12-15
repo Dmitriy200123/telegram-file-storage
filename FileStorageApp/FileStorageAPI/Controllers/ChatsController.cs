@@ -19,7 +19,7 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("api/chats")]
     [SwaggerTag("Информация о чатах из Telegram")]
-    [Authorize]
+    // [Authorize]
     public class ChatsController : ControllerBase
     {
         private readonly IChatService _chatService;

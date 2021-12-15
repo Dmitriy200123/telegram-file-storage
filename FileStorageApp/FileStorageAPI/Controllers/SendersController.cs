@@ -18,7 +18,7 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("api/senders")]
     [SwaggerTag("Информация об отправителях из Telegram")]
-    [Authorize]
+    // [Authorize]
     public class SendersController : Controller
     {
         private readonly ISenderService _senderService;
