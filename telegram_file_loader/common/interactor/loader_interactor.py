@@ -1,39 +1,44 @@
 from io import BytesIO
 
+from common.interactor.base_interactor import BaseInteractor
 from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
-from postgres.models.db_models import File
-from telegram_client_loader.model.telegram_file import TelegramFile
+from common.repository.url_repository import UrlRepository
+from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
+from postgres.models.external_models import File as FileExternal
 
 
-class LoaderInteractor:
-    chat_repository: ChatRepository
-    file_sender_repository: FileSenderRepository
-    file_repository: FileRepository
+class LoaderInteractor(BaseInteractor):
 
     def __init__(
         self,
         chat_repository: ChatRepository,
         file_sender_repository: FileSenderRepository,
-        file_repository: FileRepository
+        file_repository: FileRepository,
+        url_repository: UrlRepository
     ):
-        self.chat_repository = chat_repository
+        super(LoaderInteractor, self).__init__(chat_repository, url_repository)
+
         self.file_sender_repository = file_sender_repository
         self.file_repository = file_repository
 
-    async def is_valid_chat(self, chat_id: int) -> bool:
-        return await self.chat_repository.is_contains_chat(chat_id)
+    async def save_file(self, file_external: FileExternal, file: BytesIO):
+        file_sender: FileSender = await self.file_sender_repository \
+            .find_by_telegram_id(file_external.sender_telegram_id)
+        chat: Chat = await self.chat_repository.find_by_telegram_id(file_external.chat_telegram_id)
+        file_info: File = await self.file_repository.create_or_get(file_external, chat.Id, file_sender.Id)
 
-    # TODO: Обновлять запись о отправителе, если изменилось имя или юзернейм
-    async def update_file_sender(self):
-        pass
+        await self.file_repository.save_file(file, file_info.Id)
 
-    async def save_file(self, telegram_file: TelegramFile, file: BytesIO):
-        file_sender = await self.file_sender_repository.find_file_sender_by_id(telegram_file.sender_id)
-        chat = await self.chat_repository.find_chat_by_id(telegram_file.chat_id)
+    async def save_url(self, url: str, sender_id: int, chat_id: int):
+        name: str = self.url_repository.get_name(url)
+        file_info: FileExternal = FileExternal(
+            name=name,
+            type=FileTypeEnum.Link,
+            sender_telegram_id=sender_id,
+            chat_telegram_id=chat_id
+        )
+        file: BytesIO = BytesIO(bytes(url, encoding='utf-8'))
 
-        file_info_external = telegram_file.to_file(chat.Id, file_sender.Id)
-        file_info: File = await self.file_repository.create_file_info(file_info_external)
-
-        await self.file_repository.save_file(file_info, file)
+        await self.save_file(file_info, file)

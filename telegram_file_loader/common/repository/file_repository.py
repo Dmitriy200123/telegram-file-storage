@@ -1,4 +1,5 @@
 from io import BytesIO
+from uuid import UUID, uuid4
 
 from clients.s3_client import S3Client
 from common.repository.base_repository import BaseRepository
@@ -14,11 +15,17 @@ class FileRepository(BaseRepository):
         super(FileRepository, self).__init__(adapter)
         self.s3_client = s3_client
 
-    async def create_file_info(self, file_info: FileExternal) -> File:
-        return await self.adapter.create_or_get(model=File, **file_info.dict(by_alias=True))
+    async def create_or_get(self, file_info: FileExternal, chat_id: UUID, file_sender_id: UUID) -> File:
+        file_tuple: (File, bool) = await self.adapter.create_or_get(
+            model=File,
+            ChatId=chat_id,
+            FileSenderId=file_sender_id,
+            **file_info.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
+        )
 
-    async def save_file(self, file_info: File, file: BytesIO):
-        await self.s3_client.upload_file(key=str(file_info.Id), file=file)
-        # await self.s3_client.upload_file(key=str(file_info.Id), filename=file_info.Name, file=file)
+        return file_tuple[0]
 
-        # print(await self.s3_client.get_download_link(str(file_info.Id)))
+    async def save_file(self, file: BytesIO, key=None) -> UUID:
+        key: UUID = key or uuid4()
+        await self.s3_client.upload_file(key=str(key), file=file)
+        return key

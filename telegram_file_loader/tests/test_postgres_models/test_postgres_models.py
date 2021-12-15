@@ -4,6 +4,7 @@ import uuid
 from conftest import create_chat, create_sender
 from postgres.basic import manager
 from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
+from postgres.models.external_models import File as FileExternal
 
 
 async def test_create_chat(db_manager):
@@ -66,8 +67,10 @@ async def test_get_all_chats(db_manager):
 
 
 async def test_create_sender(db_manager):
-    sender = await db_manager.create_or_get(model=FileSender, TelegramId=123, TelegramUserName='my name',
-                                            FullName='full name')
+    sender = await db_manager.create_or_get(
+        model=FileSender, TelegramId=123, TelegramUserName='my name',
+        FullName='full name'
+    )
 
     result = list(await manager.execute(FileSender.select()))
 
@@ -75,8 +78,10 @@ async def test_create_sender(db_manager):
 
 
 async def test_contains_sender(db_manager):
-    sender: FileSender = await db_manager.create_or_get(model=FileSender, TelegramId=1233, TelegramUserName='my name',
-                                                        FullName='full name')
+    sender: FileSender = await db_manager.create_or_get(
+        model=FileSender, TelegramId=1233, TelegramUserName='my name',
+        FullName='full name'
+    )
     await create_sender(name='mysupername')
 
     result = await db_manager.contains(FileSender, TelegramId=sender.TelegramId)
@@ -150,3 +155,56 @@ async def test_create_existing_chat(db_manager):
 
     assert not is_created
     assert new_chat.Id == chat.Id
+
+
+async def test_update_chat(db_manager):
+    chat = await create_chat()
+    chat.TelegramId = 55555
+    chat_old = await db_manager.get(Chat, Id=chat.Id)
+
+    await db_manager.update(chat_old, **chat.as_dict())
+
+    chat_update = await db_manager.get(chat_old, Id=chat.Id)
+
+    assert chat_update.TelegramId == 55555
+
+
+async def test_create_chat_without_image(db_manager):
+    chat = await db_manager.create(model=Chat, TelegramId=15514, Name='test', ImageId=None)
+
+    assert chat
+
+
+async def test_create_two_unique_file(db_manager):
+    sender = await create_sender()
+    chat = await create_chat()
+
+    first_file_external = FileExternal(
+        name='photo1212',
+        extension='jpg',
+        type=FileTypeEnum.Image,
+        upload_date=datetime.datetime.now(),
+        sender_telegram_id=123,
+        chat_telegram_id=-400
+    )
+    second_file_external = FileExternal(
+        name='YouTube',
+        type=FileTypeEnum.Link,
+        sender_telegram_id=123,
+        chat_telegram_id=-400
+    )
+
+    first_file_tuple = await db_manager.create_or_get(
+        model=File,
+        ChatId=chat.Id,
+        FileSenderId=sender.Id,
+        **first_file_external.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
+    )
+    second_file_tuple = await db_manager.create_or_get(
+        model=File,
+        ChatId=chat.Id,
+        FileSenderId=sender.Id,
+        **second_file_external.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
+    )
+
+    assert first_file_tuple[0].Id != second_file_tuple[0].Id

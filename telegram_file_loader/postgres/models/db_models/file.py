@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from enum import Enum
 
 from peewee import CharField, DateTimeField, ForeignKeyField, UUIDField
@@ -12,6 +13,7 @@ class FileTypeEnum(int, Enum):
     Audio = 1
     Video = 2
     Image = 3
+    Link = 4
 
 
 class File(BaseModel):
@@ -19,7 +21,7 @@ class File(BaseModel):
     Name = CharField()
     Extension = CharField(null=True)
     TypeId = EnumField(enum=FileTypeEnum, null=False)
-    UploadDate = DateTimeField()
+    UploadDate = DateTimeField(default=datetime.now)
     FileSenderId = ForeignKeyField(model=FileSender, db_column='FileSenderId')
     ChatId = ForeignKeyField(model=Chat, null=True, db_column='ChatId')
 

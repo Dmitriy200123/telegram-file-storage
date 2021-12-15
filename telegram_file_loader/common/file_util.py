@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from telethon.tl.types import DocumentAttributeFilename, Message, MessageMediaDocument
 
 
@@ -20,10 +22,14 @@ class FileUtil:
     @staticmethod
     def get_photo_file_info(message: Message) -> (str, str, str):
         file_type = FileUtil.DEFAULT_PHOTO_MIME_TYPE
-        filename: str = f'photo_{message.date.strftime(FileUtil.PHOTO_DATE_FORMAT)}.{FileUtil.DEFAULT_PHOTO_EXTENSION}'
+        filename: str = FileUtil.get_photo_name(message.date)
         extension = FileUtil.DEFAULT_PHOTO_EXTENSION
 
         return file_type, filename, extension
+
+    @staticmethod
+    def get_photo_name(date=datetime.now()) -> str:
+        return f'photo_{date.strftime(FileUtil.PHOTO_DATE_FORMAT)}.{FileUtil.DEFAULT_PHOTO_EXTENSION}'
 
     @staticmethod
     def __find_filename_attribute(attributes):
