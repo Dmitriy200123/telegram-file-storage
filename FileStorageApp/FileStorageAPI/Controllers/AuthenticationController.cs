@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using FileStorageAPI.Models;
 using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
@@ -20,20 +18,18 @@ namespace FileStorageAPI.Controllers
     [SwaggerTag("Авторизация с помощью GitLab")]
     public class AuthenticationController : ControllerBase
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAuthenticationService _authenticationService;
+        private readonly ISettings _settings;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>
         /// </summary>
-        /// <param name="signInManager">Менеджер входа</param>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
-        /// <param name="configuration">Конфигурация приложения</param>
-        public AuthenticationController(SignInManager<ApplicationUser> signInManager,
-            IAuthenticationService authenticationService)
+        public AuthenticationController(IAuthenticationService authenticationService, ISettings settings)
         {
-            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            _authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+            _authenticationService =
+                authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+            _settings = settings;
         }
 
         /// <summary>
@@ -41,48 +37,16 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status300MultipleChoices, "Запускает авторизацию на GitLab")]
-        public IActionResult ExternalLogin()
+        [SwaggerResponse(StatusCodes.Status200OK, "Успешно проверили пользователя и создал токен")]
+        public async Task<IActionResult> ExternalLogin([FromHeader] string token)
         {
-            const string provider = "GitLab";
-            const string returnUrl = "auth/gitlab/confirm";
-            string redirectUrl =
-                Url.Action(nameof(ExternalLoginCallback), "Authentication", new {ReturnUrl = returnUrl});
-
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-
-            return Challenge(properties, provider);
-        }
-
-        /// <summary>
-        /// Callback после авторизации на GitLab
-        /// </summary>
-        /// <param name="remoteError">Возможная ошибка на GitLab</param>
-        /// <returns></returns>
-        [Route("confirm")]
-        [HttpGet]
-        [SwaggerResponse(StatusCodes.Status302Found, "Возвращения пользователя обратно на фронт")]
-        public async Task<IActionResult> ExternalLoginCallback(string? remoteError)
-        {
-            var applicationUser = await _authenticationService.LogIn(remoteError);
+            var applicationUser = await _authenticationService.LogIn(token);
             return (applicationUser.ResponseCode switch
             {
                 HttpStatusCode.Unauthorized => Unauthorized(applicationUser.Message),
-                HttpStatusCode.OK => applicationUser.Value,
+                HttpStatusCode.OK => Ok(applicationUser.Value),
                 _ => throw new ArgumentException("Unknown response code")
             })!;
-        }
-
-        /// <summary>
-        /// Эндпоинт для пользователя, который не аутентифицировался
-        /// </summary>
-        /// <returns></returns>
-        [Route("unauthorized")]
-        [HttpGet]
-        [SwaggerResponse(StatusCodes.Status401Unauthorized)]
-        public new IActionResult Unauthorized()
-        {
-            return base.Unauthorized();
         }
 
         /// <summary>
@@ -92,11 +56,18 @@ namespace FileStorageAPI.Controllers
         [Route("logout")]
         [HttpGet]
         [Authorize]
-        [SwaggerResponse(StatusCodes.Status302Found, "Пользователь успешно разлогинен")]
-        public async Task LogOut()
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Такого пользователя нет в базе")]
+        [SwaggerResponse(StatusCodes.Status204NoContent, "Успешно удалили рефреш токен ")]
+        public async Task<IActionResult> LogOut()
         {
-            var result = await _authenticationService.LogOut();
-            Redirect(result.Value);
+            var guid = TokenHelper.GetUserIdFromHeader(HttpContext.Request, _settings.Key);
+            var result = await _authenticationService.LogOut(guid);
+            return result.ResponseCode switch
+            {
+                HttpStatusCode.BadRequest => Unauthorized(result.Message),
+                HttpStatusCode.NoContent => NoContent(),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
 
         /// <summary>
@@ -108,15 +79,15 @@ namespace FileStorageAPI.Controllers
         [HttpPost("refresh")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, "Невалидные токены")]
         [SwaggerResponse(StatusCodes.Status200OK, "Токен обновлен")]
-        public IActionResult Refresh([FromBody] RefreshCred refreshCred)
+        public async Task<IActionResult> Refresh([FromBody] RefreshCred refreshCred)
         {
-            var refresh = _authenticationService.Refresh(refreshCred);
-            return (refresh.ResponseCode switch
+            var refresh =  await _authenticationService.Refresh(refreshCred);
+            return refresh.ResponseCode switch
             {
                 HttpStatusCode.Unauthorized => Unauthorized(refresh.Message),
-                HttpStatusCode.OK => refresh.Value,
+                HttpStatusCode.OK => Ok(refresh.Value),
                 _ => throw new ArgumentException("Unknown response code")
-            })!;
+            };
         }
     }
 }

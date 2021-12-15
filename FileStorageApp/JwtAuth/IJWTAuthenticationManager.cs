@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace JwtAuth
 {
@@ -17,7 +16,6 @@ namespace JwtAuth
         /// <summary>
         /// Рефреш токены пользователей.
         /// </summary>
-        IDictionary<string, string> UsersRefreshTokens { get; set; }
 
         /// <summary>
         /// Создать токен и рефреш токен с определенными клаймами.

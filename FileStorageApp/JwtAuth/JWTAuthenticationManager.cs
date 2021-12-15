@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAuth
@@ -11,7 +12,6 @@ namespace JwtAuth
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
         /// <inheritdoc />
-        public IDictionary<string, string> UsersRefreshTokens { get; set; }
 
         private readonly string _tokenKey;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
@@ -25,23 +25,13 @@ namespace JwtAuth
         {
             _tokenKey = tokenKey ?? throw new ArgumentNullException(nameof(tokenKey));
             _refreshTokenGenerator = refreshTokenGenerator ?? throw new ArgumentNullException(nameof(refreshTokenGenerator));
-            UsersRefreshTokens = new Dictionary<string, string>();
         }
 
         /// <inheritdoc />
         public AuthenticationResponse Authenticate(string username, Claim[] claims)
         {
-            var token = GenerateTokenString(username, DateTime.UtcNow, claims);
+            var token = GenerateTokenString(DateTime.UtcNow, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
-
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
 
             return new AuthenticationResponse(token, refreshToken);
         }
@@ -49,22 +39,15 @@ namespace JwtAuth
         /// <inheritdoc />
         public AuthenticationResponse Authenticate(string username)
         {
-            var token = GenerateTokenString(username, DateTime.UtcNow);
+            var claim = new Claim(ClaimTypes.Name, username);
+            var claims = new[] {claim};
+            var token = GenerateTokenString(DateTime.UtcNow, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
-
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
 
             return new AuthenticationResponse(token, refreshToken);
         }
 
-        private string GenerateTokenString(string username, DateTime expires, Claim[] claims = null)
+        private string GenerateTokenString(DateTime expires, Claim[] claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenKey);
