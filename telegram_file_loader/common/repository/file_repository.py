@@ -20,7 +20,7 @@ class FileRepository(BaseRepository):
             model=File,
             ChatId=chat_id,
             FileSenderId=file_sender_id,
-            **file_info.dict(by_alias=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
+            **file_info.dict_non_empty_fields()
         )
 
         return file_tuple[0]

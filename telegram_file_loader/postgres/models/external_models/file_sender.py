@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from postgres.models.external_models.base import BaseExternalModel
+from pydantic import Field
 
 
-class FileSender(BaseModel):
+class FileSender(BaseExternalModel):
     telegram_id: int = Field(..., title='Телеграм id', alias='TelegramId')
     telegram_username: str = Field(
         ..., title='Имя пользователя в телеграме', alias='TelegramUserName')
