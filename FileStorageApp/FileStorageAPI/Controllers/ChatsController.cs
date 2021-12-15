@@ -23,16 +23,14 @@ namespace FileStorageAPI.Controllers
     public class ChatsController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ChatsController"/>
         /// </summary>
         /// <param name="chatService">Сервис для взаимодействия с информацией о чатах</param>
-        public ChatsController(IChatService chatService, UserManager<ApplicationUser> userManager)
+        public ChatsController(IChatService chatService)
         {
             _chatService = chatService ?? throw new ArgumentNullException(nameof(chatService));
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -42,10 +40,6 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список чатов", typeof(List<Chat>))]
         public async Task<IActionResult> GetChats()
         {
-            var claimsPrincipal = User;
-            var user = await _userManager.GetUserAsync(claimsPrincipal);
-            
-            
             var chats = await _chatService.GetAllChatsAsync();
 
             return chats.ResponseCode switch
