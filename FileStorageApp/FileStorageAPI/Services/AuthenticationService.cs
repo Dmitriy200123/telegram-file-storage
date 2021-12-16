@@ -53,15 +53,12 @@ namespace FileStorageAPI.Services
         private async Task<AuthenticationResponse> CreateToken(GitLabUser gitLabUser)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            AuthenticationResponse jwtToken; 
             var user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             if (user is null)
             {
-                var guid = Guid.NewGuid();
-                
                 user = new User
                 {
-                    Id = guid,
+                    Id = Guid.NewGuid(),
                     TelegramId = null,
                     GitLabId = gitLabUser.Id,
                     Avatar = gitLabUser.AvatarUrl,
@@ -69,10 +66,8 @@ namespace FileStorageAPI.Services
                     Name = gitLabUser.Name
                 };
                 await usersStorage.AddAsync(user);
-                jwtToken = await _jwtAuthenticationManager.Authenticate(guid.ToString());
             }
-            else
-                jwtToken = await _jwtAuthenticationManager.Authenticate(user.Id.ToString());
+            var jwtToken = await _jwtAuthenticationManager.Authenticate(user.Id.ToString());
 
             return jwtToken;
         }

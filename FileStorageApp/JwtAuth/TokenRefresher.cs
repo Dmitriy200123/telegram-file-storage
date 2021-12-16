@@ -34,11 +34,11 @@ namespace JwtAuth
 
             var userName = principal.Identity?.Name;
             if (userName == null)
-                throw new InvalidOperationException("Doesn't contain name in Identity");
+                return null;
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
             var refreshToken = await usersStorage.GetRefreshToken(Guid.Parse(userName));
             if (refreshCred.RefreshToken != refreshToken)
-                throw new SecurityTokenException("Invalid token passed!");
+                return null;
 
             return await _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
         }
