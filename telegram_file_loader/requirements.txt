@@ -19,6 +19,7 @@ identify==2.3.4
 idna==3.3
 iniconfig==1.1.1
 jmespath==0.10.0
+lxml==4.6.4
 multidict==5.2.0
 nodeenv==1.6.0
 packaging==21.2
