@@ -1,9 +1,6 @@
-const baseUrl = "https://localhost:5001/auth";
+import {myHeaders} from "./api";
 
-const myHeaders = new Headers({
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
-});
+const baseUrl = "https://localhost:5001/auth";
 
 export const fetchLog = async (url: string) => {
     const response = await fetch(baseUrl + url, {

@@ -3,6 +3,7 @@ import {MessageType, MessageTypeEnum, TokensType} from "../models/File";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
 import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./profileThunks";
+import {updateAuthToken} from "./api/api";
 
 
 const initialState = {
@@ -31,6 +32,7 @@ export const profileSlice = createSlice({
             state.isAuth = true;
             localStorage.setItem("jwtToken", action.payload.jwtToken);
             localStorage.setItem("refreshToken", action.payload.refreshToken);
+            updateAuthToken();
         },
         [fetchIsAuth.pending.type]: (state) => {
             state.loading = true;
@@ -44,6 +46,7 @@ export const profileSlice = createSlice({
             state.isAuth = true;
             localStorage.setItem("jwtToken", action.payload.jwtToken);
             localStorage.setItem("refreshToken", action.payload.refreshToken);
+            updateAuthToken();
         },
         [fetchAuthGitlab.pending.type]: (state, action) => {
         },

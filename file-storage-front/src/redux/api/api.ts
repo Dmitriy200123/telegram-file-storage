@@ -2,10 +2,17 @@ import {TokensType} from "../../models/File";
 
 const baseUrl = "https://localhost:5001/api";
 
-const myHeaders = new Headers({
+export let myHeaders = new Headers({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
 });
+
+export function updateAuthToken() {
+    myHeaders = new Headers({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
+    });
+}
 
 export const fetchData = async (url: string) => {
     const response = await fetch(baseUrl + url, {
