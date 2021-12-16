@@ -11,6 +11,6 @@ namespace JwtAuth
         /// Обновляет токен.
         /// </summary>
         /// <param name="refreshCred">Токен и рефреш токен пользователя</param>
-        AuthenticationResponse Refresh(RefreshCred refreshCred);
+        Task<AuthenticationResponse?> Refresh(RefreshCred refreshCred);
     }
 }

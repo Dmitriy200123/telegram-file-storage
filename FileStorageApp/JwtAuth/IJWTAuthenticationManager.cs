@@ -18,7 +18,6 @@ namespace JwtAuth
         /// <summary>
         /// Рефреш токены пользователей.
         /// </summary>
-        IDictionary<string, string> UsersRefreshTokens { get; set; }
 
         /// <summary>
         /// Создать токен и рефреш токен с определенными клаймами.

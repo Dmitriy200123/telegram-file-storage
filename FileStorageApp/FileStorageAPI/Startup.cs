@@ -45,14 +45,9 @@ namespace FileStorageAPI
         {
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
-            services.AddCors();
-            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
+            var settings = new Settings(Configuration, key, CreateDataBaseConfig());
+            services.AddSingleton<ISettings>(settings);
             services.AddControllers();
-
-            //подумать, а нужно ли это нам? 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
 
             services.AddAuthentication(x =>
                 {
@@ -137,11 +132,7 @@ namespace FileStorageAPI
             app.UseCookiePolicy();
             app.UseRouting();
 
-            app.UseCors(builder => builder
-                .WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
             app.UseAuthentication();
             app.UseAuthorization();
