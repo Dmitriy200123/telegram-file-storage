@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -31,22 +30,7 @@ namespace JwtAuth
         /// <inheritdoc />
         public async Task<AuthenticationResponse?> Refresh(RefreshCred refreshCred)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(refreshCred.JwtToken,
-                new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(_key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = false 
-                }, out var validatedToken);
-
-            if (validatedToken is not JwtSecurityToken jwtToken ||
-                !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid token passed!");
-            }
+            var principal = TokenHelper.GetPrincipalFromToken(refreshCred.JwtToken, _key);
 
             var userName = principal.Identity?.Name;
             if (userName == null)
@@ -56,7 +40,7 @@ namespace JwtAuth
             if (refreshCred.RefreshToken != refreshToken)
                 throw new SecurityTokenException("Invalid token passed!");
 
-            return _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
+            return await _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
         }
     }
 }

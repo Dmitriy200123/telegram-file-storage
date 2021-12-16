@@ -6,7 +6,6 @@ using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using JwtAuth;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace FileStorageAPI.Services
@@ -16,7 +15,6 @@ namespace FileStorageAPI.Services
     {
         private readonly IJwtAuthenticationManager _jwtAuthenticationManager;
         private readonly ITokenRefresher _tokenRefresher;
-        private readonly IConfiguration _configuration;
         private readonly IInfoStorageFactory _infoStorageFactory;
 
         /// <summary>
@@ -24,15 +22,12 @@ namespace FileStorageAPI.Services
         /// </summary>
         /// <param name="jwtAuthenticationManager">Менеджер токенов</param>
         /// <param name="tokenRefresher">Обновлятель токена</param>
-        /// <param name="configuration">Конфигурация приложения</param>
-        /// <param name="infoStorageFactory"></param>
-        public AuthenticationService(IJwtAuthenticationManager jwtAuthenticationManager, ITokenRefresher tokenRefresher,
-            IConfiguration configuration, IInfoStorageFactory infoStorageFactory)
+        /// <param name="infoStorageFactory">Фабрика для работы с базой данных</param>
+        public AuthenticationService(IJwtAuthenticationManager jwtAuthenticationManager, ITokenRefresher tokenRefresher, IInfoStorageFactory infoStorageFactory)
         {
             _jwtAuthenticationManager = jwtAuthenticationManager ??
                                         throw new ArgumentNullException(nameof(jwtAuthenticationManager));
             _tokenRefresher = tokenRefresher ?? throw new ArgumentNullException(nameof(tokenRefresher));
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
         }
 
@@ -48,34 +43,38 @@ namespace FileStorageAPI.Services
             var response = client.GetAsync(url).Result;
             var responseContent = await response.Content.ReadAsStringAsync();
             var gitLabUser = JsonConvert.DeserializeObject<GitLabUser>(responseContent);
-            if (gitLabUser.Id == null)
+            if (gitLabUser?.Id == null)
                 return RequestResult.BadRequest<AuthenticationResponse>("Invalid token");
+            var jwtToken = await CreateToken(gitLabUser);
 
+            return RequestResult.Ok(jwtToken);
+        }
 
+        private async Task<AuthenticationResponse> CreateToken(GitLabUser gitLabUser)
+        {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
             AuthenticationResponse jwtToken; 
-            var user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id.Value);
+            var user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             if (user is null)
             {
                 var guid = Guid.NewGuid();
-                jwtToken = _jwtAuthenticationManager.Authenticate(guid.ToString());
+                
                 user = new User
                 {
                     Id = guid,
                     TelegramId = null,
-                    GitLabId = gitLabUser.Id.Value,
-                    Avatar = gitLabUser.AvatarUrl!,
-                    RefreshToken = jwtToken.RefreshToken
+                    GitLabId = gitLabUser.Id,
+                    Avatar = gitLabUser.AvatarUrl,
+                    RefreshToken = "",
+                    Name = gitLabUser.Name
                 };
                 await usersStorage.AddAsync(user);
+                jwtToken = await _jwtAuthenticationManager.Authenticate(guid.ToString());
             }
             else
-            {
-                jwtToken = _jwtAuthenticationManager.Authenticate(user.Id.ToString());
-                await usersStorage.UpdateRefreshToken(user.Id, jwtToken.RefreshToken);
-            }
+                jwtToken = await _jwtAuthenticationManager.Authenticate(user.Id.ToString());
 
-            return RequestResult.Ok(jwtToken);
+            return jwtToken;
         }
 
 

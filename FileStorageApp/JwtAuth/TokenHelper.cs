@@ -1,26 +1,25 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FileStorageAPI
+namespace JwtAuth
 {
     /// <summary>
-    /// 
+    /// Вспомогательные методы для работы с токеном
     /// </summary>
     public static class TokenHelper
     {
         /// <summary>
-        /// 
+        /// Получение данных о пользователе из токена
         /// </summary>
-        /// <param name="httpRequest"></param>
+        /// <param name="token">jwtToken</param>
+        /// <param name="key">Ключ которым зашифрован токен</param>
         /// <returns></returns>
-        public static Guid GetUserIdFromHeader(HttpRequest httpRequest, byte[] key)
+        public static ClaimsPrincipal GetPrincipalFromToken(string token, byte[] key)
         {
-            var header = httpRequest.Headers["Authorization"].ToString();
-            var value = header.Split(' ')[1];
             var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(value,
+            var principal = tokenHandler.ValidateToken(token,
                 new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -28,7 +27,7 @@ namespace FileStorageAPI
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = false 
-                }, out SecurityToken validatedToken);
+                }, out var validatedToken);
 
             if (validatedToken is not JwtSecurityToken jwtToken ||
                 !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
@@ -36,8 +35,7 @@ namespace FileStorageAPI
                 throw new SecurityTokenException("Invalid token passed!");
             }
 
-            var userName = principal.Identity?.Name;
-            return Guid.Parse(userName);
+            return principal;
         }
     }
 }

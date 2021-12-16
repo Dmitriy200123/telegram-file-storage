@@ -13,6 +13,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public long? TelegramId { get; set; }
 
         public int GitLabId { get; set; }
+        public string Name { get; set; }
         
         public string Avatar { get; set; }
         

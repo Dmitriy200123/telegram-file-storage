@@ -83,7 +83,6 @@ namespace FileStorageAPI
             RegisterFileStorage(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
-            RegisterConverters(services);
             services.AddSwaggerGen(c =>
             {
                 c.EnableAnnotations();
@@ -117,6 +116,7 @@ namespace FileStorageAPI
                                    "SSLMode=Prefer";
             return new DataBaseConfig(connectionString);
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment() || env.IsEnvironment("Docker"))
@@ -145,11 +145,6 @@ namespace FileStorageAPI
             services.AddSingleton<IChatConverter, ChatConverter>();
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
-        }
-
-        private static void RegisterConverters(IServiceCollection services)
-        {
-            services.AddSingleton<IIntToGuidConverter, IntToGuidConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -194,19 +189,18 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
-
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
         {
             serviceCollection.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            serviceCollection.AddSingleton<ITokenRefresher>(x => 
-                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!, 
+            serviceCollection.AddSingleton<ITokenRefresher>(x =>
+                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!,
                     x.GetService<IInfoStorageFactory>()!));
             serviceCollection.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
-            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x => 
-                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!));
-            
+            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x =>
+                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!,
+                    x.GetService<IInfoStorageFactory>()!));
         }
 
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>

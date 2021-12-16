@@ -25,19 +25,21 @@ namespace FileStorageAPI.Controllers
         /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>
         /// </summary>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
+        /// <param name="settings"></param>
         public AuthenticationController(IAuthenticationService authenticationService, ISettings settings)
         {
             _authenticationService =
                 authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
-            _settings = settings;
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <summary>
-        /// Базовый эндпоинт для входа
+        /// Получает на вход токен от GitLab и авторизовывает пользователя нашим токеном
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно проверили пользователя и создал токен")]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "Токен GitLab невалидный")]
         public async Task<IActionResult> ExternalLogin([FromHeader] string token)
         {
             var applicationUser = await _authenticationService.LogIn(token);
@@ -60,8 +62,11 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status204NoContent, "Успешно удалили рефреш токен ")]
         public async Task<IActionResult> LogOut()
         {
-            var guid = TokenHelper.GetUserIdFromHeader(HttpContext.Request, _settings.Key);
-            var result = await _authenticationService.LogOut(guid);
+            var header = HttpContext.Request.Headers["Authorization"].ToString();
+            var token = header.Split(' ')[1];
+            var claimsPrincipal = TokenHelper.GetPrincipalFromToken(token, _settings.Key);
+            var id = Guid.Parse(claimsPrincipal.Identity!.Name!);
+            var result = await _authenticationService.LogOut(id);
             return result.ResponseCode switch
             {
                 HttpStatusCode.BadRequest => Unauthorized(result.Message),

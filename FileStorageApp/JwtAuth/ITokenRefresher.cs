@@ -3,7 +3,7 @@
 namespace JwtAuth
 {
     /// <summary>
-    /// Класс отвечабщий за обновление токена.
+    /// Класс отвечающий за обновление токена.
     /// </summary>
     public interface ITokenRefresher
     {
