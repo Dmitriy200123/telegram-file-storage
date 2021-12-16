@@ -79,7 +79,7 @@ namespace TelegramAuth
                 await botClient.SendTextMessageAsync(chatId, "Не смогли добавить в базу",
                     cancellationToken: cancellationToken);
             else
-                await botClient.SendTextMessageAsync(chatId, "Успешно авторизован",
+                await botClient.SendTextMessageAsync(chatId, "Успешно авторизован, пожалуйста, обновите страницу на сайте",
                     cancellationToken: cancellationToken);
         }
 
