@@ -40,7 +40,7 @@ namespace JwtAuth
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = false 
-                }, out SecurityToken validatedToken);
+                }, out var validatedToken);
 
             if (validatedToken is not JwtSecurityToken jwtToken ||
                 !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
@@ -52,7 +52,7 @@ namespace JwtAuth
             if (userName == null)
                 throw new InvalidOperationException("Doesn't contain name in Identity");
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var refreshToken = await usersStorage.GetRefreshToken(Guid.Parse(userName!));
+            var refreshToken = await usersStorage.GetRefreshToken(Guid.Parse(userName));
             if (refreshCred.RefreshToken != refreshToken)
                 throw new SecurityTokenException("Invalid token passed!");
 

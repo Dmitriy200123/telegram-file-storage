@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAuth
@@ -11,8 +10,6 @@ namespace JwtAuth
     /// <inheritdoc />
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
-        /// <inheritdoc />
-
         private readonly string _tokenKey;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
 
@@ -41,13 +38,11 @@ namespace JwtAuth
         {
             var claim = new Claim(ClaimTypes.Name, username);
             var claims = new[] {claim};
-            var token = GenerateTokenString(DateTime.UtcNow, claims);
-            var refreshToken = _refreshTokenGenerator.GenerateToken();
 
-            return new AuthenticationResponse(token, refreshToken);
+            return Authenticate(username, claims);
         }
 
-        private string GenerateTokenString(DateTime expires, Claim[] claims)
+        private string GenerateTokenString(DateTime expires, IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenKey);
