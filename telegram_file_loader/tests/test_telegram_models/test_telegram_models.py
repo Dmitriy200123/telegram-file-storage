@@ -14,6 +14,6 @@ async def test_url():
     url_model3 = ValidateUrl(url=url3)
     url_model4 = ValidateUrl(url=url4)
     url_model5 = ValidateUrl(url=url5)
-    url_model5 = ValidateUrl(url=url6)
+    url_model6 = ValidateUrl(url=url6)
 
     print(123)
