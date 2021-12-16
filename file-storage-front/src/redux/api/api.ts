@@ -7,6 +7,13 @@ const myHeaders = new Headers({
     'Authorization': `Bearer ${localStorage.getItem("token")}`
 });
 
+export const fetchLog = async (url: string) => {
+    const response = await fetch("https://localhost:5001/auth" + url, {
+        headers: myHeaders,
+    });
+};
+
+
 export const fetchAuth = async (url: string, token?: string) => {
     const myHeaders = new Headers({
         'Content-Type': 'application/json',
@@ -15,7 +22,6 @@ export const fetchAuth = async (url: string, token?: string) => {
 
     const response = await fetch("https://localhost:5001/auth" + url, {
         headers: myHeaders,
-        credentials: "include"
     });
 
     return await response.json();
@@ -26,7 +32,7 @@ export const f1etchIsAuth = async (url: string, body: object) => {
     const bodyJson = JSON.stringify(body);
     const response = await fetch("https://localhost:5001/auth" + url, {
         headers: myHeaders,
-        credentials: "include",
+        method: "POST",
         body: bodyJson
     });
 

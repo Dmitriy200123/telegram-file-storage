@@ -1,6 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 
-import {f1etchIsAuth, fetchAuth} from "./api/api";
+import {f1etchIsAuth, fetchAuth, fetchLog} from "./api/api";
 import {TokensType} from "../models/File";
 
 export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI) => {
@@ -12,7 +12,7 @@ export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI
                 jwtToken: jwtToken,
                 refreshToken: refreshToken
             };
-            const data= await f1etchIsAuth("/gitlab/refresh", tokens);
+            const data:TokensType = await f1etchIsAuth("/gitlab/refresh", tokens);
             return data;
         } catch (e) {
             return thunkAPI.rejectWithValue("Не удалось");
@@ -30,3 +30,11 @@ export const fetchAuthGitlab = createAsyncThunk("profile/login", async (token:st
     }
 })
 
+
+export const fetchLogout = createAsyncThunk("profile/logout", async (token:string, thunkAPI) => {
+    try {
+        await fetchLog("/gitlab/logout");
+    } catch (e) {
+        return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
+    }
+})
