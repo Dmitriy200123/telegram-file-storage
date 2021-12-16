@@ -2,7 +2,7 @@ import pytest
 from clients.s3_client import S3Client
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def s3_client():
     client = S3Client('test')
 
