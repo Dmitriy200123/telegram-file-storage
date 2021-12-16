@@ -1,9 +1,10 @@
 from typing import Optional
 
-from pydantic import UUID4, BaseModel, Field
+from postgres.models.external_models.base import BaseExternalModel
+from pydantic import UUID4, Field
 
 
-class Chat(BaseModel):
+class Chat(BaseExternalModel):
     name: str = Field(..., tittle='Название чата',
                       max_length=255, alias='Name')
     image_id: Optional[UUID4] = Field(

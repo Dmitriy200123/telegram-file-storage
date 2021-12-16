@@ -2,7 +2,8 @@ import datetime
 from typing import Optional
 
 from postgres.models.db_models import FileTypeEnum
-from pydantic import BaseModel, Field
+from postgres.models.external_models.base import BaseExternalModel
+from pydantic import Field
 
 type_map = {
     'document': FileTypeEnum.Document,
@@ -12,7 +13,7 @@ type_map = {
 }
 
 
-class File(BaseModel):
+class File(BaseExternalModel):
     name: str = Field(..., title='Название файла',
                       max_length=255, alias='Name')
     extension: Optional[str] = Field(
@@ -23,6 +24,9 @@ class File(BaseModel):
 
     sender_telegram_id: int
     chat_telegram_id: int
+
+    def dict_non_empty_fields(self):
+        return self.dict(by_alias=True, exclude_none=True, exclude={'sender_telegram_id', 'chat_telegram_id'})
 
     class Config:
         allow_population_by_field_name = True

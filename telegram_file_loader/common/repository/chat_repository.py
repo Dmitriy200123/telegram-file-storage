@@ -15,7 +15,7 @@ class ChatRepository(BaseRepository):
     async def create_or_get(self, chat_external: ChatExternal) -> Chat:
         chat_tuple: (Chat, bool) = await self.adapter.create_or_get(
             model=Chat,
-            **chat_external.dict(by_alias=True)
+            **chat_external.dict_non_empty_fields()
         )
 
         return chat_tuple[0]
