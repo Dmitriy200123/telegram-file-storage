@@ -2,7 +2,7 @@ const baseUrl = "https://localhost:5001/auth";
 
 const myHeaders = new Headers({
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem("token")}`
+    'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
 });
 
 export const fetchLog = async (url: string) => {

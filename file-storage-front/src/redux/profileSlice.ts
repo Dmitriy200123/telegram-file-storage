@@ -54,6 +54,8 @@ export const profileSlice = createSlice({
         [fetchLogout.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
             state.loading = false;
             state.isAuth = false;
+            localStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+            sessionStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
             localStorage.removeItem("jwtToken");
             localStorage.removeItem("refreshToken");
         },
