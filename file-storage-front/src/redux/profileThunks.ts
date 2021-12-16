@@ -31,7 +31,7 @@ export const fetchAuthGitlab = createAsyncThunk("profile/login", async (token:st
 })
 
 
-export const fetchLogout = createAsyncThunk("profile/logout", async (token:string, thunkAPI) => {
+export const fetchLogout = createAsyncThunk("profile/logout", async (_, thunkAPI) => {
     try {
         await fetchLog("/gitlab/logout");
     } catch (e) {
