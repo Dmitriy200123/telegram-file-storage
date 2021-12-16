@@ -65,7 +65,7 @@ namespace TelegramAuth
             }
 
             var telegramId = update.Message.From.Id;
-            var gitLabUserId = SendRequestToGitLab(token).Result;
+            var gitLabUserId = GetGitlabIdByToken(token).Result;
             if (!gitLabUserId.HasValue)
             {
                 await botClient.SendTextMessageAsync(chatId, "Неверный токен",
@@ -83,7 +83,7 @@ namespace TelegramAuth
                     cancellationToken: cancellationToken);
         }
 
-        private async Task<long?> SendRequestToGitLab(string token)
+        private async Task<long?> GetGitlabIdByToken(string token)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.GetAsync(Url);

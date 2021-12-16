@@ -1,49 +1,50 @@
 ﻿using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Services;
+using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с данными пользователя
+    /// </summary>
     [Authorize]
+    [Route("userinfo")]
     public class UserInfoController : Controller
     {
         private readonly IUserInfoService _userInfoService;
         private readonly ISettings _settings;
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="UserInfoController"/>
+        /// </summary>
+        /// <param name="userInfoService">Сервис для работы с информацией пользователя</param>
+        /// <param name="settings">Настройки приложения</param>
         public UserInfoController(IUserInfoService userInfoService, ISettings settings)
         {
             _userInfoService = userInfoService;
             _settings = settings;
         }
 
-        [HttpGet]//todo add dock
+        /// <summary>
+        /// Возвращает информацию о пользователе
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователе")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Такого пользователя не существует")]
         public async Task<IActionResult> GetUserInfo()
         {
             var authHeader = Request.Headers[HeaderNames.Authorization];
             var userToken = authHeader.ToString().Split(' ')[1];
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken validatedToken;
-            var principal = tokenHandler.ValidateToken(userToken,
-                new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(_settings.Key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
-                }, out validatedToken);
-            var jwtToken = validatedToken as JwtSecurityToken;
-            if(jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid token passed!");
-            }
+            var principal = TokenHelper.GetPrincipalFromToken(userToken, _settings.Key);
 
-            var userName = principal.Identity.Name;
+            var userName = principal.Identity!.Name;
             var user = await _userInfoService.GetUserInfo(Guid.Parse(userName!));
             
             return user.ResponseCode switch

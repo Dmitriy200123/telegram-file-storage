@@ -1,5 +1,4 @@
-﻿using System;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TelegramAuth
@@ -14,12 +13,12 @@ namespace TelegramAuth
             var text = update.Message.Text;
             if (text is null)
                 return false;
-            var splittedText = text.Split(' ');
-            if (splittedText.Length != 2)
+            var splitText = text.Split(' ');
+            if (splitText.Length != 2)
                 return false;
-            if (splittedText[0] != "/start")
+            if (splitText[0] != "/start")
                 return false;
-            token = splittedText[1];
+            token = splitText[1];
             return true;
         }
     }
