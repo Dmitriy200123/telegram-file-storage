@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Factories;
-using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAuth
 {

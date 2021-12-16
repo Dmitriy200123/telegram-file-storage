@@ -12,6 +12,6 @@ namespace FileStorageAPI.Converters
         /// Конвертирует информацию о чате в API-контракты.
         /// </summary>
         /// <param name="chat">Информация о чате из базы данных</param>
-        Chat? ConvertToChatInApi(ChatInDb? chat);
+        Chat ConvertToChatInApi(ChatInDb? chat);
     }
 }

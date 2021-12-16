@@ -11,6 +11,6 @@ namespace FileStorageAPI.Converters
             .CreateMapper();
 
         /// <inheritdoc/>
-        public Chat? ConvertToChatInApi(ChatInDb? chat) => chat is null ? null : _chatMapper.Map<Chat>(chat);
+        public Chat ConvertToChatInApi(ChatInDb? chat) => chat is null ? null : _chatMapper.Map<Chat>(chat);
     }
 }

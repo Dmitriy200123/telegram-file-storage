@@ -36,7 +36,6 @@ namespace FileStorageAPI.Controllers
         /// <summary>
         /// Получает на вход токен от GitLab и авторизовывает пользователя нашим токеном
         /// </summary>
-        /// <returns></returns>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно проверили пользователя и создал токен")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, "Токен GitLab невалидный")]
@@ -54,7 +53,6 @@ namespace FileStorageAPI.Controllers
         /// <summary>
         /// Разлогирование пользователя
         /// </summary>
-        /// <returns></returns>
         [Route("logout")]
         [HttpGet]
         [Authorize]
@@ -79,7 +77,6 @@ namespace FileStorageAPI.Controllers
         /// Обновление токена
         /// </summary>
         /// <param name="refreshCred">Токен и рефреш токен</param>
-        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("refresh")]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, "Невалидные токены")]
