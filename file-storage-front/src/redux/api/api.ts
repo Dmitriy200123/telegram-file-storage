@@ -4,7 +4,7 @@ const baseUrl = "https://localhost:5001/api";
 
 const myHeaders = new Headers({
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem("token")}`
+    'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
 });
 
 export const fetchData = async (url: string) => {
