@@ -9,8 +9,13 @@ import {fetchAuthGitlab} from "../../redux/profileThunks";
 
 export const StartPage: FC = memo(() => {
     const dispatch = useAppDispatch();
-    const [clicked, ChangeClicked] = useState(false);
+    const [clicked, ChangeClicked] = useState(localStorage.getItem("flag") === "true");
+    const changeClicked = (flag: boolean) => {
+        localStorage.setItem("flag", String(flag));
+        ChangeClicked(flag);
+    }
     useEffect(() => {
+        localStorage.setItem("flag", "false");
         let dataAuthGit = localStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
         if (!dataAuthGit)
             dataAuthGit = sessionStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
@@ -22,13 +27,14 @@ export const StartPage: FC = memo(() => {
     }, [localStorage, sessionStorage])
     return (
         <div>
-            <GitlabAuth
+            {clicked && <GitlabAuth
                 host="https://git.66bit.ru"
                 application_id="392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda"
                 redirect_uri="http://localhost:3000/login2"
                 scope="api openid profile email"
                 secret={"3446700f6a9e418bee18bbd32f4df0fc6e2749182faaf3bebbbc3ebd4c5b1325"}
             />
+            }
             <div className={"start-page"}>
                 <div>
                     <img src={Logo}/>
@@ -37,7 +43,7 @@ export const StartPage: FC = memo(() => {
                     <h1 className={"start-page__title"}>Хранилище файлов</h1>
                     <p className={"start-page__description"}>— Сервис, позволяющий автоматически собирать файлы из чатов
                         Telegram и сохранять в хранилище с информацией о файле.</p>
-                    <Button type={"white"} className={"start-page__btn"} onClick={() => ChangeClicked(true)}>Войти через
+                    <Button type={"white"} className={"start-page__btn"} onClick={() => changeClicked(true)}>Войти через
                         GitLab →</Button>
                 </div>
             </div>
