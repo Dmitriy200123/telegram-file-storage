@@ -20,7 +20,7 @@ export const fetchAuth = async (url: string, config?: any) => {
 
     const response = await fetch(baseUrl + url, {
         headers: myHeaders,
-        method: "GET" ?? method,
+        method: method ?? "GET",
         body: body ? JSON.stringify(body) : null
     });
 

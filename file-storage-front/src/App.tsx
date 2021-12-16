@@ -18,20 +18,13 @@ import {fetchIsAuth} from "./redux/profileThunks";
 const App: FC = () => {
     const dispatch = useDispatch();
     const {profile} = useAppSelector((state) => state);
-    const {messages} = profile;
+    const {messages, loading} = profile;
     useEffect(() => {
         dispatch(fetchIsAuth());
     }, [])
-
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {profile.isAuth ? <Main/> : <StartPage/>}
-        {/*<Switch>*/}
-        {/*    <Route path={"/login"} component={StartPage}/>*/}
-        {/*    <Route>*/}
-        {/*        <Main />*/}
-        {/*    </Route>*/}
-        {/*</Switch>*/}
+        {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
     </div>)
 }
 

@@ -12,6 +12,7 @@ const initialState = {
     email: "",
     role: "",
     chats: "",
+    loading: true,
     messages: [] as Array<MessageType>,
 }
 
@@ -26,13 +27,16 @@ export const profileSlice = createSlice({
     },
     extraReducers: {
         [fetchIsAuth.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
+            state.loading = false;
             state.isAuth = true;
             localStorage.setItem("jwtToken", action.payload.jwtToken);
             localStorage.setItem("refreshToken", action.payload.refreshToken);
         },
         [fetchIsAuth.pending.type]: (state) => {
+            state.loading = true;
         },
         [fetchIsAuth.rejected.type]: (state) => {
+            state.loading = false;
             state.isAuth = false;
         },
 
@@ -48,15 +52,17 @@ export const profileSlice = createSlice({
         },
 
         [fetchLogout.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
+            state.loading = false;
             state.isAuth = false;
             localStorage.removeItem("jwtToken");
             localStorage.removeItem("refreshToken");
         },
-        [fetchAuthGitlab.pending.type]: (state, action) => {
+        [fetchLogout.pending.type]: (state, action) => {
+            state.loading = true;
         },
-        [fetchAuthGitlab.rejected.type]: (state, action) => {
+        [fetchLogout.rejected.type]: (state, action) => {
+            state.loading = false;
         },
-
 
 
         [fetchRemoveFile.fulfilled.type]: (state) => {
@@ -68,7 +74,6 @@ export const profileSlice = createSlice({
         [fetchEditFileName.fulfilled.type]: (state) => {
             state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
         },
-
 
 
         [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
