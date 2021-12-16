@@ -12,7 +12,7 @@ namespace FileStorageAPI.Providers
         /// Возвращает строку, по которой можно скачать запрашиваемый файл
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
-        /// <returns></returns>
-        Task<string> GetDownloadLinkAsync(Guid id);
+        /// <param name="name">Имя файла</param>
+        Task<string> GetDownloadLinkAsync(Guid id, string name);
     }
 }

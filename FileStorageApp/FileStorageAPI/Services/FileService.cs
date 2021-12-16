@@ -82,10 +82,13 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<string>> GetFileDownloadLinkByIdAsync(Guid id)
         {
-            var result = await _downloadLinkProvider.GetDownloadLinkAsync(id);
-
-            if (result == null)
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
+            if (file is null)
                 return RequestResult.NotFound<string>($"File with identifier {id} not found");
+
+            var result = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
+
             return RequestResult.Ok(result);
         }
 
@@ -124,7 +127,7 @@ namespace FileStorageAPI.Services
             var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
             file.Chat = chat;
             file.FileSender = await fileSenderStorage.GetByIdAsync(Guid.Parse(TempFileSenderId));
-            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id);
+            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
 
             return RequestResult.Created<(string uri, FileInfo info)>((downloadLink,
                 _fileInfoConverter.ConvertFileInfo(file)));
@@ -143,7 +146,7 @@ namespace FileStorageAPI.Services
             file.Name = fileName;
             await filesStorage.UpdateAsync(file);
 
-            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(id);
+            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, fileName);
             if (downloadLink is null)
                 return RequestResult.NotFound<(string uri, FileInfo info)>($"File with identifier {id} not found");
 
