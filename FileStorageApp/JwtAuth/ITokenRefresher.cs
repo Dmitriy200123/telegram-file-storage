@@ -1,7 +1,9 @@
-﻿namespace JwtAuth
+﻿using System.Threading.Tasks;
+
+namespace JwtAuth
 {
     /// <summary>
-    /// Класс отвечабщий за обновление токена.
+    /// Класс отвечающий за обновление токена.
     /// </summary>
     public interface ITokenRefresher
     {
@@ -9,6 +11,6 @@
         /// Обновляет токен.
         /// </summary>
         /// <param name="refreshCred">Токен и рефреш токен пользователя</param>
-        AuthenticationResponse Refresh(RefreshCred refreshCred);
+        Task<AuthenticationResponse?> Refresh(RefreshCred refreshCred);
     }
 }

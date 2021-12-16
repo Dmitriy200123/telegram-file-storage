@@ -10,7 +10,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     {
         [Key]
         public Guid Id { get; set; }
-
+        
         [Required]
         public long TelegramId { get; set; }
 

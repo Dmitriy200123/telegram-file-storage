@@ -17,13 +17,13 @@ namespace FileStorageAPI.Controllers
     /// </summary>
     [Route("api/files")]
     [SwaggerTag("Информация об файлах из Telegram")]
-    // [Authorize]
+    [Authorize]
     public class FilesController : Controller
     {
         private readonly IFileService _fileService;
 
         /// <summary>
-        /// Инициализирует новый экземляр класса <see cref="FilesController"/>.
+        /// Инициализирует новый экземпляр класса <see cref="FilesController"/>.
         /// </summary>
         /// <param name="fileService">Сервис для взаимодействия с информацией о файлах</param>
         public FilesController(IFileService fileService)

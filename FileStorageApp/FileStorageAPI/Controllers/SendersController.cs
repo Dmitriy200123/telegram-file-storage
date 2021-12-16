@@ -18,7 +18,7 @@ namespace FileStorageAPI.Controllers
     [ApiController]
     [Route("api/senders")]
     [SwaggerTag("Информация об отправителях из Telegram")]
-    // [Authorize]
+    [Authorize]
     public class SendersController : Controller
     {
         private readonly ISenderService _senderService;
@@ -70,9 +70,9 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        ///  Возвращает отправителей по заданной подстроке username пользователя в телеграм.
+        ///  Возвращает отправителей по заданной подстроке username пользователя в телеграмм.
         /// </summary>
-        /// <param name="telegramName">Подстрока для поиска по телеграм нику</param>
+        /// <param name="telegramName">Подстрока для поиска по телеграмм нику</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("search/telegramname")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает отправителей по заданной подстроке", typeof(List<Sender>))]
@@ -89,7 +89,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает отправителя по заданной подстроке имени пользователя в телеграм.
+        /// Возвращает отправителя по заданной подстроке имени пользователя в телеграмм.
         /// </summary>
         /// <param name="fullName">Подстрока для поиска по имени отправителя</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -108,9 +108,9 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавлет отправителя в базу
+        /// Добавляет отправителя в базу
         /// </summary>
-        /// <param name="telegramUser">Данныее о пользователе</param>
+        /// <param name="telegramUser">Данные о пользователе</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном пользователе", typeof(Sender))]

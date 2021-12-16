@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -8,8 +7,6 @@ using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
-using FileStorageAPI.Data;
-using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -21,9 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -50,13 +45,9 @@ namespace FileStorageAPI
         {
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
+            var settings = new Settings(Configuration, key, CreateDataBaseConfig());
+            services.AddSingleton<ISettings>(settings);
             services.AddControllers();
-            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("UserDataBase"));
-
-            //подумать, а нужно ли это нам? 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
 
             services.AddAuthentication(x =>
                 {
@@ -76,36 +67,9 @@ namespace FileStorageAPI
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
                     };
-                })
-                .AddGitLab(options =>
-                {
-                    options.ClientId = Configuration["Authentication:GitLab:ClientId"];
-                    options.ClientSecret = Configuration["Authentication:GitLab:ClientSecret"];
-                    options.AuthorizationEndpoint = Configuration["Authentication:GitLab:AuthorizationEndpoint"];
-                    options.TokenEndpoint = Configuration["Authentication:GitLab:TokenEndpoint"];
-                    options.UserInformationEndpoint = Configuration["Authentication:GitLab:UserInformationEndpoint"];
-                    options.SaveTokens = true;
-                    options.AccessDeniedPath = "/auth/gitlab/unauthorized";
-                    options.Events.OnCreatingTicket = ctx =>
-                    {
-                        var tokens = ctx.Properties.GetTokens() as List<AuthenticationToken>;
-                        tokens!.Add(new AuthenticationToken()
-                        {
-                            Name = "TicketCreated",
-                            Value = DateTime.UtcNow.ToString()
-                        });
-                        ctx.Properties.StoreTokens(tokens);
-                        return Task.CompletedTask;
-                    };
                 });
 
             services.AddSingleton(Configuration);
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
-            });
             services.ConfigureApplicationCookie(options =>
                 {
                     options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
@@ -119,7 +83,6 @@ namespace FileStorageAPI
             RegisterFileStorage(services);
             RegisterInfoStorage(services);
             RegisterApiServices(services);
-            RegisterConverters(services);
             services.AddSwaggerGen(c =>
             {
                 c.EnableAnnotations();
@@ -141,6 +104,17 @@ namespace FileStorageAPI
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
             });
+        }
+
+        private DataBaseConfig CreateDataBaseConfig()
+        {
+            var connectionString = $"Server={Configuration["DbHost"]};" +
+                                   $"Username={Configuration["DbUser"]};" +
+                                   $"Database={Configuration["UsersDbName"]};" +
+                                   $"Port={Configuration["DbPort"]};" +
+                                   $"Password={Configuration["DbPassword"]};" +
+                                   "SSLMode=Prefer";
+            return new DataBaseConfig(connectionString);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -173,11 +147,6 @@ namespace FileStorageAPI
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
         }
 
-        private static void RegisterConverters(IServiceCollection services)
-        {
-            services.AddSingleton<IIntToGuidConverter, IntToGuidConverter>();
-        }
-
         private static void RegisterInfoStorage(IServiceCollection services)
         {
             services.AddSingleton<IDataBaseConfig>(provider =>
@@ -192,16 +161,6 @@ namespace FileStorageAPI
                 return new DataBaseConfig(connectionString);
             });
             services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
-        }
-
-        private string CreateConnectionString()
-        {
-            return $"Server={Configuration["DbHost"]};" +
-                   $"Username={Configuration["DbUser"]};" +
-                   $"Database={Configuration["UsersDbName"]};" +
-                   $"Port={Configuration["DbPort"]};" +
-                   $"Password={Configuration["DbPassword"]};" +
-                   "SSLMode=Prefer";
         }
 
         private static void RegisterFileStorage(IServiceCollection services)
@@ -230,18 +189,18 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
-
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
         {
             serviceCollection.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            serviceCollection.AddSingleton<ITokenRefresher>(x => 
-                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!));
+            serviceCollection.AddSingleton<ITokenRefresher>(x =>
+                new TokenRefresher(key, x.GetService<IJwtAuthenticationManager>()!,
+                    x.GetService<IInfoStorageFactory>()!));
             serviceCollection.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
-            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x => 
-                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!));
-            
+            serviceCollection.AddSingleton<IJwtAuthenticationManager>(x =>
+                new JwtAuthenticationManager(tokenKey, x.GetService<IRefreshTokenGenerator>()!,
+                    x.GetService<IInfoStorageFactory>()!));
         }
 
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>

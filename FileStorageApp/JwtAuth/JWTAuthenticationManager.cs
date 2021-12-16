@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JwtAuth
@@ -10,61 +12,47 @@ namespace JwtAuth
     /// <inheritdoc />
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {
-        /// <inheritdoc />
-        public IDictionary<string, string> UsersRefreshTokens { get; set; }
-
         private readonly string _tokenKey;
         private readonly IRefreshTokenGenerator _refreshTokenGenerator;
+        private readonly IInfoStorageFactory _infoStorageFactory;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="JwtAuthenticationManager"/>.
         /// </summary>
         /// <param name="tokenKey"></param>
         /// <param name="refreshTokenGenerator"></param>
-        public JwtAuthenticationManager(string tokenKey, IRefreshTokenGenerator refreshTokenGenerator)
+        /// <param name="infoStorageFactory"></param>
+        public JwtAuthenticationManager(string tokenKey, IRefreshTokenGenerator refreshTokenGenerator,
+            IInfoStorageFactory infoStorageFactory)
         {
             _tokenKey = tokenKey ?? throw new ArgumentNullException(nameof(tokenKey));
-            _refreshTokenGenerator = refreshTokenGenerator ?? throw new ArgumentNullException(nameof(refreshTokenGenerator));
-            UsersRefreshTokens = new Dictionary<string, string>();
+            _refreshTokenGenerator =
+                refreshTokenGenerator ?? throw new ArgumentNullException(nameof(refreshTokenGenerator));
+            _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
         }
 
         /// <inheritdoc />
-        public AuthenticationResponse Authenticate(string username, Claim[] claims)
+        public async Task<AuthenticationResponse> Authenticate(string username, IEnumerable<Claim> claims)
         {
-            var token = GenerateTokenString(username, DateTime.UtcNow, claims);
+            var token = GenerateTokenString(DateTime.UtcNow, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
-
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
+            using var userStorage = _infoStorageFactory.CreateUsersStorage();
+            var userId = Guid.Parse(username);
+            await userStorage.UpdateRefreshToken(userId, refreshToken);
 
             return new AuthenticationResponse(token, refreshToken);
         }
 
         /// <inheritdoc />
-        public AuthenticationResponse Authenticate(string username)
+        public async Task<AuthenticationResponse> Authenticate(string username)
         {
-            var token = GenerateTokenString(username, DateTime.UtcNow);
-            var refreshToken = _refreshTokenGenerator.GenerateToken();
+            var claim = new Claim(ClaimTypes.Name, username);
+            var claims = new[] {claim};
 
-            if (UsersRefreshTokens.ContainsKey(username))
-            {
-                UsersRefreshTokens[username] = refreshToken;
-            }
-            else
-            {
-                UsersRefreshTokens.Add(username, refreshToken);
-            }
-
-            return new AuthenticationResponse(token, refreshToken);
+            return await Authenticate(username, claims);
         }
 
-        private string GenerateTokenString(string username, DateTime expires, Claim[] claims = null)
+        private string GenerateTokenString(DateTime expires, IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenKey);
@@ -72,7 +60,8 @@ namespace JwtAuth
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = expires.AddMinutes(60),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
