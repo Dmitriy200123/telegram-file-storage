@@ -17,7 +17,7 @@ namespace FileStorageAPI.Controllers
     /// </summary>
     [Route("api/files")]
     [SwaggerTag("Информация об файлах из Telegram")]
-    // [Authorize]
+    [Authorize]
     public class FilesController : Controller
     {
         private readonly IFileService _fileService;
