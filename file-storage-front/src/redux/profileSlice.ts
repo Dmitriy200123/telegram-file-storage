@@ -1,8 +1,8 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {MessageType, MessageTypeEnum} from "../models/File";
+import {MessageType, MessageTypeEnum, TokensType} from "../models/File";
 import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
-import {fetchIsAuth} from "./profileThunks";
+import {fetchAuthGitlab, fetchIsAuth} from "./profileThunks";
 
 
 const initialState = {
@@ -31,6 +31,17 @@ export const profileSlice = createSlice({
         [fetchIsAuth.pending.type]: (state) => {
         },
         [fetchIsAuth.rejected.type]: (state) => {
+            state.isAuth = false;
+        },
+
+        [fetchAuthGitlab.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
+            state.isAuth = true;
+            localStorage.setItem("jwtToken", action.payload.jwtToken);
+            localStorage.setItem("refreshToken", action.payload.refreshToken);
+        },
+        [fetchAuthGitlab.pending.type]: (state, action) => {
+        },
+        [fetchAuthGitlab.rejected.type]: (state, action) => {
             state.isAuth = false;
         },
 

@@ -22,24 +22,17 @@ const App: FC = () => {
     const location = useLocation();
     useEffect(() => {
         dispatch(fetchIsAuth());
-    },[])
-    useEffect(() => {
-        const token = new URLSearchParams(location.search).get('token');
-        const refreshToken = new URLSearchParams(location.search).get('refreshToken');
-        if (token)
-            localStorage.setItem("token", token);
-        if (refreshToken)
-            localStorage.setItem("refreshToken", refreshToken);
-    }, [location]);
+    }, [])
 
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        <Switch>
-            <Route path={"/login"} component={StartPage}/>
-            <Route>
-                <Content1 />
-            </Route>
-        </Switch>
+        {profile.isAuth ? <Content1/> : <StartPage/>}
+        {/*<Switch>*/}
+        {/*    <Route path={"/login"} component={StartPage}/>*/}
+        {/*    <Route>*/}
+        {/*        <Content1 />*/}
+        {/*    </Route>*/}
+        {/*</Switch>*/}
     </div>)
 }
 
@@ -66,7 +59,6 @@ const Content1: FC = () => {
         </div>
     </>)
 }
-
 
 
 const store = setupStore();

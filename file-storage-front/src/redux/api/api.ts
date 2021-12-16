@@ -1,3 +1,5 @@
+import {TokensType} from "../../models/File";
+
 const baseUrl = "https://localhost:5001/api";
 
 const myHeaders = new Headers({
@@ -5,13 +7,33 @@ const myHeaders = new Headers({
     'Authorization': `Bearer ${localStorage.getItem("token")}`
 });
 
-export const fetchTest = async (url: string) => {
-    const response = await fetch("https://localhost:5001/auth/gitlab/confirm", {
+export const fetchAuth = async (url: string, token?: string) => {
+    const myHeaders = new Headers({
+        'Content-Type': 'application/json',
+        'token': token || ""
+    });
+
+    const response = await fetch("https://localhost:5001/auth" + url, {
         headers: myHeaders,
         credentials: "include"
     });
-    // return await response.json();
+
+    return await response.json();
 };
+
+export const f1etchIsAuth = async (url: string, body: object) => {
+
+    const bodyJson = JSON.stringify(body);
+    const response = await fetch("https://localhost:5001/auth" + url, {
+        headers: myHeaders,
+        credentials: "include",
+        body: bodyJson
+    });
+
+    return await response.json();
+};
+
+
 
 export const fetchData = async (url: string) => {
     const response = await fetch(baseUrl + url, {

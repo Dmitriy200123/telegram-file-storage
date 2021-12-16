@@ -26,11 +26,11 @@ export type TypeFile = {
         "telegramUserName": string,
         "fullName": string
     },
-    uploadDate:string,
-    chat:{
+    uploadDate: string,
+    chat: {
         "id": string,
         "name": string,
-        "imageId"?:string
+        "imageId"?: string
     },
     downloadLink?: string
 }
@@ -57,4 +57,9 @@ export type TypePaginator = {
 export type MessageType = {
     type: MessageTypeEnum,
     value: string
+}
+
+export type TokensType = {
+    "jwtToken": string,
+    "refreshToken": string
 }
