@@ -19,24 +19,23 @@ const App: FC = () => {
     const dispatch = useDispatch();
     const {profile} = useAppSelector((state) => state);
     const {messages} = profile;
-    const location = useLocation();
     useEffect(() => {
         dispatch(fetchIsAuth());
     }, [])
 
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {profile.isAuth ? <Content1/> : <StartPage/>}
+        {profile.isAuth ? <Main/> : <StartPage/>}
         {/*<Switch>*/}
         {/*    <Route path={"/login"} component={StartPage}/>*/}
         {/*    <Route>*/}
-        {/*        <Content1 />*/}
+        {/*        <Main />*/}
         {/*    </Route>*/}
         {/*</Switch>*/}
     </div>)
 }
 
-const Content1: FC = () => {
+const Main: FC = () => {
     const {filesReducer, profile} = useAppSelector((state) => state);
     const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
