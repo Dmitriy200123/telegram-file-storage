@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -37,7 +38,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
 
         public async Task<User?> GetByGitLabIdAsync(int gitLabId)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.GitLabId == gitLabId);
+            return await DbSet.Include(x => x.Rights).FirstOrDefaultAsync(x => x.GitLabId == gitLabId);
         }
 
         public async Task<bool> UpdateRefreshTokenAsync(Guid id, string refreshToken)
@@ -69,6 +70,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         public new async Task<User?> GetByIdAsync(Guid id)
         {
             return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<List<User>> GetAll()
+        {
+            return await DbSet.ToListAsync();
         }
     }
 }

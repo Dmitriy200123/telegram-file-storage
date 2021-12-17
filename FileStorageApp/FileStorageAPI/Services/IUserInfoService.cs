@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 
@@ -15,5 +16,10 @@ namespace FileStorageAPI.Services
         /// <param name="id">Идентификатор пользователя</param>
         /// <returns></returns>
         Task<RequestResult<UserInfo>> GetUserInfo(Guid id);
+        /// <summary>
+        /// Возвращает всех пользователей
+        /// </summary>
+        /// <returns></returns>
+        Task<RequestResult<List<UserIdAndFio>>> GetUsersInfo();
     }
 }

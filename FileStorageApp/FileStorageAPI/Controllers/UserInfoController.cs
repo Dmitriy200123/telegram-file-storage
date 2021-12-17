@@ -19,16 +19,14 @@ namespace FileStorageAPI.Controllers
     public class UserInfoController : Controller
     {
         private readonly IUserInfoService _userInfoService;
-        private readonly ISettings _settings;
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="UserInfoController"/>
         /// </summary>
         /// <param name="userInfoService">Сервис для работы с информацией пользователя</param>
         /// <param name="settings">Настройки приложения</param>
-        public UserInfoController(IUserInfoService userInfoService, ISettings settings)
+        public UserInfoController(IUserInfoService userInfoService)
         {
             _userInfoService = userInfoService;
-            _settings = settings;
         }
 
         /// <summary>
@@ -40,12 +38,8 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Такого пользователя не существует")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var authHeader = Request.Headers[HeaderNames.Authorization];
-            var userToken = authHeader.ToString().Split(' ')[1];
-            var principal = TokenHelper.GetPrincipalFromToken(userToken, _settings.Key);
-
-            var userName = principal.Identity!.Name;
-            var user = await _userInfoService.GetUserInfo(Guid.Parse(userName!));
+            var userId = Request.GetUserIdFromToken(Settings.Key);
+            var user = await _userInfoService.GetUserInfo(userId);
             
             return user.ResponseCode switch
             {
@@ -53,6 +47,17 @@ namespace FileStorageAPI.Controllers
                 HttpStatusCode.NotFound => NotFound(user.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
+        }
+        /// <summary>
+        /// Возвращает информацию о всех авторизированных пользователях
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователях")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _userInfoService.GetUsersInfo();
+            return Ok(users.Value);
         }
     }
 }

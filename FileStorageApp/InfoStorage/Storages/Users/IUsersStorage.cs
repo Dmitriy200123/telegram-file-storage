@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Models;
 
@@ -14,5 +15,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         Task<bool> RemoveRefreshTokenAsync(Guid id);
         Task<string?> GetRefreshTokenAsync(Guid id);
         Task<User?> GetByIdAsync(Guid id);
+        Task<List<User>> GetAll();
     }
 }

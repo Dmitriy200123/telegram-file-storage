@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,5 +20,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public string Avatar { get; set; }
 
         public string RefreshToken { get; set; }
+        [ForeignKey("Id")]
+        public virtual List<Right> Rights { get; set; }
     }
 }

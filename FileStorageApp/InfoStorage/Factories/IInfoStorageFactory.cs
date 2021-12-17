@@ -1,4 +1,5 @@
-﻿using FileStorageApp.Data.InfoStorage.Storages.Chats;
+﻿using FileStorageApp.Data.InfoStorage.Storages.AccessStorage;
+using FileStorageApp.Data.InfoStorage.Storages.Chats;
 using FileStorageApp.Data.InfoStorage.Storages.Files;
 using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
 using FileStorageApp.Data.InfoStorage.Storages.Users;
@@ -14,5 +15,7 @@ namespace FileStorageApp.Data.InfoStorage.Factories
         IFileSenderStorage CreateFileSenderStorage();
 
         IUsersStorage CreateUsersStorage();
+
+        IRightsStorage CreateRightsStorage();
     }
 }

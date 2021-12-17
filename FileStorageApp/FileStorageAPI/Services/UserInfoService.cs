@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
@@ -24,6 +26,14 @@ namespace FileStorageAPI.Services
             return user is null 
                 ? RequestResult.NotFound<UserInfo>("No such user in database") 
                 : RequestResult.Ok(_userConverter.ConvertUser(user));
+        }
+
+        public async Task<RequestResult<List<UserIdAndFio>>> GetUsersInfo()
+        {
+            using var usersStorage = _infoStorageFactory.CreateUsersStorage();
+            var users = await usersStorage.GetAll();
+            var convertedUsers = users.Select(_userConverter.ConvertUserToIdAndFio).ToList();
+            return RequestResult.Ok(convertedUsers);
         }
     }
 }

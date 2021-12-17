@@ -10,12 +10,6 @@ namespace JwtAuth
     public interface IJwtAuthenticationManager
     {
         /// <summary>
-        /// Создать токен и рефреш токен.
-        /// </summary>
-        /// <param name="username">Пользователь для которого создается токен и рефреш токен</param>
-        Task<AuthenticationResponse> Authenticate(string username);
-
-        /// <summary>
         /// Рефреш токены пользователей.
         /// </summary>
 

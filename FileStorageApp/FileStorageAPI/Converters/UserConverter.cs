@@ -15,5 +15,14 @@ namespace FileStorageAPI.Converters
                 Role = "null"
             };
         }
+
+        public UserIdAndFio ConvertUserToIdAndFio(User user)
+        {
+            return new UserIdAndFio
+            {
+                Id = user.Id,
+                Name = user.Name
+            };
+        }
     }
 }

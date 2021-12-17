@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -53,6 +55,7 @@ namespace FileStorageAPI.Services
         private async Task<AuthenticationResponse> CreateToken(GitLabUser gitLabUser)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
+            
             var user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             if (user is null)
             {
@@ -66,8 +69,22 @@ namespace FileStorageAPI.Services
                     Name = gitLabUser.Name
                 };
                 await usersStorage.AddAsync(user);
+                using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
+                var right = new Right
+                {
+                    Id = user.Id,
+                    AccessType = Accesses.Default
+                };
+                await rightsStorage.AddAsync(right);
             }
-            var jwtToken = await _jwtAuthenticationManager.Authenticate(user.Id.ToString());
+
+            var userName = user.Id.ToString();
+            var claimName = new Claim(ClaimTypes.Name, userName);
+            var userRights = user.Rights;
+            var accessJson = JsonConvert.SerializeObject(userRights.Select(x => x.Access).ToList());
+            var claimAccess = new Claim(ClaimTypes.Role, accessJson);
+            var claims = new[] {claimName, claimAccess};
+            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, claims);
 
             return jwtToken;
         }

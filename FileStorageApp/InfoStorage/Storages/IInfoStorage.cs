@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FileStorageApp.Data.InfoStorage.Storages
 {
@@ -12,5 +14,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         public Task<bool> DeleteAsync(Guid id);
 
         public Task<bool> ContainsAsync(Guid id);
+        public DatabaseFacade Database { get; }
     }
 }

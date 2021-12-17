@@ -43,15 +43,6 @@ namespace JwtAuth
             return new AuthenticationResponse(token, refreshToken);
         }
 
-        /// <inheritdoc />
-        public async Task<AuthenticationResponse> Authenticate(string username)
-        {
-            var claim = new Claim(ClaimTypes.Name, username);
-            var claims = new[] {claim};
-
-            return await Authenticate(username, claims);
-        }
-
         private string GenerateTokenString(DateTime expires, IEnumerable<Claim> claims)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

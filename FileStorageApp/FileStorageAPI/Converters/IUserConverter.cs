@@ -14,5 +14,12 @@ namespace FileStorageAPI.Converters
         /// <param name="user">Пользователь из базы данных</param>
         /// <returns></returns>
         UserInfo ConvertUser(User user);
+
+        /// <summary>
+        /// Конвертирует пользователя из базы в апи контракт
+        /// </summary>
+        /// <param name="user">Пользователь из базы данных</param>
+        /// <returns></returns>
+        UserIdAndFio ConvertUserToIdAndFio(User user);
     }
 }
