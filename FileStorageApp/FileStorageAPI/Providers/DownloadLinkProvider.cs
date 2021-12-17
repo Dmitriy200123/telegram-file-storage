@@ -19,12 +19,12 @@ namespace FileStorageAPI.Providers
         }
 
         /// <inheritdoc />
-        public async Task<string?> GetDownloadLinkAsync(Guid id, string name)
+        public async Task<string> GetDownloadLinkAsync(Guid id, string name)
         {
             var fileStorage = await _physicalFilesStorage.CreateAsync();
             try
             {
-                var file = await fileStorage.GetFileAsync(id.ToString());
+                var file = await fileStorage.GetFileAsync(id.ToString(), name);
                 return file.DownloadLink;
             }
             catch

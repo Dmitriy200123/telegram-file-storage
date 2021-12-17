@@ -147,8 +147,6 @@ namespace FileStorageAPI.Services
             await filesStorage.UpdateAsync(file);
 
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, fileName);
-            if (downloadLink is null)
-                return RequestResult.NotFound<(string uri, FileInfo info)>($"File with identifier {id} not found");
 
             return RequestResult.Created<(string uri, FileInfo info)>((downloadLink,
                 _fileInfoConverter.ConvertFileInfo(file)));
