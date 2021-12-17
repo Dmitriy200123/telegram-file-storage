@@ -24,8 +24,8 @@ export const ModalEdit: React.FC<{ id: string }> = ({id}) => {
         <Modal>
             <div className={"modal-confirm"}>
                 <h2 className={"modal-confirm__h2"}>Переименовать</h2>
-                <p className={"modal-confirm__p"} style={{width: "100%"}}><input value={value}
-                                                                                 onChange={(e) => changeValue(e.target.value)}
+                <p className={"modal-confirm__p"} style={{width: "100%"}}>
+                    <input value={value} onChange={(e) => changeValue(e.target.value)}
                                                                                  style={{width: "100%"}} type={"text"}/>
                 </p>
                 <div className={"modal-confirm__btns"}>

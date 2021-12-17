@@ -5,7 +5,7 @@ export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAP
     try {
         return await fetchConfig(`/files/${id}`, {method: "GET"});
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить");
+        return thunkAPI.rejectWithValue("Не удалось загрузить файл");
     }
 });
 
@@ -34,6 +34,6 @@ export const fetchDownloadLink = createAsyncThunk("file/download", async (id: st
         const link = await fetchConfigText(`/files/${id}/downloadlink`, {method: "GET"});
         window.open(link);
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить файл");
+        return thunkAPI.rejectWithValue("Не удалось загрузить ссылку на файл");
     }
 });

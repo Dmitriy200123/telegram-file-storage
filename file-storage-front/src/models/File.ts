@@ -10,6 +10,11 @@ export enum ModalContent {
     Edit
 }
 
+export enum MessageTypeEnum {
+    Error,
+    Message
+}
+
 export type FormType<TValue> = { label: string, value: TValue };
 
 export type TypeFile = {
@@ -21,11 +26,11 @@ export type TypeFile = {
         "telegramUserName": string,
         "fullName": string
     },
-    uploadDate:string,
-    chat:{
+    uploadDate: string,
+    chat: {
         "id": string,
         "name": string,
-        "imageId"?:string
+        "imageId"?: string
     },
     downloadLink?: string
 }
@@ -46,4 +51,15 @@ export type TypePaginator = {
     count: number,
     currentPage: number,
     filesInPage: number
+}
+
+
+export type MessageType = {
+    type: MessageTypeEnum,
+    value: string
+}
+
+export type TokensType = {
+    "jwtToken": string,
+    "refreshToken": string
 }

@@ -20,9 +20,11 @@ export const PreviewFile: React.FC<{ dispatch: Dispatch, className?: string, fil
             <div className={"preview-file__content"}>
                 <div className={"preview-file__file"}>
                     <File className={"preview-file__svg"}/>
-                    <p className={"preview-file__name"}>{file.name}</p>
-                    <button className="preview-file__close" onClick={setFileNull}>1
-                    </button>
+                    <div className={"preview-file__file-load"}>
+                        <p className={"preview-file__name"}>{file.name}</p>
+                        <button className="preview-file__close" onClick={setFileNull}>1</button>
+                        <div className={"preview-file__loading"} />
+                    </div>
                 </div>
                 <div className={"preview-file__btns"}>
                     <Button>Загрузить</Button>

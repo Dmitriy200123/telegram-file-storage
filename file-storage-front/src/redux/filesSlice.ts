@@ -9,7 +9,6 @@ const initialState = {
     senders: null as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
-    error: null as string | null,
     files: [
         {
             fileName: "Файл.12.123.sad.txt",
@@ -73,16 +72,14 @@ const initialState = {
         count: 1,
         filesInPage: 10,
         currentPage: 1
-    } as TypePaginator
+    } as TypePaginator,
+    filesCount: 0,
 }
 
 export const filesSlice = createSlice({
     name: "files",
     initialState,
     reducers: {
-        clearError(state) {
-            state.error = null;
-        },
         closeModal(state) {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
@@ -106,30 +103,33 @@ export const filesSlice = createSlice({
     },
     extraReducers: {
         [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
-            state.chats = action.payload;
             state.loading = false;
+            state.chats = action.payload;
         },
         [fetchChats.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+        [fetchChats.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
         },
+
 
         [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) => {
             state.loading = false;
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
             const pagesCount = Math.ceil((+action.payload.countFiles / state.paginator.filesInPage));
+            state.filesCount = +action.payload.countFiles;
             state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
             state.filesNames = action.payload.filesNames;
         },
         [fetchFilters.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+        [fetchFilters.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
         },
+
 
         //region FileThunks
         [fetchFiles.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
@@ -139,22 +139,28 @@ export const filesSlice = createSlice({
         [fetchFiles.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+        [fetchFiles.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+            state.loading = false;
         },
+
 
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
+            state.filesCount--;
+            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage > state.filesCount) {
+                state.paginator.count--;
+                state.paginator.currentPage--;
+            }
             state.modalConfirm.isOpen = false;
         },
         [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.error = action.payload
         },
 
         [fetchEditFileName.fulfilled.type]: (state, action: PayloadAction<{ id: string, fileName: string }>) => {
@@ -163,15 +169,17 @@ export const filesSlice = createSlice({
                 ...e,
                 fileName: action.payload.fileName
             } : e);
+            if (state.openFile && state.openFile.fileId === action.payload.id)
+                state.openFile.fileName = action.payload.fileName;
             state.modalConfirm.isOpen = false;
         },
         [fetchEditFileName.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
         [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
-            state.error = action.payload
         },
 
 
@@ -182,9 +190,10 @@ export const filesSlice = createSlice({
         [fetchFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+        [fetchFile.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
         },
+
 
         [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
             state.loading = false;
@@ -192,9 +201,10 @@ export const filesSlice = createSlice({
         [fetchDownloadLink.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
         },
-        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.error = action.payload
+        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
         },
+
         //endregion
     }
 });

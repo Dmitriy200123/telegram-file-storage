@@ -7,7 +7,7 @@ export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) =>
         const data: Array<Chat> = await fetchData("/chats");
         return data;
     } catch (e) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить");
+        return thunkAPI.rejectWithValue("Не удалось загрузить чаты");
     }
 })
 
@@ -33,7 +33,7 @@ export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFiles
     try {
         return await fetchConfig(`/files`, {params: args});
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить");
+        return thunkAPI.rejectWithValue("Не удалось загрузить файлы");
     }
 })
 

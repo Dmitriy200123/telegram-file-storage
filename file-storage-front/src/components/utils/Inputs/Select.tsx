@@ -59,7 +59,7 @@ export const Select: React.FC<Props> = memo(({
             <div className={"select"}>
                 <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text} onChange={(e) => {
                     changeText(e.target.value)
-                }} placeholder={placeholder}/>
+                }} placeholder={(options && calcPlaceholder(values, options)) ?? placeholder}/>
                 <ul className={"select__list " + (isOpen ? "select__list_open" : "")} onBlur={() => changeOpen(false)}>
                     <div className="select__scroll">
                         {ui}
@@ -71,3 +71,9 @@ export const Select: React.FC<Props> = memo(({
     )
 })
 
+const calcPlaceholder = (values: Array<string | number> | string | number, options:Array<{ value: any, label: string }> ) => {
+    if (values instanceof Array)
+        return values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
+    else
+        return options.find((opt) => opt.value === values)?.label;
+}
