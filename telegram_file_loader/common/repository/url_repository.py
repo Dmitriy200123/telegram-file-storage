@@ -3,18 +3,15 @@ from urllib.request import urlopen
 
 from bs4 import BeautifulSoup
 from common import utils
-from common.repository.base_repository import BaseRepository
-from postgres.pg_adapter import Adapter
 from urlextract import URLExtract
 
 
-class UrlRepository(BaseRepository):
+class UrlRepository:
 
     PARSER_NAME = 'lxml'
     HTTP = 'http://'
 
-    def __init__(self, adapter: Adapter, url_extractor: URLExtract):
-        super(UrlRepository, self).__init__(adapter)
+    def __init__(self, url_extractor: URLExtract):
         self.url_extractor = url_extractor
 
     def has_urls(self, message: str) -> bool:
