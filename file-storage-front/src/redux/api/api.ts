@@ -26,7 +26,7 @@ export const fetchConfig = async (url: string, config?: any) => {
     const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
     const myHeaders = new Headers({
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem("token")}`
+        'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
     });
     const response = await fetch(respUrl, {
         method: config.method ?? "GET",
