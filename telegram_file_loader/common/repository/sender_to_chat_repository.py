@@ -7,7 +7,7 @@ from postgres.models.db_models import SenderToChat
 class SenderToChatRepository(BaseRepository):
 
     async def create_or_get(self, sender_id: UUID, chat_id: UUID) -> SenderToChat:
-        sender_to_chat_tuple: (SenderToChat, bool) = await self.adapter.create_or_get(
+        sender_to_chat_tuple: (SenderToChat, bool) = await self.adapter.get_or_create(
             model=SenderToChat,
             SenderId=sender_id,
             ChatId=chat_id

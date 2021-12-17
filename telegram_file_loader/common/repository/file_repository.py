@@ -16,7 +16,7 @@ class FileRepository(BaseRepository):
         self.s3_client = s3_client
 
     async def create_or_get(self, file_info: FileExternal, chat_id: UUID, file_sender_id: UUID) -> File:
-        file_tuple: (File, bool) = await self.adapter.create_or_get(
+        file_tuple: (File, bool) = await self.adapter.get_or_create(
             model=File,
             ChatId=chat_id,
             FileSenderId=file_sender_id,

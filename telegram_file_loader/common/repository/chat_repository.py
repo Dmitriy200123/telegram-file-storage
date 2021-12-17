@@ -13,7 +13,7 @@ class ChatRepository(BaseRepository):
         return await self.adapter.get(model=Chat, TelegramId=telegram_id)
 
     async def create_or_get(self, chat_external: ChatExternal) -> Chat:
-        chat_tuple: (Chat, bool) = await self.adapter.create_or_get(
+        chat_tuple: (Chat, bool) = await self.adapter.get_or_create(
             model=Chat,
             **chat_external.dict_non_empty_fields()
         )

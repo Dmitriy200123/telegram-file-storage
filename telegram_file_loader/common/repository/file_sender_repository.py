@@ -11,7 +11,7 @@ class FileSenderRepository(BaseRepository):
         return await self.adapter.get(model=FileSender, TelegramId=telegram_id)
 
     async def update_or_create(self, file_sender_external: FileSenderExternal) -> FileSender:
-        file_sender, is_created = await self.adapter.create_or_get(
+        file_sender, is_created = await self.adapter.get_or_create(
             model=FileSender,
             **file_sender_external.dict_non_empty_fields()
         )
@@ -22,7 +22,7 @@ class FileSenderRepository(BaseRepository):
         return file_sender
 
     async def create_or_get(self, file_sender_external: FileSenderExternal) -> FileSender:
-        file_sender_tuple: (FileSender, bool) = await self.adapter.create_or_get(
+        file_sender_tuple: (FileSender, bool) = await self.adapter.get_or_create(
             model=FileSender,
             **file_sender_external.dict_non_empty_fields()
         )
