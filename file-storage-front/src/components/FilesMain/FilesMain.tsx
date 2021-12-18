@@ -40,6 +40,7 @@ const FilesMain = () => {
         dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
     };
 
+
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
@@ -117,7 +118,7 @@ const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
     const fileName = urlSearchParams.get("fileName");
     const senderId = urlSearchParams.get("sendersIds")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&") as any;
+    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => +e);
     const date = urlSearchParams.get("date");
     const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};

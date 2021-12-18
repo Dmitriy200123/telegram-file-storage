@@ -6,7 +6,7 @@ import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "
 
 const initialState = {
     chats: null as null | Array<Chat>,
-    senders: null as null | Array<Sender>,
+    senders: [{id:"123", fullName:"имя", telegramUserName:"телега"}, {id:"124", fullName:"имя2", telegramUserName:"телега"}, {id:"125", fullName:"имя3", telegramUserName:"телега"}] as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
     files: [
