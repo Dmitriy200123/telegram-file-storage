@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace TelegramAuth
@@ -6,13 +7,28 @@ namespace TelegramAuth
     public class Program
     {
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.json", true, true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
+                true, true)
             .Build();
 
-        public static void Main()
+        static ManualResetEvent _quitEvent = new ManualResetEvent(false);
+
+        static void Main()
         {
+            Console.CancelKeyPress += (sender, eArgs) =>
+            {
+                _quitEvent.Set();
+                eArgs.Cancel = true;
+            };
+
+            // kick off asynchronous stuff 
+
+            Console.WriteLine("hui");
+            Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
+            Console.WriteLine(Config["DbHost"]);
             var bot = new AuthBot(Config);
-            Console.ReadKey();
+            _quitEvent.WaitOne();
         }
     }
 }

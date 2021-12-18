@@ -44,6 +44,12 @@ services:
     ports:
       - '3000:3000'
 
+  telegram_auth:
+    container_name: telegram_auth
+    build:
+      context: FileStorageApp/
+      dockerfile: TelegramAuth/Dockerfile
+      
 
   telegram_loader:
     container_name: telegram_loader
