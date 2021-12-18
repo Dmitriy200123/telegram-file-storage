@@ -10,6 +10,7 @@ const {changePaginatorPage} = filesSlice.actions;
 const Paginator = ({paginator}: { paginator: TypePaginator }) => {
     const {currentPage, filesInPage,count} = paginator
     const dispatch = useAppDispatch();
+
     let pages: Array<number> = [];
     const dif = 4;
     for (let i = Math.max(currentPage - dif, 2); i <= Math.min(currentPage + dif, count - 1); i++) {
@@ -21,6 +22,8 @@ const Paginator = ({paginator}: { paginator: TypePaginator }) => {
         dispatch(fetchFiles({skip:(currentPage - 1) * filesInPage, take: filesInPage}));
     },[currentPage])
 
+    if (count <= 1)
+        return null;
     return (
         <div className={"paginator"}>
             <button className={"paginator__item" + ((currentPage === 1) ? " paginator__item_disabled" : "")} disabled={currentPage === 1}
