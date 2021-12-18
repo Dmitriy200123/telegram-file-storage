@@ -5,6 +5,7 @@ from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
 from common.repository.sender_to_chat_repository import SenderToChatRepository
+from common.repository.tag_repository import TagRepository
 from common.repository.url_repository import UrlRepository
 from common.utils import full_name
 from postgres.models.db_models import Chat, FileSender
@@ -21,9 +22,11 @@ class ChatInteractor(BaseInteractor):
         file_sender_repository: FileSenderRepository,
         file_repository: FileRepository,
         sender_to_chat_repository: SenderToChatRepository,
-        url_repository: UrlRepository
+        url_repository: UrlRepository,
+        tag_repository: TagRepository
     ):
-        super(ChatInteractor, self).__init__(chat_repository, url_repository)
+        super(ChatInteractor, self).__init__(
+            chat_repository, url_repository, tag_repository)
 
         self.file_sender_repository = file_sender_repository
         self.file_repository = file_repository

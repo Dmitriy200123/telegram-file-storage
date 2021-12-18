@@ -7,6 +7,7 @@ from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
 from common.repository.sender_to_chat_repository import SenderToChatRepository
+from common.repository.tag_repository import TagRepository
 from common.repository.url_repository import UrlRepository
 from postgres.pg_adapter import Adapter
 from telegram_client_loader.handler.chat_handler import ChatHandler
@@ -33,20 +34,23 @@ async def start():
     file_sender_repository = FileSenderRepository(adapter)
     file_repository = FileRepository(adapter, s3_client)
     sender_to_chat_repository = SenderToChatRepository(adapter)
-    url_repository = UrlRepository(adapter, url_extractor)
+    url_repository = UrlRepository(url_extractor)
+    tag_repository = TagRepository(adapter)
 
     loader_interactor = LoaderInteractor(
         chat_repository=chat_repository,
         file_repository=file_repository,
         file_sender_repository=file_sender_repository,
-        url_repository=url_repository
+        url_repository=url_repository,
+        tag_repository=tag_repository
     )
     chat_interactor = ChatInteractor(
         chat_repository=chat_repository,
         file_sender_repository=file_sender_repository,
         file_repository=file_repository,
         sender_to_chat_repository=sender_to_chat_repository,
-        url_repository=url_repository
+        url_repository=url_repository,
+        tag_repository=tag_repository
     )
 
     loader = FileHandler(

@@ -60,3 +60,15 @@ class FileHandler(BaseHandler):
     async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
         for url in urls:
             await self.loader_interactor.save_url(url, message.sender_id, message.chat_id)
+
+    async def _handle_new_message_with_tags(self, message: Message, marked_texts: (str, str)):
+        title, description = marked_texts
+
+        if self.is_empty(title) or self.is_empty(description):
+            return
+
+        await self.loader_interactor.save_text(title, description, message.sender_id, message.chat_id)
+
+    @staticmethod
+    def is_empty(text: str) -> bool:
+        return not text or text.isspace()
