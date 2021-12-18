@@ -70,7 +70,7 @@ const initialState = {
     },
     paginator: {
         count: 1,
-        filesInPage: 10,
+        filesInPage: 5,
         currentPage: 1
     } as TypePaginator,
     filesCount: 0,
@@ -148,7 +148,7 @@ export const filesSlice = createSlice({
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
-            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage > state.filesCount) {
+            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage <= state.filesCount) {
                 state.paginator.count--;
                 state.paginator.currentPage--;
             }
