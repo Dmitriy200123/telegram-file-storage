@@ -147,12 +147,9 @@ export const filesSlice = createSlice({
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
-            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage <= state.filesCount) {
-                if (state.paginator.count > 1)
-                    state.paginator.count--;
-                if (state.paginator.count > 1)
-                    state.paginator.currentPage--;
-            }
+            state.paginator.count = Math.ceil((state.filesCount / state.paginator.filesInPage));
+            if (state.paginator.currentPage > state.paginator.count)
+                state.paginator.currentPage--;
             state.modalConfirm.isOpen = false;
         },
         [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
