@@ -29,7 +29,7 @@ namespace FileStorageAPI.Converters
         {
             return new FileSender
             {
-                Id = default,
+                UserId = default,
                 TelegramId = sender.TelegramId,
                 TelegramUserName = sender.TelegramUserName,
                 FullName = sender.FullName,

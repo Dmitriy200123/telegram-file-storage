@@ -8,7 +8,8 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class Right : IModel
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
+        public Guid UserId { get; set; }
 
         public int Access { get; set; }
 

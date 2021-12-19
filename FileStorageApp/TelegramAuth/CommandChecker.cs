@@ -18,6 +18,8 @@ namespace TelegramAuth
                 return false;
             if (splitText[0] != "/start")
                 return false;
+            if (splitText[1].Length != 64)
+                return false;
             token = splitText[1];
             return true;
         }

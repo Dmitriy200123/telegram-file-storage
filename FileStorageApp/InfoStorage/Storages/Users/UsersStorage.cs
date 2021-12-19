@@ -43,7 +43,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
 
         public async Task<bool> UpdateRefreshTokenAsync(Guid id, string refreshToken)
         {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await DbSet.FirstOrDefaultAsync(x => x.UserId == id);
             if (user is null)
                 return false;
             user.RefreshToken = refreshToken;
@@ -53,7 +53,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
 
         public async Task<bool> RemoveRefreshTokenAsync(Guid id)
         {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await DbSet.FirstOrDefaultAsync(x => x.UserId == id);
             if (user == null)
                 return false;
             user.RefreshToken = "";
@@ -63,13 +63,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
 
         public async Task<string?> GetRefreshTokenAsync(Guid id)
         {
-            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await DbSet.FirstOrDefaultAsync(x => x.UserId == id);
             return user?.RefreshToken;
         }
 
         public new async Task<User?> GetByIdAsync(Guid id)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            return await DbSet.FirstOrDefaultAsync(x => x.UserId == id);
         }
 
         public async Task<List<User>> GetAll()

@@ -61,7 +61,7 @@ namespace FileStorageAPI.Services
             {
                 user = new User
                 {
-                    Id = Guid.NewGuid(),
+                    UserId = Guid.NewGuid(),
                     TelegramId = null,
                     GitLabId = gitLabUser.Id,
                     Avatar = gitLabUser.AvatarUrl,
@@ -72,13 +72,14 @@ namespace FileStorageAPI.Services
                 using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
                 var right = new Right
                 {
-                    Id = user.Id,
+                    UserId = user.UserId,
                     AccessType = Accesses.Default
                 };
                 await rightsStorage.AddAsync(right);
+                user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             }
 
-            var userName = user.Id.ToString();
+            var userName = user!.UserId.ToString();
             var claimName = new Claim(ClaimTypes.Name, userName);
             var userRights = user.Rights;
             var accessJson = JsonConvert.SerializeObject(userRights.Select(x => x.Access).ToList());

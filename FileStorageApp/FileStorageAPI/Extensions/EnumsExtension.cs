@@ -1,15 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace FileStorageAPI
+namespace FileStorageAPI.Extensions
 {
     /// <summary>
-    /// 
+    /// Методы расширения для перечислений
     /// </summary>
     public static class EnumsExtension
     {
         /// <summary>
-        /// 
+        /// Возвращает значение атрибута Description 
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

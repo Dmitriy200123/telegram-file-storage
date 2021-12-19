@@ -20,7 +20,7 @@ namespace FileStorageAPI.Tests
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chats = await chatStorage.GetAllAsync();
             foreach (var chat in chats)
-                await chatStorage.DeleteAsync(chat.Id);
+                await chatStorage.DeleteAsync(chat.UserId);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace FileStorageAPI.Tests
             using var apiClient = CreateHttpClient();
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatGuid = Guid.NewGuid();
-            var chatInDb = new Chat {Id = chatGuid, TelegramId = 0, ImageId = new Guid(), Name = "test"};
+            var chatInDb = new Chat {UserId = chatGuid, TelegramId = 0, ImageId = new Guid(), Name = "test"};
             await chatStorage.AddAsync(chatInDb);
 
             var response = await apiClient.GetAsync($"/api/chats/{chatGuid}");
@@ -45,7 +45,7 @@ namespace FileStorageAPI.Tests
         {
             using var apiClient = CreateHttpClient();
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
-            await chatStorage.AddAsync(new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "test"});
+            await chatStorage.AddAsync(new Chat {UserId = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "test"});
 
             var response = await apiClient.GetAsync($"/api/chats/{Guid.NewGuid()}");
 
@@ -58,7 +58,7 @@ namespace FileStorageAPI.Tests
             using var apiClient = CreateHttpClient();
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             const string chatName = "testName";
-            var chatInDb = new Chat {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = chatName};
+            var chatInDb = new Chat {UserId = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = chatName};
             await chatStorage.AddAsync(chatInDb);
 
             var response = await apiClient.GetAsync($"/api/chats/search?chatName={chatName}");
@@ -76,7 +76,7 @@ namespace FileStorageAPI.Tests
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             const string chatName = "testName";
             await chatStorage.AddAsync(new Chat
-                {Id = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "anotherChat"});
+                {UserId = new Guid(), TelegramId = 0, ImageId = new Guid(), Name = "anotherChat"});
 
             var response = await apiClient.GetAsync($"/api/chats/search?chatName={chatName}");
 

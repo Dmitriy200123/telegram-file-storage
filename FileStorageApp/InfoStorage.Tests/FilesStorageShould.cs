@@ -61,8 +61,8 @@ namespace InfoStorage.Tests
                 Extension = "xlsx",
                 Type = FileType.Document,
                 UploadDate = DateTime.Now,
-                FileSenderId = _fileSender.Id,
-                ChatId = _chat.Id,
+                FileSenderId = _fileSender.UserId,
+                ChatId = _chat.UserId,
             };
             expected.Add(file);
             _filesToDelete.Add(file);
@@ -70,7 +70,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetByFileNameSubstringAsync(substring);
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id));
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId));
         }
 
         [TestCase("aboba")]
@@ -84,8 +84,8 @@ namespace InfoStorage.Tests
                 Extension = "xlsx",
                 Type = FileType.Document,
                 UploadDate = DateTime.Now,
-                FileSenderId = _fileSender.Id,
-                ChatId = _chat.Id,
+                FileSenderId = _fileSender.UserId,
+                ChatId = _chat.UserId,
             };
             _filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
@@ -113,7 +113,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetAllAsync();
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id).WithStrictOrdering());
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId).WithStrictOrdering());
         }
 
         [Test]
@@ -165,9 +165,9 @@ namespace InfoStorage.Tests
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
 
             foreach (var elem in _filesToDelete)
-                await fileStorage.DeleteAsync(elem.Id);
-            await chatStorage.DeleteAsync(_chat.Id);
-            await fileSenderStorage.DeleteAsync(_fileSender.Id);
+                await fileStorage.DeleteAsync(elem.UserId);
+            await chatStorage.DeleteAsync(_chat.UserId);
+            await fileSenderStorage.DeleteAsync(_fileSender.UserId);
         }
 
         private Chat CreateChat(Guid chatId)
@@ -177,7 +177,7 @@ namespace InfoStorage.Tests
                 TelegramId = 0,
                 Name = "",
                 ImageId = Guid.NewGuid(),
-                Id = chatId
+                UserId = chatId
             };
         }
 
@@ -188,7 +188,7 @@ namespace InfoStorage.Tests
                 TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "",
-                Id = senderId
+                UserId = senderId
             };
         }
 
@@ -196,13 +196,13 @@ namespace InfoStorage.Tests
         {
             var file = new File
             {
-                Id = id,
+                UserId = id,
                 Name = "Substring",
                 Extension = "xlsx",
                 Type = FileType.Document,
                 UploadDate = dateTime,
-                FileSenderId = _fileSender.Id,
-                ChatId = _chat.Id,
+                FileSenderId = _fileSender.UserId,
+                ChatId = _chat.UserId,
             };
             _filesToDelete.Add(file);
             return file;

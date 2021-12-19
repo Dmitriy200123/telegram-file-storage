@@ -22,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
             return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
+                .ThenBy(x => x.UserId)
                 .ToListAsync();
         }
 
@@ -30,7 +30,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         {
             var query = DbSet.AsQueryable();
 
-            return AddOptionsInQuery(query, useInclude).FirstOrDefaultAsync(x => x.Id == id);
+            return AddOptionsInQuery(query, useInclude).FirstOrDefaultAsync(x => x.UserId == id);
         }
 
         public Task<List<File>> GetByFilePropertiesAsync(Expression<Func<File, bool>> expression, bool useInclude = false, int? skip = null, int? take = null)
@@ -42,7 +42,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
             return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
+                .ThenBy(x => x.UserId)
                 .ToListAsync();
         }
 
@@ -55,7 +55,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
             return AddOptionsInQuery(query, useInclude, skip, take)
                 .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
+                .ThenBy(x => x.UserId)
                 .ToListAsync();
         }
 

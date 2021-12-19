@@ -12,7 +12,6 @@ namespace FileStorageAPI.Converters
                 Name = user.Name,
                 Avatar = user.Avatar,
                 HasTelegram = user.TelegramId is not null,
-                Role = "null"
             };
         }
 
@@ -20,7 +19,7 @@ namespace FileStorageAPI.Converters
         {
             return new UserIdAndFio
             {
-                Id = user.Id,
+                Id = user.UserId,
                 Name = user.Name
             };
         }

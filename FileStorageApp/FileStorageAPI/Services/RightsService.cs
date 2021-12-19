@@ -2,33 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FileStorageAPI.Extensions;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 
 namespace FileStorageAPI.Services
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <inheritdoc />
     public class RightsService : IRightsService
     {
         private readonly IInfoStorageFactory _infoStorageFactory;
+        private readonly int[] _enumValues;
 
         /// <summary>
-        /// 
+        /// Конструктор сервиса управления правами пользователя
         /// </summary>
-        /// <param name="infoStorageFactory"></param>
+        /// <param name="infoStorageFactory">Фабрика базы данных</param>
         public RightsService(IInfoStorageFactory infoStorageFactory)
         {
             _infoStorageFactory = infoStorageFactory;
+            _enumValues = Enum.GetValues(typeof(Accesses)).Cast<Accesses>().Cast<int>().ToArray();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+
+        /// <inheritdoc />
         public async Task<RequestResult<int[]>> GetUserRights(Guid id)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
@@ -36,10 +34,7 @@ namespace FileStorageAPI.Services
             return RequestResult.Ok(userRight);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc />
         public Task<RequestResult<List<RightDescription>>> GetRightsDescription()
         {
             var descriptions = Enum.GetValues(typeof(Accesses))
@@ -50,15 +45,18 @@ namespace FileStorageAPI.Services
             return Task.FromResult(RequestResult.Ok(descriptions));
         }
 
+        /// <inheritdoc />
         public async Task<RequestResult<bool>> UpdateUserRights(RightEdition rightEdition)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-            if(rightEdition.Grant is null && rightEdition.Revoke is null || rightEdition.UserId == null)
+            if(rightEdition.Grant is null && rightEdition.Revoke is null)
                 return RequestResult.BadRequest<bool>("Invalid data in body");
-            var userId = rightEdition.UserId.Value;
+            var userId = rightEdition.UserId;
             var contains = await rightsStorage.ContainsAsync(userId);
             if(!contains)
                 return RequestResult.NotFound<bool>("No such user");
+            if(IsContainsBadIds(rightEdition.Revoke) || IsContainsBadIds(rightEdition.Grant))
+                return RequestResult.BadRequest<bool>("Invalid rights Ids");
             if (rightEdition.Revoke != null)
                 foreach (var access in rightEdition.Revoke)
                     await rightsStorage.RemoveRight(userId, access);
@@ -68,13 +66,18 @@ namespace FileStorageAPI.Services
                 {
                     var right = new Right
                     {
-                        Id = userId,
+                        UserId = userId,
                         Access = access,
                     };
                     await rightsStorage.AddAsync(right);
                 }
 
             return RequestResult.Ok(true);
+        }
+
+        private bool IsContainsBadIds(int[]? ids)
+        {
+            return ids != null && ids.Intersect(_enumValues).Count() != ids.Length;
         }
     }
 }

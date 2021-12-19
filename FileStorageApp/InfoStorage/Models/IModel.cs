@@ -4,6 +4,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
 {
     public interface IModel
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
     }
 }

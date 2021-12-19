@@ -9,7 +9,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class Chat : IModel
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
 
         [Required]
         public long TelegramId { get; set; }

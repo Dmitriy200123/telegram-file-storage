@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using JwtAuth;
@@ -58,6 +59,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status204NoContent, "Успешно удалили рефреш токен ")]
         public async Task<IActionResult> LogOut()
         {
+            var a = User.Claims.ToList();
             var id = Request.GetUserIdFromToken(Settings.Key);
             var result = await _authenticationService.LogOut(id);
             return result.ResponseCode switch

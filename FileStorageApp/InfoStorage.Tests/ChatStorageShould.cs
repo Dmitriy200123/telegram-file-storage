@@ -56,7 +56,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetByChatNameSubstringAsync(substring);
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id));
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId));
         }
 
         [TestCase("aboba")]
@@ -111,7 +111,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetAllAsync();
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id).WithStrictOrdering());
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId).WithStrictOrdering());
         }
 
         [Test]
@@ -122,21 +122,21 @@ namespace InfoStorage.Tests
             var chat = new Chat
             {
                 TelegramId = 0,
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
             var chat2 = new Chat
             {
                 TelegramId = 1,
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
             var chat3 = new Chat
             {
                 TelegramId = 2,
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Name = "aaaaa",
                 ImageId = Guid.NewGuid(),
             };
@@ -158,7 +158,7 @@ namespace InfoStorage.Tests
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             foreach (var elem in _elementsToDelete)
-                await chatStorage.DeleteAsync(elem.Id);
+                await chatStorage.DeleteAsync(elem.UserId);
         }
     }
 }

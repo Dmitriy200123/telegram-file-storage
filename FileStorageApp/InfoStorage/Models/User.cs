@@ -9,7 +9,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class User : IModel
     {
         [Key]
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
 
         public long? TelegramId { get; set; }
 
@@ -20,7 +20,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public string Avatar { get; set; }
 
         public string RefreshToken { get; set; }
-        [ForeignKey("Id")]
+        [ForeignKey("UserId")]
         public virtual List<Right> Rights { get; set; }
     }
 }

@@ -50,17 +50,17 @@ namespace FileStorageAPI.Tests
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senders = await senderStorage.GetAllAsync();
             foreach (var sender in senders)
-                await senderStorage.DeleteAsync(sender.Id);
+                await senderStorage.DeleteAsync(sender.UserId);
 
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chats = await chatStorage.GetAllAsync();
             foreach (var chat in chats)
-                await chatStorage.DeleteAsync(chat.Id);
+                await chatStorage.DeleteAsync(chat.UserId);
 
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
             var fileInfos = await chatStorage.GetAllAsync();
             foreach (var fileInfo in fileInfos)
-                await fileInfoStorage.DeleteAsync(fileInfo.Id);
+                await fileInfoStorage.DeleteAsync(fileInfo.UserId);
 
             using var filesStorage = await _filesStorageFactory.CreateAsync();
             foreach (var file in await filesStorage.GetFilesAsync())
@@ -201,13 +201,13 @@ namespace FileStorageAPI.Tests
             var form = CreateMultipartFormDataContent(fileName, contentType);
             var chat = new FileStorageApp.Data.InfoStorage.Models.Chat
             {
-                Id = Guid.Empty,
+                UserId = Guid.Empty,
                 Name = "Ручная загрузка файла",
                 ImageId = Guid.Empty
             };
             var sender = new FileSender
             {
-                Id = Guid.Parse(FileSenderId),
+                UserId = Guid.Parse(FileSenderId),
                 TelegramId = -1,
                 TelegramUserName = "Загрузчик с сайта",
                 FullName = "Загрузчик с сайта",
@@ -324,7 +324,7 @@ namespace FileStorageAPI.Tests
         {
             return new File
             {
-                Id = fileGuid,
+                UserId = fileGuid,
                 Name = "test",
                 Extension = "test",
                 TypeId = 0,
@@ -338,7 +338,7 @@ namespace FileStorageAPI.Tests
         {
             return new FileSender
             {
-                Id = Guid.Parse(FileSenderId),
+                UserId = Guid.Parse(FileSenderId),
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",

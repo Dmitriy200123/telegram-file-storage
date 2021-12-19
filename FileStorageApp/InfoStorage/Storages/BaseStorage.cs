@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FileStorageApp.Data.InfoStorage.Storages
 {
-    internal abstract class BaseStorage<T> : DbContext, IInfoStorage<T>
-        where T : class, IModel
+    internal abstract class BaseStorage<T> : DbContext, IInfoStorage<T> where T : class, IModel
     {
         private readonly IDataBaseConfig _dataBaseConfig;
 
@@ -85,7 +84,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             }
         }
 
-        public async Task<bool> ContainsAsync(Guid id)
+        public virtual async Task<bool> ContainsAsync(Guid id)
         {
             var entity = await DbSet.FindAsync(id);
             return entity is not null;

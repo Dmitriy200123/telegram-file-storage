@@ -12,11 +12,11 @@ namespace DataBaseFiller
             using var chatStorage = infoStorageFactory.CreateChatStorage();
             using var senderStorage = infoStorageFactory.CreateFileSenderStorage();
             foreach (var element in await senderStorage.GetAllAsync())
-                await senderStorage.DeleteAsync(element.Id);
+                await senderStorage.DeleteAsync(element.UserId);
             foreach (var element in await chatStorage.GetAllAsync())
-                await chatStorage.DeleteAsync(element.Id);
+                await chatStorage.DeleteAsync(element.UserId);
             foreach (var element in await filesStorage.GetAllAsync())
-                await filesStorage.DeleteAsync(element.Id);
+                await filesStorage.DeleteAsync(element.UserId);
 
             using var physicalFilesStorage = await filesStorageFactory.CreateAsync();
             foreach (var file in await physicalFilesStorage.GetFilesAsync())

@@ -55,7 +55,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id));
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId));
         }
 
         [TestCase("aboba")]
@@ -97,7 +97,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id));
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId));
         }
 
         [TestCase("aboba")]
@@ -152,7 +152,7 @@ namespace InfoStorage.Tests
 
             var actual = await chatStorage.GetAllAsync();
 
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.Id).WithStrictOrdering());
+            actual.Should().BeEquivalentTo(expected, options => options.Excluding(x => x.UserId).WithStrictOrdering());
         }
 
         [Test]
@@ -162,21 +162,21 @@ namespace InfoStorage.Tests
             var expected = new List<FileSender>();
             var fileSender = new FileSender
             {
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000002"),
                 TelegramId = 0,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
             var fileSender2 = new FileSender
             {
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000003"),
                 TelegramId = 1,
                 TelegramUserName = "",
                 FullName = "Substring",
             };
             var fileSender3 = new FileSender
             {
-                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                UserId = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 TelegramId = 2,
                 TelegramUserName = "",
                 FullName = "Substring",
@@ -199,7 +199,7 @@ namespace InfoStorage.Tests
         {
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
             foreach (var elem in _elementsToDelete)
-                await fileSenderStorage.DeleteAsync(elem.Id);
+                await fileSenderStorage.DeleteAsync(elem.UserId);
         }
     }
 }

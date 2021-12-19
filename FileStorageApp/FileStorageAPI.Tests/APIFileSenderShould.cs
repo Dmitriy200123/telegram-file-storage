@@ -24,7 +24,7 @@ namespace FileStorageAPI.Tests
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senders = await senderStorage.GetAllAsync();
             foreach (var sender in senders)
-                await senderStorage.DeleteAsync(sender.Id);
+                await senderStorage.DeleteAsync(sender.UserId);
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace FileStorageAPI.Tests
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
             {
-                Id = senderGuid,
+                UserId = senderGuid,
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
@@ -57,7 +57,7 @@ namespace FileStorageAPI.Tests
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderInDb = new FileSender
             {
-                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
@@ -76,14 +76,14 @@ namespace FileStorageAPI.Tests
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var senderInDb1 = new FileSender
             {
-                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
             };
             var senderInDb2 = new FileSender
             {
-                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 TelegramId = 1,
                 TelegramUserName = "Test1",
                 FullName = "Test1",
@@ -110,7 +110,7 @@ namespace FileStorageAPI.Tests
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
             {
-                Id = senderGuid,
+                UserId = senderGuid,
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
@@ -136,7 +136,7 @@ namespace FileStorageAPI.Tests
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
             {
-                Id = senderGuid,
+                UserId = senderGuid,
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
@@ -161,7 +161,7 @@ namespace FileStorageAPI.Tests
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
             {
-                Id = senderGuid,
+                UserId = senderGuid,
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
@@ -187,7 +187,7 @@ namespace FileStorageAPI.Tests
             var senderGuid = Guid.NewGuid();
             var senderInDb = new FileSender
             {
-                Id = senderGuid,
+                UserId = senderGuid,
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",

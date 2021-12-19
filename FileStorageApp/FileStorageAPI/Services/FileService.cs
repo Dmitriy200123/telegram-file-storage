@@ -97,7 +97,7 @@ namespace FileStorageAPI.Services
         {
             var siteFileSender = new FileSender
             {
-                Id = Guid.Parse(TempFileSenderId),
+                UserId = Guid.Parse(TempFileSenderId),
                 TelegramId = -1,
                 TelegramUserName = "Загрузчик с сайта",
                 FullName = "Загрузчик с сайта",
@@ -107,7 +107,7 @@ namespace FileStorageAPI.Services
             var now = DateTime.Now;
             var file = new DataBaseFile
             {
-                Id = Guid.NewGuid(),
+                UserId = Guid.NewGuid(),
                 Name = uploadFile.FileName,
                 Extension = Path.GetExtension(uploadFile.FileName),
                 Type = _fileTypeProvider.GetFileType(uploadFile.Headers["Content-Type"]),
@@ -120,14 +120,14 @@ namespace FileStorageAPI.Services
 
             using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);
+            await physicalFilesStorage.SaveFileAsync(file.UserId.ToString(), memoryStream);
             if (!await filesStorage.AddAsync(file))
                 return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to database");
 
-            var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
+            var chat = new Chat {UserId = Guid.Empty, Name = "Ручная загрузка файла"};
             file.Chat = chat;
             file.FileSender = await fileSenderStorage.GetByIdAsync(Guid.Parse(TempFileSenderId));
-            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
+            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.UserId, file.Name);
 
             return RequestResult.Created<(string uri, FileInfo info)>((downloadLink,
                 _fileInfoConverter.ConvertFileInfo(file)));
