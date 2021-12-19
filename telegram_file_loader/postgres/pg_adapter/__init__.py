@@ -11,6 +11,10 @@ class Adapter:
     def __init__(self, db_manager: Manager):
         self.manager = db_manager
 
+    async def create(self, model: BaseModel, **params) -> BaseModel:
+        async with self.manager.atomic():
+            return await self.manager.create(model, **params)
+
     async def get_or_create(self, model: BaseModel, **params) -> (BaseModel, bool):
         async with self.manager.atomic():
             return await self.manager.get_or_create(model, **params)
@@ -43,3 +47,8 @@ class Adapter:
             await self.manager.update(model)
 
         return is_changed
+
+    async def first(self, model: BaseModel):
+        query = model.select().first(self.manager.database)
+
+        return query
