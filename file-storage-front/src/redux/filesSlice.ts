@@ -90,7 +90,6 @@ export const filesSlice = createSlice({
             state.modalConfirm.content = payload.payload.content;
         },
         setOpenFile(state, payload: PayloadAction<TypeFile>) {
-            state.modalConfirm.isOpen = true;
             state.openFile = payload.payload;
         },
         setOpenFileById(state, payload: PayloadAction<string>) {
