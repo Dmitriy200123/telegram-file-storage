@@ -24,14 +24,19 @@ const FilesMain = () => {
     const history = useHistory();
 
     useEffect(() => {
-        dispatch(fetchFilters());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
+        dispatch(fetchFilters());
         setValue("fileName", fileName);
         setValue("senderIds", senderId);
         setValue("categories", categories);
         setValue("chatIds", chats);
         setValue("date", date);
     }, []);
+
+    useEffect(() => {
+        onChangeForm();
+    },[currentPage])
+
 
     const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
 
@@ -85,7 +90,7 @@ const FilesMain = () => {
                     {FragmentsFiles}
                 </form>
             </div>
-            <Paginator paginator={paginator} onChangePage={onChangeForm}/>
+            <Paginator paginator={paginator} />
         </div>
     );
 };
