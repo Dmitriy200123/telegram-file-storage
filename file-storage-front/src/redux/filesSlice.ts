@@ -6,7 +6,7 @@ import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "
 
 const initialState = {
     chats: null as null | Array<Chat>,
-    senders: null as null | Array<Sender>,
+    senders: [{id:"123", fullName:"имя", telegramUserName:"телега"}, {id:"124", fullName:"имя2", telegramUserName:"телега"}, {id:"125", fullName:"имя3", telegramUserName:"телега"}] as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
     files: [
@@ -90,7 +90,6 @@ export const filesSlice = createSlice({
             state.modalConfirm.content = payload.payload.content;
         },
         setOpenFile(state, payload: PayloadAction<TypeFile>) {
-            state.modalConfirm.isOpen = true;
             state.openFile = payload.payload;
         },
         setOpenFileById(state, payload: PayloadAction<string>) {
@@ -148,10 +147,9 @@ export const filesSlice = createSlice({
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
-            if ((state.paginator.currentPage - 1) * state.paginator.filesInPage > state.filesCount) {
-                state.paginator.count--;
+            state.paginator.count = Math.ceil((state.filesCount / state.paginator.filesInPage));
+            if (state.paginator.currentPage > state.paginator.count)
                 state.paginator.currentPage--;
-            }
             state.modalConfirm.isOpen = false;
         },
         [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {

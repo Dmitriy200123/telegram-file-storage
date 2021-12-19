@@ -5,15 +5,16 @@ import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
-import {useAppSelector} from "./utils/hooks/reduxHooks";
+import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
 import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
-import {fetchIsAuth} from "./redux/profileThunks";
-
+import {fetchIsAuth, fetchLogout} from "./redux/profileThunks";
+import {ReactComponent as Logout} from "./assets/logout.svg";
+import {myHeaders} from "./redux/api/api";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -25,19 +26,24 @@ const App: FC = () => {
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
         {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        {/*<Main/>*/}
     </div>)
 }
 
 const Main: FC = () => {
-    const {filesReducer, profile} = useAppSelector((state) => state);
+    localStorage.setItem("flag", "false");
+    const {filesReducer} = useAppSelector((state) => state);
     const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
+    const dispatch = useAppDispatch();
     return (<>
         <Navbar className={"app__navbar"}/>
         {loading && <Loading/>}
         <div className={"app__content"}>
-            <header className="header"/>
+            <header className="header">
+                <button className={"header__logout"} onClick={() => dispatch(fetchLogout())}><span>Выйти</span> <Logout/></button>
+            </header>
             <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
                     <Route path={"/files"} exact component={FilesMain}/>

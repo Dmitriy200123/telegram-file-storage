@@ -71,9 +71,12 @@ export const Select: React.FC<Props> = memo(({
     )
 })
 
-const calcPlaceholder = (values: Array<string | number> | string | number, options:Array<{ value: any, label: string }> ) => {
-    if (values instanceof Array)
-        return values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
-    else
-        return options.find((opt) => opt.value === values)?.label;
+const calcPlaceholder = (values: Array<string | number> | string, options:Array<{ value: any, label: string }> ) => {
+    if (values instanceof Array) {
+        return values.length === 0 ? null
+            :values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
+    }
+    else {
+        return values?.length === 0  ? null : values;
+    }
 }

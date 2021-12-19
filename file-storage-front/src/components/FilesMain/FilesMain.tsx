@@ -14,31 +14,35 @@ import {ReactComponent as Search} from "./../../assets/search.svg";
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
-    const filesData = filesReducer.files;
-    const filesNames = filesReducer.filesNames;
-    const paginator = useAppSelector((state) => state.filesReducer.paginator)
-    const chats = filesReducer.chats;
-    const senders = filesReducer.senders;
+    const {files:filesData,filesNames, chats, senders, filesCount} = filesReducer;
+    const paginator = useAppSelector((state) => state.filesReducer.paginator);
+    const {currentPage, filesInPage} = useAppSelector((state) => state.filesReducer.paginator);
     const dispatch = useAppDispatch();
     const history = useHistory();
 
     useEffect(() => {
-        dispatch(fetchFilters());
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
+        dispatch(fetchFilters());
         setValue("fileName", fileName);
-        setValue("sendersIds", senderId);
+        setValue("senderIds", senderId);
         setValue("categories", categories);
         setValue("chatIds", chats);
         setValue("date", date);
     }, []);
+
+    useEffect(() => {
+        onChangeForm();
+    },[currentPage])
+
 
     const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
 
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        dispatch(fetchFiles({skip: 0, take: 5, ...formData}));
+        dispatch(fetchFiles({skip: (currentPage - 1)* filesInPage, take: filesInPage, ...formData}));
     };
+
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
 
@@ -68,9 +72,9 @@ const FilesMain = () => {
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValueForm}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
-                    <Select name={"sendersIds"} className={"files__filter files__filter_select"} register={register}
+                    <Select name={"senderIds"} className={"files__filter files__filter_select"} register={register}
                             onChangeForm={onChangeForm} setValue={setValueForm}
-                            values={getValues("sendersIds")} options={optionsSender} isMulti={true}/>
+                            values={getValues("senderIds")} options={optionsSender} isMulti={true}/>
                     <div className={"files__filter files__filter_last files__filter_select files__filter_search"} >
                         <Select name={"chatIds"}
                                 register={register}
@@ -83,7 +87,7 @@ const FilesMain = () => {
                     {FragmentsFiles}
                 </form>
             </div>
-            <Paginator paginator={paginator}/>
+            <Paginator paginator={paginator} />
         </div>
     );
 };
@@ -116,8 +120,8 @@ const AddToUrlQueryParams = (history: any, values: Object) => {
 const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
     const fileName = urlSearchParams.get("fileName");
-    const senderId = urlSearchParams.get("sendersIds")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&") as any;
+    const senderId = urlSearchParams.get("senderIds")?.split("&")?.map((e) => e);
+    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => +e);
     const date = urlSearchParams.get("date");
     const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};
