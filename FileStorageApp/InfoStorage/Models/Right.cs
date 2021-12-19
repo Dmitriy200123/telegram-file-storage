@@ -21,6 +21,5 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
             set => Access = (int) value;
         }
-        public virtual User User { get; set; }
     }
 }
