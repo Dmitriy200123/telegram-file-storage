@@ -26,7 +26,7 @@ namespace FileStorageAPI.Converters
         {
             return new()
             {
-                FileId = file.UserId,
+                FileId = file.Id,
                 FileName = file.Name,
                 FileType = file.Type,
                 Sender = _senderConverter.ConvertFileSender(file.FileSender),

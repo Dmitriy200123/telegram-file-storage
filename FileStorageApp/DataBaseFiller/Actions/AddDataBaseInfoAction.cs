@@ -56,7 +56,7 @@ namespace DataBaseFiller.Actions
             _fileSenderId = Guid.NewGuid();
             var fileSender = new FileSender
             {
-                UserId = _fileSenderId,
+                Id = _fileSenderId,
                 TelegramId = 100,
                 TelegramUserName = "@testUser",
                 FullName = "Тестовый пользователь",
@@ -71,7 +71,7 @@ namespace DataBaseFiller.Actions
             _chatId = Guid.NewGuid();
             var chat = new Chat
             {
-                UserId = _chatId,
+                Id = _chatId,
                 TelegramId = 1022,
                 Name = "Тестовый чат",
                 ImageId = Guid.NewGuid(),
@@ -95,7 +95,7 @@ namespace DataBaseFiller.Actions
                 var uploadedFileId = await UploadFileAsync(name);
                 var file = new File
                 {
-                    UserId = uploadedFileId,
+                    Id = uploadedFileId,
                     Name = name,
                     Extension = name.Split(".").Last(),
                     TypeId = (int) FileTypeProvider.GetFileType(name),

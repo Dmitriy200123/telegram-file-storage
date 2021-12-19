@@ -8,7 +8,8 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class Right : IModel
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        
         public Guid UserId { get; set; }
 
         public int Access { get; set; }
@@ -20,5 +21,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
             set => Access = (int) value;
         }
+        public virtual User User { get; set; }
     }
 }

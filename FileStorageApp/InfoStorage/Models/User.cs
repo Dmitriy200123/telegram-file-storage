@@ -9,7 +9,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class User : IModel
     {
         [Key]
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
 
         public long? TelegramId { get; set; }
 

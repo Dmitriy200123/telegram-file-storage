@@ -9,7 +9,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     public class File : IModel
     {
         [Key]
-        public Guid UserId { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [MaxLength(255)]

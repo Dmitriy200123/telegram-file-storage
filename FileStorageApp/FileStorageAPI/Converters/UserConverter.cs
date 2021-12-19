@@ -19,7 +19,7 @@ namespace FileStorageAPI.Converters
         {
             return new UserIdAndFio
             {
-                Id = user.UserId,
+                Id = user.Id,
                 Name = user.Name
             };
         }

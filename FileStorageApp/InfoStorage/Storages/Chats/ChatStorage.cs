@@ -19,7 +19,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
         {
             return DbSet
                 .OrderBy(x => x.Name)
-                .ThenBy(x => x.UserId)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -36,7 +36,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
             return DbSet
                 .Where(x => x.Name.Contains(subString))
                 .OrderBy(x => x.Name)
-                .ThenBy(x => x.UserId)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 

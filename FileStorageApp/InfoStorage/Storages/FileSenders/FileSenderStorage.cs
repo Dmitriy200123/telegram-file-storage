@@ -19,7 +19,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
         {
             return DbSet
                 .OrderBy(x => x.FullName)
-                .ThenBy(x => x.UserId)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -31,7 +31,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
             return DbSet
                 .Where(x => x.FullName.Contains(subString))
                 .OrderBy(x => x.FullName)
-                .ThenBy(x => x.UserId)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -43,7 +43,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
             return DbSet
                 .Where(x => x.TelegramUserName.Contains(userName))
                 .OrderBy(x => x.FullName)
-                .ThenBy(x => x.UserId)
+                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
