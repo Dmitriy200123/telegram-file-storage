@@ -13,6 +13,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
     {
         internal FilesStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
+            Database.EnsureCreated();
         }
 
         public Task<List<File>> GetAllAsync(bool useInclude = false, int? skip = null, int? take = null)

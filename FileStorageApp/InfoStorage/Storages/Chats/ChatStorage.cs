@@ -12,6 +12,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Chats
     {
         internal ChatStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
+            Database.EnsureCreated();
         }
 
         public Task<List<Chat>> GetAllAsync()

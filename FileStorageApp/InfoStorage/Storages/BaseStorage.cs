@@ -14,7 +14,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages
         protected BaseStorage(IDataBaseConfig dataBaseConfig)
         {
             _dataBaseConfig = dataBaseConfig;
-            Database.EnsureCreated();
         }
 
         protected DbSet<T> DbSet { get; set; }
@@ -43,7 +42,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
             }
             catch (Exception e)
             {
-                if(writeException)
+                if (writeException)
                     Console.WriteLine(e);
                 return false;
             }

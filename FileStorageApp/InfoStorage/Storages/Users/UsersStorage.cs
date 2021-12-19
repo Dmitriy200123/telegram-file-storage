@@ -10,6 +10,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
     {
         internal UsersStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
+            Database.EnsureCreated();
         }
 
         public async Task<bool> AddTelegramIdToUser(Guid id, long telegramId)
