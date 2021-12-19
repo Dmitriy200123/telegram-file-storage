@@ -40,7 +40,7 @@ namespace FileStorageAPI.Services
             var descriptions = Enum.GetValues(typeof(Accesses))
                 .Cast<Accesses>()
                 .Where(x => x != Accesses.Default)
-                .Select(t => new RightDescription((int)t, t.GetEnumDescription()))
+                .Select(t => new RightDescription((int) t, t.GetEnumDescription()))
                 .ToList();
             return Task.FromResult(RequestResult.Ok(descriptions));
         }
@@ -49,14 +49,16 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<bool>> UpdateUserRights(RightEdition rightEdition)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-            if(rightEdition.Grant is null && rightEdition.Revoke is null)
+            if (rightEdition.Grant is null && rightEdition.Revoke is null)
                 return RequestResult.BadRequest<bool>("Invalid data in body");
             var userId = rightEdition.UserId;
             var contains = await rightsStorage.ContainsAsync(userId);
-            if(!contains)
+            if (!contains)
                 return RequestResult.NotFound<bool>("No such user");
-            if(IsContainsBadIds(rightEdition.Revoke) || IsContainsBadIds(rightEdition.Grant))
+            
+            if (IsContainsBadIds(rightEdition.Revoke) || IsContainsBadIds(rightEdition.Grant))
                 return RequestResult.BadRequest<bool>("Invalid rights Ids");
+            
             if (rightEdition.Revoke != null)
                 foreach (var access in rightEdition.Revoke)
                     await rightsStorage.RemoveRight(userId, access);

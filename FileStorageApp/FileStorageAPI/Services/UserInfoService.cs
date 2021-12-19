@@ -8,6 +8,7 @@ using FileStorageApp.Data.InfoStorage.Factories;
 
 namespace FileStorageAPI.Services
 {
+    /// <inheritdoc />
     class UserInfoService : IUserInfoService
     {
         private readonly IInfoStorageFactory _infoStorageFactory;
@@ -18,7 +19,7 @@ namespace FileStorageAPI.Services
             _infoStorageFactory = infoStorageFactory;
             _userConverter = userConverter;
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<UserInfo>> GetUserInfo(Guid id)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
@@ -27,7 +28,7 @@ namespace FileStorageAPI.Services
                 ? RequestResult.NotFound<UserInfo>("No such user in database") 
                 : RequestResult.Ok(_userConverter.ConvertUser(user));
         }
-
+        /// <inheritdoc />
         public async Task<RequestResult<List<UserIdAndFio>>> GetUsersInfo()
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
