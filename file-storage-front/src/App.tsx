@@ -31,7 +31,8 @@ const App: FC = () => {
 }
 
 const Main: FC = () => {
-    const {filesReducer, profile} = useAppSelector((state) => state);
+    localStorage.setItem("flag", "false");
+    const {filesReducer} = useAppSelector((state) => state);
     const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
