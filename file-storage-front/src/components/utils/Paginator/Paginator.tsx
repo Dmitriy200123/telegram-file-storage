@@ -7,7 +7,7 @@ import {filesSlice} from "../../../redux/filesSlice";
 
 const {changePaginatorPage} = filesSlice.actions;
 
-const Paginator = ({paginator}: { paginator: TypePaginator }) => {
+const Paginator = ({paginator, onChangePage}: { paginator: TypePaginator, onChangePage: () => void }) => {
     const {currentPage, filesInPage,count} = paginator
     const dispatch = useAppDispatch();
 
@@ -19,7 +19,8 @@ const Paginator = ({paginator}: { paginator: TypePaginator }) => {
     const changePage = useCallback((page: number) => dispatch(changePaginatorPage(page)),[]);
 
     useEffect(() => {
-        dispatch(fetchFiles({skip:(currentPage - 1) * filesInPage, take: filesInPage}));
+        onChangePage();
+        // dispatch(fetchFiles({skip:(currentPage - 1) * filesInPage, take: filesInPage}));
     },[currentPage])
 
     if (count <= 1)

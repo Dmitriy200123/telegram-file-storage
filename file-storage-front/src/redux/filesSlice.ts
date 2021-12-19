@@ -70,7 +70,7 @@ const initialState = {
     },
     paginator: {
         count: 1,
-        filesInPage: 5,
+        filesInPage: 3,
         currentPage: 1
     } as TypePaginator,
     filesCount: 0,

@@ -14,6 +14,7 @@ import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
+import {myHeaders} from "./redux/api/api";
 
 const App: FC = () => {
     const dispatch = useDispatch();
