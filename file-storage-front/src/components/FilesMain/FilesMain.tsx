@@ -14,12 +14,9 @@ import {ReactComponent as Search} from "./../../assets/search.svg";
 
 const FilesMain = () => {
     const filesReducer = useAppSelector((state) => state.filesReducer);
-    const filesData = filesReducer.files;
-    const filesNames = filesReducer.filesNames;
+    const {files:filesData,filesNames, chats, senders, filesCount} = filesReducer;
     const paginator = useAppSelector((state) => state.filesReducer.paginator);
     const {currentPage, filesInPage} = useAppSelector((state) => state.filesReducer.paginator);
-    const chats = filesReducer.chats;
-    const senders = filesReducer.senders;
     const dispatch = useAppDispatch();
     const history = useHistory();
 
