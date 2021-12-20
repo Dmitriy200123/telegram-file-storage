@@ -48,7 +48,11 @@ class Adapter:
 
         return is_changed
 
-    async def first(self, model: BaseModel):
-        query = model.select().first(self.manager.database)
+    async def first(self, model: BaseModel) -> Any:
+        query = model.select()
+        result = await self.manager.execute(query)
 
-        return query
+        if not result:
+            return None
+
+        return result[0]

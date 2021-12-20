@@ -18,7 +18,7 @@ async def test_get_marked_text(tag_repository):
 async def test_get_false_when_not_have_tags_in_db(tag_repository):
     message = create_message()
 
-    has_tags: bool = await tag_repository.has_tags(message)
+    has_tags = await tag_repository.has_tags(message)
 
     assert not has_tags
 
@@ -28,7 +28,7 @@ async def test_get_false_when_not_have_title_tag_in_message(tag_repository):
 
     await create_marked_text_tags()
 
-    has_tags: bool = await tag_repository.has_tags(message)
+    has_tags = await tag_repository.has_tags(message)
 
     assert not has_tags
 
@@ -38,7 +38,7 @@ async def test_get_false_when_not_have_description_tag_in_message(tag_repository
 
     await create_marked_text_tags()
 
-    has_tags: bool = await tag_repository.has_tags(message)
+    has_tags = await tag_repository.has_tags(message)
 
     assert not has_tags
 
@@ -48,7 +48,7 @@ async def test_get_true_when_have_tags_in_db(tag_repository):
 
     await create_marked_text_tags()
 
-    has_tags: bool = await tag_repository.has_tags(message)
+    has_tags = await tag_repository.has_tags(message)
 
     assert has_tags
 
