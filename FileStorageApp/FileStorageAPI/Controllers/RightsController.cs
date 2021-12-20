@@ -61,7 +61,7 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [RightAttribute(Accesses.Admin)]
+        [RightsFilter(Accesses.Admin)]
         [Route("set")]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно изменили права")]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]

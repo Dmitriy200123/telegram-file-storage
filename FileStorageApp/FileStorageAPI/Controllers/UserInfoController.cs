@@ -26,7 +26,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="settings">Настройки приложения</param>
         public UserInfoController(IUserInfoService userInfoService)
         {
-            _userInfoService = userInfoService;
+            _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
         }
 
         /// <summary>

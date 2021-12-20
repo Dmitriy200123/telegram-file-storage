@@ -21,10 +21,9 @@ namespace FileStorageAPI.Services
         /// <param name="infoStorageFactory">Фабрика базы данных</param>
         public RightsService(IInfoStorageFactory infoStorageFactory)
         {
-            _infoStorageFactory = infoStorageFactory;
+            _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _enumValues = Enum.GetValues(typeof(Accesses)).Cast<Accesses>().Cast<int>().ToArray();
         }
-
 
         /// <inheritdoc />
         public async Task<RequestResult<int[]>> GetUserRights(Guid id)
@@ -48,17 +47,17 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<bool>> UpdateUserRights(RightEdition rightEdition)
         {
-            using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
             if (rightEdition.Grant is null && rightEdition.Revoke is null)
                 return RequestResult.BadRequest<bool>("Invalid data in body");
+            using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
             var userId = rightEdition.UserId;
             var contains = await rightsStorage.ContainsAsync(userId);
             if (!contains)
                 return RequestResult.NotFound<bool>("No such user");
-            
+
             if (IsContainsBadIds(rightEdition.Revoke) || IsContainsBadIds(rightEdition.Grant))
                 return RequestResult.BadRequest<bool>("Invalid rights Ids");
-            
+
             if (rightEdition.Revoke != null)
                 foreach (var access in rightEdition.Revoke)
                     await rightsStorage.RemoveRightAsync(userId, access);

@@ -16,18 +16,20 @@ namespace FileStorageAPI.Services
 
         public UserInfoService(IInfoStorageFactory infoStorageFactory, IUserConverter userConverter)
         {
-            _infoStorageFactory = infoStorageFactory;
-            _userConverter = userConverter;
+            _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
+            _userConverter = userConverter ?? throw new ArgumentNullException(nameof(userConverter));
         }
+
         /// <inheritdoc />
         public async Task<RequestResult<UserInfo>> GetUserInfo(Guid id)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
             var user = await usersStorage.GetByIdAsync(id);
-            return user is null 
-                ? RequestResult.NotFound<UserInfo>("No such user in database") 
+            return user is null
+                ? RequestResult.NotFound<UserInfo>("No such user in database")
                 : RequestResult.Ok(_userConverter.ConvertUser(user));
         }
+
         /// <inheritdoc />
         public async Task<RequestResult<List<UserIdAndFio>>> GetUsersInfo()
         {
