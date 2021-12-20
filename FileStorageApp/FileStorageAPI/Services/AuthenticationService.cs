@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -40,7 +42,7 @@ namespace FileStorageAPI.Services
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var response = client.GetAsync(url).Result;
+            var response = await client.GetAsync(url);
             var responseContent = await response.Content.ReadAsStringAsync();
             var gitLabUser = JsonConvert.DeserializeObject<GitLabUser>(responseContent);
             if (gitLabUser?.Id == null)
@@ -53,6 +55,7 @@ namespace FileStorageAPI.Services
         private async Task<AuthenticationResponse> CreateToken(GitLabUser gitLabUser)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
+            
             var user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             if (user is null)
             {
@@ -66,8 +69,23 @@ namespace FileStorageAPI.Services
                     Name = gitLabUser.Name
                 };
                 await usersStorage.AddAsync(user);
+                using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
+                var right = new Right
+                {
+                    UserId = user.Id,
+                    AccessType = Accesses.Default
+                };
+                await rightsStorage.AddAsync(right);
+                user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             }
-            var jwtToken = await _jwtAuthenticationManager.Authenticate(user.Id.ToString());
+
+            var userName = user!.Id.ToString();
+            var claimName = new Claim(ClaimTypes.Name, userName);
+            var userRights = user.Rights;
+            var accessJson = JsonConvert.SerializeObject(userRights.Select(x => x.Access).ToList());
+            var claimAccess = new Claim(ClaimTypes.Role, accessJson);
+            var claims = new[] {claimName, claimAccess};
+            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, claims);
 
             return jwtToken;
         }
@@ -86,7 +104,7 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<string>> LogOut(Guid guid)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var result = await usersStorage.RemoveRefreshToken(guid);
+            var result = await usersStorage.RemoveRefreshTokenAsync(guid);
             return result 
                 ? RequestResult.NoContent<string>() 
                 : RequestResult.BadRequest<string>("No such user");

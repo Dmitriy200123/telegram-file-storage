@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace JwtAuth
 {
@@ -36,6 +38,16 @@ namespace JwtAuth
             }
 
             return principal;
+        }
+
+        public static Guid GetUserIdFromToken(this HttpRequest request, byte[] key)
+        {
+            var authHeader = request.Headers[HeaderNames.Authorization];
+            var userToken = authHeader.ToString().Split(' ')[1];
+            var principal = GetPrincipalFromToken(userToken, key);
+
+            var userName = principal.Identity!.Name;
+            return Guid.Parse(userName!);
         }
     }
 }

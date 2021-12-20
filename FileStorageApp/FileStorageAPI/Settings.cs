@@ -3,18 +3,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace FileStorageAPI
 {
-    public class Settings : ISettings
+    public static class Settings
     {
-        public Settings(IConfiguration configuration, byte[] key, IDataBaseConfig dataBaseConfig)
+        public static IConfiguration Configuration { get; private set; }
+        public static byte[] Key { get; private set; }
+
+        public static IDataBaseConfig DataBaseConfig { get; private set; }
+
+        public static void SetUpSettings(IConfiguration configuration, byte[] key, IDataBaseConfig dataBaseConfig)
         {
             Configuration = configuration;
             Key = key;
             DataBaseConfig = dataBaseConfig;
         }
-
-        public IConfiguration Configuration { get; }
-        public byte[] Key { get; }
-        
-        public IDataBaseConfig DataBaseConfig { get; }
     }
 }

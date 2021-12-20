@@ -38,18 +38,9 @@ namespace JwtAuth
             var refreshToken = _refreshTokenGenerator.GenerateToken();
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var userId = Guid.Parse(username);
-            await userStorage.UpdateRefreshToken(userId, refreshToken);
+            await userStorage.UpdateRefreshTokenAsync(userId, refreshToken);
 
             return new AuthenticationResponse(token, refreshToken);
-        }
-
-        /// <inheritdoc />
-        public async Task<AuthenticationResponse> Authenticate(string username)
-        {
-            var claim = new Claim(ClaimTypes.Name, username);
-            var claims = new[] {claim};
-
-            return await Authenticate(username, claims);
         }
 
         private string GenerateTokenString(DateTime expires, IEnumerable<Claim> claims)

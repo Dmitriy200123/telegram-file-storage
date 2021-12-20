@@ -45,8 +45,7 @@ namespace FileStorageAPI
         {
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
-            var settings = new Settings(Configuration, key, CreateDataBaseConfig());
-            services.AddSingleton<ISettings>(settings);
+            Settings.SetUpSettings(Configuration, key, CreateDataBaseConfig());
             services.AddControllers();
 
             services.AddAuthentication(x =>
@@ -126,7 +125,6 @@ namespace FileStorageAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileStorageAPI v1"));
             }
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -145,6 +143,7 @@ namespace FileStorageAPI
             services.AddSingleton<IChatConverter, ChatConverter>();
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
+            services.AddSingleton<IUserConverter, UserConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -182,6 +181,8 @@ namespace FileStorageAPI
             services.AddSingleton<IChatService, ChatService>();
             services.AddSingleton<ISenderService, SenderService>();
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IUserInfoService, UserInfoService>();
+            services.AddSingleton<IRightsService, RightsService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)

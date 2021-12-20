@@ -12,7 +12,6 @@ namespace InfoStorage.Tests
 {
     public class FileSenderStorageShould
     {
-        private List<FileSender> _elementsToDelete;
         private readonly IInfoStorageFactory _infoStorageFactory;
 
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
@@ -30,12 +29,6 @@ namespace InfoStorage.Tests
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _elementsToDelete = new List<FileSender>();
-        }
-
         [TestCase("ubs")]
         [TestCase("Substring")]
         [TestCase("")]
@@ -50,7 +43,6 @@ namespace InfoStorage.Tests
                 FullName = "Substring",
             };
             expected.Add(fileSender);
-            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
@@ -69,7 +61,6 @@ namespace InfoStorage.Tests
                 TelegramUserName = "",
                 FullName = "Substring",
             };
-            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetBySenderNameSubstringAsync(substring);
@@ -92,7 +83,6 @@ namespace InfoStorage.Tests
                 FullName = "",
             };
             expected.Add(fileSender);
-            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
@@ -111,7 +101,6 @@ namespace InfoStorage.Tests
                 TelegramUserName = "Substring",
                 FullName = "",
             };
-            _elementsToDelete.Add(fileSender);
             await chatStorage.AddAsync(fileSender);
 
             var actual = await chatStorage.GetByTelegramNameSubstringAsync(substring);
@@ -145,7 +134,6 @@ namespace InfoStorage.Tests
             expected.Add(fileSender3);
             expected.Add(fileSender);
             expected.Add(fileSender2);
-            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(fileSender);
             await chatStorage.AddAsync(fileSender2);
             await chatStorage.AddAsync(fileSender3);
@@ -184,7 +172,6 @@ namespace InfoStorage.Tests
             expected.Add(fileSender3);
             expected.Add(fileSender);
             expected.Add(fileSender2);
-            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(fileSender);
             await chatStorage.AddAsync(fileSender2);
             await chatStorage.AddAsync(fileSender3);
@@ -198,7 +185,7 @@ namespace InfoStorage.Tests
         public async Task TearDown()
         {
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
-            foreach (var elem in _elementsToDelete)
+            foreach (var elem in await fileSenderStorage.GetAllAsync())
                 await fileSenderStorage.DeleteAsync(elem.Id);
         }
     }

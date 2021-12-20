@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using JwtAuth;
@@ -19,18 +20,16 @@ namespace FileStorageAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly ISettings _settings;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>
         /// </summary>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
         /// <param name="settings"></param>
-        public AuthenticationController(IAuthenticationService authenticationService, ISettings settings)
+        public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService =
                 authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
         /// <summary>
@@ -60,10 +59,8 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status204NoContent, "Успешно удалили рефреш токен ")]
         public async Task<IActionResult> LogOut()
         {
-            var header = HttpContext.Request.Headers["Authorization"].ToString();
-            var token = header.Split(' ')[1];
-            var claimsPrincipal = TokenHelper.GetPrincipalFromToken(token, _settings.Key);
-            var id = Guid.Parse(claimsPrincipal.Identity!.Name!);
+            var a = User.Claims.ToList();
+            var id = Request.GetUserIdFromToken(Settings.Key);
             var result = await _authenticationService.LogOut(id);
             return result.ResponseCode switch
             {
