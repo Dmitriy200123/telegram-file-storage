@@ -30,7 +30,7 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<int[]>> GetUserRights(Guid id)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-            var userRight = await rightsStorage.GetUserRights(id);
+            var userRight = await rightsStorage.GetUserRightsAsync(id);
             return RequestResult.Ok(userRight);
         }
 
@@ -61,7 +61,7 @@ namespace FileStorageAPI.Services
             
             if (rightEdition.Revoke != null)
                 foreach (var access in rightEdition.Revoke)
-                    await rightsStorage.RemoveRight(userId, access);
+                    await rightsStorage.RemoveRightAsync(userId, access);
 
             if (rightEdition.Grant != null)
                 foreach (var access in rightEdition.Grant)

@@ -14,12 +14,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
             Database.EnsureCreated();
         }
 
-        public async Task<int[]> GetUserRights(Guid id)
+        public async Task<int[]> GetUserRightsAsync(Guid id)
         {
             return await DbSet.Where(x => x.UserId == id).Select(x => x.Access).ToArrayAsync();
         }
 
-        public async Task<bool> RemoveRight(Guid id, int access)
+        public async Task<bool> RemoveRightAsync(Guid id, int access)
         {
             var right = await DbSet.FirstOrDefaultAsync(x => x.UserId == id && x.Access == access);
             if (right is null)
@@ -28,6 +28,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
             await SaveChangesAsync();
             return true;
         }
+
+        public async Task<Right[]> GetAllAsync()
+        {
+            return await DbSet.ToArrayAsync();
+        }
+
         public override async Task<bool> ContainsAsync(Guid id)
         {
             var entity = await DbSet.FirstOrDefaultAsync(x => x.UserId == id);

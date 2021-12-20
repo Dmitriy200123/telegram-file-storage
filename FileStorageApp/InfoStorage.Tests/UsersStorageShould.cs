@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -12,7 +11,6 @@ namespace InfoStorage.Tests
 {
     public class UsersStorageShould
     {
-        private List<User> _elementsToDelete;
         private readonly IInfoStorageFactory _infoStorageFactory;
 
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
@@ -30,20 +28,14 @@ namespace InfoStorage.Tests
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 
-        [SetUp]
-        public void Setup()
-        {
-            _elementsToDelete = new List<User>();
-        }
-
         [TearDown]
         public async Task TearDown()
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            foreach (var elem in _elementsToDelete)
+            foreach (var elem in await usersStorage.GetAllAsync())
                 await usersStorage.DeleteAsync(elem.Id);
         }
-        
+
         [Test]
         public async Task GetAll_CorrectData_WhenCalled()
         {

@@ -9,7 +9,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     {
         [Key]
         public Guid Id { get; set; }
-        
+
         public Guid UserId { get; set; }
 
         public int Access { get; set; }
@@ -21,5 +21,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
             set => Access = (int) value;
         }
+
+        public virtual User User { get; set; }
     }
 }

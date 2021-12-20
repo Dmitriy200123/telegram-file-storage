@@ -20,7 +20,8 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public string Avatar { get; set; }
 
         public string RefreshToken { get; set; }
+
         [ForeignKey("UserId")]
-        public virtual List<Right> Rights { get; set; }
+        public virtual ICollection<Right> Rights { get; set; }
     }
 }

@@ -6,7 +6,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
 {
     public interface IRightsStorage : IDisposable, IInfoStorage<Right>
     {
-        Task<int[]> GetUserRights(Guid id);
-        Task<bool> RemoveRight(Guid id, int access);
+        Task<int[]> GetUserRightsAsync(Guid id);
+        Task<bool> RemoveRightAsync(Guid id, int access);
+        Task<Right[]> GetAllAsync();
     }
 }

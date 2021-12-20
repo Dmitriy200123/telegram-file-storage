@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -12,7 +11,6 @@ namespace InfoStorage.Tests
 {
     public class RightsStorageShould
     {
-        private List<Right> _elementsToDelete;
         private readonly IInfoStorageFactory _infoStorageFactory;
 
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
@@ -30,18 +28,12 @@ namespace InfoStorage.Tests
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 
-        [SetUp]
-        public void Setup()
-        {
-            _elementsToDelete = new List<Right>();
-        }
-
         [TearDown]
         public async Task TearDown()
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-            foreach (var elem in _elementsToDelete)
-                await rightsStorage.DeleteAsync(elem.Id);
+            foreach (var userRight in await rightsStorage.GetAllAsync())
+                await rightsStorage.DeleteAsync(userRight.Id);
         }
 
         [Test]
@@ -58,7 +50,7 @@ namespace InfoStorage.Tests
             using var rightStorage = _infoStorageFactory.CreateRightsStorage();
             await rightStorage.AddAsync(right);
 
-            var actual = await rightStorage.GetUserRights(userId);
+            var actual = await rightStorage.GetUserRightsAsync(userId);
 
             actual.Should().BeEquivalentTo(expected);
         }

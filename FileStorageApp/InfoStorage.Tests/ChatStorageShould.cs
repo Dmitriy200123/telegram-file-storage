@@ -12,7 +12,6 @@ namespace InfoStorage.Tests
 {
     public class ChatStorageShould
     {
-        private List<Chat> _elementsToDelete;
         private readonly IInfoStorageFactory _infoStorageFactory;
 
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
@@ -30,13 +29,6 @@ namespace InfoStorage.Tests
             _infoStorageFactory = new InfoStorageFactory(config);
         }
 
-
-        [SetUp]
-        public void Setup()
-        {
-            _elementsToDelete = new List<Chat>();
-        }
-
         [TestCase("ubs")]
         [TestCase("Substring")]
         [TestCase("")]
@@ -51,7 +43,6 @@ namespace InfoStorage.Tests
                 ImageId = Guid.NewGuid(),
             };
             expected.Add(chat);
-            _elementsToDelete.Add(chat);
             await chatStorage.AddAsync(chat);
 
             var actual = await chatStorage.GetByChatNameSubstringAsync(substring);
@@ -70,7 +61,6 @@ namespace InfoStorage.Tests
                 Name = "Substring",
                 ImageId = Guid.NewGuid(),
             };
-            _elementsToDelete.Add(chat);
             await chatStorage.AddAsync(chat);
 
             var actual = await chatStorage.GetByChatNameSubstringAsync(substring);
@@ -104,7 +94,6 @@ namespace InfoStorage.Tests
             expected.Add(chat);
             expected.Add(chat2);
             expected.Add(chat3);
-            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
             await chatStorage.AddAsync(chat3);
@@ -143,7 +132,6 @@ namespace InfoStorage.Tests
             expected.Add(chat3);
             expected.Add(chat);
             expected.Add(chat2);
-            _elementsToDelete.AddRange(expected);
             await chatStorage.AddAsync(chat);
             await chatStorage.AddAsync(chat2);
             await chatStorage.AddAsync(chat3);
@@ -157,7 +145,7 @@ namespace InfoStorage.Tests
         public async Task TearDown()
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
-            foreach (var elem in _elementsToDelete)
+            foreach (var elem in await chatStorage.GetAllAsync())
                 await chatStorage.DeleteAsync(elem.Id);
         }
     }

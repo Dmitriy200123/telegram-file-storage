@@ -72,7 +72,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<List<User>> GetAllAsync()
         {
             return await DbSet.ToListAsync();
         }

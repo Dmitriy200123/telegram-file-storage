@@ -15,6 +15,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         Task<bool> RemoveRefreshTokenAsync(Guid id);
         Task<string?> GetRefreshTokenAsync(Guid id);
         Task<User?> GetByIdAsync(Guid id);
-        Task<List<User>> GetAll();
+        Task<List<User>> GetAllAsync();
     }
 }

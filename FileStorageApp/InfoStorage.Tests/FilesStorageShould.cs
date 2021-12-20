@@ -14,7 +14,6 @@ namespace InfoStorage.Tests
 {
     public class FilesStorageShould
     {
-        private List<File> _filesToDelete;
         private readonly IInfoStorageFactory _infoStorageFactory;
         private Chat _chat;
         private FileSender _fileSender;
@@ -37,7 +36,6 @@ namespace InfoStorage.Tests
         [SetUp]
         public async Task SetUp()
         {
-            _filesToDelete = new List<File>();
             _chat = CreateChat(Guid.NewGuid());
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             await chatStorage.AddAsync(_chat);
@@ -65,7 +63,6 @@ namespace InfoStorage.Tests
                 ChatId = _chat.Id,
             };
             expected.Add(file);
-            _filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
 
             var actual = await chatStorage.GetByFileNameSubstringAsync(substring);
@@ -87,7 +84,6 @@ namespace InfoStorage.Tests
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,
             };
-            _filesToDelete.Add(file);
             await chatStorage.AddAsync(file);
 
             var actual = await chatStorage.GetByFileNameSubstringAsync(substring);
@@ -164,7 +160,7 @@ namespace InfoStorage.Tests
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
 
-            foreach (var elem in _filesToDelete)
+            foreach (var elem in await fileStorage.GetAllAsync())
                 await fileStorage.DeleteAsync(elem.Id);
             await chatStorage.DeleteAsync(_chat.Id);
             await fileSenderStorage.DeleteAsync(_fileSender.Id);
@@ -204,7 +200,6 @@ namespace InfoStorage.Tests
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,
             };
-            _filesToDelete.Add(file);
             return file;
         }
     }

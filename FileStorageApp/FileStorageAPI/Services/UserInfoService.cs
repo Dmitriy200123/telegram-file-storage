@@ -32,7 +32,7 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<List<UserIdAndFio>>> GetUsersInfo()
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
-            var users = await usersStorage.GetAll();
+            var users = await usersStorage.GetAllAsync();
             var convertedUsers = users.Select(_userConverter.ConvertUserToIdAndFio).ToList();
             return RequestResult.Ok(convertedUsers);
         }
