@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
+using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
 using JwtAuth;

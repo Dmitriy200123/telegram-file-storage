@@ -8,6 +8,7 @@ using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
+using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -76,6 +77,8 @@ namespace FileStorageAPI
                 }
             );
             services.AddCors();
+
+            services.AddSingleton<IRightsFilter, RightsFilter>();
             RegisterProviders(services);
             RegisterAuth(services, tokenKey, key);
             RegisterDtoConverters(services);
