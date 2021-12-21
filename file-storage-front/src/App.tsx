@@ -1,5 +1,6 @@
 import React, {FC, useEffect} from 'react';
 import './App.css';
+import './App.scss';
 import {BrowserRouter, Link, Redirect, Route, Switch, useLocation} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
@@ -15,6 +16,7 @@ import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
 import {myHeaders} from "./redux/api/api";
+import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -25,8 +27,8 @@ const App: FC = () => {
     }, [])
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
-        {/*<Main/>*/}
+        {/*{profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}*/}
+        <Main/>
     </div>)
 }
 
@@ -44,9 +46,10 @@ const Main: FC = () => {
             <header className="header">
                 <button className={"header__logout"} onClick={() => dispatch(fetchLogout())}><span>Выйти</span> <Logout/></button>
             </header>
-            <div style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
+            <div className={"app__content-components"} style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
                     <Route path={"/files"} exact component={FilesMain}/>
+                    <Route path={"/admin"} component={RightsManagerPanel}/>
                     <Route path={"/file/:id"} component={OpenedFile}/>
                     <Route path={"/load/"} component={LoadFileMain}/>
                     <Route path={"/login"} component={StartPage}/>
