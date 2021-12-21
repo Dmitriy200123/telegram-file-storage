@@ -2,6 +2,7 @@ import typing
 from io import BytesIO
 
 from common.interactor.base_interactor import BaseInteractor
+from telegram_client_loader.validator.media_validator import Validator
 from telethon import TelegramClient
 from telethon.events import NewMessage
 from telethon.tl.custom import Message
@@ -35,8 +36,7 @@ class BaseHandler:
         # is_valid = await self.is_valid_chat(message.chat_id)
 
         if message.chat_id < 0:
-            # TODO: Сделать фильтрацию типов медиа
-            if message.media:
+            if message.media and Validator.is_valid_media(message.media):
                 await self._handle_new_message_with_media(message)
 
             urls = self.base_interactor.find_urls(message.message)
