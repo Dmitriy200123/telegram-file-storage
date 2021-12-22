@@ -15,10 +15,7 @@ class Validator:
             invalid_types = filter(lambda attribute: Validator.__is_audio_voice(
                 attribute) or Validator.__is_sticker(attribute), attributes)
 
-            if any(invalid_types):
-                return False
-
-            return True
+            return not any(invalid_types)
 
         return isinstance(media, MessageMediaPhoto)
 
