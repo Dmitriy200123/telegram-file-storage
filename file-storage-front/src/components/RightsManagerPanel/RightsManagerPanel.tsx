@@ -1,51 +1,76 @@
-import React, {memo, useEffect, useState} from "react";
+import React, {Dispatch, memo, useEffect, useState} from "react";
 import "./RightsManagerPanel.scss";
 import {ReactComponent as SearchSvg} from "./../../assets/search.svg";
 import {ReactComponent as Employee} from "./../../assets/add-employee.svg";
 import {ReactComponent as Account} from "./../../assets/account.svg";
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
+import {fetchAllUsers} from "../../redux/thunks/rightsThunks";
+import {useDispatch} from "react-redux";
+import {useAppSelector} from "../../utils/hooks/reduxHooks";
+import {managePanelSlice} from "../../redux/managePanelSlice";
+import {RightsModal} from "./RightsModal/RightsModal";
 
+const {openModal} = managePanelSlice.actions;
 export const RightsManagerPanel: React.FC = memo(() => {
+    const modal = useAppSelector(state => state.managePanel.modal);
+    const dispatch = useDispatch();
     useEffect(() => {
+        dispatch(fetchAllUsers())
+    }, [])
 
-    },[])
-    return (
-        <div className={"rights-panel"}>
-            <h2 className={"rights-panel__h2"}>Добавление доступа</h2>
-            <div className={"rights-panel__content"}>
-                <div className={"rights-panel__search-block"}>
-                    <h3 className={"rights-panel__h3"}>Сотрудник</h3>
-                    <InputDropdown/>
-                </div>
-                <div className={"rights-panel__employee-info"}>
-                    <Employee className={"rights-panel__employee-info-svg"}/>
-                    <p className={"rights-panel__employee-info-p"}>Вы можете найти сотрудника</p>
-                    <p className={"rights-panel__employee-info-p"}> и добавить ему доступ</p>
+    return (<>
+
+            <div className={"rights-panel"}>
+                <h2 className={"rights-panel__h2"}>Добавление доступа</h2>
+                <div className={"rights-panel__content"}>
+                    <div className={"rights-panel__search-block"}>
+                        <h3 className={"rights-panel__h3"}>Сотрудник</h3>
+                        <InputDropdown dispatch={dispatch}/>
+                    </div>
+                    <div className={"rights-panel__employee-info"}>
+                        <Employee className={"rights-panel__employee-info-svg"}/>
+                        <p className={"rights-panel__employee-info-p"}>Вы можете найти сотрудника</p>
+                        <p className={"rights-panel__employee-info-p"}> и добавить ему доступ</p>
+                    </div>
                 </div>
             </div>
-        </div>
+            {modal.isOpen && <RightsModal/> }
+        </>
     );
 })
 
-const InputDropdown = () => {
-    const FoundUsers = [1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15,16,17].map(() => {
-        return <div className={"rights-panel__search-block-dropdown-item"}>
-            <Account/><span>Абобус</span>
-        </div>
-    })
+const InputDropdown: React.FC<{ dispatch: Dispatch<any> }> = memo(({dispatch}) => {
     const [text, changeText] = useState("");
     const [isOpen, changeOpen] = useState(false);
+    const users = useAppSelector((state) => state.managePanel.users);
+    const regexp = new RegExp(`${text}`, 'i');
+    const FoundUsers = users?.filter((elem) => !!elem.name.match(regexp))?.map(({id, name}) => {
+        function onClick() {
+            dispatch(openModal({id}));
+        }
 
-    return <OutsideAlerter className={"rights-panel__search-block-label"} onOutsideClick={() =>  changeOpen(false)}><label className={"rights-panel__search-block-label"}>
+        return <div onClick={onClick} className={"rights-panel__search-block-dropdown-item"} key={id}>
+            <Account/><span>{name}</span>
+        </div>
+    })
+
+
+    return <OutsideAlerter className={"rights-panel__search-block-label"}
+                           onOutsideClick={() => changeOpen(false)}><label
+        className={"rights-panel__search-block-label"}>
         <input onClick={() => changeOpen(true)} className={"rights-panel__search-block-input"}
-               placeholder={"Введите имя сотрудника"}/>
+               placeholder={"Введите имя сотрудника"}
+               value={text} onChange={(e) => {
+            changeText(e.target.value)
+        }}/>
         <SearchSvg className={"rights-panel__search-block-svg"}/>
-        {isOpen && <section onBlur={() => changeOpen(false)} className={"rights-panel__search-block-dropdown"}>
+        {isOpen && users && users.length > 0 &&
+        <section onBlur={() => changeOpen(false)} className={"rights-panel__search-block-dropdown"}>
             {FoundUsers}
         </section>
         }
     </label>
     </OutsideAlerter>
-}
+})
 
 

@@ -15,8 +15,9 @@ import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
-import {myHeaders} from "./redux/api/api";
+import {fetchData, myHeaders} from "./redux/api/api";
 import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
+import {fetchAllUsers, fetchUserCurrent} from "./redux/thunks/rightsThunks";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -27,18 +28,21 @@ const App: FC = () => {
     }, [])
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {/*{profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}*/}
-        <Main/>
+        {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        {/*<Main/>*/}
     </div>)
 }
 
 const Main: FC = () => {
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(fetchUserCurrent());
+    },[])
     localStorage.setItem("flag", "false");
     const {filesReducer} = useAppSelector((state) => state);
     const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
-    const dispatch = useAppDispatch();
     return (<>
         <Navbar className={"app__navbar"}/>
         {loading && <Loading/>}
