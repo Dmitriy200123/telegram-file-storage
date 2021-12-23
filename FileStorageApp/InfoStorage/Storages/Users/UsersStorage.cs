@@ -11,7 +11,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
     {
         internal UsersStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
-            Database.EnsureCreated();
         }
         
         public async Task<bool> AddTelegramIdToGitLabUserAsync(long id, long telegramId)

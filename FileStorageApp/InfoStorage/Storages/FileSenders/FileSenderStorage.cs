@@ -12,7 +12,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
     {
         internal FileSenderStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
-            Database.EnsureCreated();
         }
 
         public Task<List<FileSender>> GetAllAsync()

@@ -11,7 +11,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
     {
         internal RightsStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
-            Database.EnsureCreated();
         }
 
         public async Task<int[]> GetUserRightsAsync(Guid id)
