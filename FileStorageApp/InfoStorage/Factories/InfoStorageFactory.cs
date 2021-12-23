@@ -3,6 +3,7 @@ using FileStorageApp.Data.InfoStorage.Storages.AccessStorage;
 using FileStorageApp.Data.InfoStorage.Storages.Chats;
 using FileStorageApp.Data.InfoStorage.Storages.Files;
 using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
+using FileStorageApp.Data.InfoStorage.Storages.MarkedTextsTags;
 using FileStorageApp.Data.InfoStorage.Storages.Users;
 
 namespace FileStorageApp.Data.InfoStorage.Factories
@@ -23,6 +24,9 @@ namespace FileStorageApp.Data.InfoStorage.Factories
         public IFileSenderStorage CreateFileSenderStorage() => new FileSenderStorage(_dataBaseConfig);
 
         public IUsersStorage CreateUsersStorage() => new UsersStorage(_dataBaseConfig);
+
+        public IMarkedTextTagsStorage CreateMarkedTextTagsStorage() => new MarkedTextTagsStorage(_dataBaseConfig);
+
         public IRightsStorage CreateRightsStorage() => new RightsStorage(_dataBaseConfig);
     }
 }
