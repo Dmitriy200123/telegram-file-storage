@@ -2,6 +2,7 @@ import typing
 from io import BytesIO
 
 from common.interactor.base_interactor import BaseInteractor
+from pydantic import AnyUrl
 from telegram_client_loader.validator.media_validator import Validator
 from telethon import TelegramClient
 from telethon.events import NewMessage
@@ -52,7 +53,7 @@ class BaseHandler:
     async def _handle_new_message_with_media(self, message: Message):
         pass
 
-    async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
+    async def _handle_new_message_with_urls(self, message: Message, urls: list[AnyUrl]):
         pass
 
     async def _handle_new_message_with_tags(self, message: Message, marked_texts: (str, str)):

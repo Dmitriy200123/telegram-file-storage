@@ -8,6 +8,7 @@ from common.repository.tag_repository import TagRepository
 from common.repository.url_repository import UrlRepository
 from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 from postgres.models.external_models import File as FileExternal
+from pydantic import AnyUrl
 
 
 class LoaderInteractor(BaseInteractor):
@@ -35,15 +36,15 @@ class LoaderInteractor(BaseInteractor):
 
         await self.file_repository.save_file(file, file_info.Id)
 
-    async def save_url(self, url: str, sender_id: int, chat_id: int):
-        name: str = self.url_repository.get_name(url)
+    async def save_url(self, url: AnyUrl, sender_id: int, chat_id: int):
+        name: str = self.get_url_name(url)
         file_info: FileExternal = FileExternal(
             name=name,
             type=FileTypeEnum.Link,
             sender_telegram_id=sender_id,
             chat_telegram_id=chat_id
         )
-        file: BytesIO = BytesIO(self.__text_to_bytes(url))
+        file: BytesIO = BytesIO(self.__text_to_bytes(url.title().lower()))
 
         await self.save_file(file_info, file)
 

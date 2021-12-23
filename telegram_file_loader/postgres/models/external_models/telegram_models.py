@@ -6,4 +6,4 @@ class ValidateUrl(BaseModel):
 
     @validator('url', pre=True)
     def https_validator(cls, v: str):
-        return v if '://' in v else f'https://{v}'
+        return v if '://' in v else f'http://{v}'
