@@ -14,7 +14,7 @@ namespace FileStorageAPI.Controllers
     /// Контроллер для работы с данными пользователя
     /// </summary>
     [Authorize]
-    [Route("userinfo")]
+    [Route("users")]
     [SwaggerTag("Информация о пользователях")]
     public class UserInfoController : Controller
     {
@@ -33,7 +33,7 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о пользователе
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("current")]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователе")]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Такого пользователя не существует")]
         public async Task<IActionResult> GetUserInfo()
