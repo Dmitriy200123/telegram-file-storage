@@ -8,7 +8,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.MarkedTextsTags
     {
         internal MarkedTextTagsStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
-            Database.EnsureCreated();
         }
 
         public MarkedTextTags FirstOrDefault() => DbSet.FirstOrDefault();
