@@ -8,7 +8,7 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchFiles, fetchFilters} from "../../redux/mainThunks";
+import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 

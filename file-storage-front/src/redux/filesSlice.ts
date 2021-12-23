@@ -1,7 +1,7 @@
 import {Category, Chat, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
+import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
+import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
 
 
 const initialState = {

@@ -4,7 +4,7 @@ import {Button} from "../Button/Button";
 import Modal from "./Modal";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../../redux/filesSlice";
-import {fetchRemoveFile} from "../../../redux/fileThunks";
+import {fetchRemoveFile} from "../../../redux/thunks/fileThunks";
 import {useHistory} from "react-router-dom";
 
 const {closeModal} = filesSlice.actions;

@@ -5,7 +5,7 @@ import Modal from "./Modal";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../../redux/filesSlice";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
-import {fetchEditFileName} from "../../../redux/fileThunks";
+import {fetchEditFileName} from "../../../redux/thunks/fileThunks";
 import {separateStringExtension} from "../../../utils/functions";
 
 const {closeModal} = filesSlice.actions;

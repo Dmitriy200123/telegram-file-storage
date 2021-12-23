@@ -1,5 +1,5 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchConfig, fetchConfigText} from "./api/api";
+import {fetchConfig, fetchConfigText} from "../api/api";
 
 export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAPI) => {
     try {

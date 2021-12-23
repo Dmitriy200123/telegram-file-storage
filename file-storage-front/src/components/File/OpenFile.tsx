@@ -5,7 +5,7 @@ import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {Category, ModalContent} from "../../models/File";
 import {Link} from 'react-router-dom';
 import {useDispatch} from "react-redux";
-import {fetchDownloadLink, fetchFile} from "../../redux/fileThunks";
+import {fetchDownloadLink, fetchFile} from "../../redux/thunks/fileThunks";
 import {ReactComponent as Edit} from "./../../assets/edit.svg";
 import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {filesSlice} from "../../redux/filesSlice";

@@ -5,7 +5,7 @@ import {FC, memo, useEffect, useState} from "react";
 import {GitlabAuth} from "gitlab-auth";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch} from "../../utils/hooks/reduxHooks";
-import {fetchAuthGitlab} from "../../redux/profileThunks";
+import {fetchAuthGitlab} from "../../redux/thunks/profileThunks";
 
 export const StartPage: FC = memo(() => {
     const dispatch = useAppDispatch();

@@ -1,8 +1,8 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum, TokensType} from "../models/File";
-import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
-import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./profileThunks";
+import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
+import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
+import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
 
 

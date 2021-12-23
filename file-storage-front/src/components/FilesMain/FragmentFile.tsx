@@ -9,7 +9,7 @@ import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
-import {fetchDownloadLink} from "../../redux/fileThunks";
+import {fetchDownloadLink} from "../../redux/thunks/fileThunks";
 
 const {openModal, setOpenFile} = filesSlice.actions
 

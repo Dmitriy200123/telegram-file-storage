@@ -13,7 +13,7 @@ import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
-import {fetchIsAuth, fetchLogout} from "./redux/profileThunks";
+import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
 import {myHeaders} from "./redux/api/api";
 import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
