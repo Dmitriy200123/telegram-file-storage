@@ -12,7 +12,7 @@ export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI
                 jwtToken: jwtToken,
                 refreshToken: refreshToken
             };
-            const data:TokensType = await fetchAuth("/gitlab/refresh", {body:tokens, method: "POST"});
+            const data:TokensType = await fetchAuth("/auth/gitlab/refresh", {body:tokens, method: "POST"});
             return data;
         } catch (e) {
             return thunkAPI.rejectWithValue("Не удалось");
@@ -23,7 +23,7 @@ export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI
 
 export const fetchAuthGitlab = createAsyncThunk("profile/login", async (token:string, thunkAPI) => {
     try {
-        const data:TokensType = await fetchAuth("/gitlab", {token:token});
+        const data:TokensType = await fetchAuth("/auth/gitlab", {token:token});
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
@@ -33,7 +33,7 @@ export const fetchAuthGitlab = createAsyncThunk("profile/login", async (token:st
 
 export const fetchLogout = createAsyncThunk("profile/logout", async (_, thunkAPI) => {
     try {
-        await fetchLog("/gitlab/logout");
+        await fetchLog("/auth/gitlab/logout");
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
     }

@@ -1,6 +1,6 @@
 import {myHeaders} from "./api";
 
-const baseUrl = "https://localhost:5001/auth";
+const baseUrl = "https://localhost:5001";
 
 export const fetchLog = async (url: string) => {
     const response = await fetch(baseUrl + url, {

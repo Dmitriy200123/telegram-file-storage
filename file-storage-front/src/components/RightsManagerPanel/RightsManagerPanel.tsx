@@ -1,12 +1,14 @@
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import "./RightsManagerPanel.scss";
 import {ReactComponent as SearchSvg} from "./../../assets/search.svg";
 import {ReactComponent as Employee} from "./../../assets/add-employee.svg";
 import {ReactComponent as Account} from "./../../assets/account.svg";
-import {RightsModal} from "./RightsModal/RightsModal";
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
 
 export const RightsManagerPanel: React.FC = memo(() => {
+    useEffect(() => {
+
+    },[])
     return (
         <div className={"rights-panel"}>
             <h2 className={"rights-panel__h2"}>Добавление доступа</h2>
