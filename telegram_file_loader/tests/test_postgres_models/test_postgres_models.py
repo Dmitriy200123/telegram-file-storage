@@ -1,15 +1,21 @@
 import datetime
 import uuid
 
-from conftest import create_chat, create_sender
 from postgres.basic import manager
 from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 from postgres.models.external_models import File as FileExternal
+from tests.test_postgres_models.conftest import (
+    create_chat,
+    create_marked_text_tags,
+    create_sender,
+)
 
 
 async def test_create_chat(db_manager):
-    chat, is_created = await db_manager.get_or_create(model=Chat, Name='test name', ImageId=uuid.uuid4(),
-                                                      TelegramId=123)
+    chat, is_created = await db_manager.get_or_create(
+        model=Chat, Name='test name', ImageId=uuid.uuid4(),
+        TelegramId=123
+    )
 
     result = list(await manager.execute(Chat.select()))
 
@@ -17,8 +23,10 @@ async def test_create_chat(db_manager):
 
 
 async def test_contains_chat(db_manager):
-    chat, is_created = await db_manager.get_or_create(model=Chat, Name='test name', ImageId=uuid.uuid4(),
-                                                      TelegramId=122223)
+    chat, is_created = await db_manager.get_or_create(
+        model=Chat, Name='test name', ImageId=uuid.uuid4(),
+        TelegramId=122223
+    )
     await create_chat(chat_name='mysupername')
 
     result = await db_manager.contains(Chat, TelegramId=chat.TelegramId)
@@ -208,10 +216,23 @@ async def test_create_two_unique_file(db_manager):
         ChatId=chat.Id,
         FileSenderId=sender.Id,
 
-        **second_file_external.dict(by_alias=True, exclude_none=True,
-                                    exclude={'sender_telegram_id', 'chat_telegram_id'})
+        **second_file_external.dict(
+            by_alias=True, exclude_none=True,
+            exclude={'sender_telegram_id', 'chat_telegram_id'}
+        )
     )
     assert is_created_first
     assert is_created_second
 
     assert first_file.Id != second_file.Id
+
+
+async def test_create_marked_text_tags(db_manager):
+    title_tag = '<t>'
+    description_tag = '<d>'
+
+    marked_text_tags = await create_marked_text_tags(title_tag, description_tag)
+
+    assert marked_text_tags
+    assert marked_text_tags.TitleTag == title_tag
+    assert marked_text_tags.DescriptionTag == description_tag

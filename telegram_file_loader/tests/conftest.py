@@ -4,6 +4,7 @@ import sys
 import postgres
 import pytest
 from postgres.models.db_models import Chat, File, FileSender, SenderToChat
+from postgres.models.db_models.marked_text_tags import MarkedTextTags
 from postgres.pg_adapter import Adapter
 
 
@@ -24,6 +25,7 @@ def init_db():
     FileSender.create_table()
     File.create_table()
     SenderToChat.create_table()
+    MarkedTextTags.create_table()
 
     return postgres.basic.manager
 
@@ -42,3 +44,4 @@ def clean_db(init_db):
     File.truncate_table(cascade=True)
     FileSender.truncate_table(cascade=True)
     SenderToChat.truncate_table(cascade=True)
+    MarkedTextTags.truncate_table(cascade=True)

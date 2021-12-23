@@ -14,6 +14,7 @@ class FileTypeEnum(int, Enum):
     Video = 2
     Image = 3
     Link = 4
+    Text = 5
 
 
 class File(BaseModel):

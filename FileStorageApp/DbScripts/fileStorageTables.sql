@@ -110,3 +110,15 @@ alter table "Rights"
 create index "IX_Rights_UserId"
     on "Rights" ("UserId");
 
+create table "MarkedTextTags"
+(
+    "Id"             uuid not null
+        constraint "PK_MarkedTextTags"
+            primary key,
+    "TitleTag"       text not null,
+    "DescriptionTag" text not null
+);
+
+alter table "MarkedTextTags"
+    owner to "FileStorageApp";
+

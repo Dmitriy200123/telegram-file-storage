@@ -1,5 +1,6 @@
 from common.utils import now_utc
 from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
+from postgres.models.db_models.marked_text_tags import MarkedTextTags
 from postgres.models.external_models import Chat as chat_ext_model
 
 
@@ -23,12 +24,12 @@ async def create_sender(name=None, telegram_id=None, telegram_username=None) -> 
 
 
 async def create_file(
-        sender: FileSender,
-        chat: Chat,
-        filename=None,
-        extension=None,
-        typeId=None,
-        upload_date=None,
+    sender: FileSender,
+    chat: Chat,
+    filename=None,
+    extension=None,
+    typeId=None,
+    upload_date=None,
 ):
     file = await File.create(
         Name=filename or 'my filename',
@@ -39,3 +40,11 @@ async def create_file(
         ChatId=chat.Id,
     )
     return file
+
+
+async def create_marked_text_tags(title_tag: str = None, description_tag: str = None):
+    marked_text_tags = await MarkedTextTags.create(
+        TitleTag=title_tag or '#',
+        DescriptionTag=description_tag or '*'
+    )
+    return marked_text_tags

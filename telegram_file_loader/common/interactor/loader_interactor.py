@@ -4,21 +4,25 @@ from common.interactor.base_interactor import BaseInteractor
 from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
 from common.repository.file_sender_repository import FileSenderRepository
+from common.repository.tag_repository import TagRepository
 from common.repository.url_repository import UrlRepository
 from postgres.models.db_models import Chat, File, FileSender, FileTypeEnum
 from postgres.models.external_models import File as FileExternal
 
 
 class LoaderInteractor(BaseInteractor):
+    DEFAULT_ENCODE = 'utf-8'
 
     def __init__(
         self,
         chat_repository: ChatRepository,
         file_sender_repository: FileSenderRepository,
         file_repository: FileRepository,
-        url_repository: UrlRepository
+        url_repository: UrlRepository,
+        tag_repository: TagRepository
     ):
-        super(LoaderInteractor, self).__init__(chat_repository, url_repository)
+        super(LoaderInteractor, self).__init__(
+            chat_repository, url_repository, tag_repository)
 
         self.file_sender_repository = file_sender_repository
         self.file_repository = file_repository
@@ -39,6 +43,21 @@ class LoaderInteractor(BaseInteractor):
             sender_telegram_id=sender_id,
             chat_telegram_id=chat_id
         )
-        file: BytesIO = BytesIO(bytes(url, encoding='utf-8'))
+        file: BytesIO = BytesIO(self.__text_to_bytes(url))
 
         await self.save_file(file_info, file)
+
+    async def save_text(self, title: str, description: str, sender_id: int, chat_id: int):
+        file_info: FileExternal = FileExternal(
+            name=title,
+            type=FileTypeEnum.Text,
+            sender_telegram_id=sender_id,
+            chat_telegram_id=chat_id
+        )
+        file: BytesIO = BytesIO(self.__text_to_bytes(description))
+
+        await self.save_file(file_info, file)
+
+    @staticmethod
+    def __text_to_bytes(text: str) -> bytes:
+        return bytes(text, encoding=LoaderInteractor.DEFAULT_ENCODE)

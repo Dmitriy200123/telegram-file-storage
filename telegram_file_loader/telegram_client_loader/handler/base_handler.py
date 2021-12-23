@@ -44,10 +44,18 @@ class BaseHandler:
             if urls:
                 await self._handle_new_message_with_urls(message, urls)
 
+            marked_text = await self.base_interactor.find_marked_text(message.message)
+
+            if marked_text:
+                await self._handle_new_message_with_tags(message, marked_text)
+
     async def _handle_new_message_with_media(self, message: Message):
         pass
 
     async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
+        pass
+
+    async def _handle_new_message_with_tags(self, message: Message, marked_texts: (str, str)):
         pass
 
     async def _is_valid_chat(self, chat_id: int) -> bool:
