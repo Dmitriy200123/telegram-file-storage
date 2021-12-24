@@ -13,7 +13,6 @@ class TelegramSetting:
         await client.connect()
 
         if not await client.is_user_authorized():
-            Code.create_table()
             Code.truncate_table()
             await client.send_code_request(phone=number)
             code = await TelegramSetting.get_code()
