@@ -5,6 +5,7 @@ from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
 from postgres.models.external_models import File
 from postgres.models.external_models.file import type_map
+from pydantic import AnyUrl
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
 from telethon.tl.custom import Message
@@ -57,7 +58,7 @@ class FileHandler(BaseHandler):
 
         return telegram_file
 
-    async def _handle_new_message_with_urls(self, message: Message, urls: list[str]):
+    async def _handle_new_message_with_urls(self, message: Message, urls: list[AnyUrl]):
         for url in urls:
             await self.loader_interactor.save_url(url, message.sender_id, message.chat_id)
 

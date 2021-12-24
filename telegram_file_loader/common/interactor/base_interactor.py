@@ -3,6 +3,7 @@ from typing import Any
 from common.repository.chat_repository import ChatRepository
 from common.repository.tag_repository import TagRepository
 from common.repository.url_repository import UrlRepository
+from pydantic import AnyUrl
 
 
 class BaseInteractor:
@@ -26,7 +27,7 @@ class BaseInteractor:
 
         return self.url_repository.find_urls(message)
 
-    def get_url_name(self, url: str) -> str:
+    def get_url_name(self, url: AnyUrl) -> str:
         return self.url_repository.get_name(url)
 
     async def find_marked_text(self, message: str) -> Any:
