@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
+using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +17,9 @@ namespace FileStorageAPI.Controllers
     /// <summary>
     /// API информации о файлах из Telegram.
     /// </summary>
+    [ApiController]
     [Route("api/files")]
-    [SwaggerTag("Информация об файлах из Telegram")]
+    [SwaggerTag("Информация о файлах из Telegram")]
     [Authorize]
     public class FilesController : Controller
     {
@@ -111,11 +114,12 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление файла в хранилище.
+        /// Добавление файла в хранилище. Требуется право "Admin" или "Upload".
         /// </summary>
         /// <param name="file">Файл</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
+        [RightsFilter(Accesses.Upload, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm]IFormFile file)
@@ -131,12 +135,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Обновление названия файла.
+        /// Обновление названия файла. Требуется право "Admin" или "Rename".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <param name="fileName">Новое имя файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPut("{id:guid}")]
+        [RightsFilter(Accesses.Rename, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> PutFile(Guid id, [FromBody]UpdateFile fileName)
@@ -152,11 +157,12 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Удаление файла.
+        /// Удаление файла. Требуется право "Admin" или "Delete".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpDelete("{id:guid}")]
+        [RightsFilter(Accesses.Delete, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status204NoContent, "Возвращает информацию об удаленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> DeleteFile(Guid id)

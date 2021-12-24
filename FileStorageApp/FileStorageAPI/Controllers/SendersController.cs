@@ -108,7 +108,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавляет отправителя в базу
+        /// Добавляет отправителя в базу.
         /// </summary>
         /// <param name="telegramUser">Данные о пользователе</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -121,7 +121,7 @@ namespace FileStorageAPI.Controllers
             return sender.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(sender.Value),
-                HttpStatusCode.Created => Created("",sender.Value),
+                HttpStatusCode.Created => Created("", sender.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
