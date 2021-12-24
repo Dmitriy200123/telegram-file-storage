@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
@@ -6,6 +7,7 @@ using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
 using JwtAuth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -13,42 +15,42 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace FileStorageAPI.Controllers
 {
     /// <summary>
-    /// 
+    /// АPI прав на использование функций сервиса.
     /// </summary>
+    [ApiController]
+    [Authorize]
+    [SwaggerTag("Права на использование некоторых функций сервиса")]
     [Route("rights")]
     public class RightsController : Controller
     {
         private readonly IRightsService _rightsService;
+
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="RightsController"/>.
         /// </summary>
-        /// <param name="rightsService"></param>
+        /// <param name="rightsService">Сервис прав</param>
         public RightsController(IRightsService rightsService)
         {
-            _rightsService = rightsService;
+            _rightsService = rightsService ?? throw new ArgumentNullException(nameof(rightsService));
         }
 
         /// <summary>
-        /// Возвращает информацию о пользователе
+        /// Возвращает информацию о правах текущего пользователя.
         /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("user")]
+        [HttpGet("currentUserRights")]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя")]
-        public async Task<IActionResult> GetUserInfo()
+        public async Task<IActionResult> GetUserRights()
         {
             var userId = Request.GetUserIdFromToken(Settings.Key);
-            var userRights = await _rightsService.GetUserRights(userId);
+            var currentUserRights = await _rightsService.GetCurrentUserRights(userId);
 
-            return Ok(userRights.Value);
+            return Ok(currentUserRights.Value);
         }
-        
+
         /// <summary>
-        /// Возвращает информацию доступных права
+        /// Возвращает информацию доступных права.
         /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("description")]
+        [HttpGet("description")]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о доступных правах")]
         public async Task<IActionResult> GetRightsDescription()
         {
@@ -56,14 +58,12 @@ namespace FileStorageAPI.Controllers
 
             return Ok(rightsDescription.Value);
         }
-        
+
         /// <summary>
-        /// Добавляет или удаляет права пользователя
+        /// Добавляет или удаляет права пользователя. Требуется право "Admin".
         /// </summary>
-        /// <returns></returns>
-        [HttpPost]
+        [HttpPost("set")]
         [RightsFilter(Accesses.Admin)]
-        [Route("set")]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно изменили права")]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Невалидные данные")]
@@ -76,6 +76,25 @@ namespace FileStorageAPI.Controllers
                 HttpStatusCode.OK => Ok(updateUserRights.Value),
                 HttpStatusCode.NotFound => NotFound(updateUserRights.Message),
                 HttpStatusCode.BadRequest => BadRequest(updateUserRights.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Возвращает информацию о правах пользователя по его идентификатору. Требуется право "Admin".
+        /// </summary>
+        [HttpGet("userRights")]
+        [RightsFilter(Accesses.Admin)]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору")]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]
+        public async Task<IActionResult> GetUserRights([FromQuery(Name = "userId"), Required] Guid userId)
+        {
+            var userRights = await _rightsService.GetUserRights(userId);
+
+            return userRights.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(userRights.Value),
+                HttpStatusCode.NotFound => NotFound(userRights.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

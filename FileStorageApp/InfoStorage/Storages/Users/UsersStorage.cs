@@ -12,7 +12,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         internal UsersStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
         }
-        
+
         public async Task<bool> AddTelegramIdToGitLabUserAsync(long id, long telegramId)
         {
             var user = await DbSet.FirstOrDefaultAsync(x => x.GitLabId == id);
@@ -66,9 +66,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
             return user?.RefreshToken;
         }
 
-        public new async Task<User?> GetByIdAsync(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id, bool useInclude = false)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            var query = DbSet.AsQueryable();
+            if (useInclude)
+                query = query.Include(user => user.Rights);
+
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<User>> GetAllAsync()

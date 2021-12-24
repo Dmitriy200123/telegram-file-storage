@@ -26,11 +26,21 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int[]>> GetUserRights(Guid id)
+        public async Task<RequestResult<int[]>> GetCurrentUserRights(Guid id)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
             var userRight = await rightsStorage.GetUserRightsAsync(id);
             return RequestResult.Ok(userRight);
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<int[]>> GetUserRights(Guid id)
+        {
+            using var usersStorage = _infoStorageFactory.CreateUsersStorage();
+            var user = await usersStorage.GetByIdAsync(id, true);
+            return user is null
+                ? RequestResult.NotFound<int[]>("Не найден пользователь с данным идентификатором")
+                : RequestResult.Ok(user.Rights.Select(right => right.Access).ToArray());
         }
 
         /// <inheritdoc />

@@ -12,7 +12,7 @@ using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 namespace FileStorageAPI.Controllers
 {
     /// <summary>
-    /// Авторизация через GitLab
+    /// Авторизация через GitLab.
     /// </summary>
     [ApiController]
     [Route("auth/gitlab")]
@@ -22,10 +22,9 @@ namespace FileStorageAPI.Controllers
         private readonly IAuthenticationService _authenticationService;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>
+        /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>.
         /// </summary>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
-        /// <param name="settings"></param>
         public AuthenticationController(IAuthenticationService authenticationService)
         {
             _authenticationService =
@@ -33,7 +32,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Получает на вход токен от GitLab и авторизовывает пользователя нашим токеном
+        /// Получает на вход токен от GitLab и авторизовывает пользователя нашим токеном.
         /// </summary>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно проверили пользователя и создал токен")]
@@ -50,7 +49,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Разлогирование пользователя
+        /// Разлогирование пользователя.
         /// </summary>
         [Route("logout")]
         [HttpGet]
@@ -71,7 +70,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Обновление токена
+        /// Обновление токена.
         /// </summary>
         /// <param name="refreshCred">Токен и рефреш токен</param>
         [AllowAnonymous]
@@ -80,7 +79,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Токен обновлен")]
         public async Task<IActionResult> Refresh([FromBody] RefreshCred refreshCred)
         {
-            var refresh =  await _authenticationService.Refresh(refreshCred);
+            var refresh = await _authenticationService.Refresh(refreshCred);
             return refresh.ResponseCode switch
             {
                 HttpStatusCode.Unauthorized => Unauthorized(refresh.Message),
