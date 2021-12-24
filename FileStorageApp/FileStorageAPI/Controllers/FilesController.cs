@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
+using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -116,6 +118,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="file">Файл</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
+        [RightsFilter(Accesses.Upload)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm]IFormFile file)
@@ -137,6 +140,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="fileName">Новое имя файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPut("{id:guid}")]
+        [RightsFilter(Accesses.Rename)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> PutFile(Guid id, [FromBody]UpdateFile fileName)
@@ -157,6 +161,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="id">Идентификатор файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpDelete("{id:guid}")]
+        [RightsFilter(Accesses.Delete)]
         [SwaggerResponse(StatusCodes.Status204NoContent, "Возвращает информацию об удаленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> DeleteFile(Guid id)
