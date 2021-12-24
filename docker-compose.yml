@@ -49,6 +49,8 @@ services:
     build:
       context: FileStorageApp/
       dockerfile: TelegramAuth/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
       
 
   telegram_loader:

@@ -22,11 +22,7 @@ namespace TelegramAuth
                 eArgs.Cancel = true;
             };
 
-            // kick off asynchronous stuff 
-
-            Console.WriteLine("hui");
-            Console.WriteLine(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
-            Console.WriteLine(Config["DbHost"]);
+            Console.WriteLine($"Run in {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")} mode");
             var bot = new AuthBot(Config);
             _quitEvent.WaitOne();
         }
