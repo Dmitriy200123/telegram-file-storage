@@ -65,4 +65,62 @@
       transform: rotate(-45deg);
     }
   }
+
+  &__access{
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  &__option{
+    color: black;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: center;
+    gap: 16px;
+    &::before{
+      content: "";
+      display: block;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #CFD8E1;
+      background: white;
+      border-radius: 3.2px;
+    }
+    &:hover{
+      cursor: pointer;
+      color: white;
+      background: #1976D3;
+      &::before{
+        background: #222835;
+      }
+    }
+
+    &_active{
+      background: #C7EDDD;
+      text-decoration: underline;
+      &::before{
+        display: none !important;
+      }
+    }
+
+    &_added{
+      color: white !important;
+      background: #1976D3;
+      text-decoration: underline;
+      &::before{
+        background: #222835;
+      }
+    }
+
+    &_removed{
+      text-decoration: line-through solid black ;
+      &::before{
+        background: white;
+      }
+    }
+  }
 }

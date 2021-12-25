@@ -4,6 +4,7 @@ import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
 import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
+import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
 
 
 const initialState = {
@@ -15,6 +16,7 @@ const initialState = {
     chats: "",
     loading: true,
     messages: [] as Array<MessageType>,
+    rights: null as null | any,
 }
 
 export const profileSlice = createSlice({
@@ -27,6 +29,28 @@ export const profileSlice = createSlice({
 
     },
     extraReducers: {
+        [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string }>) => {
+            state.name = action.payload.name;
+        },
+        [fetchUserCurrent.pending.type]: (state) => {
+            state.loading = true;
+        },
+        [fetchUserCurrent.rejected.type]: (state) => {
+            state.loading = false;
+        },
+
+
+        [fetchRightsCurrentUser.fulfilled.type]: (state, action: PayloadAction) => {
+            state.rights = action.payload;
+        },
+        [fetchRightsCurrentUser.pending.type]: (state) => {
+            state.loading = true;
+        },
+        [fetchRightsCurrentUser.rejected.type]: (state) => {
+            state.loading = false;
+        },
+
+
         [fetchIsAuth.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
             state.loading = false;
             state.isAuth = true;

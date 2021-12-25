@@ -4,7 +4,7 @@ import {ReactComponent as SearchSvg} from "./../../assets/search.svg";
 import {ReactComponent as Employee} from "./../../assets/add-employee.svg";
 import {ReactComponent as Account} from "./../../assets/account.svg";
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
-import {fetchAllUsers} from "../../redux/thunks/rightsThunks";
+import {fetchAllUsers, fetchRightsDescription} from "../../redux/thunks/rightsThunks";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {managePanelSlice} from "../../redux/managePanelSlice";
@@ -15,7 +15,8 @@ export const RightsManagerPanel: React.FC = memo(() => {
     const modal = useAppSelector(state => state.managePanel.modal);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(fetchAllUsers())
+        dispatch(fetchRightsDescription());
+        dispatch(fetchAllUsers());
     }, [])
 
     return (<>

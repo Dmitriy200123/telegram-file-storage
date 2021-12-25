@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from 'react';
 import './App.css';
 import './App.scss';
-import {BrowserRouter, Link, Redirect, Route, Switch, useLocation} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFile} from "./components/File/OpenFile";
@@ -15,9 +15,8 @@ import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
-import {fetchData, myHeaders} from "./redux/api/api";
 import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
-import {fetchAllUsers, fetchUserCurrent} from "./redux/thunks/rightsThunks";
+import {fetchRightsCurrentUser, fetchUserCurrent} from "./redux/thunks/rightsThunks";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -37,6 +36,7 @@ const Main: FC = () => {
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(fetchUserCurrent());
+        dispatch(fetchRightsCurrentUser());
     },[])
     localStorage.setItem("flag", "false");
     const {filesReducer} = useAppSelector((state) => state);

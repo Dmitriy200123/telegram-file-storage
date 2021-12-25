@@ -1,15 +1,15 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats} from "./thunks/mainThunks";
-import {Chat, ModalContent} from "../models/File";
-import {fetchAllUsers} from "./thunks/rightsThunks";
-import {RightsManagerPanel} from "../components/RightsManagerPanel/RightsManagerPanel";
+import {Chat} from "../models/File";
+import {fetchAllUsers, fetchRightsDescription} from "./thunks/rightsThunks";
 type UserType = {id: string, name: string};
 const initialState = {
     users: null as null | UserType[],
     modal: {
         idUser: null as string | null,
         isOpen: false,
-    }
+        name: "123" as null | string,
+    },
+    allRights: null as null | Array<{name:string, id: number}>,
 }
 
 export const managePanelSlice = createSlice({
@@ -26,12 +26,20 @@ export const managePanelSlice = createSlice({
         },
     },
     extraReducers: {
-        [fetchAllUsers.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
+        [fetchAllUsers.fulfilled.type]: (state, action: PayloadAction<Array<UserType>>) => {
             state.users = action.payload;
         },
         [fetchAllUsers.pending.type]: (state, action: PayloadAction) => {
         },
         [fetchAllUsers.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+        },
+
+        [fetchRightsDescription.fulfilled.type]: (state, action: PayloadAction<Array<{name:string, id: number}>>) => {
+            state.allRights = action.payload;
+        },
+        [fetchRightsDescription.pending.type]: (state, action: PayloadAction) => {
+        },
+        [fetchRightsDescription.rejected.type]: (state) => {
         },
     }
 });

@@ -21,3 +21,21 @@ export const fetchUserCurrent = createAsyncThunk("users-info/current", async (_,
     }
 })
 
+export const fetchRightsCurrentUser = createAsyncThunk("rights/current", async (_, thunkAPI) => {
+    try {
+        const data = await fetchData("/rights/user");
+        return data;
+    } catch (e) {
+        return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
+    }
+})
+
+export const fetchRightsDescription = createAsyncThunk("rights/description", async (_, thunkAPI) => {
+    try {
+        const data = await fetchData("/rights/description");
+        return data;
+    } catch (e) {
+        return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
+    }
+})
+
