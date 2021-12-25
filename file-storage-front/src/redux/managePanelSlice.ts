@@ -1,15 +1,15 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Chat} from "../models/File";
+import {Chat, Rights} from "../models/File";
 import {fetchAllUsers, fetchRightsDescription, fetchRightsUserById, fetchSetRightsUser} from "./thunks/rightsThunks";
 
 type UserType = { id: string, name: string };
 const initialState = {
     users: null as null | UserType[],
     modal: {
-        idUser: null as string | null,
+        idUser: null as string | null ,
         isOpen: false,
-        name: "123" as null | string,
-        rights: [] as Array<number>,
+        name: null as undefined | null | string ,
+        rights: [] as Array<Rights>,
     },
     allRights: null as null | Array<{ name: string, id: number }>,
 }
@@ -21,6 +21,7 @@ export const managePanelSlice = createSlice({
         openModal(state, payload: PayloadAction<{ id: string }>) {
             state.modal.isOpen = true;
             state.modal.idUser = payload.payload.id;
+            state.modal.name = state.users?.find((e) => e.id === payload.payload.id)?.name;
         },
         closeModal(state) {
             state.modal = {

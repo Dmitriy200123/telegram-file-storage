@@ -8,7 +8,7 @@ import {filesSlice} from "../../../redux/filesSlice";
 const {changePaginatorPage} = filesSlice.actions;
 
 const Paginator = ({paginator}: { paginator: TypePaginator}) => {
-    const {currentPage, filesInPage,count} = paginator
+    const {currentPage,count} = paginator
     const dispatch = useAppDispatch();
 
     let pages: Array<number> = [];

@@ -11,7 +11,6 @@ type Props = {
 }
 
 export const Select: React.FC<Props> = memo(({
-                                                 name,
                                                  className,
                                                  values,
                                                  oldValues,

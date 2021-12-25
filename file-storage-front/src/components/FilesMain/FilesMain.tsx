@@ -13,10 +13,11 @@ import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 
 const FilesMain = () => {
-    const filesReducer = useAppSelector((state) => state.filesReducer);
-    const {files:filesData,filesNames, chats, senders, filesCount} = filesReducer;
-    const paginator = useAppSelector((state) => state.filesReducer.paginator);
-    const {currentPage, filesInPage} = useAppSelector((state) => state.filesReducer.paginator);
+    const state = useAppSelector((state) => state);
+    const {filesReducer, profile} = state;
+    const {rights} = profile;
+    const {files:filesData,filesNames, chats, senders, filesCount, paginator} = filesReducer;
+    const {currentPage, filesInPage} = paginator;
     const dispatch = useAppDispatch();
     const history = useHistory();
 
@@ -44,7 +45,7 @@ const FilesMain = () => {
     };
 
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     const setValueForm = (name: any, value: any) => {

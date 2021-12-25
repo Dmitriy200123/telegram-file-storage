@@ -13,7 +13,7 @@ const {closeModal} = managePanelSlice.actions;
 export const RightsModal: React.FC = memo(() => {
     const dispatch = useDispatch();
     const state = useAppSelector((state) => state);
-    const {managePanel, profile} = state;
+    const {managePanel} = state;
     const {allRights, modal} = managePanel;
     const {name, idUser, rights} = modal;
 

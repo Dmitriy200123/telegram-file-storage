@@ -1,20 +1,21 @@
 import React, {memo, useEffect} from 'react';
 import "./File.scss"
-import {ReactComponent as Svg} from "../../assets/download.svg";
-import {useAppSelector} from "../../utils/hooks/reduxHooks";
-import {Category, ModalContent} from "../../models/File";
+import {ReactComponent as Svg} from "../../../assets/download.svg";
+import {useAppSelector} from "../../../utils/hooks/reduxHooks";
+import {Category, ModalContent, Rights} from "../../../models/File";
 import {Link} from 'react-router-dom';
 import {useDispatch} from "react-redux";
-import {fetchDownloadLink, fetchFile} from "../../redux/thunks/fileThunks";
-import {ReactComponent as Edit} from "./../../assets/edit.svg";
-import {ReactComponent as Delete} from "./../../assets/delete.svg";
-import {filesSlice} from "../../redux/filesSlice";
-import {Button} from "../utils/Button/Button";
+import {fetchDownloadLink, fetchFile} from "../../../redux/thunks/fileThunks";
+import {ReactComponent as Edit} from "../../../assets/edit.svg";
+import {ReactComponent as Delete} from "../../../assets/delete.svg";
+import {filesSlice} from "../../../redux/filesSlice";
+import {Button} from "../../utils/Button/Button";
 
 const {openModal} = filesSlice.actions;
 export const OpenedFile: React.FC<any> = memo(({match}) => {
     const id = match.params["id"];
-    const file = useAppSelector((state) => state.filesReducer.openFile);
+    const state = useAppSelector((state) => state);
+    const {profile: {rights}, filesReducer: {openFile: file}} = state;
     const dispatch = useDispatch();
     useEffect(() => {
         if (file && id === fileId)
@@ -25,6 +26,8 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
         return null;
     const {fileName, fileId, fileType, sender, chat, uploadDate} = file;
 
+    const canRename = rights?.includes(Rights["Переименовывать файлы"]);
+    const openRename = () => dispatch(openModal({id: id, content: ModalContent.Edit}));
     return (
         <div className={"file"}>
             <div className="file__header">
@@ -33,7 +36,7 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
             </div>
             <div className="file__content">
                 <h3 className="file__content-title"
-                    onClick={() => dispatch(openModal({id: id, content: ModalContent.Edit}))}>{fileName}<Edit/></h3>
+                    onClick={canRename ? openRename : undefined}>{fileName} {canRename && <Edit/>}</h3>
                 <div className="file__item"><span>Формат: </span>{Category[fileType]}</div>
                 <div className="file__item"><span>Отправитель: </span><a>{sender.fullName}</a></div>
                 <div className="file__item"><span>Чат: </span><a>{chat.name}</a></div>
@@ -45,7 +48,9 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
                         <div>Скачать</div>
                         <Svg/>
                     </button>
-                    <Button onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))} type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>
+                    {rights?.includes(Rights["Удалять файлы"]) &&
+                    <Button onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
+                            type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
                 </div>
             </div>
         </div>

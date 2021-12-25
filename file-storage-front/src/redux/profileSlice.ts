@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {MessageType, MessageTypeEnum, TokensType} from "../models/File";
+import {MessageType, MessageTypeEnum, Rights, TokensType} from "../models/File";
 import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
 import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./thunks/profileThunks";
@@ -16,7 +16,7 @@ const initialState = {
     chats: "",
     loading: true,
     messages: [] as Array<MessageType>,
-    rights: null as null | any,
+    rights: [] as null | Rights[],
 }
 
 export const profileSlice = createSlice({
@@ -40,7 +40,7 @@ export const profileSlice = createSlice({
         },
 
 
-        [fetchRightsCurrentUser.fulfilled.type]: (state, action: PayloadAction) => {
+        [fetchRightsCurrentUser.fulfilled.type]: (state, action: PayloadAction<Rights[]>) => {
             state.rights = action.payload;
         },
         [fetchRightsCurrentUser.pending.type]: (state) => {
