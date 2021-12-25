@@ -1,15 +1,17 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Chat} from "../models/File";
-import {fetchAllUsers, fetchRightsDescription} from "./thunks/rightsThunks";
-type UserType = {id: string, name: string};
+import {fetchAllUsers, fetchRightsDescription, fetchRightsUserById, fetchSetRightsUser} from "./thunks/rightsThunks";
+
+type UserType = { id: string, name: string };
 const initialState = {
     users: null as null | UserType[],
     modal: {
         idUser: null as string | null,
         isOpen: false,
         name: "123" as null | string,
+        rights: [] as Array<number>,
     },
-    allRights: null as null | Array<{name:string, id: number}>,
+    allRights: null as null | Array<{ name: string, id: number }>,
 }
 
 export const managePanelSlice = createSlice({
@@ -21,8 +23,12 @@ export const managePanelSlice = createSlice({
             state.modal.idUser = payload.payload.id;
         },
         closeModal(state) {
-            state.modal.isOpen = false;
-            state.modal.idUser = null;
+            state.modal = {
+                idUser: null,
+                isOpen: false,
+                name: null,
+                rights: []
+            }
         },
     },
     extraReducers: {
@@ -34,12 +40,30 @@ export const managePanelSlice = createSlice({
         [fetchAllUsers.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
         },
 
-        [fetchRightsDescription.fulfilled.type]: (state, action: PayloadAction<Array<{name:string, id: number}>>) => {
+        [fetchRightsDescription.fulfilled.type]: (state, action: PayloadAction<Array<{ name: string, id: number }>>) => {
             state.allRights = action.payload;
         },
         [fetchRightsDescription.pending.type]: (state, action: PayloadAction) => {
         },
         [fetchRightsDescription.rejected.type]: (state) => {
+        },
+
+
+        [fetchRightsUserById.fulfilled.type]: (state, action: PayloadAction<Array<number>>) => {
+            state.modal.rights = action.payload;
+        },
+        [fetchRightsUserById.pending.type]: (state, action: PayloadAction) => {
+        },
+        [fetchRightsUserById.rejected.type]: (state) => {
+        },
+
+
+        [fetchSetRightsUser.fulfilled.type]: (state) => {
+            state.modal = {idUser: null, isOpen: false, name: null, rights: []};
+        },
+        [fetchSetRightsUser.pending.type]: (state, action: PayloadAction) => {
+        },
+        [fetchSetRightsUser.rejected.type]: (state) => {
         },
     }
 });

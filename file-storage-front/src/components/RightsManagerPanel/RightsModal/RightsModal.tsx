@@ -1,12 +1,12 @@
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import "./RightsModal.scss";
 import Modal from "../../utils/Modal/Modal";
 import {Button} from "../../utils/Button/Button";
 import {useDispatch} from "react-redux";
 import {managePanelSlice} from "../../../redux/managePanelSlice";
-import {fetchData} from "../../../redux/api/api";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {Select} from "./Select";
+import {fetchRightsUserById, fetchSetRightsUser} from "../../../redux/thunks/rightsThunks";
 
 const {closeModal} = managePanelSlice.actions;
 
@@ -14,15 +14,35 @@ export const RightsModal: React.FC = memo(() => {
     const dispatch = useDispatch();
     const state = useAppSelector((state) => state);
     const {managePanel, profile} = state;
-    const {rights: currentRights} = profile;
     const {allRights, modal} = managePanel;
-    const {name, idUser} = modal;
+    const {name, idUser, rights} = modal;
 
-    const [newRights, changeRights] = useState<Array<number>>(currentRights);
-    const options = allRights?.map(({id, name}, i) => ({label: name, value: i}));
+    useEffect(() => {
+        if (idUser) {
+            dispatch(fetchRightsUserById(idUser))
+        }
+    },[])
+
+    useEffect(() => {
+        changeRights(rights)
+    },[rights])
+
+    const [newRights, changeRights] = useState<Array<number>>(rights);
+    const options = allRights?.map(({id, name}, i) => ({label: name, value: id}));
+
 
     function close() {
         dispatch(closeModal());
+    }
+
+    function post(){
+        if (!idUser)
+            return;
+        const grant = newRights.filter((e) => !rights.includes(e));
+        const revoke = rights.filter((e) => !newRights.includes(e));
+        if (grant.length === 0 && revoke.length === 0)
+            return;
+        dispatch(fetchSetRightsUser({userId: idUser, grant: grant, revoke:revoke}));
     }
 
     return (
@@ -38,12 +58,12 @@ export const RightsModal: React.FC = memo(() => {
                     <h3 className={"rights-modal__h3"}>Доступы</h3>
                     <div>
                         <Select name={"rights"} values={newRights} options={options} setValue={changeRights}
-                                oldValues={currentRights}/>
+                                oldValues={rights}/>
                     </div>
                 </div>
                 <div className={"rights-modal__btns"}>
                     <Button type={"transparent"} onClick={close}>ОТМЕНА</Button>
-                    <Button>ОК</Button>
+                    <Button onClick={post}>ОК</Button>
                 </div>
             </div>
         </Modal>
