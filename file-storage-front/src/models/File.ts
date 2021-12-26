@@ -5,6 +5,13 @@ export enum Category {
     "картинки",
 }
 
+export enum Rights {
+    "Загружать файлы"= 1,
+    "Переименовывать файлы" = 2,
+    "Удалять файлы" = 3,
+    "Редактировать права пользователей" = 4,
+}
+
 export enum ModalContent {
     Remove,
     Edit

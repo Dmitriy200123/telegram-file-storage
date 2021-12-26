@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import "./Paginator.scss"
-import {fetchFiles} from "../../../redux/mainThunks";
+import {fetchFiles} from "../../../redux/thunks/mainThunks";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
 import {TypePaginator} from "../../../models/File";
 import {filesSlice} from "../../../redux/filesSlice";
@@ -8,7 +8,7 @@ import {filesSlice} from "../../../redux/filesSlice";
 const {changePaginatorPage} = filesSlice.actions;
 
 const Paginator = ({paginator}: { paginator: TypePaginator}) => {
-    const {currentPage, filesInPage,count} = paginator
+    const {currentPage,count} = paginator
     const dispatch = useAppDispatch();
 
     let pages: Array<number> = [];

@@ -1,0 +1,126 @@
+@import "src/Variables";
+
+.rights-modal{
+  width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  text-align: left;
+  font-size: 14rem / $font-size;
+
+  &__h2{
+    font-size: 18rem / $font-size;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  &__name{
+    margin-bottom: 24px;
+  }
+
+  &__h3{
+    font-weight: 600;
+    font-size: 14rem / $font-size;
+    margin-bottom: 8px;
+  }
+
+  &__btns{
+    align-self: flex-end;
+    & button:first-child{
+      margin-right: 5px;
+    }
+  }
+
+  &__close {
+    align-self: flex-end;
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    right: -5px;
+    top: -5px;
+
+    &:hover {
+      cursor: pointer;
+      &:before, &:after {
+        background: #8e9091;
+      }
+    }
+
+    &:before, &:after {
+      transition: background-color 0.25s ease;
+      position: absolute;
+      left: 50%;
+      content: ' ';
+      height: 100%;
+      width: 2px;
+      background-color: #CED4DA;
+    }
+
+    &:before {
+      transform: rotate(45deg);
+    }
+
+    &:after {
+      transform: rotate(-45deg);
+    }
+  }
+
+  &__access{
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  &__option{
+    color: black;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: start;
+    align-items: center;
+    gap: 16px;
+    &::before{
+      content: "";
+      display: block;
+      width: 16px;
+      height: 16px;
+      border: 1px solid #CFD8E1;
+      background: white;
+      border-radius: 3.2px;
+    }
+    &:hover{
+      cursor: pointer;
+      color: white;
+      background: #1976D3;
+      &::before{
+        background: #222835;
+      }
+    }
+
+    &_active{
+      background: #C7EDDD;
+      text-decoration: underline;
+      &::before{
+        display: none !important;
+      }
+    }
+
+    &_added{
+      color: white !important;
+      background: #1976D3;
+      text-decoration: underline;
+      &::before{
+        background: #222835;
+      }
+    }
+
+    &_removed{
+      text-decoration: line-through solid black ;
+      &::before{
+        background: white;
+      }
+    }
+  }
+}

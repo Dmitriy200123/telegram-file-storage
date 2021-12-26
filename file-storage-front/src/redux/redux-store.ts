@@ -4,11 +4,13 @@ import filesReducer from "./filesSlice";
 import profileReducer from "./profileSlice";
 import editorReducer from "./editorSlice";
 import {Api} from "../services/Api";
+import managePanelReducer from "./managePanelSlice";
 
 let rootReducer = combineReducers({
     filesReducer: filesReducer,
     profile: profileReducer,
     editor: editorReducer,
+    managePanel: managePanelReducer,
     [Api.reducerPath]: Api.reducer,
 });
 

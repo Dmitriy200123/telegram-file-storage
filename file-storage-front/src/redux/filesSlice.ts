@@ -1,7 +1,7 @@
 import {Category, Chat, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters} from "./mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./fileThunks";
+import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
+import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
 
 
 const initialState = {
@@ -10,57 +10,57 @@ const initialState = {
     filesNames: null as string[] | null,
     loading: false,
     files: [
-        {
-            fileName: "Файл.12.123.sad.txt",
-            fileType: Category.документы,
-            chat: {
-                "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
-                "name": "фуллы",
-                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-            },
-            fileId: "айди3",
-            uploadDate: "12.10.2020",
-            downloadLink: "asdasdasd",
-            sender: {
-                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130003",
-                "telegramUserName": "asdasd",
-                "fullName": "Кабанщие"
-            }
-        },
-        {
-            fileName: "Файл2",
-            fileType: Category.картинки,
-            chat: {
-                "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
-                "name": "фуллы2",
-                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-            },
-            fileId: "айди2",
-            uploadDate: "13.10.2020",
-            downloadLink: "asdasdasd",
-            sender: {
-                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130004",
-                "telegramUserName": "asdasd",
-                "fullName": "1"
-            }
-        },
-        {
-            fileName: "Файл3",
-            fileType: Category.аудио,
-            chat: {
-                "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
-                "name": "фуллы3",
-                "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-            },
-            fileId: "айди1",
-            uploadDate: "14.10.2020",
-            downloadLink: "asdasdasd",
-            sender: {
-                "id": "d33ad0b4-4acf-11ec-81d3-0242ac130005",
-                "telegramUserName": "asdasd",
-                "fullName": "2"
-            }
-        },
+        // {
+        //     fileName: "Файл.12.123.sad.txt",
+        //     fileType: Category.документы,
+        //     chat: {
+        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
+        //         "name": "фуллы",
+        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+        //     },
+        //     fileId: "айди3",
+        //     uploadDate: "12.10.2020",
+        //     downloadLink: "asdasdasd",
+        //     sender: {
+        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130003",
+        //         "telegramUserName": "asdasd",
+        //         "fullName": "Кабанщие"
+        //     }
+        // },
+        // {
+        //     fileName: "Файл2",
+        //     fileType: Category.картинки,
+        //     chat: {
+        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
+        //         "name": "фуллы2",
+        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+        //     },
+        //     fileId: "айди2",
+        //     uploadDate: "13.10.2020",
+        //     downloadLink: "asdasdasd",
+        //     sender: {
+        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130004",
+        //         "telegramUserName": "asdasd",
+        //         "fullName": "1"
+        //     }
+        // },
+        // {
+        //     fileName: "Файл3",
+        //     fileType: Category.аудио,
+        //     chat: {
+        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
+        //         "name": "фуллы3",
+        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
+        //     },
+        //     fileId: "айди1",
+        //     uploadDate: "14.10.2020",
+        //     downloadLink: "asdasdasd",
+        //     sender: {
+        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130005",
+        //         "telegramUserName": "asdasd",
+        //         "fullName": "2"
+        //     }
+        // },
     ] as Array<TypeFile>,
     openFile: null as null | TypeFile | undefined,
     modalConfirm: {
@@ -184,6 +184,8 @@ export const filesSlice = createSlice({
         [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
             state.loading = false;
             state.openFile = action.payload;
+            if (state.files.length === 0)
+                state.files = [action.payload];
         },
         [fetchFile.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;

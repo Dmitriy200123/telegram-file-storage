@@ -1,6 +1,6 @@
 import {TokensType} from "../../models/File";
 
-const baseUrl = "https://localhost:5001/api";
+const baseUrl = "https://localhost:5001";
 
 export let myHeaders = new Headers({
     'Content-Type': 'application/json',
