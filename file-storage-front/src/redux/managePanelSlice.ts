@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Chat, Rights} from "../models/File";
-import {fetchAllUsers, fetchRightsDescription, fetchRightsUserById, fetchSetRightsUser} from "./thunks/rightsThunks";
+import {fetchAllUsers, fetchRightsDescription, fetchRightsUserById, postSetRightsUser} from "./thunks/rightsThunks";
 
 type UserType = { id: string, name: string };
 const initialState = {
@@ -59,12 +59,12 @@ export const managePanelSlice = createSlice({
         },
 
 
-        [fetchSetRightsUser.fulfilled.type]: (state) => {
+        [postSetRightsUser.fulfilled.type]: (state) => {
             state.modal = {idUser: null, isOpen: false, name: null, rights: []};
         },
-        [fetchSetRightsUser.pending.type]: (state, action: PayloadAction) => {
+        [postSetRightsUser.pending.type]: (state, action: PayloadAction) => {
         },
-        [fetchSetRightsUser.rejected.type]: (state) => {
+        [postSetRightsUser.rejected.type]: (state) => {
         },
     }
 });

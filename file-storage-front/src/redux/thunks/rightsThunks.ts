@@ -49,7 +49,7 @@ export const fetchRightsDescription = createAsyncThunk("rights/description", asy
 })
 
 
-export const fetchSetRightsUser = createAsyncThunk("rights/set", async (args: { userId: string, grant?: Array<string | number>, revoke?: Array<string | number> }, thunkAPI) => {
+export const postSetRightsUser = createAsyncThunk("rights/set", async (args: { userId: string, grant?: Array<string | number>, revoke?: Array<string | number> }, thunkAPI) => {
     try {
         const data = await fetchConfig("/rights/set", {method: "POST", body: args});
         return data;

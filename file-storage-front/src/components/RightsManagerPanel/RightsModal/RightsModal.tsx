@@ -6,7 +6,7 @@ import {useDispatch} from "react-redux";
 import {managePanelSlice} from "../../../redux/managePanelSlice";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {Select} from "./Select";
-import {fetchRightsUserById, fetchSetRightsUser} from "../../../redux/thunks/rightsThunks";
+import {fetchRightsCurrentUser, fetchRightsUserById, postSetRightsUser} from "../../../redux/thunks/rightsThunks";
 
 const {closeModal} = managePanelSlice.actions;
 
@@ -35,14 +35,15 @@ export const RightsModal: React.FC = memo(() => {
         dispatch(closeModal());
     }
 
-    function post(){
+    async function post(){
         if (!idUser)
             return;
         const grant = newRights.filter((e) => !rights.includes(e));
         const revoke = rights.filter((e) => !newRights.includes(e));
         if (grant.length === 0 && revoke.length === 0)
             return;
-        dispatch(fetchSetRightsUser({userId: idUser, grant: grant, revoke:revoke}));
+        await dispatch(postSetRightsUser({userId: idUser, grant: grant, revoke:revoke}));
+        dispatch(fetchRightsCurrentUser());
     }
 
     return (
