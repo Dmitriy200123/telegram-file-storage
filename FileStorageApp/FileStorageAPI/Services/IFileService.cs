@@ -56,5 +56,10 @@ namespace FileStorageAPI.Services
         /// Возвращает список названий файлов.
         /// </summary>
         Task<RequestResult<List<string>>> GetFileNamesAsync();
+
+        /// <summary>
+        /// Возвращает список типов файлов.
+        /// </summary>
+        RequestResult<FileTypeDescription[]> GetFilesTypes();
     }
 }

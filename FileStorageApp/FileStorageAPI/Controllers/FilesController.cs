@@ -122,7 +122,7 @@ namespace FileStorageAPI.Controllers
         [RightsFilter(Accesses.Upload, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
-        public async Task<IActionResult> PostFile([FromForm]IFormFile file)
+        public async Task<IActionResult> PostFile([FromForm] IFormFile file)
         {
             var uploadedFile = await _fileService.CreateFileAsync(file);
 
@@ -144,7 +144,7 @@ namespace FileStorageAPI.Controllers
         [RightsFilter(Accesses.Rename, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
-        public async Task<IActionResult> PutFile(Guid id, [FromBody]UpdateFile fileName)
+        public async Task<IActionResult> PutFile(Guid id, [FromBody] UpdateFile fileName)
         {
             var file = await _fileService.UpdateFileAsync(id, fileName.FileName);
 
@@ -192,6 +192,18 @@ namespace FileStorageAPI.Controllers
                 HttpStatusCode.OK => Ok(count.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
+        }
+
+        /// <summary>
+        /// Возвращает список типов файлов.
+        /// </summary>
+        [HttpGet("types")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список типов файлов", typeof(FileTypeDescription[]))]
+        public IActionResult GetFileTypes()
+        {
+            var filesTypes = _fileService.GetFilesTypes();
+
+            return Ok(filesTypes.Value);
         }
     }
 }

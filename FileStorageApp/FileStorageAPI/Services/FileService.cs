@@ -5,10 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
+using FileStorageAPI.Extensions;
+using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
+using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
+using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
 using FileInfo = FileStorageAPI.Models.FileInfo;
 
@@ -186,6 +190,17 @@ namespace FileStorageAPI.Services
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
 
             return RequestResult.Ok(await fileInfoStorage.GetFileNamesAsync());
+        }
+
+        /// <inheritdoc />
+        public RequestResult<FileTypeDescription[]> GetFilesTypes()
+        {
+            var descriptions = Enum.GetValues(typeof(FileType))
+                .Cast<FileType>()
+                .Select(fileType => new FileTypeDescription {Id = (int) fileType, Name = fileType.GetEnumDescription()})
+                .ToArray();
+
+            return RequestResult.Ok(descriptions);
         }
     }
 }
