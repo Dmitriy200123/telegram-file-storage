@@ -122,3 +122,13 @@ create table "MarkedTextTags"
 alter table "MarkedTextTags"
     owner to "FileStorageApp";
 
+create table "CodeForTelegramLoader"
+(
+    id   serial       not null
+        constraint "CodeForTelegramLoader_pkey"
+            primary key,
+    code varchar(255) not null
+);
+
+alter table "CodeForTelegramLoader"
+    owner to "FileStorageApp";
