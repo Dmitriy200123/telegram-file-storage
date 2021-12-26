@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageAPI.Extensions;
@@ -44,14 +43,15 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public Task<RequestResult<List<RightDescription>>> GetRightsDescription()
+        public RequestResult<RightDescription[]> GetRightsDescription()
         {
             var descriptions = Enum.GetValues(typeof(Accesses))
                 .Cast<Accesses>()
                 .Where(x => x != Accesses.Default)
                 .Select(t => new RightDescription((int) t, t.GetEnumDescription()))
-                .ToList();
-            return Task.FromResult(RequestResult.Ok(descriptions));
+                .ToArray();
+
+            return RequestResult.Ok(descriptions);
         }
 
         /// <inheritdoc />

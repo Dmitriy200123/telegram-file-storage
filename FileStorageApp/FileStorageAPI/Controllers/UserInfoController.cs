@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FileStorageAPI.Models;
 using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -36,7 +38,7 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о пользователе.
         /// </summary>
         [HttpGet("current")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователе")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователе", typeof(UserInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Такого пользователя не существует")]
         public async Task<IActionResult> GetUserInfo()
         {
@@ -55,7 +57,7 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о всех авторизированных пользователях. Требуется право "Admin".
         /// </summary>
         [HttpGet]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователях")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователях", typeof(List<UserIdAndFio>))]
         [RightsFilter(Accesses.Admin)]
         public async Task<IActionResult> GetAllUsers()
         {

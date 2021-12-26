@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
 
@@ -19,7 +18,7 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Сопоставление описания и номера права.
         /// </summary>
-        Task<RequestResult<List<RightDescription>>> GetRightsDescription();
+        RequestResult<RightDescription[]> GetRightsDescription();
 
         /// <summary>
         /// Обновить права пользователя.

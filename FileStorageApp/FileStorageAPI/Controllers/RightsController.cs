@@ -38,7 +38,7 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о правах текущего пользователя.
         /// </summary>
         [HttpGet("currentUserRights")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя", typeof(int[]))]
         public async Task<IActionResult> GetUserRights()
         {
             var userId = Request.GetUserIdFromToken(Settings.Key);
@@ -51,10 +51,10 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию доступных права.
         /// </summary>
         [HttpGet("description")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о доступных правах")]
-        public async Task<IActionResult> GetRightsDescription()
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о доступных правах", typeof(RightDescription[]))]
+        public IActionResult GetRightsDescription()
         {
-            var rightsDescription = await _rightsService.GetRightsDescription();
+            var rightsDescription = _rightsService.GetRightsDescription();
 
             return Ok(rightsDescription.Value);
         }
@@ -85,7 +85,7 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         [HttpGet("userRights")]
         [RightsFilter(Accesses.Admin)]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору", typeof(int[]))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]
         public async Task<IActionResult> GetUserRights([FromQuery(Name = "userId"), Required] Guid userId)
         {
