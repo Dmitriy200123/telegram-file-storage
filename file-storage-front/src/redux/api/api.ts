@@ -1,6 +1,6 @@
 import {TokensType} from "../../models/File";
 
-const baseUrl = "https://localhost:5001";
+const baseUrl = process.env.REACT_APP_BACKEND_URL;
 
 export let myHeaders = new Headers({
     'Content-Type': 'application/json',
