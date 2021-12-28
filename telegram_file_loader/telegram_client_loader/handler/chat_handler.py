@@ -3,6 +3,7 @@ from common.interactor.chat_interactor import ChatInteractor
 from postgres.models.external_models import Chat, FileSender
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
+from telethon.errors import ChannelPrivateError
 from telethon.events import ChatAction, Raw
 from telethon.tl.patched import Message, MessageService
 from telethon.tl.types import Chat as TelegramChat
@@ -113,11 +114,14 @@ class ChatHandler(BaseHandler):
             await self.chat_interactor.add_new_users([user], chat_id)
 
     async def __handle_joined_client_event(self, event: UpdateChannel):
-        chat = await self.telegram_client.get_entity(event.channel_id)
-        chat_id = get_peer_id(PeerChannel(event.channel_id))
-        me = await self.telegram_client.get_me()
+        try:
+            chat = await self.telegram_client.get_entity(event.channel_id)
+            chat_id = get_peer_id(PeerChannel(event.channel_id))
+            me = await self.telegram_client.get_me()
 
-        await self.__add_new_chat(chat, chat_id, me.id)
+            await self.__add_new_chat(chat, chat_id, me.id)
+        except ChannelPrivateError:
+            pass
 
     async def __add_new_chat(self, telegram_chat: TelegramChat, chat_id: int, me_id: int):
         filtered_users: list[User] = await self._get_users_without_me(telegram_chat, me_id)
