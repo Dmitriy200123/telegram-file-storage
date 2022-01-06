@@ -57,6 +57,8 @@ const Main: FC = () => {
             <div className={"app__content-components"}
                  style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
+                    <Route path={"/Profile"} component={Profile}/>
+                    {/*<Route path={"/login"} component={StartPage}/>*/}
                     {hasTelegram && <>
                         <Route path={"/files"} exact component={FilesMain}/>
                         <Route path={"/file/:id"} component={OpenedFile}/>
@@ -67,9 +69,6 @@ const Main: FC = () => {
 
                         <Redirect to={"/files"}/>
                     </>}
-
-                    <Route path={"/Profile"} component={Profile}/>
-                    <Route path={"/login"} component={StartPage}/>
                 </Switch>
             </div>
             {isOpen && id && <Content id={id}/>}
