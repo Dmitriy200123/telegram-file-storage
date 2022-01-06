@@ -84,7 +84,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileInfoById(Guid id)
         {
-            var file = await _fileService.GetFileInfoByIdAsync(id,Request);
+            var file = await _fileService.GetFileInfoByIdAsync(id, Request);
 
             return file.ResponseCode switch
             {
@@ -104,7 +104,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileDownloadLink(Guid id)
         {
-            var file = await _fileService.GetFileDownloadLinkByIdAsync(id,Request);
+            var file = await _fileService.GetFileDownloadLinkByIdAsync(id, Request);
 
             return file.ResponseCode switch
             {
@@ -206,6 +206,48 @@ namespace FileStorageAPI.Controllers
             var filesTypes = _fileService.GetFilesTypes();
 
             return Ok(filesTypes.Value);
+        }
+
+        /// <summary>
+        /// Возвращает ссылку.
+        /// </summary>
+        /// <param name="id">Идентификатор ссылки</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{id:guid}/link")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
+            typeof(string))]
+        public async Task<IActionResult> GetLink(Guid id)
+        {
+            var file = await _fileService.GetLink(id, Request);
+
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Возвращает сообщение.
+        /// </summary>
+        /// <param name="id">Идентификатор сообщения</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{id:guid}/message")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
+            typeof(string))]
+        public async Task<IActionResult> GetMessage(Guid id)
+        {
+            var file = await _fileService.GetMessage(id, Request);
+
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
     }
 }

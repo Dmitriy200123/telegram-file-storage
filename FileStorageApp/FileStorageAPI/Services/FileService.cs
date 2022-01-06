@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -182,7 +183,8 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int>> GetFilesCountAsync(FileSearchParameters fileSearchParameters, HttpRequest request)
+        public async Task<RequestResult<int>> GetFilesCountAsync(FileSearchParameters fileSearchParameters,
+            HttpRequest request)
         {
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
             var files = await fileInfoStorage.GetAllAsync();
@@ -211,6 +213,47 @@ namespace FileStorageAPI.Services
                 .ToArray();
 
             return RequestResult.Ok(descriptions);
+        }
+
+        public async Task<RequestResult<string>> GetLink(Guid id, HttpRequest request)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
+            if (file is null)
+                return RequestResult.NotFound<string>($"Link with identifier {id} not found");
+
+            var sender = await request.GetSenderFromToken(_infoStorageFactory);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            if (filteredFiles.Count == 0)
+                return RequestResult.Unauthorized<string>("Don't have access to this link");
+            var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
+            var requestToS3 = WebRequest.Create(fileLink);
+
+            using var response = await requestToS3.GetResponseAsync();
+            var streamReader = new StreamReader(response.GetResponseStream());
+            var text = await streamReader.ReadToEndAsync();
+            return RequestResult.Ok(text);
+        }
+        public async Task<RequestResult<string>> GetMessage(Guid id, HttpRequest request)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
+            if (file is null)
+                return RequestResult.NotFound<string>($"Message with identifier {id} not found");
+
+            var sender = await request.GetSenderFromToken(_infoStorageFactory);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            if (filteredFiles.Count == 0)
+                return RequestResult.Unauthorized<string>("Don't have access to this message");
+            var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
+            var requestToS3 = WebRequest.Create(fileLink);
+
+            using var response = await requestToS3.GetResponseAsync();
+            var streamReader = new StreamReader(response.GetResponseStream());
+            var text = await streamReader.ReadToEndAsync();
+            return RequestResult.Ok(text);
         }
     }
 }

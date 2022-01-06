@@ -65,5 +65,21 @@ namespace FileStorageAPI.Services
         /// Возвращает список типов файлов.
         /// </summary>
         RequestResult<FileTypeDescription[]> GetFilesTypes();
+
+        /// <summary>
+        /// Возвращает сохраненную ссылку
+        /// </summary>
+        /// <param name="id">Id ссылки</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<RequestResult<string>> GetLink(Guid id, HttpRequest request);
+
+        /// <summary>
+        /// Возвращает сохраненное сообщение
+        /// </summary>
+        /// <param name="id">Id сообщения</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<RequestResult<string>> GetMessage(Guid id, HttpRequest request);
     }
 }
