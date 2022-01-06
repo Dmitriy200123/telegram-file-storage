@@ -7,6 +7,7 @@ using FileStorageAPI.Models;
 using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
+using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +47,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetFileInfos([FromQuery] FileSearchParameters fileSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
-            var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take);
+            var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take, Request);
 
             return files.ResponseCode switch
             {
@@ -64,7 +65,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список названия файлов для поиска", typeof(IEnumerable<string>))]
         public async Task<IActionResult> GetFileNames()
         {
-            var fileNames = await _fileService.GetFileNamesAsync();
+            var fileNames = await _fileService.GetFileNamesAsync(Request);
 
             return fileNames.ResponseCode switch
             {
@@ -83,7 +84,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileInfoById(Guid id)
         {
-            var file = await _fileService.GetFileInfoByIdAsync(id);
+            var file = await _fileService.GetFileInfoByIdAsync(id,Request);
 
             return file.ResponseCode switch
             {
@@ -103,7 +104,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileDownloadLink(Guid id)
         {
-            var file = await _fileService.GetFileDownloadLinkByIdAsync(id);
+            var file = await _fileService.GetFileDownloadLinkByIdAsync(id,Request);
 
             return file.ResponseCode switch
             {
@@ -124,7 +125,8 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm] IFormFile file)
         {
-            var uploadedFile = await _fileService.CreateFileAsync(file);
+            var userId = Request.GetUserIdFromToken(Settings.Key);
+            var uploadedFile = await _fileService.CreateFileAsync(file, Request);
 
             return uploadedFile.ResponseCode switch
             {
@@ -183,9 +185,9 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("count")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов, содержащихся в хранилище", typeof(int))]
-        public async Task<IActionResult> GetFilesCount()
+        public async Task<IActionResult> GetFilesCount([FromQuery] FileSearchParameters fileSearchParameters)
         {
-            var count = await _fileService.GetFilesCountAsync();
+            var count = await _fileService.GetFilesCountAsync(fileSearchParameters, Request);
 
             return count.ResponseCode switch
             {

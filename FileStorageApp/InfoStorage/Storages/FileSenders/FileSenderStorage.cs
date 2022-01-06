@@ -51,6 +51,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
             return base.GetByIdAsync(id);
         }
 
+        public async Task<FileSender?> GetByTelegramIdAsync(long id)
+        {
+            return await DbSet.FirstOrDefaultAsync(x => x.TelegramId == id);
+        }
+
         public Task<bool> ContainsByTelegramIdAsync(long id)
         {
             return DbSet.AnyAsync(sender => sender.TelegramId == id);
