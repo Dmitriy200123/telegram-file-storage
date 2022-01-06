@@ -10,10 +10,8 @@ import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
 const initialState = {
     isAuth: false,
     name: "Берсерк Справедливович",
-    login: "",
-    email: "",
-    role: "",
-    chats: "",
+    hasTelegram: false,
+    avatar: null as string | null,
     loading: true,
     messages: [] as Array<MessageType>,
     rights: [] as null | Rights[],
@@ -29,8 +27,10 @@ export const profileSlice = createSlice({
 
     },
     extraReducers: {
-        [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string }>) => {
+        [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string , hasTelegram: boolean, avatar: string | null}>) => {
             state.name = action.payload.name;
+            state.hasTelegram = action.payload.hasTelegram;
+            state.avatar =  action.payload.avatar;
         },
         [fetchUserCurrent.pending.type]: (state) => {
             state.loading = true;

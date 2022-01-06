@@ -42,7 +42,7 @@ const Main: FC = () => {
     }, [])
     localStorage.setItem("flag", "false");
     const {filesReducer, profile} = useAppSelector((state) => state);
-    const {rights} = profile;
+    const {rights, hasTelegram} = profile;
     const {loading, modalConfirm} = filesReducer;
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
@@ -57,18 +57,19 @@ const Main: FC = () => {
             <div className={"app__content-components"}
                  style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
-                    <Route path={"/files"} exact component={FilesMain}/>
-                    <Route path={"/file/:id"} component={OpenedFile}/>
+                    {hasTelegram && <>
+                        <Route path={"/files"} exact component={FilesMain}/>
+                        <Route path={"/file/:id"} component={OpenedFile}/>
+                        {rights?.includes(Rights["Редактировать права пользователей"]) &&
+                        <Route path={"/admin"} component={RightsManagerPanel}/>}
+                        {rights?.includes(Rights["Загружать файлы"]) &&
+                        <Route exact={true} path={"/load/"} component={LoadFileMain}/>}
+
+                        <Redirect to={"/files"}/>
+                    </>}
+
                     <Route path={"/Profile"} component={Profile}/>
-
-                    {rights?.includes(Rights["Редактировать права пользователей"]) &&
-                    <Route path={"/admin"} component={RightsManagerPanel}/>}
-
-                    {rights?.includes(Rights["Загружать файлы"]) &&
-                    <Route exact={true} path={"/load/"} component={LoadFileMain}/>}
-
                     <Route path={"/login"} component={StartPage}/>
-                    <Redirect to={"/files"}/>
                 </Switch>
             </div>
             {isOpen && id && <Content id={id}/>}
