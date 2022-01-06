@@ -18,6 +18,7 @@ import {ReactComponent as Logout} from "./assets/logout.svg";
 import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
 import {fetchRightsCurrentUser, fetchUserCurrent} from "./redux/thunks/rightsThunks";
 import {Rights} from "./models/File";
+import {Profile} from "./components/Profile/Profile";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -58,6 +59,7 @@ const Main: FC = () => {
                 <Switch>
                     <Route path={"/files"} exact component={FilesMain}/>
                     <Route path={"/file/:id"} component={OpenedFile}/>
+                    <Route path={"/Profile"} component={Profile}/>
 
                     {rights?.includes(Rights["Редактировать права пользователей"]) &&
                     <Route path={"/admin"} component={RightsManagerPanel}/>}
