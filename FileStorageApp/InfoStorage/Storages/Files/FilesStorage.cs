@@ -58,7 +58,14 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 .ToListAsync();
         }
 
-        public Task<int> GetFilesCountAsync() => DbSet.CountAsync();
+        public async Task<int> GetFilesCountAsync(Expression<Func<File, bool>> expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            var query = DbSet.Where(expression);
+            return await query.CountAsync();
+        }
 
         public Task<List<string>> GetFileNamesAsync() => DbSet.Select(fileInfo => fileInfo.Name).ToListAsync();
 

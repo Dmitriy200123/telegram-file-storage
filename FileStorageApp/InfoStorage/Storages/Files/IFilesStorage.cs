@@ -16,7 +16,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<File> GetByIdAsync(Guid id, bool useInclude = false);
 
-        public Task<int> GetFilesCountAsync();
+        public Task<int> GetFilesCountAsync(Expression<Func<File, bool>> expression);
 
         public Task<List<string>> GetFileNamesAsync();
     }

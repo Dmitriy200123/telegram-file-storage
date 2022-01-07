@@ -193,6 +193,7 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
+            services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)

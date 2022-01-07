@@ -9,13 +9,20 @@ namespace FileStorageAPI.Extensions
 {
     public static class FileFilterExtension
     {
-        public static async Task<List<File>> FilterFiles(this List<File> files, Guid fileSenderId, IInfoStorageFactory infoStorageFactory)
+        public static async Task<List<File>> FilterFiles(this List<File> files, Guid fileSenderId,
+            IInfoStorageFactory infoStorageFactory)
+        {
+            var chatsId = await GetUserChats(fileSenderId, infoStorageFactory);
+            return files.Where(x => chatsId.Contains(x.ChatId!.Value)).ToList();
+        }
+
+        public static async Task<List<Guid>> GetUserChats(Guid fileSenderId, IInfoStorageFactory infoStorageFactory)
         {
             using var sendersStorage = infoStorageFactory.CreateFileSenderStorage();
             var fileSender = await sendersStorage.GetByIdAsync(fileSenderId);
             var chatsId = fileSender.Chats.Select(x => x.Id).ToList();
             chatsId.Add(Guid.Empty);
-            return files.Where(x => chatsId.Contains(x.ChatId!.Value)).ToList();
+            return chatsId;
         }
     }
 }

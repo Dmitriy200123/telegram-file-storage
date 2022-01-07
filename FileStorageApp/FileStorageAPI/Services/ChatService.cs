@@ -5,6 +5,7 @@ using FileStorageApp.Data.InfoStorage.Factories;
 using System.Threading.Tasks;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
+using ChatInDb = FileStorageApp.Data.InfoStorage.Models.Chat;
 
 namespace FileStorageAPI.Services
 {
@@ -30,6 +31,8 @@ namespace FileStorageAPI.Services
         {
             using var chatStorage = _infoStorageFactory.CreateChatStorage();
             var chatsInDb = await chatStorage.GetAllAsync();
+            var chat = new ChatInDb {Id = Guid.Empty, Name = "Ручная загрузка файла"};
+            chatsInDb.Add(chat);
 
             return RequestResult.Ok(chatsInDb.Select(_chatConverter.ConvertToChatInApi).ToList());
         }
