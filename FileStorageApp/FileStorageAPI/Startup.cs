@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -106,6 +107,7 @@ namespace FileStorageAPI
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
             });
+            ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;//Там че-то сложно с сертами на localhost пришел тыкнуть это
         }
 
         private DataBaseConfig CreateDataBaseConfig()

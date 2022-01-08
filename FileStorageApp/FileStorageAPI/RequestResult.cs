@@ -125,5 +125,16 @@ namespace FileStorageAPI
         {
             return new RequestResult<T>(HttpStatusCode.Unauthorized, message);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static RequestResult<T> Forbidden<T>(string message)
+        {
+            return new RequestResult<T>(HttpStatusCode.Forbidden, message);
+        }
     }
 }

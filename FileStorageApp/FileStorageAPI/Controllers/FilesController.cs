@@ -90,6 +90,7 @@ namespace FileStorageAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(file.Value),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -110,6 +111,7 @@ namespace FileStorageAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(file.Value),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -125,12 +127,12 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm] IFormFile file)
         {
-            var userId = Request.GetUserIdFromToken(Settings.Key);
             var uploadedFile = await _fileService.CreateFileAsync(file, Request);
 
             return uploadedFile.ResponseCode switch
             {
                 HttpStatusCode.Created => Created(uploadedFile.Value.Uri, uploadedFile.Value.Info),
+                HttpStatusCode.BadRequest => BadRequest(uploadedFile.Message),
                 HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
                 _ => throw new ArgumentException("Unknown response code")
             };
@@ -153,7 +155,7 @@ namespace FileStorageAPI.Controllers
             return file.ResponseCode switch
             {
                 HttpStatusCode.Created => Created(file.Value.Uri, file.Value.Info),
-                HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.NotFound => NotFound("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -175,6 +177,7 @@ namespace FileStorageAPI.Controllers
             {
                 HttpStatusCode.NoContent => NoContent(),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.InternalServerError => new StatusCodeResult(StatusCodes.Status500InternalServerError),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -224,7 +227,9 @@ namespace FileStorageAPI.Controllers
             return file.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.BadRequest => BadRequest(file.Message),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -245,7 +250,9 @@ namespace FileStorageAPI.Controllers
             return file.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.BadRequest => BadRequest(file.Message),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

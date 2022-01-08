@@ -86,11 +86,9 @@ namespace FileStorageAPI.Services
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
-            if (filteredFiles.Count == 0)
-                return RequestResult.Unauthorized<FileInfo>("Don't have access to this file");
-
-
-            return RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
+            return filteredFiles.Count == 0
+                ? RequestResult.Forbidden<FileInfo>("Don't have access to this file")
+                : RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
         }
 
         /// <inheritdoc />
@@ -105,7 +103,7 @@ namespace FileStorageAPI.Services
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
             if (filteredFiles.Count == 0)
-                return RequestResult.Unauthorized<string>("Don't have access to this file");
+                return RequestResult.Forbidden<string>("Don't have access to this file");
             var result = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
 
             return RequestResult.Ok(result);
@@ -194,7 +192,7 @@ namespace FileStorageAPI.Services
             var chatsId = await FileFilterExtension.GetUserChats(sender.Id, _infoStorageFactory);
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var filesCount = await filesStorage.GetFilesCountAsync(expression);
-            
+
             return RequestResult.Ok(filesCount);
         }
 
@@ -220,19 +218,20 @@ namespace FileStorageAPI.Services
             return RequestResult.Ok(descriptions);
         }
 
+        /// <inheritdoc />
         public async Task<RequestResult<string>> GetLink(Guid id, HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var file = await filesStorage.GetByIdAsync(id);
             if (file is null)
                 return RequestResult.NotFound<string>($"Link with identifier {id} not found");
-            if(file.Type != FileType.Link)
+            if (file.Type != FileType.Link)
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
             if (filteredFiles.Count == 0)
-                return RequestResult.Unauthorized<string>("Don't have access to this link");
+                return RequestResult.Forbidden<string>("Don't have access to this link");
             var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
             var requestToS3 = WebRequest.Create(fileLink);
 
@@ -241,19 +240,21 @@ namespace FileStorageAPI.Services
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
         }
+
+        /// <inheritdoc />
         public async Task<RequestResult<string>> GetMessage(Guid id, HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var file = await filesStorage.GetByIdAsync(id);
             if (file is null)
                 return RequestResult.NotFound<string>($"Message with identifier {id} not found");
-            if(file.Type != FileType.Text)
+            if (file.Type != FileType.Text)
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
             if (filteredFiles.Count == 0)
-                return RequestResult.Unauthorized<string>("Don't have access to this message");
+                return RequestResult.Forbidden<string>("Don't have access to this message");
             var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
             var requestToS3 = WebRequest.Create(fileLink);
 
