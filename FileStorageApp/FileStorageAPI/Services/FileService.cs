@@ -44,7 +44,7 @@ namespace FileStorageAPI.Services
             IFilesStorageFactory filesStorageFactory,
             IFileTypeProvider fileTypeProvider,
             IExpressionFileFilterProvider expressionFileFilterProvider,
-            IDownloadLinkProvider downloadLinkProvider, 
+            IDownloadLinkProvider downloadLinkProvider,
             ISenderFormTokenProvider senderFormTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
@@ -67,7 +67,7 @@ namespace FileStorageAPI.Services
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters);
             var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
-            var filteredFiles = await filesFromDataBase.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filteredFiles = filesFromDataBase.FilterFiles(sender);
             var convertedFiles = filteredFiles
                 .Select(_fileInfoConverter.ConvertFileInfo)
                 .ToList();
@@ -84,7 +84,7 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<FileInfo>($"File with identifier {id} not found");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filteredFiles = filesToFilter.FilterFiles(sender);
             return filteredFiles.Count == 0
                 ? RequestResult.Forbidden<FileInfo>("Don't have access to this file")
                 : RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
@@ -100,7 +100,7 @@ namespace FileStorageAPI.Services
 
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filteredFiles = filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this file");
             var result = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
@@ -188,7 +188,7 @@ namespace FileStorageAPI.Services
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
-            var chatsId = await FileFilterExtension.GetUserChats(sender.Id, _infoStorageFactory);
+            var chatsId = sender!.Chats.Select(chat => chat.Id).ToList();
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var filesCount = await filesStorage.GetFilesCountAsync(expression);
 
@@ -201,7 +201,7 @@ namespace FileStorageAPI.Services
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
             var files = await fileInfoStorage.GetAllAsync();
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
-            var filterFiles = await files.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filterFiles = files.FilterFiles(sender);
             var filesNames = filterFiles.Select(x => x.Name).ToList();
             return RequestResult.Ok(filesNames);
         }
@@ -228,7 +228,7 @@ namespace FileStorageAPI.Services
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filteredFiles = filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this link");
             var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
@@ -251,7 +251,7 @@ namespace FileStorageAPI.Services
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = await filesToFilter.FilterFiles(sender!.Id, _infoStorageFactory);
+            var filteredFiles = filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this message");
             var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);

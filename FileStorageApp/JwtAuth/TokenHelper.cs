@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 
 namespace JwtAuth
 {

@@ -46,14 +46,22 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
                 .ToListAsync();
         }
 
-        public new Task<FileSender> GetByIdAsync(Guid id)
+        public Task<FileSender> GetByIdAsync(Guid id, bool useInclude = false)
         {
-            return base.GetByIdAsync(id);
+            var query = DbSet.AsQueryable();
+            if (useInclude)
+                query = query.Include(sender => sender.Chats);
+
+            return query.FirstOrDefaultAsync(sender => sender.Id == id);
         }
 
-        public async Task<FileSender?> GetByTelegramIdAsync(long id)
+        public Task<FileSender> GetByTelegramIdAsync(long id, bool useInclude = false)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.TelegramId == id);
+            var query = DbSet.AsQueryable();
+            if (useInclude)
+                query = query.Include(sender => sender.Chats);
+
+            return query.FirstOrDefaultAsync(x => x.TelegramId == id);
         }
 
         public Task<bool> ContainsByTelegramIdAsync(long id)

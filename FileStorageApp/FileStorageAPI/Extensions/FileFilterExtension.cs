@@ -1,27 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 
 namespace FileStorageAPI.Extensions
 {
-    public static class FileFilterExtension
+    internal static class FileFilterExtension
     {
-        public static async Task<List<File>> FilterFiles(this List<File> files, Guid fileSenderId,
-            IInfoStorageFactory infoStorageFactory)
+        public static List<File> FilterFiles(this IEnumerable<File> files, FileSender fileSender)
         {
-            var chatsId = await GetUserChats(fileSenderId, infoStorageFactory);
+            var chatsId = fileSender.Chats.Select(chat => chat.Id).ToHashSet();
             return files.Where(x => !x.ChatId.HasValue || chatsId.Contains(x.ChatId!.Value)).ToList();
-        }
-
-        public static async Task<List<Guid>> GetUserChats(Guid fileSenderId, IInfoStorageFactory infoStorageFactory)
-        {
-            using var sendersStorage = infoStorageFactory.CreateFileSenderStorage();
-            var fileSender = await sendersStorage.GetByIdAsync(fileSenderId);
-            var chatsId = fileSender.Chats.Select(x => x.Id).ToList();
-            return chatsId;
         }
     }
 }

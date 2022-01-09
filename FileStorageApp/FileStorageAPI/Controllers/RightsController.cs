@@ -7,7 +7,6 @@ using FileStorageAPI.Providers;
 using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
-using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
