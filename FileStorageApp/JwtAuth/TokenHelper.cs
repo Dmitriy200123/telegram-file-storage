@@ -39,15 +39,5 @@ namespace JwtAuth
 
             return principal;
         }
-
-        public static Guid GetUserIdFromToken(this HttpRequest request, byte[] key)
-        {
-            var authHeader = request.Headers[HeaderNames.Authorization];
-            var userToken = authHeader.ToString().Split(' ')[1];
-            var principal = GetPrincipalFromToken(userToken, key);
-
-            var userName = principal.Identity!.Name;
-            return Guid.Parse(userName!);
-        }
     }
 }

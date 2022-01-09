@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FileStorageAPI.Providers;
 using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,15 +21,19 @@ namespace FileStorageAPI.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="AuthenticationController"/>.
         /// </summary>
         /// <param name="authenticationService">Сервис для взаимодействия с аутентификацией</param>
-        public AuthenticationController(IAuthenticationService authenticationService)
+        /// <param name="userIdFromTokenProvider"></param>
+        public AuthenticationController(IAuthenticationService authenticationService,
+            IUserIdFromTokenProvider userIdFromTokenProvider)
         {
             _authenticationService =
                 authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
+            _userIdFromTokenProvider = userIdFromTokenProvider;
         }
 
         /// <summary>
@@ -58,8 +63,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status204NoContent, "Успешно удалили рефреш токен ")]
         public async Task<IActionResult> LogOut()
         {
-            var a = User.Claims.ToList();
-            var id = Request.GetUserIdFromToken(Settings.Key);
+            var id = _userIdFromTokenProvider.GetUserIdFromToken(Request, Settings.Key);
             var result = await _authenticationService.LogOut(id);
             return result.ResponseCode switch
             {

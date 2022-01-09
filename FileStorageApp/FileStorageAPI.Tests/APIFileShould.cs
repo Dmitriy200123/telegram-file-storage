@@ -212,15 +212,16 @@ namespace FileStorageAPI.Tests
                 TelegramUserName = "Загрузчик с сайта",
                 FullName = "Загрузчик с сайта",
             };
+            await senderStorage.AddAsync(sender);
 
             var response = await apiClient.PostAsync("/api/files/", form);
+            var responseString = await response.Content.ReadAsStringAsync();
+            response.EnsureSuccessStatusCode();
             var fileInfo = (await fileStorage.GetAllAsync()).First();
             fileInfo.Chat = chat;
             fileInfo.FileSender = sender;
             var expected = FilesConverter.ConvertFileInfo(fileInfo);
-
-            response.EnsureSuccessStatusCode();
-            var responseString = await response.Content.ReadAsStringAsync();
+           
             var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString);
             actual.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.UploadDate));
         }

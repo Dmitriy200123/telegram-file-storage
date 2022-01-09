@@ -13,7 +13,7 @@ namespace FileStorageAPI.Extensions
             IInfoStorageFactory infoStorageFactory)
         {
             var chatsId = await GetUserChats(fileSenderId, infoStorageFactory);
-            return files.Where(x => chatsId.Contains(x.ChatId!.Value)).ToList();
+            return files.Where(x => !x.ChatId.HasValue || chatsId.Contains(x.ChatId!.Value)).ToList();
         }
 
         public static async Task<List<Guid>> GetUserChats(Guid fileSenderId, IInfoStorageFactory infoStorageFactory)
@@ -21,7 +21,6 @@ namespace FileStorageAPI.Extensions
             using var sendersStorage = infoStorageFactory.CreateFileSenderStorage();
             var fileSender = await sendersStorage.GetByIdAsync(fileSenderId);
             var chatsId = fileSender.Chats.Select(x => x.Id).ToList();
-            chatsId.Add(Guid.Empty);
             return chatsId;
         }
     }

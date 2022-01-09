@@ -33,7 +33,7 @@ namespace FileStorageAPI.Services
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
         /// </summary>
         /// <param name="infoStorageFactory">Фабрика для получения доступа к хранилищу файлов</param>
-        /// <param name="fileInfoConverter">Конвертор для преобразования файлов в API-контракты</param>
+        /// <param name="fileInfoConverter">Конвертер для преобразования файлов в API-контракты</param>
         /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
         /// <param name="fileTypeProvider">Поставщик типа файла</param>
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
@@ -44,17 +44,16 @@ namespace FileStorageAPI.Services
             IFilesStorageFactory filesStorageFactory,
             IFileTypeProvider fileTypeProvider,
             IExpressionFileFilterProvider expressionFileFilterProvider,
-            IDownloadLinkProvider downloadLinkProvider, ISenderFormTokenProvider senderFormTokenProvider)
+            IDownloadLinkProvider downloadLinkProvider, 
+            ISenderFormTokenProvider senderFormTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
             _filesStorageFactory = filesStorageFactory ?? throw new ArgumentNullException(nameof(filesStorageFactory));
             _fileTypeProvider = fileTypeProvider ?? throw new ArgumentNullException(nameof(fileTypeProvider));
-            _expressionFileFilterProvider = expressionFileFilterProvider ??
-                                            throw new ArgumentNullException(nameof(expressionFileFilterProvider));
-            _downloadLinkProvider =
-                downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
-            _senderFormTokenProvider = senderFormTokenProvider;
+            _expressionFileFilterProvider = expressionFileFilterProvider ?? throw new ArgumentNullException(nameof(expressionFileFilterProvider));
+            _downloadLinkProvider = downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
+            _senderFormTokenProvider = senderFormTokenProvider ?? throw new ArgumentNullException(nameof(senderFormTokenProvider));
         }
 
         /// <inheritdoc />
