@@ -46,7 +46,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetFileInfos([FromQuery] FileSearchParameters fileSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
-            var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take);
+            var files = await _fileService.GetFileInfosAsync(fileSearchParameters, skip, take, Request);
 
             return files.ResponseCode switch
             {
@@ -64,7 +64,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список названия файлов для поиска", typeof(IEnumerable<string>))]
         public async Task<IActionResult> GetFileNames()
         {
-            var fileNames = await _fileService.GetFileNamesAsync();
+            var fileNames = await _fileService.GetFileNamesAsync(Request);
 
             return fileNames.ResponseCode switch
             {
@@ -83,12 +83,13 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileInfoById(Guid id)
         {
-            var file = await _fileService.GetFileInfoByIdAsync(id);
+            var file = await _fileService.GetFileInfoByIdAsync(id, Request);
 
             return file.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(file.Value),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -103,12 +104,13 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> GetFileDownloadLink(Guid id)
         {
-            var file = await _fileService.GetFileDownloadLinkByIdAsync(id);
+            var file = await _fileService.GetFileDownloadLinkByIdAsync(id, Request);
 
             return file.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(file.Value),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -124,11 +126,12 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm] IFormFile file)
         {
-            var uploadedFile = await _fileService.CreateFileAsync(file);
+            var uploadedFile = await _fileService.CreateFileAsync(file, Request);
 
             return uploadedFile.ResponseCode switch
             {
                 HttpStatusCode.Created => Created(uploadedFile.Value.Uri, uploadedFile.Value.Info),
+                HttpStatusCode.BadRequest => BadRequest(uploadedFile.Message),
                 HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
                 _ => throw new ArgumentException("Unknown response code")
             };
@@ -151,7 +154,7 @@ namespace FileStorageAPI.Controllers
             return file.ResponseCode switch
             {
                 HttpStatusCode.Created => Created(file.Value.Uri, file.Value.Info),
-                HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.NotFound => NotFound("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -173,6 +176,7 @@ namespace FileStorageAPI.Controllers
             {
                 HttpStatusCode.NoContent => NoContent(),
                 HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.InternalServerError => new StatusCodeResult(StatusCodes.Status500InternalServerError),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -183,9 +187,9 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("count")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов, содержащихся в хранилище", typeof(int))]
-        public async Task<IActionResult> GetFilesCount()
+        public async Task<IActionResult> GetFilesCount([FromQuery] FileSearchParameters fileSearchParameters)
         {
-            var count = await _fileService.GetFilesCountAsync();
+            var count = await _fileService.GetFilesCountAsync(fileSearchParameters, Request);
 
             return count.ResponseCode switch
             {
@@ -204,6 +208,52 @@ namespace FileStorageAPI.Controllers
             var filesTypes = _fileService.GetFilesTypes();
 
             return Ok(filesTypes.Value);
+        }
+
+        /// <summary>
+        /// Возвращает ссылку.
+        /// </summary>
+        /// <param name="id">Идентификатор ссылки</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{id:guid}/link")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
+            typeof(string))]
+        public async Task<IActionResult> GetLink(Guid id)
+        {
+            var file = await _fileService.GetLink(id, Request);
+
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.BadRequest => BadRequest(file.Message),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Возвращает сообщение.
+        /// </summary>
+        /// <param name="id">Идентификатор сообщения</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{id:guid}/message")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
+            typeof(string))]
+        public async Task<IActionResult> GetMessage(Guid id)
+        {
+            var file = await _fileService.GetMessage(id, Request);
+
+            return file.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(file.Value),
+                HttpStatusCode.BadRequest => BadRequest(file.Message),
+                HttpStatusCode.NotFound => NotFound(file.Message),
+                HttpStatusCode.Forbidden => Forbid("Bearer"),
+                _ => throw new ArgumentException("Unknown response code")
+            };
         }
     }
 }

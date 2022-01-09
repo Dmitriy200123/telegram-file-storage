@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Telegram.Bot;
@@ -75,6 +76,19 @@ namespace TelegramAuth
 
 
             var dataBaseResult = await usersStorage.AddTelegramIdToGitLabUserAsync(gitLabUserId!.Value, telegramId);
+            var sendersStorage = _infoStorageFactory.CreateFileSenderStorage();
+            var fileSender = await sendersStorage.GetByTelegramIdAsync(chatId);
+            if (fileSender is null)
+            {
+                fileSender = new FileSender
+                {
+                    Id = Guid.NewGuid(),
+                    TelegramId = chatId,
+                    TelegramUserName = update.Message.Chat.Username!,
+                    FullName = $"{update.Message.Chat.FirstName} {update.Message.Chat.LastName}",
+                };
+                await sendersStorage.AddAsync(fileSender);
+            }
             if (!dataBaseResult)
                 await botClient.SendTextMessageAsync(chatId, "Не смогли добавить в базу",
                     cancellationToken: cancellationToken);

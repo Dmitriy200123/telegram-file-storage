@@ -13,6 +13,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.FileSenders
 
         public Task<bool> ContainsByTelegramIdAsync(long id);
         public Task<List<FileSender>> GetAllAsync();
-        public new Task<FileSender> GetByIdAsync(Guid id);
+        public Task<FileSender> GetByIdAsync(Guid id, bool useInclude = false);
+        public Task<FileSender> GetByTelegramIdAsync(long id, bool useInclude = false);
     }
 }

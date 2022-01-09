@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using FileStorageApp.Data.InfoStorage.Models;
 
@@ -13,6 +14,7 @@ namespace FileStorageAPI.Providers
         /// Возвращает query Expression.
         /// </summary>
         /// <param name="parameters">Параметры поиска файлов</param>
-        Expression<Func<File, bool>> GetExpression(FileSearchParameters parameters);
+        /// <param name="chatsId"></param>
+        Expression<Func<File, bool>> GetExpression(FileSearchParameters parameters, List<Guid>? chatsId = null);
     }
 }

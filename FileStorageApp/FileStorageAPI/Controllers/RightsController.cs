@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
+using FileStorageAPI.Providers;
 using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
-using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +24,17 @@ namespace FileStorageAPI.Controllers
     public class RightsController : Controller
     {
         private readonly IRightsService _rightsService;
+        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="RightsController"/>.
         /// </summary>
         /// <param name="rightsService">Сервис прав</param>
-        public RightsController(IRightsService rightsService)
+        /// <param name="userIdFromTokenProvider"></param>
+        public RightsController(IRightsService rightsService, IUserIdFromTokenProvider userIdFromTokenProvider)
         {
             _rightsService = rightsService ?? throw new ArgumentNullException(nameof(rightsService));
+            _userIdFromTokenProvider = userIdFromTokenProvider;
         }
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя", typeof(int[]))]
         public async Task<IActionResult> GetUserRights()
         {
-            var userId = Request.GetUserIdFromToken(Settings.Key);
+            var userId = _userIdFromTokenProvider.GetUserIdFromToken(Request, Settings.Key);
             var currentUserRights = await _rightsService.GetCurrentUserRights(userId);
 
             return Ok(currentUserRights.Value);
@@ -85,7 +88,8 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         [HttpGet("userRights")]
         [RightsFilter(Accesses.Admin)]
-        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору", typeof(int[]))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору",
+            typeof(int[]))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]
         public async Task<IActionResult> GetUserRights([FromQuery(Name = "userId"), Required] Guid userId)
         {

@@ -10,7 +10,6 @@ using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
-using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
 using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
@@ -27,37 +26,38 @@ namespace FileStorageAPI.Services
         private readonly IInfoStorageFactory _infoStorageFactory;
         private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
         private readonly IDownloadLinkProvider _downloadLinkProvider;
-        private const string TempFileSenderId = "00000000-0000-0000-0000-000000000001";
+        private readonly ISenderFormTokenProvider _senderFormTokenProvider;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
         /// </summary>
         /// <param name="infoStorageFactory">Фабрика для получения доступа к хранилищу файлов</param>
-        /// <param name="fileInfoConverter">Конвертор для преобразования файлов в API-контракты</param>
+        /// <param name="fileInfoConverter">Конвертер для преобразования файлов в API-контракты</param>
         /// <param name="filesStorageFactory">Фабрика для получения доступа к физическому хранилищу чатов</param>
         /// <param name="fileTypeProvider">Поставщик типа файла</param>
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
         /// <param name="downloadLinkProvider">Поставщик для получения ссылки на файл</param>
+        /// <param name="senderFormTokenProvider"></param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
             IFileTypeProvider fileTypeProvider,
             IExpressionFileFilterProvider expressionFileFilterProvider,
-            IDownloadLinkProvider downloadLinkProvider)
+            IDownloadLinkProvider downloadLinkProvider,
+            ISenderFormTokenProvider senderFormTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
             _filesStorageFactory = filesStorageFactory ?? throw new ArgumentNullException(nameof(filesStorageFactory));
             _fileTypeProvider = fileTypeProvider ?? throw new ArgumentNullException(nameof(fileTypeProvider));
-            _expressionFileFilterProvider = expressionFileFilterProvider ??
-                                            throw new ArgumentNullException(nameof(expressionFileFilterProvider));
-            _downloadLinkProvider =
-                downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
+            _expressionFileFilterProvider = expressionFileFilterProvider ?? throw new ArgumentNullException(nameof(expressionFileFilterProvider));
+            _downloadLinkProvider = downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
+            _senderFormTokenProvider = senderFormTokenProvider ?? throw new ArgumentNullException(nameof(senderFormTokenProvider));
         }
 
         /// <inheritdoc />
         public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters,
-            int skip, int take)
+            int skip, int take, HttpRequest request)
         {
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
@@ -65,7 +65,9 @@ namespace FileStorageAPI.Services
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters);
             var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
-            var convertedFiles = filesFromDataBase
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filteredFiles = filesFromDataBase.FilterFiles(sender);
+            var convertedFiles = filteredFiles
                 .Select(_fileInfoConverter.ConvertFileInfo)
                 .ToList();
 
@@ -73,50 +75,53 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<FileInfo>> GetFileInfoByIdAsync(Guid id)
+        public async Task<RequestResult<FileInfo>> GetFileInfoByIdAsync(Guid id, HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var file = await filesStorage.GetByIdAsync(id, true);
-
             if (file is null)
                 return RequestResult.NotFound<FileInfo>($"File with identifier {id} not found");
-            return RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = filesToFilter.FilterFiles(sender);
+            return filteredFiles.Count == 0
+                ? RequestResult.Forbidden<FileInfo>("Don't have access to this file")
+                : RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<string>> GetFileDownloadLinkByIdAsync(Guid id)
+        public async Task<RequestResult<string>> GetFileDownloadLinkByIdAsync(Guid id, HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var file = await filesStorage.GetByIdAsync(id);
             if (file is null)
                 return RequestResult.NotFound<string>($"File with identifier {id} not found");
 
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = filesToFilter.FilterFiles(sender);
+            if (filteredFiles.Count == 0)
+                return RequestResult.Forbidden<string>("Don't have access to this file");
             var result = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
 
             return RequestResult.Ok(result);
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<(string Uri, FileInfo Info)>> CreateFileAsync(IFormFile uploadFile)
+        public async Task<RequestResult<(string Uri, FileInfo Info)>> CreateFileAsync(IFormFile uploadFile,
+            HttpRequest request)
         {
-            var siteFileSender = new FileSender
-            {
-                Id = Guid.Parse(TempFileSenderId),
-                TelegramId = -1,
-                TelegramUserName = "Загрузчик с сайта",
-                FullName = "Загрузчик с сайта",
-            };
-            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
-            await fileSenderStorage.AddAsync(siteFileSender, false);
-            var now = DateTime.Now;
+            var fileSender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            if (fileSender is null)
+                return RequestResult.BadRequest<(string Uri, FileInfo Info)>("Does not have this sender in database");
             var file = new DataBaseFile
             {
                 Id = Guid.NewGuid(),
                 Name = uploadFile.FileName,
                 Extension = Path.GetExtension(uploadFile.FileName),
                 Type = _fileTypeProvider.GetFileType(uploadFile.Headers["Content-Type"]),
-                UploadDate = now,
-                FileSenderId = Guid.Parse(TempFileSenderId)
+                UploadDate = DateTime.Now,
+                FileSenderId = fileSender.Id
             };
 
             await using var memoryStream = new MemoryStream();
@@ -130,7 +135,8 @@ namespace FileStorageAPI.Services
 
             var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
             file.Chat = chat;
-            file.FileSender = await fileSenderStorage.GetByIdAsync(Guid.Parse(TempFileSenderId));
+            using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
+            file.FileSender = await fileSenderStorage.GetByIdAsync(fileSender.Id);
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
 
             return RequestResult.Created<(string uri, FileInfo info)>((downloadLink,
@@ -141,7 +147,6 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public async Task<RequestResult<(string Uri, FileInfo Info)>> UpdateFileAsync(Guid id, string fileName)
         {
-            //todo rename file s3
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             var file = await filesStorage.GetByIdAsync(id, true);
@@ -177,19 +182,27 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int>> GetFilesCountAsync()
+        public async Task<RequestResult<int>> GetFilesCountAsync(FileSearchParameters fileSearchParameters,
+            HttpRequest request)
         {
-            using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var chatsId = sender!.Chats.Select(chat => chat.Id).ToList();
+            var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
+            var filesCount = await filesStorage.GetFilesCountAsync(expression);
 
-            return RequestResult.Ok(await fileInfoStorage.GetFilesCountAsync());
+            return RequestResult.Ok(filesCount);
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<string>>> GetFileNamesAsync()
+        public async Task<RequestResult<List<string>>> GetFileNamesAsync(HttpRequest request)
         {
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
-
-            return RequestResult.Ok(await fileInfoStorage.GetFileNamesAsync());
+            var files = await fileInfoStorage.GetAllAsync();
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filterFiles = files.FilterFiles(sender);
+            var filesNames = filterFiles.Select(x => x.Name).ToList();
+            return RequestResult.Ok(filesNames);
         }
 
         /// <inheritdoc />
@@ -201,6 +214,46 @@ namespace FileStorageAPI.Services
                 .ToArray();
 
             return RequestResult.Ok(descriptions);
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<string>> GetLink(Guid id, HttpRequest request)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
+            if (file is null)
+                return RequestResult.NotFound<string>($"Link with identifier {id} not found");
+            if (file.Type != FileType.Link)
+                return RequestResult.BadRequest<string>("Invalid file type");
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = filesToFilter.FilterFiles(sender);
+            if (filteredFiles.Count == 0)
+                return RequestResult.Forbidden<string>("Don't have access to this link");
+            using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
+            var text = await streamReader.ReadToEndAsync();
+            return RequestResult.Ok(text);
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<string>> GetMessage(Guid id, HttpRequest request)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var file = await filesStorage.GetByIdAsync(id);
+            if (file is null)
+                return RequestResult.NotFound<string>($"Message with identifier {id} not found");
+            if (file.Type != FileType.Text)
+                return RequestResult.BadRequest<string>("Invalid file type");
+            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var filesToFilter = new List<DataBaseFile> {file};
+            var filteredFiles = filesToFilter.FilterFiles(sender);
+            if (filteredFiles.Count == 0)
+                return RequestResult.Forbidden<string>("Don't have access to this message");
+            using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
+            var text = await streamReader.ReadToEndAsync();
+            return RequestResult.Ok(text);
         }
     }
 }

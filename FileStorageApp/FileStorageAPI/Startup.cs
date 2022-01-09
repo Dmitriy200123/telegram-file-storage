@@ -106,6 +106,7 @@ namespace FileStorageAPI
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
             });
+            ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;//Там че-то сложно с сертами на localhost пришел тыкнуть это
         }
 
         private DataBaseConfig CreateDataBaseConfig()
@@ -193,6 +194,8 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
+            services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
+            services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
