@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -231,11 +230,8 @@ namespace FileStorageAPI.Services
             var filteredFiles = filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this link");
-            var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
-            var requestToS3 = WebRequest.Create(fileLink);
-
-            using var response = await requestToS3.GetResponseAsync();
-            var streamReader = new StreamReader(response.GetResponseStream());
+            using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
         }
@@ -254,11 +250,8 @@ namespace FileStorageAPI.Services
             var filteredFiles = filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this message");
-            var fileLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
-            var requestToS3 = WebRequest.Create(fileLink);
-
-            using var response = await requestToS3.GetResponseAsync();
-            var streamReader = new StreamReader(response.GetResponseStream());
+            using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
         }
