@@ -10,17 +10,22 @@ import {Rights} from "../../models/File";
 
 
 export const Navbar: FC<{ className?: string }> = memo(({className}) => {
-    const rights = useAppSelector((state) => state.profile.rights);
+    const {rights, hasTelegram} = useAppSelector((state) => state.profile);
     return (<div className={(`${className} ` ?? "") + "navbar"}>
             <div className={"navbar__logo"}>
                 <Logo/>
             </div>
             <div className={"navbar__links"}>
-                <Link to={"/files"} className={"navbar__link"}><Search/>Поиск файлов</Link>
-                {rights?.includes(Rights["Загружать файлы"]) &&
-                <Link to={"/load/"} className={"navbar__link"}><Download/><span>Загрузка файлов</span></Link>}
-                {rights?.includes(Rights["Редактировать права пользователей"]) &&
-                <Link to={"/admin"} className={"navbar__link"}><Settings/><span>Предоставление доступа</span></Link>}
+                <Link to={"/profile"} className={"navbar__link"}><Settings/><span>Профиль</span></Link>
+                {hasTelegram && <>
+                    <Link to={"/files"} className={"navbar__link"}><Search/>Поиск файлов</Link>
+                    {rights?.includes(Rights["Загружать файлы"]) &&
+                    <Link to={"/load/"} className={"navbar__link"}><Download/><span>Загрузка файлов</span></Link>}
+                    {rights?.includes(Rights["Редактировать права пользователей"]) &&
+                    <Link to={"/admin"}
+                          className={"navbar__link"}><Settings/><span>Предоставление доступа</span></Link>}
+                </>
+                }
             </div>
         </div>
     );
