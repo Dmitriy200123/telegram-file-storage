@@ -1,0 +1,34 @@
+@import "src/Variables";
+
+.load{
+
+  &__drop-area{
+    border: 2px dashed #CED4DA;
+    height: 100%;
+    display: grid;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    &:hover{
+      border: 2px dashed black;
+    }
+  }
+  &__btn-load{
+    justify-self: center;
+  }
+  &__input-file{
+    position: relative;
+    color: $menu-color;
+    &:hover{
+      cursor: pointer;
+      color: $menu-color-hover;
+    }
+    & input{
+      opacity: 0;
+      left: 0;
+      visibility: hidden;
+      position: absolute;
+    }
+  }
+}

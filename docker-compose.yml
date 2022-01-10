@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+
+  dotnet_backend:
+    container_name: dotnet_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+      - ASPNETCORE_ENVIRONMENT=Release
+    ports:
+      - '5001:5001'
+
+  front:
+    container_name: front
+    build:
+      context: file-storage-front/
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+
+  telegram_auth:
+    container_name: telegram_auth
+    build:
+      context: FileStorageApp/
+      dockerfile: TelegramAuth/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Release
+
+
+  telegram_loader:
+    container_name: telegram_loader
+    build:
+      context: telegram_file_loader/
+      dockerfile: Dockerfile
+    environment:
+      - Test="true"
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=FileStorageApp
+      - DB_USER=FileStorageApp
+      - DB_PASS=change
+      - S3_URL=http://s3:4566
+      - BUCKET_NAME=test
+    ports:
+      - '8080:8080'
+    depends_on:
+      - front
+      - dotnet_backend

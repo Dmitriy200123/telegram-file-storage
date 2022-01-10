@@ -1,0 +1,125 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace TextAnalysis
+{
+    static class FrequencyAnalysisTask
+    {
+        public static Dictionary<string, string> GetMostFrequentNextWords(List<List<string>> text)
+        {
+            text = ParseText(text);
+            var result = new Dictionary<string, string>();
+            var mainDictionary = new Dictionary<string, Dictionary<string, int>>();
+            var minLengthSentence = int.MaxValue;
+            foreach (var sentence in text)
+            {
+                if (sentence.Count == 0) continue;
+                if (minLengthSentence > sentence.Count) minLengthSentence = sentence.Count;
+            }
+
+            if (minLengthSentence == 2)
+                result = GetBigram(mainDictionary, text);
+            if (minLengthSentence > 2)
+            {
+                result = GetBigram(mainDictionary, text);
+                mainDictionary = new Dictionary<string, Dictionary<string, int>>();
+                var tempResult = GetTrigram(mainDictionary, text);
+                foreach (var results in tempResult)
+                    result.Add(results.Key, results.Value);
+            }
+            return result;
+        }
+
+        public static Dictionary<string, string> GetTrigram(Dictionary<string, Dictionary<string, int>> mainDict, List<List<string>> text)
+        {
+            for (int i = 0; i < text.Count; i++)
+            {
+                for (int j = 0; j < text[i].Count; j++)
+                {
+                    if (j == text[i].Count - 2)
+                        break;
+                    if (!mainDict.ContainsKey(text[i][j] + " " + text[i][j + 1]))
+                        mainDict[text[i][j] + " " + text[i][j + 1]] = new Dictionary<string, int>();
+                    if (!mainDict[text[i][j] + " " + text[i][j + 1]].ContainsKey(text[i][j + 2]))
+                        mainDict[text[i][j] + " " + text[i][j + 1]][text[i][j + 2]] = 1;
+                    else
+                        mainDict[text[i][j] + " " + text[i][j + 1]][text[i][j + 2]]++;
+                }
+            }
+            var result = GetMostFrequency(mainDict);
+            return result;
+        }
+
+        public static Dictionary<string, string> GetBigram(Dictionary<string, Dictionary<string, int>> mainDict, List<List<string>> text)
+        {
+            for (int i = 0; i < text.Count; i++)
+            {
+                for (int j = 0; j < text[i].Count; j++)
+                {
+                    if (j == text[i].Count - 1)
+                        break;
+                    if (!mainDict.ContainsKey(text[i][j]))
+                        mainDict[text[i][j]] = new Dictionary<string, int>();
+                    if (!mainDict[text[i][j]].ContainsKey(text[i][j + 1]))
+                        mainDict[text[i][j]][text[i][j + 1]] = 1;
+                    else
+                        mainDict[text[i][j]][text[i][j + 1]]++;
+                }
+            }
+            var result = GetMostFrequency(mainDict);
+            return result;
+        }
+
+        public static Dictionary<string, string> GetMostFrequency(Dictionary<string, Dictionary<string, int>> mainDict)
+        {
+            var counter = 0;
+            var result = new Dictionary<string, string>();
+            foreach (var item in mainDict)
+            {
+                counter = 0;
+                foreach (var el in item.Value)
+                {
+                    if (counter == el.Value)
+                    {
+                        var X = string.Compare(el.Key, result[item.Key], StringComparison.InvariantCultureIgnoreCase);
+                        if (X == -1)
+                            result[item.Key] = el.Key;
+                    }
+                    if (counter < el.Value)
+                    {
+                        counter = el.Value;
+                        result[item.Key] = el.Key;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static List<List<string>> ParseText(List<List<string>> text)
+        {
+            for (int i = 0; i < text.Count; i++)
+            {
+                if (!IsHaveLetter(string.Join(" ", text[i])))
+                {
+                    text.RemoveAt(i);
+                    break;
+                }
+                for (int j = 0; j < text[i].Count; j++)
+                    text[i][j] = text[i][j].ToLower();
+            }
+            return text;
+        }
+
+        public static bool IsHaveLetter(string sentence)
+        {
+            bool haveLetter = false;
+            foreach (var symbol in sentence)
+            {
+                haveLetter = char.IsLetter(symbol);
+                if (haveLetter) break;
+            }
+            return haveLetter;
+        }
+    }
+}

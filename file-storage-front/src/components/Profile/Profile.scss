@@ -1,0 +1,67 @@
+@import "src/Variables";
+
+.profile {
+  display: flex;
+  padding: 28px 70px;
+  gap: 100px;
+  &__block-img{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__img{
+    width: 150px;
+    height: 150px;
+    background: #c4c4c4;
+    border-radius: 50%;
+    overflow: hidden;
+    & img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__telegram{
+    color: $menu-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    &:hover{
+      color: $menu-color-hover;
+      cursor: pointer;
+      & path{
+        fill: $menu-color-hover;
+      }
+    }
+  }
+
+  &__h2,&__h3,&__p{
+    font-size: 14rem / $font-size;
+  }
+
+  &__info{
+    flex: 1 1 auto;
+    text-align: left;
+  }
+
+  &__h2{
+    padding: 18px 16px;
+    border-bottom: 1px solid #CED4DA;
+    margin-bottom: 20px;
+  }
+
+  &__h3{
+    margin-bottom: 5px;
+    margin-left: 20px;
+  }
+
+  &__p{
+    padding-bottom: 7px;
+    margin: 0 20px;
+    border-bottom: 1px solid #CED4DA;
+
+  }
+}

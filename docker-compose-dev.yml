@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  s3:
+    image: localstack/localstack
+    container_name: s3
+    ports:
+      - 4566:4566
+      - 9090:8080
+    environment:
+      - SERVICES=s3,sns,sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=eu-west-2
+      - PORT_WEB_UI=8080
+    volumes:
+      - "localstack-vol:/tmp/localstack"
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=FileStorageApp
+      - POSTGRES_PASSWORD=change
+      - POSTGRES_DB=FileStorageApp
+    ports:
+      - "5432:5432"
+
+  dotnet_backend:
+    container_name: dotnet_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - '5001:5001'
+
+  front:
+    container_name: front
+    build:
+      context: file-storage-front/
+      dockerfile: Dockerfile_develop
+    ports:
+      - '3000:3000'
+
+  telegram_auth:
+    container_name: telegram_auth
+    build:
+      context: FileStorageApp/
+      dockerfile: TelegramAuth/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+
+
+  telegram_loader:
+    container_name: telegram_loader
+    build:
+      context: telegram_file_loader/
+      dockerfile: Dockerfile
+    tty: true
+    stdin_open: true
+    environment:
+      - Test="true"
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=FileStorageApp
+      - DB_USER=FileStorageApp
+      - DB_PASS=change
+      - S3_URL=http://s3:4566
+      - AWS_ACCESS_KEY_ID="123"
+      - AWS_SECRET_ACCESS_KEY="123"
+    ports:
+      - '8080:8080'
+
+volumes:
+  localstack-vol:
