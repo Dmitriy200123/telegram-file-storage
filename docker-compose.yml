@@ -36,14 +36,14 @@ services:
       context: telegram_file_loader/
       dockerfile: Dockerfile
     environment:
-      - Test="true"
-      - DB_HOST=postgres
+      - Test="false"
+      - DB_HOST=31.184.208.123
       - DB_PORT=5432
-      - DB_NAME=FileStorageApp
-      - DB_USER=FileStorageApp
-      - DB_PASS=change
-      - S3_URL=http://s3:4566
-      - BUCKET_NAME=test
+      - DB_NAME=filestore
+      - DB_USER=filestore
+      - DB_PASS=mlonDNBDFPqC
+      - S3_URL=http://students.66bit.ru:19000
+      - BUCKET_NAME=filestore
     ports:
       - '8080:8080'
     depends_on:
