@@ -1,12 +1,10 @@
 import asyncio
 import sys
 
-import postgres
 import telegram_client_loader
 
 
 async def init():
-    postgres.start()
     await telegram_client_loader.start()
 
 
