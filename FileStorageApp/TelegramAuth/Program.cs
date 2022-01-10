@@ -7,9 +7,7 @@ namespace TelegramAuth
     public class Program
     {
         private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-            .AddJsonFile($"appsettings.json", true, true)
-            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
-                true, true)
+            .AddJsonFile($"appsettings.json")
             .Build();
 
         static ManualResetEvent _quitEvent = new ManualResetEvent(false);
