@@ -6,8 +6,8 @@
 Запуск конейнеров aws s3 и PostgreSQL:` docker-compose -f docker-compose-dev.yml up --build --force-recreate postgres s3`
 
 ## Боевой запуск
-`docker-compose up -d && docker attach telegram_loader`
-и после этого ввести кодик из телеги
+`docker-compose up`
+и после этого ввести кодик из телеги в табличку в базе
 
 ###Данные для подключения локально:
 
