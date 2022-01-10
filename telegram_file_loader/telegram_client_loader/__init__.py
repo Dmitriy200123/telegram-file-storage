@@ -18,17 +18,17 @@ from urlextract import URLExtract
 
 
 async def start():
+    db_manager = postgres.start(max_connections=config.MAX_DB_CONNECTION)
+    adapter = Adapter(db_manager)
+    s3_client = S3Client(bucket_name=config.BUCKET_NAME)
+    url_extractor = URLExtract()
+
     telegram_client = TelegramClient(
         'telegram_client_loader',
         config.API_ID,
         config.API_HASH
     )
     await TelegramSetting.configure_telegram_client(telegram_client, config.NUMBER)
-
-    db_manager = postgres.start(max_connections=config.MAX_DB_CONNECTION)
-    adapter = Adapter(db_manager)
-    s3_client = S3Client(bucket_name=config.BUCKET_NAME)
-    url_extractor = URLExtract()
 
     chat_repository = ChatRepository(adapter)
     file_sender_repository = FileSenderRepository(adapter)
