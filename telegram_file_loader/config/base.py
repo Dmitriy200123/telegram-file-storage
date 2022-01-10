@@ -1,11 +1,5 @@
-import os
-
-# Настройки окружения
-ENV = os.getenv('ENVIRONMENT', 'not_set')
-VERSION = os.getenv('TAG', 'not_set')
-
 # Настройки базы
-DB_HOST = 'pg-prod-url'
+DB_HOST = 'localhost'
 DB_PORT = 5432
 DB_NAME = 'FileStorageApp'
 DB_USER = 'FileStorageApp'
