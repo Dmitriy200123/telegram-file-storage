@@ -16,9 +16,10 @@ import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
 import {ReactComponent as Logout} from "./assets/logout.svg";
 import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerPanel";
-import {fetchRightsCurrentUser, fetchUserCurrent} from "./redux/thunks/rightsThunks";
+import {fetchRightsCurrentUser, fetchRightsDescription, fetchUserCurrent} from "./redux/thunks/rightsThunks";
 import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
+import {fetchFilesTypes} from "./redux/thunks/mainThunks";
 
 const App: FC = () => {
     const dispatch = useDispatch();
@@ -30,7 +31,6 @@ const App: FC = () => {
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
         {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
-        {/*<Main/>*/}
     </div>)
 }
 
@@ -38,6 +38,8 @@ const Main: FC = () => {
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(fetchUserCurrent());
+        dispatch(fetchFilesTypes());
+        dispatch(fetchRightsDescription);
         dispatch(fetchRightsCurrentUser());
     }, [])
     localStorage.setItem("flag", "false");
@@ -60,14 +62,14 @@ const Main: FC = () => {
                     <Route path={"/Profile"} component={Profile}/>
                     {/*<Route path={"/login"} component={StartPage}/>*/}
                     {hasTelegram && <>
-                        <Route path={"/files"} exact component={FilesMain}/>
+                        <Route exact path={"/files"} component={FilesMain}/>
                         <Route path={"/file/:id"} component={OpenedFile}/>
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}
                         {rights?.includes(Rights["Загружать файлы"]) &&
                         <Route exact={true} path={"/load/"} component={LoadFileMain}/>}
 
-                        <Redirect to={"/files"}/>
+                        {/*<Redirect to={"/files"}/>*/}
                     </>}
                 </Switch>
             </div>
