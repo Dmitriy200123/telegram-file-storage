@@ -22,7 +22,7 @@ export const fetchData = async (url: string) => {
 };
 
 export const fetchConfig = async (url: string, config?: any) => {
-    const params = queryParams(config.params);
+    const params = queryParams(config?.params);
     const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
         method: config.method ?? "GET",

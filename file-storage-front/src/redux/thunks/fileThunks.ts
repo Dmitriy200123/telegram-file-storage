@@ -9,6 +9,26 @@ export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAP
     }
 });
 
+export const postFile = createAsyncThunk("file/post", async (file:File, thunkAPI) => {
+    try {
+        const formData = new FormData();
+        formData.append("file",file);
+        return await fetchConfig("/api/files", {method: "POST", body: formData});
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить файл");
+    }
+});
+
+export const postCustomFile = createAsyncThunk("file/custom/post", async (file:any, thunkAPI) => {
+    try {
+        const formData = new FormData();
+        formData.append("file",file);
+        return await fetchConfig("/api/files", {method: "POST", body: formData});
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить файл");
+    }
+});
+
 export const fetchEditFileName = createAsyncThunk("file/edit", async (args: { id: string, fileName: string }, thunkAPI) => {
     const {id, fileName} = args;
     try {
