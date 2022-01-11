@@ -15,7 +15,7 @@ export const LoadFileMain: React.FC<any> = memo(({match}) => {
         <div className={"load-file"}>
             <h2 className={"load-file__h2"}>Загрузка файлов</h2>
             <Switch>
-                <Route path={`${match.path}ВСТАВЬ-СЮДА-УРЛ`} component={LoadText}/>
+                <Route  component={LoadText} />
                 <Route path={`*`}>
                     <div className={"load-file__content"}>
                         {file

@@ -6,9 +6,13 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Button} from "../../utils/Button/Button";
 import {Link} from "react-router-dom";
 import {InputText} from "../../utils/Inputs/Text/InputText";
+import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 
 export const LoadText: React.FC<{ dispatch: Dispatch, className?: string }> = memo(({dispatch, className}) => {
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
+
+    const {filesTypes} = useAppSelector(state => state.filesReducer);
+    const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
 
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         console.log(formData);
@@ -24,7 +28,6 @@ export const LoadText: React.FC<{ dispatch: Dispatch, className?: string }> = me
     }
 
 
-    //TODO: OPTIONS ПОПРАВЬ
     return (
         <div className={className + "  load-text"}>
             <form onSubmit={onChangeForm} className={"load-text__form"}>
@@ -33,7 +36,7 @@ export const LoadText: React.FC<{ dispatch: Dispatch, className?: string }> = me
                         <p>Тип Файла</p>
                         <Select name={"categories"} register={register}
                                 onChangeForm={onChangeForm} setValue={setValueForm}
-                                values={getValues("categories")} options={[]} isMulti={false}
+                                values={getValues("categories")} options={optionsCategory} isMulti={false}
                                 placeholder={""}/>
                     </div>
                     <label>

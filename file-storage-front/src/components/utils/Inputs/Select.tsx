@@ -76,6 +76,6 @@ const calcPlaceholder = (values: Array<string | number> | string, options:Array<
             :values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
     }
     else {
-        return values?.length === 0  ? null : values;
+        return options?.find(e => e.value === values)?.label;
     }
 }
