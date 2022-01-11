@@ -1,6 +1,6 @@
 import React, {memo, useState} from 'react';
 import "./FilesMain.scss"
-import {Category, ModalContent, Rights, TypeFile} from "../../models/File";
+import {ExpandingObject, ModalContent, Rights, TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
 import {ReactComponent as Edit} from "./../../assets/edit.svg";
@@ -13,7 +13,7 @@ import {fetchDownloadLink} from "../../redux/thunks/fileThunks";
 
 const {openModal, setOpenFile} = filesSlice.actions
 
-const FragmentFile: React.FC<PropsType> = ({file, rights}) => {
+const FragmentFile: React.FC<PropsType> = ({file, rights, types}) => {
     const {fileId, fileName, uploadDate, fileType, sender, chat} = file;
     const dispatch = useDispatch();
     return <React.Fragment key={fileId}>
@@ -21,7 +21,7 @@ const FragmentFile: React.FC<PropsType> = ({file, rights}) => {
             dispatch(setOpenFile(file));
         }}>{fileName}</Link>
         <div className={"files__item"}>{uploadDate}</div>
-        <div className={"files__item"}>{Category[fileType]}</div>
+        <div className={"files__item"}>{types && types[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
         <div className={"files__item files__item_relative"}>{chat.name} <Controls rights={rights} id={fileId}
                                                                                   dispatch={dispatch}/></div>
@@ -57,7 +57,7 @@ const Controls = memo(({id, dispatch, rights}: { id: string, dispatch: Dispatch<
     </OutsideAlerter>
 });
 
-type PropsType = { file: TypeFile, rights: Rights[] };
+type PropsType = { file: TypeFile, rights: Rights[], types: undefined | ExpandingObject<string> };
 
 export default FragmentFile;
 

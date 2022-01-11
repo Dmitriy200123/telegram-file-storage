@@ -1,5 +1,4 @@
 import React, {memo, useState} from 'react';
-import {Category} from "../../../models/File";
 import "./Select.scss";
 import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 
@@ -31,7 +30,7 @@ export const Select: React.FC<Props> = memo(({
             const onChange = () => {
                 if (isMulti) {
                     if (values?.includes(elem.value)) {
-                        setValue(name, values.filter((v: Category) => v !== elem.value));
+                        setValue(name, values.filter((v: string) => v !== elem.value));
                     } else if (values) {
                         setValue(name, [...values, elem.value])
                     } else {

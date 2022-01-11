@@ -1,5 +1,5 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {Category, Chat} from "../../models/File";
+import {Chat} from "../../models/File";
 import {fetchData, fetchConfig, fetchConfigText} from "../api/api";
 
 export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) => {
@@ -26,7 +26,7 @@ export const fetchFilters = createAsyncThunk("files/filters", async (_, thunkAPI
 type TypeFilesFetchFilters = {
     skip: number,
     take: number,
-    categories?: Category
+    categories?: string
 }
 
 export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFilesFetchFilters, thunkAPI) => {
@@ -34,6 +34,15 @@ export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFiles
         return await fetchConfig(`/api/files`, {params: args});
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить файлы");
+    }
+})
+
+
+export const fetchFilesTypes = createAsyncThunk("files/filesTypes", async (_, thunkAPI) => {
+    try {
+        return await fetchData(`/api/files/types`);
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить типы файлов");
     }
 })
 

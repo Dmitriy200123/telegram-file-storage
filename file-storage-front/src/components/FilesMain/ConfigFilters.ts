@@ -1,12 +1,5 @@
-import {Category, Chat, Sender, TypeFile} from "../../models/File";
+import { Chat, Sender, TypeFile} from "../../models/File";
 
-export const optionsCategory: Array<{ value: any, label: string }> = [
-    {value: Category.документы, label: 'Документы'},
-    {value: Category.аудио, label: 'Аудио'},
-    {value: Category.видео, label: 'Видео'},
-    {value: Category.картинки, label: 'Картинки'},
-
-];
 
 const optionsDate = [
     {value: 'За все время', label: 'За все время'},
@@ -21,6 +14,6 @@ export const configFilters = (filesNames: string[] | null, chats:Chat[] | null, 
     const optionsName = filesNames?.map((f) => ({label: f, value: f}));
     const optionsSender = senders?.map((f) => ({label: f.fullName, value: f.id}));
     const optionsChat = chats ? chats.map((f) => ({label: f.name, value: f.id})) : [];
-    return {optionsName, optionsSender, optionsDate, optionsCategory, optionsChat};
+    return {optionsName, optionsSender, optionsDate, optionsChat};
 }
 

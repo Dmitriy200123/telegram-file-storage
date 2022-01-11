@@ -2,7 +2,7 @@ import React, {memo, useEffect} from 'react';
 import "./File.scss"
 import {ReactComponent as Svg} from "../../../assets/download.svg";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
-import {Category, ModalContent, Rights} from "../../../models/File";
+import {ModalContent, Rights} from "../../../models/File";
 import {Link} from 'react-router-dom';
 import {useDispatch} from "react-redux";
 import {fetchDownloadLink, fetchFile} from "../../../redux/thunks/fileThunks";
@@ -15,7 +15,7 @@ const {openModal} = filesSlice.actions;
 export const OpenedFile: React.FC<any> = memo(({match}) => {
     const id = match.params["id"];
     const state = useAppSelector((state) => state);
-    const {profile: {rights}, filesReducer: {openFile: file}} = state;
+    const {profile: {rights}, filesReducer: {openFile: file, filesTypes}} = state;
     const dispatch = useDispatch();
     useEffect(() => {
         if (file && id === fileId)
@@ -37,7 +37,7 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
             <div className="file__content">
                 <h3 className="file__content-title"
                     onClick={canRename ? openRename : undefined}>{fileName} {canRename && <Edit/>}</h3>
-                <div className="file__item"><span>Формат: </span>{Category[fileType]}</div>
+                <div className="file__item"><span>Формат: </span>{filesTypes && filesTypes[fileType]}</div>
                 <div className="file__item"><span>Отправитель: </span><a>{sender.fullName}</a></div>
                 <div className="file__item"><span>Чат: </span><a>{chat.name}</a></div>
                 <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>

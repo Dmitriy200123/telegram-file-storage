@@ -8,7 +8,7 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
+import {fetchFiles, fetchFilesTypes, fetchFilters} from "../../redux/thunks/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 
@@ -16,7 +16,7 @@ const FilesMain = () => {
     const state = useAppSelector((state) => state);
     const {filesReducer, profile} = state;
     const {rights} = profile;
-    const {files:filesData,filesNames, chats, senders, filesCount, paginator} = filesReducer;
+    const {files:filesData,filesNames, chats, senders, paginator, filesTypes} = filesReducer;
     const {currentPage, filesInPage} = paginator;
     const dispatch = useAppDispatch();
     const history = useHistory();
@@ -24,6 +24,7 @@ const FilesMain = () => {
     useEffect(() => {
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         dispatch(fetchFilters());
+        dispatch(fetchFilesTypes());
         setValue("fileName", fileName);
         setValue("senderIds", senderId);
         setValue("categories", categories);
@@ -36,8 +37,8 @@ const FilesMain = () => {
     },[currentPage])
 
 
-    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
-
+    const {optionsName, optionsSender, optionsChat} = configFilters(filesNames, chats, senders);
+    const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
@@ -45,7 +46,7 @@ const FilesMain = () => {
     };
 
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []} types={filesTypes}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     const setValueForm = (name: any, value: any) => {

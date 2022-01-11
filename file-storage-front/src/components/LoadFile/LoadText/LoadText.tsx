@@ -4,7 +4,6 @@ import "./LoadText.scss"
 import {Select} from "../../utils/Inputs/Select";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Button} from "../../utils/Button/Button";
-import {optionsCategory} from "../../FilesMain/ConfigFilters";
 import {Link} from "react-router-dom";
 import {InputText} from "../../utils/Inputs/Text/InputText";
 
@@ -24,6 +23,8 @@ export const LoadText: React.FC<{ dispatch: Dispatch, className?: string }> = me
         });
     }
 
+
+    //TODO: OPTIONS ПОПРАВЬ
     return (
         <div className={className + "  load-text"}>
             <form onSubmit={onChangeForm} className={"load-text__form"}>
@@ -32,7 +33,7 @@ export const LoadText: React.FC<{ dispatch: Dispatch, className?: string }> = me
                         <p>Тип Файла</p>
                         <Select name={"categories"} register={register}
                                 onChangeForm={onChangeForm} setValue={setValueForm}
-                                values={getValues("categories")} options={optionsCategory} isMulti={false}
+                                values={getValues("categories")} options={[]} isMulti={false}
                                 placeholder={""}/>
                     </div>
                     <label>
