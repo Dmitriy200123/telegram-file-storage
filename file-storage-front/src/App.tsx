@@ -67,9 +67,7 @@ const Main: FC = () => {
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}
                         {rights?.includes(Rights["Загружать файлы"]) &&
-                        <Route exact={true} path={"/load/"} component={LoadFileMain}/>}
-
-                        {/*<Redirect to={"/files"}/>*/}
+                        <Route path={"/load/"} component={LoadFileMain}/>}
                     </>}
                 </Switch>
             </div>
