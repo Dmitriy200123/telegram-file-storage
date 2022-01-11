@@ -21,9 +21,7 @@ export const postFile = createAsyncThunk("file/post", async (file:File, thunkAPI
 
 export const postCustomFile = createAsyncThunk("file/custom/post", async (file:any, thunkAPI) => {
     try {
-        const formData = new FormData();
-        formData.append("file",file);
-        return await fetchConfig("/api/files", {method: "POST", body: formData});
+        return await fetchConfig("/api/files", {method: "POST", body: file});
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить файл");
     }
