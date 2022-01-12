@@ -239,7 +239,7 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <param name="id">Идентификатор сообщения</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpGet("{id:guid}/message")]
+        [HttpGet("{id:guid}/text")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
             typeof(string))]
@@ -262,11 +262,11 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <param name="textData">Данные для загрузки (сообщение)</param>
         /// <returns></returns>
-        [HttpPost("message")]
+        [HttpPost("upload/text")]
         [RightsFilter(Accesses.Upload, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданного сообщении", typeof(Guid))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
-        public async Task<IActionResult> PostMessage([FromForm] UploadTextData textData)
+        public async Task<IActionResult> PostMessage([FromBody] UploadTextData textData)
         {
             var id = await _fileService.PostMessage(textData, Request);
             
@@ -285,11 +285,11 @@ namespace FileStorageAPI.Controllers
         /// <param name="textData">Данные для загрузки (ссылка)</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        [HttpPost("link")]
+        [HttpPost("upload/link")]
         [RightsFilter(Accesses.Upload, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданной ссылке", typeof(Guid))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
-        public async Task<IActionResult> PostLink([FromForm] UploadTextData textData)
+        public async Task<IActionResult> PostLink([FromBody] UploadTextData textData)
         {
             var id = await _fileService.PostLink(textData, Request);
             

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -126,7 +127,7 @@ namespace FileStorageAPI.Services
                 UploadDate = DateTime.Now,
                 FileSenderId = fileSender.Id
             };
-
+            
             await using var memoryStream = new MemoryStream();
             await uploadFile.CopyToAsync(memoryStream);
 
@@ -264,10 +265,9 @@ namespace FileStorageAPI.Services
             if (fileSender is null)
                 return RequestResult.BadRequest<(string Uri, Guid Guid)>("Does not have this sender in database");
             var file = CreateFile(FileType.Text, fileSender.Id, uploadTextData.Name);
-            var stream = await CreateStream(uploadTextData.Value);
+            await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(uploadTextData.Value));
             if (!await UploadFile(file, stream))
                 return RequestResult.InternalServerError<(string uri, Guid Guid)>("Can't add to database");
-            await stream.DisposeAsync();
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
             return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
         }
@@ -282,10 +282,9 @@ namespace FileStorageAPI.Services
             if (fileSender is null)
                 return RequestResult.BadRequest<(string Uri, Guid Guid)>("Does not have this sender in database");
             var file = CreateFile(FileType.Link, fileSender.Id, uploadTextData.Name);
-            var stream = await CreateStream(uploadTextData.Value);
+            await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(uploadTextData.Value));
             if (!await UploadFile(file, stream))
                 return RequestResult.InternalServerError<(string uri, Guid Guid)>("Can't add to database");
-            await stream.DisposeAsync();
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
             return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
         }
@@ -296,16 +295,6 @@ namespace FileStorageAPI.Services
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), stream);
             return await filesStorage.AddAsync(file);
-        }
-
-        private static async Task<Stream> CreateStream(string value)
-        {
-            var memoryStream = new MemoryStream();
-            var streamWriter = new StreamWriter(memoryStream);
-            await streamWriter.WriteAsync(value);
-            await streamWriter.FlushAsync();
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            return memoryStream;
         }
 
         private static DataBaseFile CreateFile(FileType fileType, Guid senderId, string name)
