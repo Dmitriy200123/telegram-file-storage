@@ -81,5 +81,21 @@ namespace FileStorageAPI.Services
         /// <param name="request"></param>
         /// <returns></returns>
         Task<RequestResult<string>> GetMessage(Guid id, HttpRequest request);
+
+        /// <summary>
+        /// Создает новое сообщение и возвращает ссылку на него и id
+        /// </summary>
+        /// <param name="uploadTextData">Название сообщения и его текст</param>
+        /// <param name="request">Пришедший запрос</param>
+        /// <returns></returns>
+        Task<RequestResult<(string Uri, Guid Guid)>> PostMessage(UploadTextData uploadTextData, HttpRequest request);
+        
+        /// <summary>
+        /// Создает новую ссылку и возвращает ссылку на нее и id
+        /// </summary>
+        /// <param name="uploadTextData">Название ссылки и ее текст</param>
+        /// <param name="request">Пришедший запрос</param>
+        /// <returns></returns>
+        Task<RequestResult<(string Uri, Guid Guid)>> PostLink(UploadTextData uploadTextData, HttpRequest request);
     }
 }
