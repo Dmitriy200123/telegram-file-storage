@@ -276,6 +276,8 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<(string Uri, Guid Guid)>> PostLink(UploadTextData uploadTextData,
             HttpRequest request)
         {
+            if(!Uri.IsWellFormedUriString(uploadTextData.Value, UriKind.Absolute))
+                return RequestResult.BadRequest<(string Uri, Guid Guid)>("This is not url");
             var fileSender = await _senderFormTokenProvider.GetSenderFromToken(request);
             if (fileSender is null)
                 return RequestResult.BadRequest<(string Uri, Guid Guid)>("Does not have this sender in database");
