@@ -47,7 +47,9 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
                 <div className="file__item"><span>Отправитель: </span><a>{sender?.fullName}</a></div>
                 <div className="file__item"><span>Чат: </span><a>{chat?.name}</a></div>
                 <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>
-                {message && <div className="file__item"><span>Сообщение: </span>{message}</div>}
+                {message && <div className="file__item">
+                    <span>Сообщение: </span>{+fileType === 4 ?<a href={message}>{message} </a> : message}
+                </div>}
                 <div className={"file__btns"}>
                     {+fileType !== 5 && +fileType !== 4  && <button className="file__btn" onClick={() => {
                         dispatch(fetchDownloadLink(id))
