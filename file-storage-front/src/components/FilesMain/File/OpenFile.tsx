@@ -38,16 +38,16 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
                 <h3 className="file__content-title"
                     onClick={canRename ? openRename : undefined}>{fileName} {canRename && <Edit/>}</h3>
                 <div className="file__item"><span>Формат: </span>{filesTypes && filesTypes[fileType]}</div>
-                <div className="file__item"><span>Отправитель: </span><a>{sender.fullName}</a></div>
-                <div className="file__item"><span>Чат: </span><a>{chat.name}</a></div>
+                <div className="file__item"><span>Отправитель: </span><a>{sender?.fullName}</a></div>
+                <div className="file__item"><span>Чат: </span><a>{chat?.name}</a></div>
                 <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>
                 <div className={"file__btns"}>
-                    <button className="file__btn" onClick={() => {
+                    {+fileType !== 4 && +fileType !== 5 && <button className="file__btn" onClick={() => {
                         dispatch(fetchDownloadLink(id))
                     }}>
                         <div>Скачать</div>
                         <Svg/>
-                    </button>
+                    </button>}
                     {rights?.includes(Rights["Удалять файлы"]) &&
                     <Button onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
                             type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
