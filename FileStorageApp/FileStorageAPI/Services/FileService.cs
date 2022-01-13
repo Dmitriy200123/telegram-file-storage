@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -50,9 +51,12 @@ namespace FileStorageAPI.Services
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
             _filesStorageFactory = filesStorageFactory ?? throw new ArgumentNullException(nameof(filesStorageFactory));
             _fileTypeProvider = fileTypeProvider ?? throw new ArgumentNullException(nameof(fileTypeProvider));
-            _expressionFileFilterProvider = expressionFileFilterProvider ?? throw new ArgumentNullException(nameof(expressionFileFilterProvider));
-            _downloadLinkProvider = downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
-            _senderFormTokenProvider = senderFormTokenProvider ?? throw new ArgumentNullException(nameof(senderFormTokenProvider));
+            _expressionFileFilterProvider = expressionFileFilterProvider ??
+                                            throw new ArgumentNullException(nameof(expressionFileFilterProvider));
+            _downloadLinkProvider =
+                downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
+            _senderFormTokenProvider = senderFormTokenProvider ??
+                                       throw new ArgumentNullException(nameof(senderFormTokenProvider));
         }
 
         /// <inheritdoc />
@@ -123,14 +127,11 @@ namespace FileStorageAPI.Services
                 UploadDate = DateTime.Now,
                 FileSenderId = fileSender.Id
             };
-
+            
             await using var memoryStream = new MemoryStream();
             await uploadFile.CopyToAsync(memoryStream);
 
-            using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
-            using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), memoryStream);
-            if (!await filesStorage.AddAsync(file))
+            if (!await UploadFile(file, memoryStream))
                 return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to database");
 
             var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
@@ -254,6 +255,58 @@ namespace FileStorageAPI.Services
             using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<(string Uri, Guid Guid)>> PostMessage(UploadTextData uploadTextData,
+            HttpRequest request)
+        {
+            var fileSender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            if (fileSender is null)
+                return RequestResult.BadRequest<(string Uri, Guid Guid)>("Does not have this sender in database");
+            var file = CreateFile(FileType.Text, fileSender.Id, uploadTextData.Name);
+            await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(uploadTextData.Value));
+            if (!await UploadFile(file, stream))
+                return RequestResult.InternalServerError<(string uri, Guid Guid)>("Can't add to database");
+            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
+            return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<(string Uri, Guid Guid)>> PostLink(UploadTextData uploadTextData,
+            HttpRequest request)
+        {
+            if(!Uri.IsWellFormedUriString(uploadTextData.Value, UriKind.Absolute))
+                return RequestResult.BadRequest<(string Uri, Guid Guid)>("This is not url");
+            var fileSender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            if (fileSender is null)
+                return RequestResult.BadRequest<(string Uri, Guid Guid)>("Does not have this sender in database");
+            var file = CreateFile(FileType.Link, fileSender.Id, uploadTextData.Name);
+            await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(uploadTextData.Value));
+            if (!await UploadFile(file, stream))
+                return RequestResult.InternalServerError<(string uri, Guid Guid)>("Can't add to database");
+            var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
+            return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
+        }
+
+        private async Task<bool> UploadFile(DataBaseFile file, Stream stream)
+        {
+            using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), stream);
+            return await filesStorage.AddAsync(file);
+        }
+
+        private static DataBaseFile CreateFile(FileType fileType, Guid senderId, string name)
+        {
+            return new DataBaseFile
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Type = fileType,
+                UploadDate = DateTime.Now,
+                FileSenderId = senderId
+            };
         }
     }
 }
