@@ -24,12 +24,6 @@ export const LoadFileMain: React.FC<any> = memo(({match}) => {
                         }
                     </div>
                 </Route>
-                {/*<div className={"load-file__content"}>*/}
-                {/*    {file*/}
-                {/*        ? <PreviewFile file={file} dispatch={dispatch}/>*/}
-                {/*        : <LoadFile dispatch={dispatch} className={""}/>*/}
-                {/*    }*/}
-                {/*</div>*/}
             </Switch>
         </div>
     );

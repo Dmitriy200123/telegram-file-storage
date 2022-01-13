@@ -1,7 +1,14 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum, Rights, TokensType} from "../models/File";
 import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile, postFile} from "./thunks/fileThunks";
+import {
+    fetchDownloadLink,
+    fetchEditFileName,
+    fetchFile,
+    fetchRemoveFile,
+    postCustomFile,
+    postFile
+} from "./thunks/fileThunks";
 import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
 import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
@@ -135,6 +142,18 @@ export const profileSlice = createSlice({
             state.loading = true;
         },
         [postFile.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        },
+
+        [postCustomFile.fulfilled.type]: (state, _) => {
+            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно загружен"}];
+            state.loading = false;
+        },
+        [postCustomFile.pending.type]: (state, _) => {
+            state.loading = true;
+        },
+        [postCustomFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },

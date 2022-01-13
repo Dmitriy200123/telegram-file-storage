@@ -24,7 +24,7 @@ export const fetchConfig = async (url: string, config?: any) => {
     const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
         method: config.method ?? "GET",
-        body: JSON.stringify(config.body),
+        body: JSON.stringify(config?.body),
         headers: myHeaders,
     });
 

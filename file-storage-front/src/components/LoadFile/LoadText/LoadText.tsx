@@ -1,5 +1,4 @@
 import React, {memo} from "react";
-import {Dispatch} from "@reduxjs/toolkit";
 import "./LoadText.scss"
 import {Select} from "../../utils/Inputs/Select";
 import {SubmitHandler, useForm} from "react-hook-form";
@@ -16,11 +15,12 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
     const dispatch = useDispatch();
 
     const {filesTypes} = useAppSelector(state => state.filesReducer);
-    const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
+    const optionsCategory = filesTypes && Object.keys(filesTypes).filter(key => key === "4" || key === "5")
+        .map((key) => ({label: filesTypes[key], value: key}));
 
-    const dispatchValuesForm: SubmitHandler<{contentType: string, FileName: string}> = (formData) => {
-        console.log(formData);
-        dispatch(postCustomFile(formData));
+    const dispatchValuesForm: SubmitHandler<{ contentType: string, FileName: string, message: string }> = (formData) => {
+        if (formData.contentType)
+            dispatch(postCustomFile(formData));
     };
 
 
@@ -31,7 +31,6 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
             shouldDirty: true
         });
     }
-
 
 
     return (
@@ -47,11 +46,11 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
                     </div>
                     <label>
                         <p>Название</p>
-                        <InputText type={"text"} form={{...register("FileName")}}/>
+                        <InputText type={"text"} form={{...register("FileName",{ required: true })}}/>
                     </label>
                     <label>
                         <p>Ссылка или текст</p>
-                        <InputText type={"text"} form={{...register("text")}}/>
+                        <InputText type={"text"} form={{...register("message", { required: true })}}/>
                     </label>
                 </div>
                 <div className={"load-text__btns"}>
