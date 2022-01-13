@@ -39,7 +39,7 @@ const Main: FC = () => {
     useEffect(() => {
         dispatch(fetchUserCurrent());
         dispatch(fetchFilesTypes());
-        dispatch(fetchRightsDescription);
+        dispatch(fetchRightsDescription());
         dispatch(fetchRightsCurrentUser());
     }, [])
     localStorage.setItem("flag", "false");

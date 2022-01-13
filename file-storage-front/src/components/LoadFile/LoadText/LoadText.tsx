@@ -18,7 +18,8 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
     const {filesTypes} = useAppSelector(state => state.filesReducer);
     const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
 
-    const dispatchValuesForm: SubmitHandler<any> = (formData) => {
+    const dispatchValuesForm: SubmitHandler<{contentType: string, FileName: string}> = (formData) => {
+        console.log(formData);
         dispatch(postCustomFile(formData));
     };
 
@@ -39,14 +40,14 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
                 <div className={"load-text__form-inputes"}>
                     <div>
                         <p>Тип Файла</p>
-                        <Select name={"categories"} register={register}
+                        <Select name={"contentType"} register={register}
                                 onChangeForm={onChangeForm} setValue={setValueForm}
-                                values={getValues("categories")} options={optionsCategory} isMulti={false}
+                                values={getValues("contentType")} options={optionsCategory} isMulti={false}
                                 placeholder={""}/>
                     </div>
                     <label>
                         <p>Название</p>
-                        <InputText type={"text"} form={{...register("name")}}/>
+                        <InputText type={"text"} form={{...register("FileName")}}/>
                     </label>
                     <label>
                         <p>Ссылка или текст</p>

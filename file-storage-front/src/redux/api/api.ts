@@ -1,5 +1,3 @@
-import {TokensType} from "../../models/File";
-
 const baseUrl = process.env.REACT_APP_BACKEND_URL;
 
 export let myHeaders = new Headers({
@@ -33,6 +31,19 @@ export const fetchConfig = async (url: string, config?: any) => {
     return await response.json();
 };
 
+export const fPostFile = async (url: string, body?: any) => {
+    let postHeaders = new Headers({
+        'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
+    });
+
+    const response = await fetch(baseUrl + url, {
+        method: "POST",
+        headers: postHeaders,
+        body: body,
+    });
+
+    return await response.json();
+};
 
 export const fetchConfigText = async (url: string, config?: any) => {
     const params = queryParams(config?.params);

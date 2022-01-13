@@ -1,5 +1,5 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfig, fetchConfigText, fPostFile} from "../api/api";
 
 export const fetchFile = createAsyncThunk("file/get", async (id: string, thunkAPI) => {
     try {
@@ -13,13 +13,13 @@ export const postFile = createAsyncThunk("file/post", async (file:File, thunkAPI
     try {
         const formData = new FormData();
         formData.append("file",file);
-        return await fetchConfig("/api/files", {method: "POST", body: formData});
+        return await fPostFile("/api/files", formData);
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить файл");
     }
 });
 
-export const postCustomFile = createAsyncThunk("file/custom/post", async (file:any, thunkAPI) => {
+export const postCustomFile = createAsyncThunk("file/custom/post", async (file: {  }, thunkAPI) => {
     try {
         return await fetchConfig("/api/files", {method: "POST", body: file});
     } catch (err) {
