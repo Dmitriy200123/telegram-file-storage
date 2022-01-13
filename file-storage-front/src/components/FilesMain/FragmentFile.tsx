@@ -23,7 +23,7 @@ const FragmentFile: React.FC<PropsType> = ({file, rights, types}) => {
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{types && types[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
-        <div className={"files__item files__item_relative"}>{chat.name} <Controls rights={rights} id={fileId}
+        <div className={"files__item files__item_relative"}>{chat?.name} <Controls rights={rights} id={fileId}
                                                                                   dispatch={dispatch}/></div>
     </React.Fragment>
 };
