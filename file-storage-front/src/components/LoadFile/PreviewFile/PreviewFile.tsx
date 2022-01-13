@@ -17,7 +17,9 @@ export const PreviewFile: React.FC<{ dispatch: any, className?: string, file: Fi
     }
 
     function post(){
-        dispatch(postFile(file))
+        const formData = new FormData();
+        formData.append("file",file);
+        dispatch(postFile(formData))
     }
 
     return (
