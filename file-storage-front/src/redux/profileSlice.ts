@@ -4,7 +4,7 @@ import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
 import {
     fetchDownloadLink,
     fetchEditFileName,
-    fetchFile,
+    fetchFile, fetchFileText,
     fetchRemoveFile,
     postCustomFile,
     postFile
@@ -131,6 +131,10 @@ export const profileSlice = createSlice({
             state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
         [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        },
+
+        [fetchFileText.rejected.type]: (state, action: PayloadAction<string>) => {
             state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },
 

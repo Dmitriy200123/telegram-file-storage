@@ -51,11 +51,22 @@ export const fetchRemoveFile = createAsyncThunk("file/remove", async (id: string
 });
 
 
-export const fetchDownloadLink = createAsyncThunk("file/download", async (id: string, thunkAPI) => {
+export const fetchDownloadLink = createAsyncThunk("file/downloadlink", async (id: string, thunkAPI) => {
     try {
         const link = await fetchConfigText(`/api/files/${id}/downloadlink`, {method: "GET"});
         window.open(link);
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить ссылку на файл");
+    }
+});
+
+export const fetchFileText = createAsyncThunk("file/readtext", async ({id, type}: {id: string, type: number}, thunkAPI) => {
+    try {
+        if (type === 5)
+            return await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
+        else if (type === 4)
+            return await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
+    } catch (err) {
+        return thunkAPI.rejectWithValue("Не удалось загрузить текст файла");
     }
 });

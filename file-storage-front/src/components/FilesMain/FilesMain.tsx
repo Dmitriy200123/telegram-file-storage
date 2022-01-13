@@ -13,7 +13,7 @@ import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 
 
-let isCurrentPageChanged = false; 
+let isCurrentPageChanged = false;
 const FilesMain = () => {
     const state = useAppSelector((state) => state);
     const {filesReducer, profile} = state;
@@ -52,7 +52,6 @@ const FilesMain = () => {
 
         isCurrentPageChanged = false;
     };
-
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []} types={filesTypes}/>);
 

@@ -1,8 +1,7 @@
 import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {fetchChats, fetchFiles, fetchFilesTypes, fetchFilters} from "./thunks/mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
-
+import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRemoveFile} from "./thunks/fileThunks";
 
 const initialState = {
     chats: null as null | Array<Chat>,
@@ -10,7 +9,7 @@ const initialState = {
     filesNames: null as string[] | null,
     loading: false,
     files: [] as Array<TypeFile>,
-    openFile: null as null | TypeFile | undefined,
+    openFile: null as null | (TypeFile & {message?:string}) | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -164,6 +163,18 @@ export const filesSlice = createSlice({
             state.loading = true;
         },
         [fetchFile.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
+        },
+
+        [fetchFileText.fulfilled.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            if (state.openFile)
+                state.openFile.message = action.payload;
+        },
+        [fetchFileText.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchFileText.rejected.type]: (state, action: PayloadAction) => {
             state.loading = false;
         },
 
