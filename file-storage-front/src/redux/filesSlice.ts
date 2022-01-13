@@ -100,9 +100,13 @@ export const filesSlice = createSlice({
 
 
         //region FileThunks
-        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files:Array<TypeFile>, filesCount: string | number }>) => {
             state.loading = false;
-            state.files = action.payload;
+            state.files = action.payload.files;
+
+            const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
+            state.filesCount = +action.payload.filesCount;
+            state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
         },
         [fetchFiles.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;

@@ -8,10 +8,12 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {Select} from "../utils/Inputs/Select";
-import {fetchFiles, fetchFilesTypes, fetchFilters} from "../../redux/thunks/mainThunks";
+import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 
+
+let isCurrentPageChanged = false; 
 const FilesMain = () => {
     const state = useAppSelector((state) => state);
     const {filesReducer, profile} = state;
@@ -32,6 +34,7 @@ const FilesMain = () => {
     }, []);
 
     useEffect(() => {
+        isCurrentPageChanged = true;
         onChangeForm();
     },[currentPage])
 
@@ -41,7 +44,13 @@ const FilesMain = () => {
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        dispatch(fetchFiles({skip: (currentPage - 1)* filesInPage, take: filesInPage, ...formData}));
+        if (isCurrentPageChanged){
+            dispatch(fetchFiles({skip: (currentPage - 1) * filesInPage, take: filesInPage, ...formData}));
+        } else {
+            dispatch(fetchFiles({skip: 0, take: filesInPage, ...formData}));
+        }
+
+        isCurrentPageChanged = false;
     };
 
 
