@@ -130,7 +130,7 @@ const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
     const fileName = urlSearchParams.get("fileName");
     const senderId = urlSearchParams.get("senderIds")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => +e);
+    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => e);
     const date = urlSearchParams.get("date");
     const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};

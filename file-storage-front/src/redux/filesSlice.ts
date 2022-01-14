@@ -120,7 +120,7 @@ export const filesSlice = createSlice({
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
             state.paginator.count = Math.ceil((state.filesCount / state.paginator.filesInPage));
-            if (state.paginator.currentPage > state.paginator.count)
+            if (state.paginator.currentPage > 0 && state.paginator.currentPage > state.paginator.count)
                 state.paginator.currentPage--;
             state.modalConfirm.isOpen = false;
         },
