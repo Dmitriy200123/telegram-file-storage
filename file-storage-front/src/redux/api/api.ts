@@ -53,7 +53,9 @@ export const fetchConfigText = async (url: string, config?: any) => {
         body: JSON.stringify(config?.body),
         headers: myHeaders
     });
-    return await response.text();
+    if (response.ok)
+        return await response.text();
+    throw Error();
 };
 
 function queryParams(obj: any) {

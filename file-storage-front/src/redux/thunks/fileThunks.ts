@@ -19,12 +19,12 @@ export const postFile = createAsyncThunk("file/post", async (formData: FormData,
 
 export const postCustomFile =
     createAsyncThunk("file/custom/post", async ({contentType, FileName, message}: { contentType: string, FileName: string, message: string },
-                                                                          thunkAPI) => {
+                                                thunkAPI) => {
     try {
         if (contentType === "4"){
-            return await fetchConfigText("/api/files/upload/link", {method: "POST", body: {name: FileName, value:message}});
+            const res = await fetchConfigText("/api/files/upload/link", {method: "POST", body: {name: FileName, value:message}});
         } else if (contentType === "5"){
-            return await fetchConfigText("/api/files/upload/text", {method: "POST", body: {name: FileName, value:message}});
+            const res =  await fetchConfigText("/api/files/upload/text", {method: "POST", body: {name: FileName, value:message}});
         }
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить, проверьте вводимые данные");
