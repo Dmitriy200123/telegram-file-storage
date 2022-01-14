@@ -202,7 +202,7 @@ namespace FileStorageAPI.Services
             var files = await fileInfoStorage.GetAllAsync();
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             var filterFiles = files.FilterFiles(sender);
-            var filesNames = filterFiles.Select(x => x.Name).ToList();
+            var filesNames = filterFiles.Select(x => x.Name).Distinct().ToList();
             return RequestResult.Ok(filesNames);
         }
 
