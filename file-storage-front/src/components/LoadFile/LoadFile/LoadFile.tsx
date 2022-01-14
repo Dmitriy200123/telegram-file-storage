@@ -47,7 +47,7 @@ export const LoadFile: React.FC<{ dispatch: Dispatch, className?:string }> = mem
                     </h3>
                 }
                 <div>ИЛИ</div>
-                <NavLink to={"ВСТАВЬ-СЮДА-УРЛ"} ><Button>Добавить ссылку или текст</Button></NavLink>
+                <NavLink to={"custom"} ><Button>Добавить ссылку или текст</Button></NavLink>
             </div>
         </div>
 

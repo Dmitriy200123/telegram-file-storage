@@ -124,10 +124,10 @@ export const filesSlice = createSlice({
                 state.paginator.currentPage--;
             state.modalConfirm.isOpen = false;
         },
-        [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
+        [fetchRemoveFile.pending.type]: (state) => {
             state.loading = true;
         },
-        [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+        [fetchRemoveFile.rejected.type]: (state) => {
             state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
