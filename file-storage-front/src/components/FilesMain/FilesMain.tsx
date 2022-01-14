@@ -45,7 +45,7 @@ const FilesMain = () => {
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
         if (isCurrentPageChanged){
-            dispatch(fetchFiles({skip: (currentPage - 1) * filesInPage, take: filesInPage, ...formData}));
+            dispatch(fetchFiles({skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0, take: filesInPage, ...formData}));
         } else {
             dispatch(fetchFiles({skip: 0, take: filesInPage, ...formData}));
         }
