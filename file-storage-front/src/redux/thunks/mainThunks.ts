@@ -31,7 +31,10 @@ type TypeFilesFetchFilters = {
 
 export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFilesFetchFilters, thunkAPI) => {
     try {
-        const filesCount = fetchConfigText("/api/files/count", {params: args})
+        const params:any = {...args};
+        delete params['take'];
+        delete params['skip'];
+        const filesCount = fetchConfigText("/api/files/count", {params: params})
         return {files:await fetchConfig(`/api/files`, {params: args}), filesCount: await filesCount};
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить файлы");

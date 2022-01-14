@@ -11,9 +11,11 @@ import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
+import {filesSlice} from "../../redux/filesSlice";
 
 
 let isCurrentPageChanged = false;
+const {changePaginatorPage} = filesSlice.actions;
 const FilesMain = () => {
     const state = useAppSelector((state) => state);
     const {filesReducer, profile} = state;
@@ -47,7 +49,10 @@ const FilesMain = () => {
         if (isCurrentPageChanged){
             dispatch(fetchFiles({skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0, take: filesInPage, ...formData}));
         } else {
-            dispatch(fetchFiles({skip: 0, take: filesInPage, ...formData}));
+            if (currentPage !== 1)
+                dispatch(changePaginatorPage(1));
+            else
+                dispatch(fetchFiles({skip: 0, take: filesInPage, ...formData}));
         }
 
         isCurrentPageChanged = false;
