@@ -15,6 +15,11 @@ services:
       - PORT_WEB_UI=8080
     volumes:
       - "localstack-vol:/tmp/localstack"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1500M
   postgres:
     image: postgres
     container_name: postgres
