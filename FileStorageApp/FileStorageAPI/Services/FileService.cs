@@ -68,12 +68,11 @@ namespace FileStorageAPI.Services
 
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters);
+            var chatsId = sender!.Chats.Select(chat => chat.Id).ToList();
+            var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
-           
-            var filteredFiles = filesFromDataBase.FilterFiles(sender);
-            SetFileChat(filteredFiles);
-            var convertedFiles = filteredFiles
+            SetFileChat(filesFromDataBase);
+            var convertedFiles = filesFromDataBase
                 .Select(_fileInfoConverter.ConvertFileInfo)
                 .ToList();
 
