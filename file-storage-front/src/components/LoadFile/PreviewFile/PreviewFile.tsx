@@ -4,15 +4,22 @@ import "./PreviewFile.scss"
 import {ReactComponent as File} from "../../../assets/file.svg";
 import {editorSlice} from "../../../redux/editorSlice";
 import {Button} from "../../utils/Button/Button";
+import {postFile} from "../../../redux/thunks/fileThunks";
 
 const {setFile} = editorSlice.actions;
-export const PreviewFile: React.FC<{ dispatch: Dispatch, className?: string, file: File }> = memo(({
+export const PreviewFile: React.FC<{ dispatch: any, className?: string, file: File }> = memo(({
                                                                                                        dispatch,
                                                                                                        className,
                                                                                                        file
                                                                                                    }) => {
     function setFileNull() {
         dispatch(setFile(null))
+    }
+
+    function post(){
+        const formData = new FormData();
+        formData.append("file",file);
+        dispatch(postFile(formData))
     }
 
     return (
@@ -27,7 +34,7 @@ export const PreviewFile: React.FC<{ dispatch: Dispatch, className?: string, fil
                     </div>
                 </div>
                 <div className={"preview-file__btns"}>
-                    <Button>Загрузить</Button>
+                    <Button onClick={post}>Загрузить</Button>
                     <Button type={"transparent"} onClick={setFileNull}>Отмена</Button>
                 </div>
             </div>

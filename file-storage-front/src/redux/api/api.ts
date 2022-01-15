@@ -1,5 +1,3 @@
-import {TokensType} from "../../models/File";
-
 const baseUrl = process.env.REACT_APP_BACKEND_URL;
 
 export let myHeaders = new Headers({
@@ -22,17 +20,30 @@ export const fetchData = async (url: string) => {
 };
 
 export const fetchConfig = async (url: string, config?: any) => {
-    const params = queryParams(config.params);
+    const params = queryParams(config?.params);
     const respUrl = baseUrl + url + (params.length > 0 ? "?" + params : "");
     const response = await fetch(respUrl, {
         method: config.method ?? "GET",
-        body: JSON.stringify(config.body),
+        body: JSON.stringify(config?.body),
         headers: myHeaders,
     });
 
     return await response.json();
 };
 
+export const fPostFile = async (url: string, body?: any) => {
+    let postHeaders = new Headers({
+        'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
+    });
+
+    const response = await fetch(baseUrl + url, {
+        method: "POST",
+        headers: postHeaders,
+        body: body,
+    });
+
+    return await response.json();
+};
 
 export const fetchConfigText = async (url: string, config?: any) => {
     const params = queryParams(config?.params);
@@ -42,7 +53,9 @@ export const fetchConfigText = async (url: string, config?: any) => {
         body: JSON.stringify(config?.body),
         headers: myHeaders
     });
-    return await response.text();
+    if (response.ok)
+        return await response.text();
+    throw Error();
 };
 
 function queryParams(obj: any) {

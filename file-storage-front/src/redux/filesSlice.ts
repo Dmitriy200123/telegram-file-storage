@@ -1,68 +1,15 @@
-import {Category, Chat, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
+import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchRemoveFile} from "./thunks/fileThunks";
-
+import {fetchChats, fetchFiles, fetchFilesTypes, fetchFilters} from "./thunks/mainThunks";
+import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRemoveFile} from "./thunks/fileThunks";
 
 const initialState = {
     chats: null as null | Array<Chat>,
     senders: [{id:"123", fullName:"имя", telegramUserName:"телега"}, {id:"124", fullName:"имя2", telegramUserName:"телега"}, {id:"125", fullName:"имя3", telegramUserName:"телега"}] as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
-    files: [
-        // {
-        //     fileName: "Файл.12.123.sad.txt",
-        //     fileType: Category.документы,
-        //     chat: {
-        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130003",
-        //         "name": "фуллы",
-        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-        //     },
-        //     fileId: "айди3",
-        //     uploadDate: "12.10.2020",
-        //     downloadLink: "asdasdasd",
-        //     sender: {
-        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130003",
-        //         "telegramUserName": "asdasd",
-        //         "fullName": "Кабанщие"
-        //     }
-        // },
-        // {
-        //     fileName: "Файл2",
-        //     fileType: Category.картинки,
-        //     chat: {
-        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130007",
-        //         "name": "фуллы2",
-        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-        //     },
-        //     fileId: "айди2",
-        //     uploadDate: "13.10.2020",
-        //     downloadLink: "asdasdasd",
-        //     sender: {
-        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130004",
-        //         "telegramUserName": "asdasd",
-        //         "fullName": "1"
-        //     }
-        // },
-        // {
-        //     fileName: "Файл3",
-        //     fileType: Category.аудио,
-        //     chat: {
-        //         "id": "c1734b7c-4acf-11ec-81d3-0242ac130009",
-        //         "name": "фуллы3",
-        //         "imageId": "d33acc68-4acf-11ec-81d3-0242ac130003"
-        //     },
-        //     fileId: "айди1",
-        //     uploadDate: "14.10.2020",
-        //     downloadLink: "asdasdasd",
-        //     sender: {
-        //         "id": "d33ad0b4-4acf-11ec-81d3-0242ac130005",
-        //         "telegramUserName": "asdasd",
-        //         "fullName": "2"
-        //     }
-        // },
-    ] as Array<TypeFile>,
-    openFile: null as null | TypeFile | undefined,
+    files: [] as Array<TypeFile>,
+    openFile: null as null | (TypeFile & {message?:string}) | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -74,6 +21,7 @@ const initialState = {
         currentPage: 1
     } as TypePaginator,
     filesCount: 0,
+    filesTypes: undefined as undefined | ExpandingObject<string>,
 }
 
 export const filesSlice = createSlice({
@@ -130,10 +78,34 @@ export const filesSlice = createSlice({
         },
 
 
-        //region FileThunks
-        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<Array<TypeFile>>) => {
+
+        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{id:string, name:string}>>) => {
+            const types:ExpandingObject<string> = {};
+            action.payload.forEach(({id,name}) => {
+                types[id] = name;
+            });
+
+            state.filesTypes = types;
             state.loading = false;
-            state.files = action.payload;
+        },
+        // [fetchFilesTypes.pending.type]: (state, action: PayloadAction) => {
+        //     state.loading = true;
+        // },
+        // [fetchFilesTypes.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+        //     state.loading = false;
+        // },
+
+
+
+
+        //region FileThunks
+        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files:Array<TypeFile>, filesCount: string | number }>) => {
+            state.loading = false;
+            state.files = action.payload.files;
+
+            const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
+            state.filesCount = +action.payload.filesCount;
+            state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
         },
         [fetchFiles.pending.type]: (state, action: PayloadAction) => {
             state.loading = true;
@@ -148,14 +120,14 @@ export const filesSlice = createSlice({
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
             state.paginator.count = Math.ceil((state.filesCount / state.paginator.filesInPage));
-            if (state.paginator.currentPage > state.paginator.count)
+            if (state.paginator.currentPage > 0 && state.paginator.currentPage > state.paginator.count)
                 state.paginator.currentPage--;
             state.modalConfirm.isOpen = false;
         },
-        [fetchRemoveFile.pending.type]: (state, action: PayloadAction) => {
+        [fetchRemoveFile.pending.type]: (state) => {
             state.loading = true;
         },
-        [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+        [fetchRemoveFile.rejected.type]: (state) => {
             state.loading = false;
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
@@ -194,6 +166,18 @@ export const filesSlice = createSlice({
             state.loading = false;
         },
 
+        [fetchFileText.fulfilled.type]: (state, action: PayloadAction<string>) => {
+            state.loading = false;
+            if (state.openFile)
+                state.openFile.message = action.payload;
+        },
+        [fetchFileText.pending.type]: (state, action: PayloadAction) => {
+            state.loading = true;
+        },
+        [fetchFileText.rejected.type]: (state, action: PayloadAction) => {
+            state.loading = false;
+        },
+
 
         [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
             state.loading = false;
@@ -208,6 +192,8 @@ export const filesSlice = createSlice({
         //endregion
     }
 });
+
+
 
 
 export default filesSlice.reducer;

@@ -11,12 +11,16 @@ import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {SelectTime} from "../utils/Inputs/SelectDate";
 import {ReactComponent as Search} from "./../../assets/search.svg";
+import {filesSlice} from "../../redux/filesSlice";
 
+
+let isCurrentPageChanged = false;
+const {changePaginatorPage} = filesSlice.actions;
 const FilesMain = () => {
     const state = useAppSelector((state) => state);
     const {filesReducer, profile} = state;
     const {rights} = profile;
-    const {files:filesData,filesNames, chats, senders, filesCount, paginator} = filesReducer;
+    const {files:filesData,filesNames, chats, senders, paginator, filesTypes} = filesReducer;
     const {currentPage, filesInPage} = paginator;
     const dispatch = useAppDispatch();
     const history = useHistory();
@@ -32,20 +36,29 @@ const FilesMain = () => {
     }, []);
 
     useEffect(() => {
+        isCurrentPageChanged = true;
         onChangeForm();
     },[currentPage])
 
 
-    const {optionsName, optionsSender, optionsChat, optionsCategory} = configFilters(filesNames, chats, senders);
-
+    const {optionsName, optionsSender, optionsChat} = configFilters(filesNames, chats, senders);
+    const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
     const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
     const dispatchValuesForm: SubmitHandler<any> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        dispatch(fetchFiles({skip: (currentPage - 1)* filesInPage, take: filesInPage, ...formData}));
+        if (isCurrentPageChanged){
+            dispatch(fetchFiles({skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0, take: filesInPage, ...formData}));
+        } else {
+            if (currentPage !== 1)
+                dispatch(changePaginatorPage(1));
+            else
+                dispatch(fetchFiles({skip: 0, take: filesInPage, ...formData}));
+        }
+
+        isCurrentPageChanged = false;
     };
 
-
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}/>);
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []} types={filesTypes}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
     const setValueForm = (name: any, value: any) => {
@@ -122,7 +135,7 @@ const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
     const fileName = urlSearchParams.get("fileName");
     const senderId = urlSearchParams.get("senderIds")?.split("&")?.map((e) => e);
-    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => +e);
+    const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => e);
     const date = urlSearchParams.get("date");
     const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
     return {fileName, senderId, categories, date, chats};

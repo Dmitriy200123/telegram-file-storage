@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {postFile} from "./thunks/fileThunks";
 
 
 const initialState = {
@@ -14,16 +15,14 @@ export const editorSlice = createSlice({
         },
     },
     extraReducers: {
-        // [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
-        //     state.chats = action.payload;
-        //     state.loading =false;
-        // },
-        // [fetchChats.pending.type]: (state, action: PayloadAction) => {
-        //     state.loading = true;
-        // },
-        // [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.error = action.payload
-        // },
+        [postFile.fulfilled.type]: (state, _) => {
+            state.file = null;
+        },
+        [postFile.pending.type]: (state, _) => {
+        },
+        [postFile.rejected.type]: (state, _) => {
+            state.file = null;
+        },
 
     }
 });

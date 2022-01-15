@@ -4,7 +4,7 @@ import {ReactComponent as SearchSvg} from "./../../assets/search.svg";
 import {ReactComponent as Employee} from "./../../assets/add-employee.svg";
 import {ReactComponent as Account} from "./../../assets/account.svg";
 import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
-import {fetchAllUsers, fetchRightsDescription} from "../../redux/thunks/rightsThunks";
+import {fetchAllUsers} from "../../redux/thunks/rightsThunks";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {managePanelSlice} from "../../redux/managePanelSlice";
@@ -15,12 +15,10 @@ export const RightsManagerPanel: React.FC = memo(() => {
     const modal = useAppSelector(state => state.managePanel.modal);
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(fetchRightsDescription());
         dispatch(fetchAllUsers());
     }, [])
 
     return (<>
-
             <div className={"rights-panel"}>
                 <h2 className={"rights-panel__h2"}>Добавление доступа</h2>
                 <div className={"rights-panel__content"}>

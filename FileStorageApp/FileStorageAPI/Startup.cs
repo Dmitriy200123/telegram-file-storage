@@ -47,7 +47,8 @@ namespace FileStorageAPI
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
             Settings.SetUpSettings(Configuration, key, CreateDataBaseConfig());
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(new DateTimeConverter()));
 
             services.AddAuthentication(x =>
                 {
@@ -106,7 +107,8 @@ namespace FileStorageAPI
                 var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FileStorageAPI.xml");
                 options.IncludeXmlComments(xmlPath);
             });
-            ServicePointManager.ServerCertificateValidationCallback += (_, _, _, _) => true;//Там че-то сложно с сертами на localhost пришел тыкнуть это
+            ServicePointManager.ServerCertificateValidationCallback +=
+                (_, _, _, _) => true; //Там че-то сложно с сертами на localhost пришел тыкнуть это
         }
 
         private DataBaseConfig CreateDataBaseConfig()
