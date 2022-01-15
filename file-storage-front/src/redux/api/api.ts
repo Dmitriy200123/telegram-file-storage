@@ -42,7 +42,9 @@ export const fPostFile = async (url: string, body?: any) => {
         body: body,
     });
 
-    return await response.json();
+    if (response.ok)
+        return await response.text();
+    throw Error();
 };
 
 export const fetchConfigText = async (url: string, config?: any) => {
