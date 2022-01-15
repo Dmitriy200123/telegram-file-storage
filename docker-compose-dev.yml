@@ -24,6 +24,8 @@ services:
       - POSTGRES_DB=FileStorageApp
     ports:
       - "5432:5432"
+    volumes:
+      - ./DbScripts/fileStorageTables.sql:/docker-entrypoint-initdb.d/init.sql
 
   dotnet_backend:
     container_name: dotnet_backend
