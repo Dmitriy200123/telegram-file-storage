@@ -21,7 +21,7 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
     const dispatchValuesForm: SubmitHandler<{ contentType: string, FileName: string, message: string }> = (formData) => {
         if (formData.contentType) {
             dispatch(postCustomFile(formData));
-            reset();
+            reset({contentType: null, FileName: null, message: null});
         }
     };
 
