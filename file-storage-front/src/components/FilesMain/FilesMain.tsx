@@ -48,6 +48,7 @@ const FilesMain = () => {
         AddToUrlQueryParams(history, formData);
         let form = {
             take: filesInPage,
+            fileName: formData.fileName,
             senderIds: formData.senderIds, categories: formData.categories,
             dateTo: formData.date?.dateTo,
             dateFrom: formData.date?.dateFrom,
