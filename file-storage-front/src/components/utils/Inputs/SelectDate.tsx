@@ -2,12 +2,44 @@ import React, {useState} from 'react';
 import "./Select.scss";
 import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 
+function createDateISO(date:Date | number){
+    const date1 = new Date(date);
+    date1.setHours(0,0,0,0);
+    return date1.toISOString();
+}
+
 const optionsDate = [
-    {value: 'За все время', label: 'За все время'},
-    {value: 'Сегодня', label: 'Сегодня'},
-    {value: 'Вчера', label: 'Вчера'},
-    {value: 'За последние 7 дней', label: 'За последние 7 дней'},
-    {value: 'За последние 30 дней', label: 'За последние 30 дней'},
+    {
+        value: {
+            dateTo: null,
+            dateFrom: null
+        }, label: 'За все время'
+    },
+    {
+        value: {
+            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateFrom: createDateISO(new Date()),
+        },
+        label: 'Сегодня'
+    },
+    {
+        value: {
+            dateTo: createDateISO(new Date()),
+            dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 1))
+        }, label: 'Вчера'
+    },
+    {
+        value: {
+            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 6))
+        }, label: 'За последние 7 дней'
+    },
+    {
+        value: {
+            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 29))
+        }, label: 'За последние 30 дней'
+    },
     {value: null, label: 'Другой период...'}
 ];
 
@@ -39,12 +71,25 @@ export const SelectTime: React.FC<PropsDate> = ({
                     changeStrangeDate(true);
                 } else {
                     setValue(name, elem.value)
-                    onChangeForm();
                 }
             }
 
-            return <li key={elem.value}
-                       className={"select__option " + (values && (values.includes(elem.value)) ? "select__option_active" : "")}
+
+            //todo: refactor
+            function className() {
+                if (!values)
+                    return ""
+                const f = !optionsDate.find((elem) =>
+                    ((values.dateTo === elem.value?.dateTo && values.dateFrom === elem.value?.dateFrom)));
+                if (f && elem.label === "Другой период...") {
+                    return "select__option_active";
+                }
+
+                return (values.dateTo === elem.value?.dateTo && values.dateFrom === elem.value?.dateFrom) ? "select__option_active" : ""
+            }
+
+            return <li key={JSON.stringify(elem.value)}
+                       className={"select__option " + className()}
                        onClick={onChange}>{elem.label}</li>;
         })
 
@@ -56,13 +101,12 @@ export const SelectTime: React.FC<PropsDate> = ({
                 <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text}
                        onChange={(e) => {
                            changeText(e.target.value)
-                       }} placeholder={placeholder}/>
+                       }} placeholder={calcPlaceholder(values, optionsDate) ?? placeholder}/>
                 <ul className={"select__list " + (isOpen ? "select__list_open" : "")}>
                     <div className="select__scroll">
                         {strangeDate ? <FormTime
                                 setValue={(value: any) => {
                                     setValue(name, value);
-                                    onChangeForm();
                                 }}
                                 onDecline={() => changeStrangeDate(false)}/>
                             : ui}
@@ -72,22 +116,35 @@ export const SelectTime: React.FC<PropsDate> = ({
             </div>
         </OutsideAlerter>
     )
+};
+
+
+const calcPlaceholder = (value: any | null, options: Array<{ value: any, label: string }>) => {
+    const label = options?.find(e => value?.dateTo === e.value?.dateTo && value?.dateFrom === e.value?.dateFrom)?.label;
+    return label ?? "Другой период";
 }
 
 export const FormTime = ({className, setValue, onDecline}: any) => {
     const [date, changeDate] = useState({start: null as null | string, end: null as null | string})
     const onAccept = (e: any) => {
         e.preventDefault();
-        setValue(`${date.start} ${date.end}`);
-        onDecline();
-    }
+        if (date.end && date.start) {
+            setValue({
+                dateTo: new Date(date.end).toISOString(),
+                dateFrom: new Date(date.start).toISOString()
+            });
+
+            onDecline();
+        }
+    };
+
     return <div className={className ? className + " input-date" : "input-date"}>
         <div className={"input-date__label"}>От</div>
-        <input type={"date"} onChange={(e) => {
+        <input className={"input-date__input"} type={"date"} onChange={(e) => {
             changeDate({...date, start: e.target.value});
         }}/>
         <div className={"input-date__label"}>До</div>
-        <input type={"date"} onChange={(e) => {
+        <input className={"input-date__input"} type={"date"} onChange={(e) => {
             changeDate({...date, end: e.target.value});
         }}/>
         <div className={"input-date__btns"}>
