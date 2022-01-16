@@ -107,7 +107,6 @@ export const SelectTime: React.FC<PropsDate> = ({
                         {strangeDate ? <FormTime
                                 setValue={(value: any) => {
                                     setValue(name, value);
-                                    onChangeForm();
                                 }}
                                 onDecline={() => changeStrangeDate(false)}/>
                             : ui}
