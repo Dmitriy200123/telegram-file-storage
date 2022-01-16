@@ -16,5 +16,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         Task<string?> GetRefreshTokenAsync(Guid id);
         Task<User?> GetByIdAsync(Guid id, bool useInclude = false);
         Task<List<User>> GetAllAsync();
+        Task<bool> RemoveTelegramIdAsync(Guid id);
     }
 }
