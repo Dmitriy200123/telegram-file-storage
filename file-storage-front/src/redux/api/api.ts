@@ -20,7 +20,7 @@ export const fetchData = async (url: string) => {
 };
 
 export const fetchConfig = async (url: string, config?: any) => {
-    const {params, method, body} = config
+    const {params, method, body} = config || {}
     const paramsString = queryParams(params);
     const respUrl = baseUrl + url + (paramsString.length > 0 ? "?" + paramsString : "");
     const response = await fetch(respUrl, {
@@ -51,7 +51,7 @@ export const fPostFile = async (url: string, body?: any) => {
 };
 
 export const fetchConfigText = async (url: string, config?: any) => {
-    const {params, method, body} = config
+    const {params, method, body} = config || {}
     const paramsString = queryParams(params);
     const respUrl = baseUrl + url + (paramsString.length > 0 ? "?" + paramsString : "");
     const response = await fetch(respUrl, {

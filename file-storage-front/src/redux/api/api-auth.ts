@@ -9,7 +9,7 @@ export const fetchLog = async (url: string) => {
 };
 
 export const fetchAuth = async (url: string, config?: any) => {
-    const {token, method, body} = config;
+    const {token, method, body} = config || {};
     const myHeaders = new Headers({
         'Content-Type': 'application/json',
         'token': token || ""
