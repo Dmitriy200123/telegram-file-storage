@@ -3,6 +3,8 @@ import "./Messages.scss";
 import {MessageType, MessageTypeEnum} from "../../../models/File";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
 import {profileSlice} from "../../../redux/profileSlice";
+import error from "../../../assets/error.svg";
+import success from "../../../assets/success.svg";
 
 const {clearMessage} = profileSlice.actions;
 export const Messages: React.FC<{ className?: string, messages: Array<MessageType> }> = ({messages, className}) => {
@@ -33,13 +35,30 @@ const Message: React.FC<{ value: string, type: MessageTypeEnum, index: Number }>
         dispatch(clearMessage(index));
     }
 
-    return (
-        <div className={"message"}>
-            <h2>{dict[type].text}</h2>
-            <p>{value}</p>
-            <button onClick={onClose}>закрыть</button>
-        </div>
-    )
+    if (dict[type].text == "Успешно") {
+        return (
+            <div className={"message color-success"}>
+                <img src={success}/>
+                <h2>
+                    {dict[type].text}
+                </h2>
+                <p className={"p-padding"}>{value}</p>
+                <button className={"close-button"} onClick={onClose}/>
+            </div>
+        )
+    } else {
+        return (
+            <div className={"message color-error"}>
+                <img src={error}/>
+                <h2>
+                    {dict[type].text}
+                </h2>
+                <p className={"p-padding"}>{value}</p>
+                <button className={"close-button"} onClick={onClose}/>
+            </div>
+        )
+    }
 }
+
 
 
