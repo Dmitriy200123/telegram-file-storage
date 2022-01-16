@@ -1,11 +1,12 @@
 import "./Profile.scss";
 import React, {FC, memo} from "react";
 import {ReactComponent as Telegram} from "./../../assets/telegram.svg";
-import {useAppSelector} from "../../utils/hooks/reduxHooks";
+import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
+import {fetchLogoutTelegram} from "../../redux/thunks/profileThunks";
 
 export const Profile: FC = memo(() => {
     const {name, hasTelegram, avatar} = useAppSelector((state) => state.profile);
-
+    const dispatch = useAppDispatch();
     function onAuth() {
         let dataAuthGit = localStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
         if (!dataAuthGit)
@@ -17,6 +18,7 @@ export const Profile: FC = memo(() => {
     }
 
     function onLogoutTelegram() {
+        dispatch(fetchLogoutTelegram())
     }
 
     return (<div className={"profile"}>

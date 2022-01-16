@@ -21,7 +21,10 @@ export const fetchAuth = async (url: string, config?: any) => {
         body: body ? JSON.stringify(body) : null
     });
 
-    return await response.json();
+
+    if(response.ok)
+        return await response.json();
+    throw Error();
 };
 
 

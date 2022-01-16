@@ -9,7 +9,7 @@ import {
     postCustomFile,
     postFile
 } from "./thunks/fileThunks";
-import {fetchAuthGitlab, fetchIsAuth, fetchLogout} from "./thunks/profileThunks";
+import {fetchAuthGitlab, fetchIsAuth, fetchLogout, fetchLogoutTelegram} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
 import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
 
@@ -97,6 +97,17 @@ export const profileSlice = createSlice({
             state.loading = true;
         },
         [fetchLogout.rejected.type]: (state, action) => {
+            state.loading = false;
+        },
+
+        [fetchLogoutTelegram.fulfilled.type]: (state) => {
+            state.loading = false;
+            state.hasTelegram = false;
+        },
+        [fetchLogout.pending.type]: (state) => {
+            state.loading = true;
+        },
+        [fetchLogout.rejected.type]: (state) => {
             state.loading = false;
         },
 
