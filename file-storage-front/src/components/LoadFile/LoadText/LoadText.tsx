@@ -11,7 +11,7 @@ import {AppDispatch} from "../../../redux/redux-store";
 import {useDispatch} from "react-redux";
 
 export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> = memo(({className}) => {
-    const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
+    const {register, handleSubmit, formState: {errors}, setValue, getValues, reset} = useForm();
     const dispatch = useDispatch();
 
     const {filesTypes} = useAppSelector(state => state.filesReducer);
@@ -19,8 +19,10 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
         .map((key) => ({label: filesTypes[key], value: key}));
 
     const dispatchValuesForm: SubmitHandler<{ contentType: string, FileName: string, message: string }> = (formData) => {
-        if (formData.contentType)
+        if (formData.contentType) {
             dispatch(postCustomFile(formData));
+            reset();
+        }
     };
 
 
