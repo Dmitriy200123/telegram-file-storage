@@ -25,7 +25,6 @@ export const ModalConfirm: React.FC<{ id: string }> = ({id}) => {
                     }}>Да</Button>
                     <Button onClick={() => dispatch(closeModal())} type={"transparent"}>Нет</Button>
                 </div>
-                {id}
             </div>
         </Modal>
     )
