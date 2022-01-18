@@ -14,6 +14,7 @@ using FileStorageAPI.Converters;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using NUnit.Framework;
 using Chat = FileStorageAPI.Models.Chat;
 using File = FileStorageApp.Data.InfoStorage.Models.File;
@@ -30,6 +31,8 @@ namespace FileStorageAPI.Tests
 
         private static readonly IFileInfoConverter FilesConverter =
             new FileInfoConverter(ChatConverter, SenderConverter);
+
+        private readonly IsoDateTimeConverter _dateTimeConverter = new() {DateTimeFormat = "dd.MM.yyyy HH:mm:ss"};
 
         public APIFileShould()
         {
@@ -79,12 +82,19 @@ namespace FileStorageAPI.Tests
             await senderStorage.AddAsync(senderInDb);
             await fileStorage.AddAsync(fileInDb);
             fileInDb.FileSender = senderInDb;
+            var chat = new FileStorageApp.Data.InfoStorage.Models.Chat
+            {
+                Id = Guid.Empty,
+                Name = "Загрузка с сайта",
+                ImageId = Guid.Empty
+            };
 
             var response = await apiClient.GetAsync($"/api/files/{fileGuid}");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString);
+            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString, _dateTimeConverter);
+            fileInDb.Chat = chat;
             actual.Should().BeEquivalentTo(FilesConverter.ConvertFileInfo(fileInDb));
         }
 
@@ -121,13 +131,20 @@ namespace FileStorageAPI.Tests
             await fileStorage.AddAsync(fileInDb2);
             fileInDb.FileSender = senderInDb;
             fileInDb2.FileSender = senderInDb;
+            var chat = new Chat
+            {
+                Id = Guid.Empty,
+                Name = "Загрузка с сайта",
+                ImageId = Guid.Empty
+            };
             var expected = new[] {fileInDb, fileInDb2}.Select(x => FilesConverter.ConvertFileInfo(x)).ToList();
-
+            foreach (var file in expected)
+                file.Chat = chat;
             var response = await apiClient.GetAsync($"/api/files?skip=0&take=2");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<List<Models.FileInfo>>(responseString);
+            var actual = JsonConvert.DeserializeObject<List<Models.FileInfo>>(responseString,_dateTimeConverter);
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -222,7 +239,7 @@ namespace FileStorageAPI.Tests
             fileInfo.FileSender = sender;
             var expected = FilesConverter.ConvertFileInfo(fileInfo);
            
-            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString);
+            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString,_dateTimeConverter);
             actual.Should().BeEquivalentTo(expected, o => o.Excluding(x => x.UploadDate));
         }
 
@@ -244,7 +261,7 @@ namespace FileStorageAPI.Tests
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString);
+            var actual = JsonConvert.DeserializeObject<Models.FileInfo>(responseString,_dateTimeConverter);
             fileInDb.Name = "aboba";
             actual.Should().BeEquivalentTo(FilesConverter.ConvertFileInfo(fileInDb));
         }

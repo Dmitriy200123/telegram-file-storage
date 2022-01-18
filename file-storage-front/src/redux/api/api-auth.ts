@@ -9,7 +9,7 @@ export const fetchLog = async (url: string) => {
 };
 
 export const fetchAuth = async (url: string, config?: any) => {
-    const {token, method, body} = config;
+    const {token, method, body} = config || {};
     const myHeaders = new Headers({
         'Content-Type': 'application/json',
         'token': token || ""
@@ -21,7 +21,10 @@ export const fetchAuth = async (url: string, config?: any) => {
         body: body ? JSON.stringify(body) : null
     });
 
-    return await response.json();
+
+    if(response.ok)
+        return await response.json();
+    throw Error();
 };
 
 

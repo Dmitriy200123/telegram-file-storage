@@ -79,5 +79,15 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Users
         {
             return await DbSet.ToListAsync();
         }
+
+        public async Task<bool> RemoveTelegramIdAsync(Guid id)
+        {
+            var user = await DbSet.FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+                return false;
+            user.TelegramId = null;
+            await SaveChangesAsync();
+            return true;
+        }
     }
 }

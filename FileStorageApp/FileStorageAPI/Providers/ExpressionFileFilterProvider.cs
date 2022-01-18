@@ -17,10 +17,10 @@ namespace FileStorageAPI.Providers
                         (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                         (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
                         (categories == null || categories.Contains(x.TypeId)) &&
-                        (chatsId == null || chatsId.Contains(x.ChatId!.Value)) &&
+                        (chatsId == null || chatsId.Contains(x.ChatId!.Value) || x.ChatId == null) &&
                         (parameters.SenderIds == null || parameters.SenderIds.Contains(x.FileSenderId)) &&
                         (parameters.ChatIds == null || x.ChatId != null && parameters.ChatIds.Contains(x.ChatId.Value) ||
-                         parameters.ChatIds == null && x.ChatId != null);
+                        x.ChatId == null && parameters.ChatIds.Contains(Guid.Empty));
         }
     }
 }

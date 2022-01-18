@@ -121,6 +121,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="file">Файл</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
+        [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
         [RightsFilter(Accesses.Upload, Accesses.Admin)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
@@ -186,7 +187,8 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("count")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов, содержащихся в хранилище", typeof(int))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов, содержащихся в хранилище",
+            typeof(int))]
         public async Task<IActionResult> GetFilesCount([FromQuery] FileSearchParameters fileSearchParameters)
         {
             var count = await _fileService.GetFilesCountAsync(fileSearchParameters, Request);
@@ -238,7 +240,7 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         /// <param name="id">Идентификатор сообщения</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpGet("{id:guid}/message")]
+        [HttpGet("{id:guid}/text")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает сохраненную ссылку", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если ссылку с таким идентификатором не найдена",
             typeof(string))]
@@ -252,6 +254,51 @@ namespace FileStorageAPI.Controllers
                 HttpStatusCode.BadRequest => BadRequest(file.Message),
                 HttpStatusCode.NotFound => NotFound(file.Message),
                 HttpStatusCode.Forbidden => Forbid("Bearer"),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+
+        /// <summary>
+        /// Загрузка сообщения
+        /// </summary>
+        /// <param name="textData">Данные для загрузки (сообщение)</param>
+        /// <returns></returns>
+        [HttpPost("upload/text")]
+        [RightsFilter(Accesses.Upload, Accesses.Admin)]
+        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданного сообщении", typeof(Guid))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
+        public async Task<IActionResult> PostMessage([FromBody] UploadTextData textData)
+        {
+            var id = await _fileService.PostMessage(textData, Request);
+            
+            return id.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(id.Value.Uri, id.Value.Guid.ToString()),
+                HttpStatusCode.BadRequest => BadRequest(id.Message),
+                HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+        
+        /// <summary>
+        /// Загрузка ссылки
+        /// </summary>
+        /// <param name="textData">Данные для загрузки (ссылка)</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpPost("upload/link")]
+        [RightsFilter(Accesses.Upload, Accesses.Admin)]
+        [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданной ссылке", typeof(Guid))]
+        [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
+        public async Task<IActionResult> PostLink([FromBody] UploadTextData textData)
+        {
+            var id = await _fileService.PostLink(textData, Request);
+            
+            return id.ResponseCode switch
+            {
+                HttpStatusCode.Created => Created(id.Value.Uri, id.Value.Guid.ToString()),
+                HttpStatusCode.BadRequest => BadRequest(id.Message),
+                HttpStatusCode.InternalServerError => StatusCode(500, "Something wrong with database"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

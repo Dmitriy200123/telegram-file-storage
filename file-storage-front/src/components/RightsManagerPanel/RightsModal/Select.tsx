@@ -1,5 +1,4 @@
 import React, {memo, useState} from 'react';
-import {Category} from "../../../models/File";
 import "./Select.scss";
 import {OutsideAlerter} from "../../utils/OutSideAlerter/OutSideAlerter";
 
@@ -27,7 +26,7 @@ export const Select: React.FC<Props> = memo(({
         .map((elem) => {
             const onChange = () => {
                 if (values?.includes(elem.value)) {
-                    setValue(values.filter((v: Category) => v !== elem.value));
+                    setValue(values.filter((v: string) => v !== elem.value));
                 } else if (values) {
                     setValue([...values, elem.value])
                 } else {

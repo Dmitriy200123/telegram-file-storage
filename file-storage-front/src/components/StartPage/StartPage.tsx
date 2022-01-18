@@ -36,7 +36,7 @@ export const StartPage: FC = memo(() => {
             />
             }
             <div className={"start-page"}>
-                <div>
+                <div className={"start-page__logo"}>
                     <img src={Logo}/>
                 </div>
                 <div className={"start-page__content"}>

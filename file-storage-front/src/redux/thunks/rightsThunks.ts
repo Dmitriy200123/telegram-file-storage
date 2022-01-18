@@ -41,8 +41,7 @@ export const fetchRightsUserById = createAsyncThunk("rights/user", async (id: st
 
 export const fetchRightsDescription = createAsyncThunk("rights/description", async (_, thunkAPI) => {
     try {
-        const data = await fetchData("/rights/description");
-        return data;
+        return await fetchData("/rights/description");
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
     }

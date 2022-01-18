@@ -69,13 +69,6 @@ namespace FileStorageAPI.Services
                     Name = gitLabUser.Name
                 };
                 await usersStorage.AddAsync(user);
-                using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-                var right = new Right
-                {
-                    UserId = user.Id,
-                    AccessType = Accesses.Default
-                };
-                await rightsStorage.AddAsync(right);
                 user = await usersStorage.GetByGitLabIdAsync(gitLabUser.Id);
             }
 

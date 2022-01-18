@@ -1,15 +1,12 @@
-export enum Category {
-    "документы",
-    "аудио",
-    "видео",
-    "картинки",
-}
-
 export enum Rights {
     "Загружать файлы"= 1,
     "Переименовывать файлы" = 2,
     "Удалять файлы" = 3,
     "Редактировать права пользователей" = 4,
+}
+
+export interface ExpandingObject<T> {
+    [key: string]: T
 }
 
 export enum ModalContent {
@@ -27,7 +24,7 @@ export type FormType<TValue> = { label: string, value: TValue };
 export type TypeFile = {
     fileId: string,
     fileName: string,
-    fileType: Category,
+    fileType: string,
     sender: {
         "id": string,
         "telegramUserName": string,
