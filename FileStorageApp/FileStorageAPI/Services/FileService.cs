@@ -234,7 +234,7 @@ namespace FileStorageAPI.Services
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this link");
             using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
-            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFileStreamAsync(file.Id.ToString()));
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
         }
@@ -254,7 +254,7 @@ namespace FileStorageAPI.Services
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this message");
             using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
-            using var streamReader = new StreamReader(await physicalFileStorage.GetFile(file.Id.ToString()));
+            using var streamReader = new StreamReader(await physicalFileStorage.GetFileStreamAsync(file.Id.ToString()));
             var text = await streamReader.ReadToEndAsync();
             return RequestResult.Ok(text);
         }
