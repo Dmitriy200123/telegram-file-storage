@@ -21,16 +21,32 @@ import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
 import {fetchFilesTypes} from "./redux/thunks/mainThunks";
 
+const store = setupStore();
+
+function FileStorageApp() {
+    return (
+        <BrowserRouter>
+            <Provider store={store}>
+                <App/>
+            </Provider>
+        </BrowserRouter>
+    );
+}
+
+
 const App: FC = () => {
     const dispatch = useDispatch();
-    const {profile} = useAppSelector((state) => state);
-    const {messages, loading} = profile;
+    const messages = useAppSelector((state) => state.profile.messages);
+    const loading = useAppSelector((state) => state.profile.loading);
+    const isAuth = useAppSelector((state) => state.profile.isAuth);
+
     useEffect(() => {
         dispatch(fetchIsAuth());
-    }, [])
+    }, []);
+
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        {isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
     </div>)
 }
 
@@ -43,9 +59,12 @@ const Main: FC = () => {
         dispatch(fetchRightsCurrentUser());
     }, [])
     localStorage.setItem("flag", "false");
-    const {filesReducer, profile} = useAppSelector((state) => state);
-    const {rights, hasTelegram} = profile;
-    const {loading, modalConfirm} = filesReducer;
+
+    const rights = useAppSelector((state) => state.profile.rights);
+    const hasTelegram = useAppSelector((state) => state.profile.hasTelegram);
+
+    const loading = useAppSelector((state) => state.filesReducer.loading);
+    const modalConfirm = useAppSelector((state) => state.filesReducer.modalConfirm);
     const {isOpen, id, content} = modalConfirm;
     const Content = modalContents[content || 0];
     return (<>
@@ -76,16 +95,5 @@ const Main: FC = () => {
 }
 
 
-const store = setupStore();
-
-function FileStorageApp() {
-    return (
-        <BrowserRouter>
-            <Provider store={store}>
-                <App/>
-            </Provider>
-        </BrowserRouter>
-    );
-}
 
 export default FileStorageApp;
