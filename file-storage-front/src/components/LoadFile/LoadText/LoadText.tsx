@@ -5,22 +5,29 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {Button} from "../../utils/Button/Button";
 import {Link} from "react-router-dom";
 import {InputText} from "../../utils/Inputs/Text/InputText";
-import {useAppSelector} from "../../../utils/hooks/reduxHooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {postCustomFile} from "../../../redux/thunks/fileThunks";
 import {AppDispatch} from "../../../redux/redux-store";
 import {useDispatch} from "react-redux";
 
 export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> = memo(({className}) => {
-    const {register, handleSubmit, formState: {errors}, setValue, getValues, reset} = useForm();
-    const dispatch = useDispatch();
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+        setValue,
+        getValues,
+        reset
+    } = useForm<FormType>();
+    const dispatch = useAppDispatch();
 
     const {filesTypes} = useAppSelector(state => state.filesReducer);
     const optionsCategory = filesTypes && Object.keys(filesTypes).filter(key => key === "4" || key === "5")
         .map((key) => ({label: filesTypes[key], value: key}));
 
-    const dispatchValuesForm: SubmitHandler<{ contentType: string, FileName: string, message: string }> = (formData) => {
-        if (formData.contentType) {
-            dispatch(postCustomFile(formData));
+    const dispatchValuesForm: SubmitHandler<FormType> = ({contentType, FileName, message}) => {
+        if (contentType && FileName && message) {
+            dispatch(postCustomFile({contentType, FileName, message}));
             reset({contentType: null, FileName: null, message: null});
         }
     };
@@ -48,11 +55,11 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
                     </div>
                     <label>
                         <p>Название</p>
-                        <InputText type={"text"} form={{...register("FileName",{ required: true })}}/>
+                        <InputText type={"text"} form={{...register("FileName", {required: true})}}/>
                     </label>
                     <label>
                         <p>Ссылка или текст</p>
-                        <InputText type={"text"} form={{...register("message", { required: true })}}/>
+                        <InputText type={"text"} form={{...register("message", {required: true})}}/>
                     </label>
                 </div>
                 <div className={"load-text__btns"}>
@@ -65,6 +72,4 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
     );
 })
 
-
-
-
+type FormType = { contentType: string | null, FileName: string | null, message: string | null };
