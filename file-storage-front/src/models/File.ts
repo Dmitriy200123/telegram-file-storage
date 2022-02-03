@@ -67,3 +67,6 @@ export type TokensType = {
     "jwtToken": string,
     "refreshToken": string
 }
+
+export type MainPageFilters = {
+}
