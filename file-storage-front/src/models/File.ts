@@ -1,3 +1,5 @@
+export type Nullable<T> = T | null;
+
 export enum Rights {
     "Загружать файлы"= 1,
     "Переименовывать файлы" = 2,

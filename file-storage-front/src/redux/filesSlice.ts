@@ -5,11 +5,22 @@ import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRem
 
 const initialState = {
     chats: null as null | Array<Chat>,
-    senders: [{id:"123", fullName:"имя", telegramUserName:"телега"}, {id:"124", fullName:"имя2", telegramUserName:"телега"}, {id:"125", fullName:"имя3", telegramUserName:"телега"}] as null | Array<Sender>,
+    senders: [{id: "123", fullName: "имя", telegramUserName: "телега"}, {
+        id: "124",
+        fullName: "имя2",
+        telegramUserName: "телега"
+    }, {id: "125", fullName: "имя3", telegramUserName: "телега"}] as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
     files: [] as Array<TypeFile>,
-    openFile: null as null | (TypeFile & {message?:string}) | undefined,
+    openFile: {
+        message: "1",
+        fileId: "1",
+        fileName: "1",
+        fileType: "1",
+        chat: {id: "null", name: "null", imageId: "null"}
+
+    } as null | (TypeFile & { message?: string }) | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -21,7 +32,7 @@ const initialState = {
         currentPage: 1
     } as TypePaginator,
     filesCount: 0,
-    filesTypes: undefined as undefined | ExpandingObject<string>,
+    filesTypes: {} as ExpandingObject<string>,
 }
 
 export const filesSlice = createSlice({
@@ -78,10 +89,9 @@ export const filesSlice = createSlice({
         },
 
 
-
-        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{id:string, name:string}>>) => {
-            const types:ExpandingObject<string> = {};
-            action.payload.forEach(({id,name}) => {
+        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{ id: string, name: string }>>) => {
+            const types: ExpandingObject<string> = {};
+            action.payload.forEach(({id, name}) => {
                 types[id] = name;
             });
 
@@ -96,10 +106,8 @@ export const filesSlice = createSlice({
         // },
 
 
-
-
         //region FileThunks
-        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files:Array<TypeFile>, filesCount: string | number }>) => {
+        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) => {
             state.loading = false;
             state.files = action.payload.files;
 
@@ -192,8 +200,6 @@ export const filesSlice = createSlice({
         //endregion
     }
 });
-
-
 
 
 export default filesSlice.reducer;

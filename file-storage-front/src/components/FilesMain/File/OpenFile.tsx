@@ -1,10 +1,9 @@
 import React, {memo, useEffect} from 'react';
 import "./File.scss"
 import {ReactComponent as Svg} from "../../../assets/download.svg";
-import {useAppSelector} from "../../../utils/hooks/reduxHooks";
-import {ModalContent, Rights} from "../../../models/File";
+import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
+import {ExpandingObject, ModalContent, Rights, TypeFile} from "../../../models/File";
 import {Link} from 'react-router-dom';
-import {useDispatch} from "react-redux";
 import {fetchDownloadLink, fetchFile, fetchFileText} from "../../../redux/thunks/fileThunks";
 import {ReactComponent as Edit} from "../../../assets/edit.svg";
 import {ReactComponent as Delete} from "../../../assets/delete.svg";
@@ -12,28 +11,40 @@ import {filesSlice} from "../../../redux/filesSlice";
 import {Button} from "../../utils/Button/Button";
 
 const {openModal} = filesSlice.actions;
-export const OpenedFile: React.FC<any> = memo(({match}) => {
+export const OpenedFileContainer: React.FC<any> = memo(({match}) => {
+    const dispatch = useAppDispatch();
+    
     const id = match.params["id"];
-    const state = useAppSelector((state) => state);
-    const {profile: {rights}, filesReducer: {openFile: file, filesTypes}} = state;
-    const dispatch = useDispatch();
+    const rights = useAppSelector((state) => state.profile.rights);
+    const file = useAppSelector((state) => state.filesReducer.openFile);
+    const filesTypes = useAppSelector((state) => state.filesReducer.filesTypes);
+
     useEffect(() => {
-        if (file && id === fileId) return;
+        if (file && id === file?.fileId) return;
         dispatch(fetchFile(id));
     }, [id])
 
     useEffect(() => {
-        if (file &&(+fileType === 4 || +fileType === 5))
+        if (file && (+fileType === 4 || +fileType === 5))
             dispatch(fetchFileText({id, type: +fileType}))
     }, [file])
 
     if (!file)
         return null;
-    const {fileName, fileId, fileType, sender, chat, uploadDate, message} = file;
 
+    const {fileType} = file;
+    return <OpenedFile file={file} filesTypes={filesTypes || {}} id={id} rights={rights || []}/>;
+})
 
+const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes}) => {
+    const dispatch = useAppDispatch();
+    const {fileName, fileType, sender, chat, uploadDate, message} = file;
     const canRename = rights?.includes(Rights["Переименовывать файлы"]);
-    const openRename = () => dispatch(openModal({id: id, content: ModalContent.Edit}));
+
+    function openRename() {
+        dispatch(openModal({id: id, content: ModalContent.Edit}));
+    }
+
     return (
         <div className={"file"}>
             <div className="file__header">
@@ -48,10 +59,10 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
                 <div className="file__item"><span>Чат: </span><a>{chat?.name}</a></div>
                 <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>
                 {message && <div className="file__item">
-                    <span>Сообщение: </span>{+fileType === 4 ?<a href={message}>{message} </a> : message}
+                    <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
                 </div>}
                 <div className={"file__btns"}>
-                    {+fileType !== 5 && +fileType !== 4  && <button className="file__btn" onClick={() => {
+                    {+fileType !== 5 && +fileType !== 4 && <button className="file__btn" onClick={() => {
                         dispatch(fetchDownloadLink(id))
                     }}>
                         <div>Скачать файл</div>
@@ -64,7 +75,9 @@ export const OpenedFile: React.FC<any> = memo(({match}) => {
             </div>
         </div>
     );
-})
+});
+
+type PropsType = { id: string, file: TypeFile & { message?: string }, rights: Rights[], filesTypes: ExpandingObject<string> };
 
 
 
