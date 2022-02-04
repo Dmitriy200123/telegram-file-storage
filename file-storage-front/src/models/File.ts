@@ -1,7 +1,7 @@
 export type Nullable<T> = T | null;
 
 export enum Rights {
-    "Загружать файлы"= 1,
+    "Загружать файлы" = 1,
     "Переименовывать файлы" = 2,
     "Удалять файлы" = 3,
     "Редактировать права пользователей" = 4,
@@ -70,5 +70,4 @@ export type TokensType = {
     "refreshToken": string
 }
 
-export type MainPageFilters = {
-}
+export type MainPageFilters = {}

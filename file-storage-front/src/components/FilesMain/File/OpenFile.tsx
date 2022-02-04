@@ -11,9 +11,17 @@ import {filesSlice} from "../../../redux/filesSlice";
 import {Button} from "../../utils/Button/Button";
 
 const {openModal} = filesSlice.actions;
-export const OpenedFileContainer: React.FC<any> = memo(({match}) => {
+
+export interface match<Params extends { [K in keyof Params]?: string } = {}> {
+    params: Params;
+    isExact: boolean;
+    path: string;
+    url: string;
+}
+
+export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = memo(({match}) => {
     const dispatch = useAppDispatch();
-    
+
     const id = match.params["id"];
     const rights = useAppSelector((state) => state.profile.rights);
     const file = useAppSelector((state) => state.filesReducer.openFile);

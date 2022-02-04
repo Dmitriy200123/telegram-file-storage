@@ -13,14 +13,7 @@ const initialState = {
     filesNames: null as string[] | null,
     loading: false,
     files: [] as Array<TypeFile>,
-    openFile: {
-        message: "1",
-        fileId: "1",
-        fileName: "1",
-        fileType: "1",
-        chat: {id: "null", name: "null", imageId: "null"}
-
-    } as null | (TypeFile & { message?: string }) | undefined,
+    openFile: null as null | (TypeFile & { message?: string }) | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
@@ -33,7 +26,7 @@ const initialState = {
     } as TypePaginator,
     filesCount: 0,
     filesTypes: {} as ExpandingObject<string>,
-}
+};
 
 export const filesSlice = createSlice({
     name: "files",

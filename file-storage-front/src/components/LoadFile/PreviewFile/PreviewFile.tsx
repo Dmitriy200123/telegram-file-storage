@@ -5,20 +5,22 @@ import {ReactComponent as File} from "../../../assets/file.svg";
 import {editorSlice} from "../../../redux/editorSlice";
 import {Button} from "../../utils/Button/Button";
 import {postFile} from "../../../redux/thunks/fileThunks";
+import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
 
 const {setFile} = editorSlice.actions;
-export const PreviewFile: React.FC<{ dispatch: any, className?: string, file: File }> = memo(({
-                                                                                                       dispatch,
-                                                                                                       className,
-                                                                                                       file
-                                                                                                   }) => {
+export const PreviewFile: React.FC<PropsType> = memo(({
+                                                          className,
+                                                          file
+                                                      }) => {
+    const dispatch = useAppDispatch();
+
     function setFileNull() {
         dispatch(setFile(null))
     }
 
-    function post(){
+    function post() {
         const formData = new FormData();
-        formData.append("file",file);
+        formData.append("file", file);
         dispatch(postFile(formData))
     }
 
@@ -30,7 +32,7 @@ export const PreviewFile: React.FC<{ dispatch: any, className?: string, file: Fi
                     <div className={"preview-file__file-load"}>
                         <p className={"preview-file__name"}>{file.name}</p>
                         <button className="preview-file__close" onClick={setFileNull}>1</button>
-                        <div className={"preview-file__loading"} />
+                        <div className={"preview-file__loading"}/>
                     </div>
                 </div>
                 <div className={"preview-file__btns"}>
@@ -43,6 +45,8 @@ export const PreviewFile: React.FC<{ dispatch: any, className?: string, file: Fi
     );
 })
 
+
+type PropsType = { className?: string, file: File };
 
 
 
