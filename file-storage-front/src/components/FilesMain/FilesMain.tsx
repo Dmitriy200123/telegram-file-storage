@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {FC, useEffect} from 'react';
 import "./FilesMain.scss"
 import Paginator from '../utils/Paginator/Paginator';
 import FragmentFile from "./FragmentFile";
@@ -94,25 +94,21 @@ const FilesMain = () => {
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
                     <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            setValue={setValueForm}
                             values={getValues("fileName")} options={optionsName} isMulti={false}/>
-                    {/*<Select className="files__filter files__filter_select"*/}
-                    {/*        isMulti={false} name={"date"} onChangeForm={onChangeForm} register={register}*/}
-                    {/*        values={getValues("date")}*/}
-                    {/*        setValue={setValueForm} options={optionsDate}/>*/}
                     <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
-                                onChangeForm={onChangeForm} setValue={setValueForm}
+                               setValue={setValueForm}
                                 values={getValues("date")} placeholder={"Выберите дату"}/>
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValueForm}
+                             setValue={setValueForm}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
                     <Select name={"senderIds"} className={"files__filter files__filter_select"} register={register}
-                            onChangeForm={onChangeForm} setValue={setValueForm}
+                            setValue={setValueForm}
                             values={getValues("senderIds")} options={optionsSender} isMulti={true}/>
                     <div className={"files__filter files__filter_last files__filter_select files__filter_search"}>
                         <Select name={"chatIds"}
                                 register={register}
-                                onChangeForm={onChangeForm} setValue={setValueForm}
+                                setValue={setValueForm}
                                 values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
                         <button>
                             <Search/>
@@ -125,6 +121,7 @@ const FilesMain = () => {
         </div>
     );
 };
+
 
 
 export default FilesMain;

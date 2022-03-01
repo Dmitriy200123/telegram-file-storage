@@ -44,14 +44,13 @@ const optionsDate = [
 ];
 
 type PropsDate = {
-    name: string, onChangeForm: any,
+    name: string,
     className?: string, register: any, values: any, setValue: any,
     placeholder?: string, isMulti?: boolean
 };
 
 export const SelectTime: React.FC<PropsDate> = ({
                                                     name,
-                                                    onChangeForm,
                                                     className,
                                                     register,
                                                     values,
@@ -112,7 +111,6 @@ export const SelectTime: React.FC<PropsDate> = ({
                             : ui}
                     </div>
                 </ul>
-                <select multiple={true} {...register(name, {onChange: () => onChangeForm})}/>
             </div>
         </OutsideAlerter>
     )

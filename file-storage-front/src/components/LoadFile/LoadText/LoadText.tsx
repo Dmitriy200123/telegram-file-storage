@@ -49,7 +49,7 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
                     <div>
                         <p>Тип Файла</p>
                         <Select name={"contentType"} register={register}
-                                onChangeForm={onChangeForm} setValue={setValueForm}
+                                setValue={setValueForm}
                                 values={getValues("contentType")} options={optionsCategory} isMulti={false}
                                 placeholder={""}/>
                     </div>

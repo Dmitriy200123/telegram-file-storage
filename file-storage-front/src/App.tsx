@@ -4,7 +4,7 @@ import './App.scss';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
-import {OpenedFile} from "./components/FilesMain/File/OpenFile";
+import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
@@ -81,7 +81,7 @@ const Main: FC = () => {
                     <Route path={"/Profile"} component={Profile}/>
                     {hasTelegram && <>
                         <Route exact path={"/files"} component={FilesMain}/>
-                        <Route path={"/file/:id"} component={OpenedFile}/>
+                        <Route path={"/file/:id"} component={OpenedFileContainer}/>
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}
                         {rights?.includes(Rights["Загружать файлы"]) &&
