@@ -26,11 +26,11 @@ export const fetchFilters = createAsyncThunk("files/filters", async (_, thunkAPI
 type TypeFilesFetchFilters = {
     skip: number,
     take: number,
-    categories?: string,
-    dateTo?: string,
-    dateFrom?: string,
-    senderIds?: string,
-    chatIds?: string,
+    categories?: string[] | null | undefined,
+    dateTo?: string | null | undefined,
+    dateFrom?: string | null | undefined,
+    senderIds?: string[] | null | undefined,
+    chatIds?: string[] | null | undefined,
 }
 
 export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFilesFetchFilters, thunkAPI) => {

@@ -5,10 +5,9 @@ import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 //todo: fix updates redraw
 type Props = {
     name: string,
-    className?: string, register: any, values: any, setValue: any, options: Array<{ value: any, label: string }> | undefined,
+    className?: string, register: any, values: any, setValue: (name: string, value: any) => void, options: Array<{ value: any, label: string }> | undefined,
     placeholder?: string, isMulti?: boolean
 }
-
 export const Select: React.FC<Props> = memo(({
                                                  name,
                                                  className,
@@ -66,12 +65,11 @@ export const Select: React.FC<Props> = memo(({
     )
 })
 
-const calcPlaceholder = (values: Array<string | number> | string, options:Array<{ value: any, label: string }> ) => {
+const calcPlaceholder = (values: Array<string | number> | string, options: Array<{ value: any, label: string }>) => {
     if (values instanceof Array) {
         return values.length === 0 ? null
-            :values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
-    }
-    else {
+            : values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
+    } else {
         return options?.find(e => e.value === values)?.label;
     }
 }

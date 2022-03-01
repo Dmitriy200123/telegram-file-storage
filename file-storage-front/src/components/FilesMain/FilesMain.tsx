@@ -3,7 +3,6 @@ import "./FilesMain.scss"
 import Paginator from '../utils/Paginator/Paginator';
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
-import * as queryString from "querystring";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
@@ -43,10 +42,10 @@ const FilesMain = () => {
 
     const {optionsName, optionsSender, optionsChat} = configFilters(filesNames, chats, senders);
     const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
-    const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm();
-    const dispatchValuesForm: SubmitHandler<any> = (formData) => {
+    const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm<TypeSelectFilters>();
+    const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
-        let form = {
+        const form = {
             take: filesInPage,
             fileName: formData.fileName,
             senderIds: formData.senderIds, categories: formData.categories,
@@ -54,7 +53,7 @@ const FilesMain = () => {
             dateFrom: formData.date?.dateFrom,
             chatIds: formData.chatIds,
         };
-        console.log(form);
+
         if (isCurrentPageChanged) {
             dispatch(fetchFiles({
                 skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
@@ -76,8 +75,8 @@ const FilesMain = () => {
                                                               types={filesTypes}/>);
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
-    const setValueForm = (name: any, value: any) => {
-        setValue(name, value, {
+    const setValueForm = (name: string, value: any) => {
+        setValue(name as "fileName" | "senderIds" | "date" | "chatIds" | "categories", value, {
             shouldValidate: true,
             shouldDirty: true
         });
@@ -97,10 +96,10 @@ const FilesMain = () => {
                             setValue={setValueForm}
                             values={getValues("fileName")} options={optionsName} isMulti={false}/>
                     <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
-                               setValue={setValueForm}
+                                setValue={setValueForm}
                                 values={getValues("date")} placeholder={"Выберите дату"}/>
                     <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
-                             setValue={setValueForm}
+                            setValue={setValueForm}
                             values={getValues("categories")} options={optionsCategory} isMulti={true}/>
                     <Select name={"senderIds"} className={"files__filter files__filter_select"} register={register}
                             setValue={setValueForm}
@@ -123,5 +122,12 @@ const FilesMain = () => {
 };
 
 
+type TypeSelectFilters = {
+    fileName: string | undefined | null,
+    senderIds: string[] | undefined | null,
+    date: { dateFrom: string | null, dateTo: string | null },
+    chatIds: string[] | undefined | null,
+    categories: string[] | undefined | null,
+}
 
 export default FilesMain;
