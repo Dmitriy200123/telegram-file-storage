@@ -1,27 +1,28 @@
-import React, {FC, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import "./FilesMain.scss"
 import Paginator from '../utils/Paginator/Paginator';
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
-import {configFilters} from "./ConfigFilters";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {Select} from "../utils/Inputs/Select";
 import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
-import {ReactComponent as Search} from "./../../assets/search.svg";
 import {filesSlice} from "../../redux/filesSlice";
-import {SelectTime} from "../utils/Inputs/SelectDate";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
+import {Filters} from "./Filters";
 
 let isCurrentPageChanged = false;
 const {changePaginatorPage} = filesSlice.actions;
 
 const FilesMain = () => {
-    const state = useAppSelector((state) => state);
-    const {filesReducer, profile} = state;
-    const {rights} = profile;
-    const {files: filesData, filesNames, chats, senders, paginator, filesTypes} = filesReducer;
-    const {currentPage, filesInPage} = paginator;
+    const rights = useAppSelector((state) => state.profile.rights);
+
+    const filesData = useAppSelector((state) => state.filesReducer.files);
+    const filesTypes = useAppSelector((state) => state.filesReducer.filesTypes);
+
+    const paginator = useAppSelector((state) => state.filesReducer.paginator);
+    const currentPage = useAppSelector((state) => state.filesReducer.paginator.currentPage);
+    const filesInPage = useAppSelector((state) => state.filesReducer.paginator.filesInPage);
+
     const dispatch = useAppDispatch();
     const history = useHistory();
 
@@ -40,9 +41,8 @@ const FilesMain = () => {
         onChangeForm();
     }, [currentPage])
 
-    const {optionsName, optionsSender, optionsChat} = configFilters(filesNames, chats, senders);
-    const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
-    const {register, handleSubmit, formState: {errors}, setValue, getValues} = useForm<TypeSelectFilters>();
+
+    const {handleSubmit, formState: {errors}, setValue, getValues} = useForm<TypeSelectFilters>();
     const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
         const form = {
@@ -92,27 +92,7 @@ const FilesMain = () => {
                     <h3 className={"files__title"}>Формат</h3>
                     <h3 className={"files__title"}>Отправитель</h3>
                     <h3 className={"files__title"}>Чаты</h3>
-                    <Select name={"fileName"} className={"files__filter files__filter_select"} register={register}
-                            setValue={setValueForm}
-                            values={getValues("fileName")} options={optionsName} isMulti={false}/>
-                    <SelectTime name={"date"} className={"files__filter files__filter_select"} register={register}
-                                setValue={setValueForm}
-                                values={getValues("date")} placeholder={"Выберите дату"}/>
-                    <Select name={"categories"} className={"files__filter files__filter_select"} register={register}
-                            setValue={setValueForm}
-                            values={getValues("categories")} options={optionsCategory} isMulti={true}/>
-                    <Select name={"senderIds"} className={"files__filter files__filter_select"} register={register}
-                            setValue={setValueForm}
-                            values={getValues("senderIds")} options={optionsSender} isMulti={true}/>
-                    <div className={"files__filter files__filter_last files__filter_select files__filter_search"}>
-                        <Select name={"chatIds"}
-                                register={register}
-                                setValue={setValueForm}
-                                values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
-                        <button>
-                            <Search/>
-                        </button>
-                    </div>
+                    <Filters setValueForm={setValueForm} getValues={getValues}/>
                     {FragmentsFiles}
                 </form>
             </div>
@@ -122,7 +102,7 @@ const FilesMain = () => {
 };
 
 
-type TypeSelectFilters = {
+export type TypeSelectFilters = {
     fileName: string | undefined | null,
     senderIds: string[] | undefined | null,
     date: { dateFrom: string | null, dateTo: string | null },

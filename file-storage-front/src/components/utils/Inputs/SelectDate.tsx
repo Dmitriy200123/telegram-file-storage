@@ -45,14 +45,13 @@ const optionsDate = [
 
 type PropsDate = {
     name: string,
-    className?: string, register: any, values: any, setValue: any,
+    className?: string,values: any, setValue: (name: string, value: any) => void,
     placeholder?: string, isMulti?: boolean
 };
 
 export const SelectTime: React.FC<PropsDate> = ({
                                                     name,
                                                     className,
-                                                    register,
                                                     values,
                                                     setValue,
                                                     placeholder,

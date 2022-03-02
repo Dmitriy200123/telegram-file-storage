@@ -5,7 +5,9 @@ import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 //todo: fix updates redraw
 type Props = {
     name: string,
-    className?: string, register: any, values: any, setValue: (name: string, value: any) => void, options: Array<{ value: any, label: string }> | undefined,
+    className?: string,
+    values: any,
+    setValue: (name: string, value: any) => void, options: Array<{ value: any, label: string }> | undefined,
     placeholder?: string, isMulti?: boolean
 }
 export const Select: React.FC<Props> = memo(({

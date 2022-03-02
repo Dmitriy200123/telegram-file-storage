@@ -12,11 +12,11 @@ import {useDispatch} from "react-redux";
 
 export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> = memo(({className}) => {
     const {
-        register,
         handleSubmit,
         formState: {errors},
         setValue,
         getValues,
+        register,
         reset
     } = useForm<FormType>();
     const dispatch = useAppDispatch();
@@ -48,7 +48,7 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
                 <div className={"load-text__form-inputes"}>
                     <div>
                         <p>Тип Файла</p>
-                        <Select name={"contentType"} register={register}
+                        <Select name={"contentType"}
                                 setValue={setValueForm}
                                 values={getValues("contentType")} options={optionsCategory} isMulti={false}
                                 placeholder={""}/>
