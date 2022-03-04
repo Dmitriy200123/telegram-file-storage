@@ -6,19 +6,13 @@ import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
-import {filesSlice} from "../../redux/filesSlice";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
 import {Filters} from "./Filters";
 
-let isCurrentPageChanged = false;
-const {changePaginatorPage} = filesSlice.actions;
-
 const FilesMain = () => {
     const rights = useAppSelector((state) => state.profile.rights);
-
     const filesData = useAppSelector((state) => state.filesReducer.files);
     const filesTypes = useAppSelector((state) => state.filesReducer.filesTypes);
-
     const paginator = useAppSelector((state) => state.filesReducer.paginator);
     const currentPage = useAppSelector((state) => state.filesReducer.paginator.currentPage);
     const filesInPage = useAppSelector((state) => state.filesReducer.paginator.filesInPage);
@@ -37,7 +31,6 @@ const FilesMain = () => {
     }, []);
 
     useEffect(() => {
-        isCurrentPageChanged = true;
         onChangeForm();
     }, [currentPage])
 
@@ -45,6 +38,7 @@ const FilesMain = () => {
     const {handleSubmit, formState: {errors}, setValue, getValues} = useForm<TypeSelectFilters>();
     const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
+
         const form = {
             take: filesInPage,
             fileName: formData.fileName,
@@ -54,27 +48,20 @@ const FilesMain = () => {
             chatIds: formData.chatIds,
         };
 
-        if (isCurrentPageChanged) {
-            dispatch(fetchFiles({
-                skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
-                ...form
-            }));
-        } else {
-            if (currentPage !== 1)
-                dispatch(changePaginatorPage(1));
-            else
-                dispatch(fetchFiles({
-                    skip: 0, ...form
-                }));
-        }
 
-        isCurrentPageChanged = false;
+        dispatch(fetchFiles({
+            skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
+            ...form
+        }));
+
     };
 
-    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}
-                                                              types={filesTypes}/>);
-
     const onChangeForm = handleSubmit(dispatchValuesForm);
+
+
+    const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}
+                                                              types={filesTypes} fetchFiles={onChangeForm}/>);
+
     const setValueForm = (name: string, value: any) => {
         setValue(name as "fileName" | "senderIds" | "date" | "chatIds" | "categories", value, {
             shouldValidate: true,

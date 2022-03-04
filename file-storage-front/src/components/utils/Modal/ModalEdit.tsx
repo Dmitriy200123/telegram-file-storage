@@ -10,7 +10,7 @@ import {separateStringExtension} from "../../../utils/functions";
 
 const {closeModal} = filesSlice.actions;
 
-export const ModalEdit: React.FC<{ id: string }> = ({id}) => {
+export const ModalEdit: React.FC<{ id: string, callbackAccept?: ((...args:any) => void) | null }> = ({id}) => {
     const dispatch = useDispatch();
     const file = useAppSelector((state) => state.filesReducer.files.find((file) => file.fileId === id));
     //todo: переделать, тут что-то не очень

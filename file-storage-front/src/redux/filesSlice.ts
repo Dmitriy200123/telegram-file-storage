@@ -18,6 +18,7 @@ const initialState = {
         isOpen: false,
         id: null as null | string,
         content: null as null | ModalContent,
+        callbackAccept: null as null | AnyFuncType | undefined,
     },
     paginator: {
         count: 1,
@@ -35,11 +36,13 @@ export const filesSlice = createSlice({
         closeModal(state) {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
+            state.modalConfirm.callbackAccept = null;
         },
-        openModal(state, payload: PayloadAction<{ id: string, content: ModalContent }>) {
+        openModal(state, payload: PayloadAction<{ id: string, content: ModalContent, callbackAccept?: AnyFuncType }>) {
             state.modalConfirm.isOpen = true;
             state.modalConfirm.id = payload.payload.id;
             state.modalConfirm.content = payload.payload.content;
+            state.modalConfirm.callbackAccept = payload.payload.callbackAccept;
         },
         setOpenFile(state, payload: PayloadAction<TypeFile>) {
             state.openFile = payload.payload;
@@ -50,6 +53,9 @@ export const filesSlice = createSlice({
         },
         changePaginatorPage(state, action: PayloadAction<number>) {
             state.paginator.currentPage = action.payload;
+        },
+        setLoading(state, action: PayloadAction<boolean>){
+            state.loading = action.payload;
         },
     },
     extraReducers: {
@@ -194,5 +200,7 @@ export const filesSlice = createSlice({
     }
 });
 
+
+type AnyFuncType = (...args:any) => void;
 
 export default filesSlice.reducer;

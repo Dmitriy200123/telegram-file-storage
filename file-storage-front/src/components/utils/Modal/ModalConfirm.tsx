@@ -9,7 +9,7 @@ import {useHistory} from "react-router-dom";
 
 const {closeModal} = filesSlice.actions;
 
-export const ModalConfirm: React.FC<{ id: string }> = ({id}) => {
+export const ModalConfirm: React.FC<{ id: string, callbackAccept?: ((...args:any) => void) | null}> = ({id, callbackAccept}) => {
     const history = useHistory();
     const dispatch = useDispatch();
     return (
@@ -20,6 +20,7 @@ export const ModalConfirm: React.FC<{ id: string }> = ({id}) => {
                 <div className={"modal-confirm__btns"}>
                     <Button onClick={async () => {
                         await dispatch(fetchRemoveFile(id));
+                        callbackAccept && callbackAccept();
                         if (history.location.pathname !== "files")
                             history.push("/files");
                     }}>Да</Button>
