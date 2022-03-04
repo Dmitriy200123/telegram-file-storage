@@ -2,7 +2,7 @@ import {createAsyncThunk} from "@reduxjs/toolkit";
 
 import {TokensType} from "../../models/File";
 import {fetchAuth, fetchLog} from "../api/api-auth";
-import {fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfigText} from "../api/api";
 
 export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI) => {
     const jwtToken = localStorage.getItem("jwtToken");

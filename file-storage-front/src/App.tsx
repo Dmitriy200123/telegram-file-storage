@@ -50,6 +50,7 @@ const App: FC = () => {
     </div>)
 }
 
+
 const Main: FC = () => {
     const dispatch = useAppDispatch();
     useEffect(() => {
@@ -66,7 +67,7 @@ const Main: FC = () => {
     const loading = useAppSelector((state) => state.filesReducer.loading);
     const modalConfirm = useAppSelector((state) => state.filesReducer.modalConfirm);
     const {isOpen, id, content, callbackAccept} = modalConfirm;
-    const Content = modalContents[content || 0];
+    const ModalComponent = modalContents[content || 0];
     return (<>
         <Navbar className={"app__navbar"}/>
         {loading && <Loading/>}
@@ -89,7 +90,7 @@ const Main: FC = () => {
                     </>}
                 </Switch>
             </div>
-            {isOpen && id && <Content id={id} callbackAccept={callbackAccept}/>}
+            {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
         </div>
     </>)
 }

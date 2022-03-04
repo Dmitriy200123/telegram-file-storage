@@ -1,10 +1,10 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {Chat} from "../../models/File";
-import {fetchData, fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfig, fetchConfigText} from "../api/api";
 
 export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) => {
     try {
-        const data: Array<Chat> = await fetchData("/api/chats");
+        const data: Array<Chat> = await fetchConfig("/api/chats");
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не удалось загрузить чаты");
@@ -13,9 +13,9 @@ export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) =>
 
 export const fetchFilters = createAsyncThunk("files/filters", async (_, thunkAPI) => {
     try {
-        const chats = fetchData("/api/chats");
-        const senders = fetchData("/api/senders");
-        const filesNames = fetchData("/api/files/names");
+        const chats = fetchConfig("/api/chats");
+        const senders = fetchConfig("/api/senders");
+        const filesNames = fetchConfig("/api/files/names");
         const countFiles = fetchConfigText("/api/files/count");
         return {chats: await chats, senders: await senders, countFiles: await countFiles, filesNames: await filesNames};
     } catch (err) {
@@ -48,7 +48,7 @@ export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFiles
 
 export const fetchFilesTypes = createAsyncThunk("files/filesTypes", async (_, thunkAPI) => {
     try {
-        return await fetchData(`/api/files/types`);
+        return await fetchConfig(`/api/files/types`);
     } catch (err) {
         return thunkAPI.rejectWithValue("Не удалось загрузить типы файлов");
     }
