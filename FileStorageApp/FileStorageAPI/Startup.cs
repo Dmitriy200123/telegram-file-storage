@@ -135,7 +135,11 @@ namespace FileStorageAPI
             app.UseCookiePolicy();
             app.UseRouting();
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials());
 
             app.UseAuthentication();
             app.UseAuthorization();
