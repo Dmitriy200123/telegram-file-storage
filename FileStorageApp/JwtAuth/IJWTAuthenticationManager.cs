@@ -18,6 +18,6 @@ namespace JwtAuth
         /// </summary>
         /// <param name="username">Пользователь для которого создается токен и рефреш токен</param>
         /// <param name="claims">Клаймы</param>
-        Task<AuthenticationResponse> Authenticate(string username, IEnumerable<Claim> claims);
+        Task<AuthenticationResponse> Authenticate(string username, params Claim[] claims);
     }
 }
