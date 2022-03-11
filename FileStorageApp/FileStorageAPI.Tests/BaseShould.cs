@@ -46,7 +46,7 @@ namespace FileStorageAPI.Tests
             A.CallTo(() => _userIdFromTokenProvider.GetUserIdFromToken(A<HttpRequest>.Ignored, A<byte[]>.Ignored))
                 .Returns(Guid.Parse(SenderId));
             _fakeRightsFilter = A.Fake<IRightsFilter>();
-            A.CallTo(() => _fakeRightsFilter.CheckRights(A<ActionExecutingContext>.Ignored, A<IEnumerable<int>>.Ignored))
+            A.CallTo(() => _fakeRightsFilter.CheckRightsAsync(A<ActionExecutingContext>.Ignored, A<int[]>.Ignored))
                 .Returns(true);
             _senderFormTokenProvider = A.Fake<ISenderFormTokenProvider>();
             A.CallTo(() => _senderFormTokenProvider.GetSenderFromToken(A<HttpRequest>.Ignored))

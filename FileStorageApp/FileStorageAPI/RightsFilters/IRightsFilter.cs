@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FileStorageAPI.RightsFilters
@@ -13,6 +13,6 @@ namespace FileStorageAPI.RightsFilters
         /// </summary>
         /// <param name="filterContext">Контекст</param>
         /// <param name="accesses">Требуемые доступы</param>
-        bool CheckRights(ActionExecutingContext filterContext, IEnumerable<int> accesses);
+        Task<bool> CheckRightsAsync(ActionExecutingContext filterContext, int[] accesses);
     }
 }
