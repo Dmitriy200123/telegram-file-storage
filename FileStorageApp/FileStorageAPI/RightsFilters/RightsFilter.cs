@@ -24,19 +24,14 @@ namespace FileStorageAPI.RightsFilters
             var userToken = authHeader.ToString().Split(' ')[1];
             var principal = TokenHelper.GetPrincipalFromToken(userToken, Settings.Key);
             var username = principal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
-
-            Guid.TryParse(username?.Value, out var userId);
+            var userId = Guid.Parse(username!.Value);
 
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var user = await userStorage.GetByIdAsync(userId, true);
-            var userAccesses = user?.Rights.Select(right => right.Access);
-
-            if (userAccesses == null)
-                return false;
-
+            var userAccesses = user!.Rights.Select(right => right.Access);
             var accessIntersections = userAccesses.Intersect(accesses);
 
-            return accesses.All(access => accessIntersections.Contains(access));
+            return accesses.Length == accessIntersections.Count();
         }
     }
 }

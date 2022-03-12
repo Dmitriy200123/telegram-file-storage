@@ -116,7 +116,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление файла в хранилище. Требуется право "Admin" или "Upload".
+        /// Добавление файла в хранилище. Требуется право "Upload".
         /// </summary>
         /// <param name="file">Файл</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
@@ -139,7 +139,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Обновление названия файла. Требуется право "Admin" или "Rename".
+        /// Обновление названия файла. Требуется право "Rename".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <param name="fileName">Новое имя файла</param>
@@ -161,7 +161,7 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Удаление файла. Требуется право "Admin" или "Delete".
+        /// Удаление файла. Требуется право "Delete".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
