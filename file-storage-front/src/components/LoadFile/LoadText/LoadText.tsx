@@ -8,7 +8,6 @@ import {InputText} from "../../utils/Inputs/Text/InputText";
 import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {postCustomFile} from "../../../redux/thunks/fileThunks";
 import {AppDispatch} from "../../../redux/redux-store";
-import {useDispatch} from "react-redux";
 
 export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> = memo(({className}) => {
     const {
@@ -22,8 +21,10 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
     const dispatch = useAppDispatch();
 
     const {filesTypes} = useAppSelector(state => state.filesReducer);
-    const optionsCategory = filesTypes && Object.keys(filesTypes).filter(key => key === "4" || key === "5")
-        .map((key) => ({label: filesTypes[key], value: key}));
+    const optionsCategory = filesTypes
+        && Object.keys(filesTypes)
+            .filter(key => key === "4" || key === "5")
+            .map((key) => ({label: filesTypes[key], value: key}));
 
     const dispatchValuesForm: SubmitHandler<FormType> = ({contentType, FileName, message}) => {
         if (contentType && FileName && message) {
@@ -34,8 +35,8 @@ export const LoadText: React.FC<{ dispatch: AppDispatch, className?: string }> =
 
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
-    const setValueForm = (name: any, value: any) => {
-        setValue(name, value, {
+    const setValueForm = (name: string, value: any) => {
+        setValue(name as keyof FormType, value, {
             shouldValidate: true,
             shouldDirty: true
         });

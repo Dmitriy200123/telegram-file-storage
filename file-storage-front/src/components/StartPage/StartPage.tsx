@@ -3,17 +3,18 @@ import Logo from "./../../assets/logos/grey.png";
 import {Button} from "../utils/Button/Button";
 import {FC, memo, useEffect, useState} from "react";
 import {GitlabAuth} from "gitlab-auth";
-import {useHistory} from "react-router-dom";
 import {useAppDispatch} from "../../utils/hooks/reduxHooks";
 import {fetchAuthGitlab} from "../../redux/thunks/profileThunks";
 
 export const StartPage: FC = memo(() => {
     const dispatch = useAppDispatch();
     const [clicked, ChangeClicked] = useState(localStorage.getItem("flag") === "true");
+
     const changeClicked = (flag: boolean) => {
         localStorage.setItem("flag", String(flag));
         ChangeClicked(flag);
-    }
+    };
+
     useEffect(() => {
         localStorage.setItem("flag", "false");
         let dataAuthGit = localStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
@@ -24,7 +25,8 @@ export const StartPage: FC = memo(() => {
             const json = JSON.parse(dataAuthGit);
             dispatch(fetchAuthGitlab(json.access_token));
         }
-    }, [localStorage, sessionStorage])
+    }, [localStorage, sessionStorage]);
+
     return (
         <div>
             {clicked && <GitlabAuth

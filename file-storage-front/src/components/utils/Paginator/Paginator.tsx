@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {memo, useCallback, useEffect} from 'react';
 import "./Paginator.scss"
 import {fetchFiles} from "../../../redux/thunks/mainThunks";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
@@ -7,7 +7,7 @@ import {filesSlice} from "../../../redux/filesSlice";
 
 const {changePaginatorPage} = filesSlice.actions;
 
-const Paginator = ({paginator}: { paginator: TypePaginator}) => {
+const Paginator = memo(({paginator}: { paginator: TypePaginator}) => {
     const {currentPage,count} = paginator
     const dispatch = useAppDispatch();
 
@@ -44,6 +44,6 @@ const Paginator = ({paginator}: { paginator: TypePaginator}) => {
             </button>
         </div>
     )
-}
+})
 
 export default Paginator;

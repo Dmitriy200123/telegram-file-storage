@@ -6,7 +6,7 @@ import {PreviewFile} from "./PreviewFile/PreviewFile";
 import {Route, Switch} from "react-router-dom";
 import {LoadText} from "./LoadText/LoadText";
 
-export const LoadFileMain: React.FC<any> = memo(({match}) => {
+export const LoadFileMain: React.FC<{ match: {path:string}}> = memo(({match}) => {
     const file = useAppSelector((state) => state.editor.file);
     return (
         <div className={"load-file"}>
