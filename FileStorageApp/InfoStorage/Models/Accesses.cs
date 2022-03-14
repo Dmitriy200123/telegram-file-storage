@@ -31,9 +31,9 @@ namespace FileStorageApp.Data.InfoStorage.Models
         Delete = 3,
 
         /// <summary>
-        /// Возможность изменять права пользователей
+        /// Возможность управления пользователями и их правами
         /// </summary>
-        [Description("Редактировать права других пользователей")]
+        [Description("Управлять пользователями и их правами")]
         UserAccessesManagement = 4,
     }
 }

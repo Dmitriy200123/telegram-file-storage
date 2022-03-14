@@ -24,11 +24,17 @@ namespace FileStorageAPI.RightsFilters
             var userToken = authHeader.ToString().Split(' ')[1];
             var principal = TokenHelper.GetPrincipalFromToken(userToken, Settings.Key);
             var username = principal.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
-            var userId = Guid.Parse(username!.Value);
+            if (username == null)
+                throw new InvalidOperationException($"Doesn't contain claim of {nameof(ClaimTypes.Name)}");
+            if (!Guid.TryParse(username.Value, out var userId))
+                throw new InvalidOperationException($"Can't convert ${nameof(username)} claim to user id");
 
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var user = await userStorage.GetByIdAsync(userId, true);
-            var userAccesses = user!.Rights.Select(right => right.Access);
+            if (user == null)
+                throw new InvalidOperationException("User not found");
+
+            var userAccesses = user.Rights.Select(right => right.Access);
             var accessIntersections = userAccesses.Intersect(accesses);
 
             return accesses.Length == accessIntersections.Count();
