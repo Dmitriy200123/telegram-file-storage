@@ -57,11 +57,11 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает информацию о всех авторизированных пользователях. Требуется право "Admin".
+        /// Возвращает информацию о всех авторизированных пользователях. Требуется право "UserAccessesManagement".
         /// </summary>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователях", typeof(List<UserIdAndFio>))]
-        [RightsFilter(Accesses.Admin)]
+        [RightsFilter(Accesses.UserAccessesManagement)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userInfoService.GetUsersInfo();

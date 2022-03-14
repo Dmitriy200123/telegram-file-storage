@@ -34,6 +34,6 @@ namespace FileStorageApp.Data.InfoStorage.Models
         /// Возможность изменять права пользователей
         /// </summary>
         [Description("Редактировать права других пользователей")]
-        Admin = 4,
+        UserAccessesManagement = 4,
     }
 }
