@@ -51,6 +51,7 @@ export const fetchRightsDescription = createAsyncThunk("rights/description", asy
 export const postSetRightsUser = createAsyncThunk("rights/set", async (args: { userId: string, grant?: Array<string | number>, revoke?: Array<string | number> }, thunkAPI) => {
     try {
         const data = await fetchConfig("/rights/set", {method: "POST", body: args});
+        thunkAPI.dispatch(fetchRightsCurrentUser());
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");

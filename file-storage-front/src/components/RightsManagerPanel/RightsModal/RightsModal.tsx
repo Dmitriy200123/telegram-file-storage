@@ -50,10 +50,11 @@ const RightsModalUI: React.FC<PropsType> = memo(({allRights, name, rights, idUse
             return;
         const grant = newRights.filter((e) => !rights.includes(e));
         const revoke = rights.filter((e) => !newRights.includes(e));
-        if (grant.length === 0 && revoke.length === 0)
+        if (grant.length === 0 && revoke.length === 0) {
+            close();
             return;
-        await dispatch(postSetRightsUser({userId: idUser, grant: grant, revoke: revoke}));
-        dispatch(fetchRightsCurrentUser());
+        }
+        dispatch(postSetRightsUser({userId: idUser, grant: grant, revoke: revoke}));
     }
 
     return (
