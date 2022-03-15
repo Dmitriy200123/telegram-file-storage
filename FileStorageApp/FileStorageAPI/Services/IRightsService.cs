@@ -12,8 +12,8 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Получение прав текущего пользователя по его идентификатору.
         /// </summary>
-        /// <param name="id"></param>
-        Task<RequestResult<int[]>> GetCurrentUserRights(Guid id);
+        /// <param name="userId"></param>
+        Task<RequestResult<int[]>> GetCurrentUserRights(Guid userId);
 
         /// <summary>
         /// Сопоставление описания и номера права.

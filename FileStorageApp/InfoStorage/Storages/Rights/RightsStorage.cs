@@ -5,7 +5,7 @@ using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
+namespace FileStorageApp.Data.InfoStorage.Storages.Rights
 {
     internal class RightsStorage : BaseStorage<Right>, IRightsStorage
     {
@@ -13,9 +13,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.AccessStorage
         {
         }
 
-        public async Task<int[]> GetUserRightsAsync(Guid id)
+        public async Task<int[]> GetUserRightsAsync(Guid userId)
         {
-            return await DbSet.Where(x => x.UserId == id).Select(x => x.Access).ToArrayAsync();
+            return await DbSet.Where(x => x.UserId == userId).Select(x => x.Access).ToArrayAsync();
         }
 
         public async Task<bool> RemoveRightAsync(Guid id, int access)

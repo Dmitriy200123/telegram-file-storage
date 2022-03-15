@@ -25,10 +25,10 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int[]>> GetCurrentUserRights(Guid id)
+        public async Task<RequestResult<int[]>> GetCurrentUserRights(Guid userId)
         {
             using var rightsStorage = _infoStorageFactory.CreateRightsStorage();
-            var userRight = await rightsStorage.GetUserRightsAsync(id);
+            var userRight = await rightsStorage.GetUserRightsAsync(userId);
             return RequestResult.Ok(userRight);
         }
 
