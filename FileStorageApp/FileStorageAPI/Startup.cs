@@ -201,6 +201,7 @@ namespace FileStorageAPI
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
             services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
             services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
+            services.AddSingleton<IAccessesFromTokenProvider, AccessesFromTokenProvider>();
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)

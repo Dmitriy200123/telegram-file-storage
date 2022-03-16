@@ -35,5 +35,11 @@ namespace FileStorageApp.Data.InfoStorage.Models
         /// </summary>
         [Description("Управлять пользователями и их правами")]
         UserAccessesManagement = 4,
+        
+        /// <summary>
+        /// Возможность просматривать файлы всех чатов 
+        /// </summary>
+        [Description("Просматривать файлы всех чатов")]
+        AllChatFiles = 5
     }
 }
