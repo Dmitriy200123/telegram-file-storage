@@ -1,6 +1,5 @@
 import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRemoveFile} from "./thunks/fileThunks";
 
 const initialState = {
     chats: null as null | Array<Chat>,
@@ -56,7 +55,6 @@ export const filesSlice = createSlice({
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-
         setFilesTypes(state, action: PayloadAction<Array<{ id: string, name: string }>>) {
             const types: ExpandingObject<string> = {};
             action.payload.forEach(({id, name}) => {
@@ -65,7 +63,6 @@ export const filesSlice = createSlice({
 
             state.filesTypes = types;
         },
-
         setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) {
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
@@ -81,88 +78,56 @@ export const filesSlice = createSlice({
             state.filesCount = +action.payload.filesCount;
             state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
         },
+        changeFileName(state, action: PayloadAction<{ id: string, fileName: string }>) {
+            state.files = state.files.map(e => e.fileId === action.payload.id ? {
+                ...e,
+                fileName: action.payload.fileName
+            } : e);
 
-
-    },
-    extraReducers: {
-        [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
-            state.loading = false;
+            if (state.openFile && state.openFile.fileId === action.payload.id)
+                state.openFile.fileName = action.payload.fileName;
+        },
+        removeFile(state, action: PayloadAction<string>) {
             state.files = state.files.filter(e => e.fileId !== action.payload);
             state.filesCount--;
             state.paginator.count = Math.ceil((state.filesCount / state.paginator.filesInPage));
             if (state.paginator.currentPage > 0 && state.paginator.currentPage > state.paginator.count)
                 state.paginator.currentPage--;
-            state.modalConfirm.isOpen = false;
-        },
+        }
 
-        [fetchRemoveFile.pending.type]: (state) => {
-            state.loading = true;
-        },
-
-        [fetchRemoveFile.rejected.type]: (state) => {
-            state.loading = false;
-            state.modalConfirm.isOpen = false;
-            state.modalConfirm.id = null
-        },
-
-        [fetchEditFileName.fulfilled.type]: (state, action: PayloadAction<{ id: string, fileName: string }>) => {
-            state.loading = false;
-            state.files = state.files.map(e => e.fileId === action.payload.id ? {
-                ...e,
-                fileName: action.payload.fileName
-            } : e);
-            if (state.openFile && state.openFile.fileId === action.payload.id)
-                state.openFile.fileName = action.payload.fileName;
-            state.modalConfirm.isOpen = false;
-        },
-        [fetchEditFileName.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.loading = false;
-            state.modalConfirm.isOpen = false;
-            state.modalConfirm.id = null
-        },
-
-        [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
-            state.loading = false;
-            state.openFile = action.payload;
-            if (state.files.length === 0)
-                state.files = [action.payload];
-        },
-        [fetchFile.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchFile.rejected.type]: (state, action: PayloadAction) => {
-            state.loading = false;
-        },
-
-        [fetchFileText.fulfilled.type]: (state, action: PayloadAction<string>) => {
-            state.loading = false;
-            if (state.openFile)
-                state.openFile.message = action.payload;
-        },
-        [fetchFileText.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchFileText.rejected.type]: (state, action: PayloadAction) => {
-            state.loading = false;
-        },
+    },
+    extraReducers: {
 
 
-        [fetchDownloadLink.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
-            state.loading = false;
-        },
-        [fetchDownloadLink.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction) => {
-            state.loading = false;
-        },
+        // [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
+        //     state.loading = false;
+        //     state.openFile = action.payload;
+        //     if (state.files.length === 0)
+        //         state.files = [action.payload];
+        // },
+        // [fetchFile.pending.type]: (state, action: PayloadAction) => {
+        //     state.loading = true;
+        // },
+        // [fetchFile.rejected.type]: (state, action: PayloadAction) => {
+        //     state.loading = false;
+        // },
+        //
+        // [fetchFileText.fulfilled.type]: (state: typeof initialState, action: PayloadAction<string>) => {
+        //     state.loading = false;
+        //     if (state.openFile)
+        //         state.openFile.message = action.payload;
+        // },
+        // [fetchFileText.pending.type]: (state: typeof initialState, action: PayloadAction) => {
+        //     state.loading = true;
+        // },
+        // [fetchFileText.rejected.type]: (state: typeof initialState, action: PayloadAction) => {
+        //     state.loading = false;
+        // },
+
 
         //endregion
     }
-});
+})
 
 
 type AnyFuncType = (...args: any) => void;
