@@ -66,7 +66,7 @@ export const filesSlice = createSlice({
             state.filesTypes = types;
         },
 
-        setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>){
+        setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) {
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
             const pagesCount = Math.ceil((+action.payload.countFiles / state.paginator.filesInPage));
@@ -74,28 +74,17 @@ export const filesSlice = createSlice({
             state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
             state.filesNames = action.payload.filesNames;
         },
-        setFiles(state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>){
+        setFiles(state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) {
             state.loading = false;
-                state.files = action.payload.files;
-                const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
-                state.filesCount = +action.payload.filesCount;
-                state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
+            state.files = action.payload.files;
+            const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
+            state.filesCount = +action.payload.filesCount;
+            state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
         },
 
 
     },
     extraReducers: {
-
-        //region FileThunks
-        // [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) => {
-        //     state.loading = false;
-        //     state.files = action.payload.files;
-        //
-        //     const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
-        //     state.filesCount = +action.payload.filesCount;
-        //     state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
-        // },
-
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
             state.files = state.files.filter(e => e.fileId !== action.payload);
@@ -134,7 +123,6 @@ export const filesSlice = createSlice({
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
         },
-
 
         [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
             state.loading = false;

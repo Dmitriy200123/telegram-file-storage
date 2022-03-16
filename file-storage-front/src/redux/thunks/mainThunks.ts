@@ -1,8 +1,11 @@
 import {fetchConfig, fetchConfigText} from "../api/api";
 import {AppDispatch} from "../redux-store";
 import {filesSliceActions} from "../filesSlice";
+import {profileSlice} from "../profileSlice";
+import {MessageTypeEnum} from "../../models/File";
 
 const {setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
+const {addMessage} = profileSlice.actions;
 
 export const fetchFilters = () => async (dispatch: AppDispatch) => {
     try {
@@ -19,8 +22,8 @@ export const fetchFilters = () => async (dispatch: AppDispatch) => {
         }));
         dispatch(setLoading(false));
     } catch (err) {
-        //todo: set err message
         dispatch(setLoading(false));
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить фильтры"}));
     }
 };
 
@@ -44,8 +47,8 @@ export const fetchFiles = (args:TypeFilesFetchFilters) => async (dispatch: AppDi
         dispatch(setFiles({files: await fetchConfig(`/api/files`, {params: args}), filesCount: await filesCount}));
         dispatch(setLoading(false));
     } catch (err) {
-        //todo: set err message
         dispatch(setLoading(false));
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить файлы"}))
     }
 };
 
@@ -56,17 +59,7 @@ export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
         dispatch(setFilesTypes(await fetchConfig(`/api/files/types`)));
         dispatch(setLoading(false));
     } catch (err) {
-        //todo: set err message
         dispatch(setLoading(false));
+        dispatch( addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить типы файлов"}))
     }
 }
-
-/*
- TODO: ШАБЛОН
-const fetchUsers = () => async (dispatch) => {
-  dispatch(usersLoading());
-  const response = await usersAPI.fetchAll();
-  dispatch(usersReceived(response.data));
-};
-*/
-
