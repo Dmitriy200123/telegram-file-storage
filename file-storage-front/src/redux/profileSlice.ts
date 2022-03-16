@@ -31,6 +31,9 @@ export const profileSlice = createSlice({
         clearMessage(state, payload: PayloadAction<Number>) {
             state.messages = state.messages.filter((e, i) => i !== payload.payload);
         },
+        addMessage (state, payload: PayloadAction<{type: MessageTypeEnum, value: string}>){
+            state.messages = [...state.messages, payload.payload];
+        }
 
     },
     extraReducers: {
