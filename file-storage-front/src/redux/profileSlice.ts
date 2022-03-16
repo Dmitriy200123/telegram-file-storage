@@ -1,14 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum, Rights, TokensType} from "../models/File";
-import {
-    fetchDownloadLink,
-    fetchEditFileName,
-    fetchFile,
-    fetchFileText,
-    fetchRemoveFile,
-    postCustomFile,
-    postFile
-} from "./thunks/fileThunks";
 import {fetchAuthGitlab, fetchIsAuth, fetchLogout, fetchLogoutTelegram} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
 import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
@@ -16,7 +7,7 @@ import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
 
 const initialState = {
     isAuth: false,
-    name: "Берсерк Справедливович",
+    name: "Полина Антоновна",
     hasTelegram: false,
     avatar: null as string | null,
     loading: true,
@@ -31,8 +22,11 @@ export const profileSlice = createSlice({
         clearMessage(state, payload: PayloadAction<Number>) {
             state.messages = state.messages.filter((e, i) => i !== payload.payload);
         },
-        addMessage (state, payload: PayloadAction<{type: MessageTypeEnum, value: string}>){
+        addMessage(state, payload: PayloadAction<{ type: MessageTypeEnum, value: string }>) {
             state.messages = [...state.messages, payload.payload];
+        },
+        setLoading(state, payload: PayloadAction<boolean>) {
+            state.loading = payload.payload
         }
 
     },
@@ -115,58 +109,41 @@ export const profileSlice = createSlice({
         },
 
 
-        [fetchRemoveFile.fulfilled.type]: (state) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно удален файл"}];
-        },
-        [fetchEditFileName.fulfilled.type]: (state) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
-        },
-        [fetchEditFileName.fulfilled.type]: (state) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
-        },
+        // [fetchRemoveFile.fulfilled.type]: (state) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно удален файл"}];
+        // },
+        // [fetchEditFileName.fulfilled.type]: (state) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
+        // },
+        // [fetchEditFileName.fulfilled.type]: (state) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
+        // },
 
 
+        // [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        // },
+        // [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        // },
+        // [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
 
-        [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-        [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-        [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-        [fetchDownloadLink.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-
-        [fetchFileText.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-
-        [postFile.fulfilled.type]: (state, _) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно загружен"}];
-            state.loading = false;
-        },
-        [postFile.pending.type]: (state, _) => {
-            state.loading = true;
-        },
-        [postFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.loading = false;
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-
-        [postCustomFile.fulfilled.type]: (state, _) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно загружен"}];
-            state.loading = false;
-        },
-        [postCustomFile.pending.type]: (state, _) => {
-            state.loading = true;
-        },
-        [postCustomFile.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.loading = false;
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+        // [fetchFileText.rejected.type]: (state, action: PayloadAction<string>) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        // },
+        //
+        // [postCustomFile.fulfilled.type]: (state, _) => {
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно загружен"}];
+        //     state.loading = false;
+        // },
+        // [postCustomFile.pending.type]: (state, _) => {
+        //     state.loading = true;
+        // },
+        // [postCustomFile.rejected.type]: (state, action: PayloadAction<string>) => {
+        //     state.loading = false;
+        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
+        // },
     }
 });
 
