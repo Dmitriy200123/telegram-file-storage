@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum, Rights, TokensType} from "../models/File";
-import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
 import {
     fetchDownloadLink,
     fetchEditFileName,
@@ -124,15 +123,7 @@ export const profileSlice = createSlice({
         },
 
 
-        [fetchChats.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-        [fetchFilters.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
-        [fetchFiles.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        },
+
         [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
             state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
         },

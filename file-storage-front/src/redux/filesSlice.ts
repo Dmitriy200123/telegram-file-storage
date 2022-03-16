@@ -1,6 +1,5 @@
 import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchChats, fetchFiles, fetchFilesTypes, fetchFilters} from "./thunks/mainThunks";
 import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRemoveFile} from "./thunks/fileThunks";
 
 const initialState = {
@@ -54,25 +53,20 @@ export const filesSlice = createSlice({
         changePaginatorPage(state, action: PayloadAction<number>) {
             state.paginator.currentPage = action.payload;
         },
-        setLoading(state, action: PayloadAction<boolean>){
+        setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-    },
-    extraReducers: {
-        [fetchChats.fulfilled.type]: (state, action: PayloadAction<Array<Chat>>) => {
-            state.loading = false;
-            state.chats = action.payload;
-        },
-        [fetchChats.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchChats.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
-            state.loading = false;
+
+        setFilesTypes(state, action: PayloadAction<Array<{ id: string, name: string }>>) {
+            const types: ExpandingObject<string> = {};
+            action.payload.forEach(({id, name}) => {
+                types[id] = name;
+            });
+
+            state.filesTypes = types;
         },
 
-
-        [fetchFilters.fulfilled.type]: (state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) => {
-            state.loading = false;
+        setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>){
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
             const pagesCount = Math.ceil((+action.payload.countFiles / state.paginator.filesInPage));
@@ -80,47 +74,27 @@ export const filesSlice = createSlice({
             state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
             state.filesNames = action.payload.filesNames;
         },
-        [fetchFilters.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchFilters.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
+        setFiles(state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>){
             state.loading = false;
+                state.files = action.payload.files;
+                const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
+                state.filesCount = +action.payload.filesCount;
+                state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
         },
 
 
-        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{ id: string, name: string }>>) => {
-            const types: ExpandingObject<string> = {};
-            action.payload.forEach(({id, name}) => {
-                types[id] = name;
-            });
-
-            state.filesTypes = types;
-            state.loading = false;
-        },
-        // [fetchFilesTypes.pending.type]: (state, action: PayloadAction) => {
-        //     state.loading = true;
-        // },
-        // [fetchFilesTypes.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
-        //     state.loading = false;
-        // },
-
+    },
+    extraReducers: {
 
         //region FileThunks
-        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) => {
-            state.loading = false;
-            state.files = action.payload.files;
-
-            const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
-            state.filesCount = +action.payload.filesCount;
-            state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
-        },
-        [fetchFiles.pending.type]: (state, action: PayloadAction) => {
-            state.loading = true;
-        },
-        [fetchFiles.rejected.type]: (state, action: PayloadAction<Array<Chat>>) => {
-            state.loading = false;
-        },
-
+        // [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) => {
+        //     state.loading = false;
+        //     state.files = action.payload.files;
+        //
+        //     const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
+        //     state.filesCount = +action.payload.filesCount;
+        //     state.paginator.count = isNaN(pagesCount) ? 1 : pagesCount;
+        // },
 
         [fetchRemoveFile.fulfilled.type]: (state, action: PayloadAction<string>) => {
             state.loading = false;
@@ -131,9 +105,11 @@ export const filesSlice = createSlice({
                 state.paginator.currentPage--;
             state.modalConfirm.isOpen = false;
         },
+
         [fetchRemoveFile.pending.type]: (state) => {
             state.loading = true;
         },
+
         [fetchRemoveFile.rejected.type]: (state) => {
             state.loading = false;
             state.modalConfirm.isOpen = false;
@@ -201,6 +177,7 @@ export const filesSlice = createSlice({
 });
 
 
-type AnyFuncType = (...args:any) => void;
+type AnyFuncType = (...args: any) => void;
 
+export const filesSliceActions = filesSlice.actions;
 export default filesSlice.reducer;
