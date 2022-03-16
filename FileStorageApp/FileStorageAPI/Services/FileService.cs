@@ -11,6 +11,7 @@ using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
 using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
@@ -28,6 +29,7 @@ namespace FileStorageAPI.Services
         private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
         private readonly IDownloadLinkProvider _downloadLinkProvider;
         private readonly ISenderFormTokenProvider _senderFormTokenProvider;
+        private readonly IAccessesFromTokenProvider _accessesFromTokenProvider;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
@@ -39,13 +41,15 @@ namespace FileStorageAPI.Services
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
         /// <param name="downloadLinkProvider">Поставщик для получения ссылки на файл</param>
         /// <param name="senderFormTokenProvider"></param>
+        /// <param name="accessesFromTokenProvider">Поставщик для получения Id пользователя из токена</param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
             IFileTypeProvider fileTypeProvider,
             IExpressionFileFilterProvider expressionFileFilterProvider,
             IDownloadLinkProvider downloadLinkProvider,
-            ISenderFormTokenProvider senderFormTokenProvider)
+            ISenderFormTokenProvider senderFormTokenProvider,
+            IAccessesFromTokenProvider accessesFromTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
@@ -57,6 +61,8 @@ namespace FileStorageAPI.Services
                 downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
             _senderFormTokenProvider = senderFormTokenProvider ??
                                        throw new ArgumentNullException(nameof(senderFormTokenProvider));
+            _accessesFromTokenProvider = accessesFromTokenProvider ??
+                                         throw new ArgumentNullException(nameof(accessesFromTokenProvider));
         }
 
         /// <inheritdoc />
@@ -68,7 +74,8 @@ namespace FileStorageAPI.Services
 
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var chatsId = sender!.Chats.Select(chat => chat.Id).ToList();
+            var hasAllChatFileAccess = await HasAllChatFilesAccess(request);
+            var chatsId = hasAllChatFileAccess ? null : sender!.Chats.Select(chat => chat.Id).ToList();
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
             SetFileChat(filesFromDataBase);
@@ -78,7 +85,7 @@ namespace FileStorageAPI.Services
 
             return RequestResult.Ok(convertedFiles);
         }
-        
+
         /// <inheritdoc />
         public async Task<RequestResult<int>> GetFilesCountAsync(FileSearchParameters fileSearchParameters,
             HttpRequest request)
@@ -100,14 +107,15 @@ namespace FileStorageAPI.Services
             if (file is null)
                 return RequestResult.NotFound<FileInfo>($"File with identifier {id} not found");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var hasAllChatFilesAccess = await HasAllChatFilesAccess(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = filesToFilter.FilterFiles(sender);
+            var filteredFiles = hasAllChatFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             SetFileChat(filteredFiles);
             return filteredFiles.Count == 0
                 ? RequestResult.Forbidden<FileInfo>("Don't have access to this file")
                 : RequestResult.Ok(_fileInfoConverter.ConvertFileInfo(file));
         }
-        
+
         /// <inheritdoc />
         public async Task<RequestResult<string>> GetFileDownloadLinkByIdAsync(Guid id, HttpRequest request)
         {
@@ -117,8 +125,9 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<string>($"File with identifier {id} not found");
 
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var hasAllChatFilesAccess = await HasAllChatFilesAccess(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = filesToFilter.FilterFiles(sender);
+            var filteredFiles = hasAllChatFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this file");
             var result = await _downloadLinkProvider.GetDownloadLinkAsync(id, file.Name);
@@ -203,7 +212,8 @@ namespace FileStorageAPI.Services
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
             var files = await fileInfoStorage.GetAllAsync();
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
-            var filterFiles = files.FilterFiles(sender);
+            var hasAllChatFilesAccess = await HasAllChatFilesAccess(request);
+            var filterFiles = hasAllChatFilesAccess ? files : files.FilterFiles(sender);
             var filesNames = filterFiles.Select(x => x.Name).ToList();
             return RequestResult.Ok(filesNames);
         }
@@ -229,8 +239,9 @@ namespace FileStorageAPI.Services
             if (file.Type != FileType.Link)
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var hasAllChatFilesAccess = await HasAllChatFilesAccess(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = filesToFilter.FilterFiles(sender);
+            var filteredFiles = hasAllChatFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this link");
             using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
@@ -249,8 +260,9 @@ namespace FileStorageAPI.Services
             if (file.Type != FileType.Text)
                 return RequestResult.BadRequest<string>("Invalid file type");
             var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
+            var hasAllChatFilesAccess = await HasAllChatFilesAccess(request);
             var filesToFilter = new List<DataBaseFile> {file};
-            var filteredFiles = filesToFilter.FilterFiles(sender);
+            var filteredFiles = hasAllChatFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
                 return RequestResult.Forbidden<string>("Don't have access to this message");
             using var physicalFileStorage = await _filesStorageFactory.CreateAsync();
@@ -299,6 +311,12 @@ namespace FileStorageAPI.Services
             return await filesStorage.AddAsync(file);
         }
 
+        private async Task<bool> HasAllChatFilesAccess(HttpRequest request)
+        {
+            var accesses = await _accessesFromTokenProvider.GetAccessesFromTokenAsync(request);
+            return accesses.Any(access => access == Accesses.AllChatFiles);
+        }
+
         private static DataBaseFile CreateFile(FileType fileType, Guid senderId, string name)
         {
             return new DataBaseFile
@@ -310,6 +328,7 @@ namespace FileStorageAPI.Services
                 FileSenderId = senderId
             };
         }
+
         private static void SetFileChat(IEnumerable<DataBaseFile> files)
         {
             var chat = new Chat
@@ -324,6 +343,5 @@ namespace FileStorageAPI.Services
                 file.Chat ??= chat;
             }
         }
-
     }
 }

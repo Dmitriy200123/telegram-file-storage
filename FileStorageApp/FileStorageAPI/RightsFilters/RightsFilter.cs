@@ -10,23 +10,21 @@ namespace FileStorageAPI.RightsFilters
     internal class RightsFilter : IRightsFilter
     {
         private readonly IInfoStorageFactory _infoStorageFactory;
-        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
+        private readonly IAccessesFromTokenProvider _accessesFromTokenProvider;
 
-        public RightsFilter(IInfoStorageFactory infoStorageFactory, IUserIdFromTokenProvider userIdFromTokenProvider)
+        public RightsFilter(IInfoStorageFactory infoStorageFactory,
+            IAccessesFromTokenProvider accessesFromTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
-            _userIdFromTokenProvider = userIdFromTokenProvider ?? throw new ArgumentNullException(nameof(userIdFromTokenProvider));
+            _accessesFromTokenProvider = accessesFromTokenProvider ??
+                                         throw new ArgumentNullException(nameof(accessesFromTokenProvider));
         }
 
         public async Task<bool> CheckRightsAsync(ActionExecutingContext filterContext, int[] accesses)
         {
-            var userId = _userIdFromTokenProvider.GetUserIdFromToken(filterContext.HttpContext.Request, Settings.Key);
-            using var userStorage = _infoStorageFactory.CreateUsersStorage();
-            var user = await userStorage.GetByIdAsync(userId, true);
-            if (user == null)
-                throw new InvalidOperationException("User not found");
-
-            var userAccesses = user.Rights.Select(right => right.Access);
+            var userAccesses = (await _accessesFromTokenProvider
+                .GetAccessesFromTokenAsync(filterContext.HttpContext.Request))
+                .Cast<int>();
             var accessIntersections = userAccesses.Intersect(accesses);
 
             return accesses.Length == accessIntersections.Count();
