@@ -1,27 +1,28 @@
-import {createAsyncThunk} from "@reduxjs/toolkit";
-import {Chat} from "../../models/File";
 import {fetchConfig, fetchConfigText} from "../api/api";
+import {AppDispatch} from "../redux-store";
+import {filesSliceActions} from "../filesSlice";
 
-export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) => {
-    try {
-        const data: Array<Chat> = await fetchConfig("/api/chats");
-        return data;
-    } catch (e) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить чаты");
-    }
-})
+const {setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
 
-export const fetchFilters = createAsyncThunk("files/filters", async (_, thunkAPI) => {
+export const fetchFilters = () => async (dispatch: AppDispatch) => {
     try {
+        dispatch(setLoading(true));
         const chats = fetchConfig("/api/chats");
         const senders = fetchConfig("/api/senders");
         const filesNames = fetchConfig("/api/files/names");
         const countFiles = fetchConfigText("/api/files/count");
-        return {chats: await chats, senders: await senders, countFiles: await countFiles, filesNames: await filesNames};
+        dispatch(setFilters({
+            chats: await chats,
+            senders: await senders,
+            countFiles: await countFiles,
+            filesNames: await filesNames
+        }));
+        dispatch(setLoading(false));
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить фильтры");
+        //todo: set err message
+        dispatch(setLoading(false));
     }
-})
+};
 
 type TypeFilesFetchFilters = {
     skip: number,
@@ -33,24 +34,39 @@ type TypeFilesFetchFilters = {
     chatIds?: string[] | null | undefined,
 }
 
-export const fetchFiles = createAsyncThunk("files/files", async (args: TypeFilesFetchFilters, thunkAPI) => {
+export const fetchFiles = (args:TypeFilesFetchFilters) => async (dispatch: AppDispatch) => {
     try {
-        const params:any = {...args};
+        const params: any = {...args};
         delete params['take'];
         delete params['skip'];
+        dispatch(setLoading(true));
         const filesCount = fetchConfigText("/api/files/count", {params: params})
-        return {files:await fetchConfig(`/api/files`, {params: args}), filesCount: await filesCount};
+        dispatch(setFiles({files: await fetchConfig(`/api/files`, {params: args}), filesCount: await filesCount}));
+        dispatch(setLoading(false));
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить файлы");
+        //todo: set err message
+        dispatch(setLoading(false));
     }
-})
+};
 
 
-export const fetchFilesTypes = createAsyncThunk("files/filesTypes", async (_, thunkAPI) => {
+export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
     try {
-        return await fetchConfig(`/api/files/types`);
+        dispatch(setLoading(true));
+        dispatch(setFilesTypes(await fetchConfig(`/api/files/types`)));
+        dispatch(setLoading(false));
     } catch (err) {
-        return thunkAPI.rejectWithValue("Не удалось загрузить типы файлов");
+        //todo: set err message
+        dispatch(setLoading(false));
     }
-})
+}
+
+/*
+ TODO: ШАБЛОН
+const fetchUsers = () => async (dispatch) => {
+  dispatch(usersLoading());
+  const response = await usersAPI.fetchAll();
+  dispatch(usersReceived(response.data));
+};
+*/
 
