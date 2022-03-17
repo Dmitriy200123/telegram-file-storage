@@ -15,9 +15,11 @@ namespace Test
             var factory = new DocumentsIndexFactory(elasticConfig);
             var storage = factory.CreateDocumentIndexStorage();
             var guid = Guid.NewGuid();
-            storage.IndexDocument(guid, "YWJvYmlr").GetAwaiter().GetResult();
+            var text = "YWJvYmlr";
+            storage.IndexDocument(guid, text).GetAwaiter().GetResult();
             //storage.DeleteDocument(guid).GetAwaiter().GetResult();
-            var b = storage.GetDoc(guid);
+            Thread.Sleep(500);
+            var b = storage.GetDoc(text);
             var a = 1;
         }
     }

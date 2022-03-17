@@ -19,7 +19,7 @@ namespace DocumentsIndex
         {
             var document = new ElasticDocument
             {
-                Text = "Name",
+                Text = text,
                 Id = Guid.NewGuid()
             };
             var result = await _elasticClient.IndexDocumentAsync(document);
@@ -36,9 +36,14 @@ namespace DocumentsIndex
             return deleteResponse.IsValid;
         }
 
-        public ElasticDocument? GetDoc(Guid guid)
+        public ElasticDocument? GetDoc(string text)
         {
-            var a = _elasticClient.Search<ElasticDocument>();
+            var a = _elasticClient.Search<ElasticDocument>(x => x
+                .Query(y => y
+                    .QueryString(m => m
+                        .Query(text)
+                        .Fields(f => f
+                            .Field(z => z.Text)))));
             var firstHit = a.Hits.FirstOrDefault();
             return firstHit?.Source;
         }

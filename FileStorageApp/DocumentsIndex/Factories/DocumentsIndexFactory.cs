@@ -31,14 +31,31 @@ namespace DocumentsIndex.Factories
 
         private void CreateMapping()
         {
-            _elasticClient.Indices.Create("document", c => c
+            _elasticClient.Indices.Create("document3", c => c
                 .Map<ElasticDocument>(m => m
                     .Properties(ps => ps
                         .Text(s => s
                             .Name(n => n.Text)
+                            .Analyzer("substring_analyzer")
                         )
                         .Keyword(k =>
                             k.Name(n => n.Id))
+                    )
+                )
+                .Settings(s => s
+                    .Analysis(a => a
+                        .Analyzers(analyzer => analyzer
+                            .Custom("substring_analyzer", analyzerDescriptor => analyzerDescriptor
+                                .Tokenizer("standard")
+                                .Filters("lowercase", "substring")
+                            )
+                        )
+                        .TokenFilters(tf => tf
+                            .NGram("substring", filterDescriptor => filterDescriptor
+                                .MinGram(2)
+                                .MaxGram(3)
+                            )
+                        )
                     )
                 )
             );
