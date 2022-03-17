@@ -3,7 +3,7 @@ using Nest;
 
 namespace DocumentsIndex.Model
 {
-    public class Document
+    public class ElasticDocument
     {
         public Guid Id { get; set; }
         public string Text { get; set; }

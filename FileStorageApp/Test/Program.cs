@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System;
+using System.Threading;
 using DocumentsIndex.Config;
 using DocumentsIndex.Factories;
 
@@ -15,8 +16,9 @@ namespace Test
             var storage = factory.CreateDocumentIndexStorage();
             var guid = Guid.NewGuid();
             storage.IndexDocument(guid, "YWJvYmlr").GetAwaiter().GetResult();
-            storage.DeleteDocument(guid).GetAwaiter().GetResult();
-
+            //storage.DeleteDocument(guid).GetAwaiter().GetResult();
+            var b = storage.GetDoc(guid);
+            var a = 1;
         }
     }
 }
