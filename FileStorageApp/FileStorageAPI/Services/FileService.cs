@@ -29,7 +29,8 @@ namespace FileStorageAPI.Services
         private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
         private readonly IDownloadLinkProvider _downloadLinkProvider;
         private readonly ISenderFormTokenProvider _senderFormTokenProvider;
-        private readonly IAccessesFromTokenProvider _accessesFromTokenProvider;
+        private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
+        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
@@ -41,7 +42,8 @@ namespace FileStorageAPI.Services
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
         /// <param name="downloadLinkProvider">Поставщик для получения ссылки на файл</param>
         /// <param name="senderFormTokenProvider"></param>
-        /// <param name="accessesFromTokenProvider">Поставщик для получения Id пользователя из токена</param>
+        /// <param name="userIdFromTokenProvider">Поставщик для получения Id пользователя из токена</param>
+        /// <param name="accessesByUserIdProvider">Поставщик для получения прав пользователя по Id</param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
@@ -49,7 +51,8 @@ namespace FileStorageAPI.Services
             IExpressionFileFilterProvider expressionFileFilterProvider,
             IDownloadLinkProvider downloadLinkProvider,
             ISenderFormTokenProvider senderFormTokenProvider,
-            IAccessesFromTokenProvider accessesFromTokenProvider)
+            IAccessesByUserIdProvider accessesByUserIdProvider,
+            IUserIdFromTokenProvider userIdFromTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
@@ -61,8 +64,9 @@ namespace FileStorageAPI.Services
                 downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
             _senderFormTokenProvider = senderFormTokenProvider ??
                                        throw new ArgumentNullException(nameof(senderFormTokenProvider));
-            _accessesFromTokenProvider = accessesFromTokenProvider ??
-                                         throw new ArgumentNullException(nameof(accessesFromTokenProvider));
+            _accessesByUserIdProvider = accessesByUserIdProvider ??
+                                         throw new ArgumentNullException(nameof(accessesByUserIdProvider));
+            _userIdFromTokenProvider = userIdFromTokenProvider;
         }
 
         /// <inheritdoc />
@@ -313,7 +317,8 @@ namespace FileStorageAPI.Services
 
         private async Task<bool> HasAllChatFilesAccess(HttpRequest request)
         {
-            var accesses = await _accessesFromTokenProvider.GetAccessesFromTokenAsync(request);
+            var userId = _userIdFromTokenProvider.GetUserIdFromToken(request, Settings.Key);
+            var accesses = await _accessesByUserIdProvider.GetAccessesByUserIdAsync(userId);
             return accesses.Any(access => access == Accesses.AllChatFiles);
         }
 

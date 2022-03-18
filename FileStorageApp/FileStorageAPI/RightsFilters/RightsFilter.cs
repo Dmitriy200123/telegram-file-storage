@@ -2,28 +2,30 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FileStorageAPI.Providers;
-using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FileStorageAPI.RightsFilters
 {
     internal class RightsFilter : IRightsFilter
     {
-        private readonly IInfoStorageFactory _infoStorageFactory;
-        private readonly IAccessesFromTokenProvider _accessesFromTokenProvider;
+        private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
+        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
-        public RightsFilter(IInfoStorageFactory infoStorageFactory,
-            IAccessesFromTokenProvider accessesFromTokenProvider)
+        public RightsFilter(
+            IAccessesByUserIdProvider accessesByUserIdProvider,
+            IUserIdFromTokenProvider userIdFromTokenProvider
+        )
         {
-            _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
-            _accessesFromTokenProvider = accessesFromTokenProvider ??
-                                         throw new ArgumentNullException(nameof(accessesFromTokenProvider));
+            _accessesByUserIdProvider = accessesByUserIdProvider ??
+                                        throw new ArgumentNullException(nameof(accessesByUserIdProvider));
+            _userIdFromTokenProvider = userIdFromTokenProvider ??
+                                       throw new ArgumentNullException(nameof(userIdFromTokenProvider));
         }
 
         public async Task<bool> CheckRightsAsync(ActionExecutingContext filterContext, int[] accesses)
         {
-            var userAccesses = (await _accessesFromTokenProvider
-                .GetAccessesFromTokenAsync(filterContext.HttpContext.Request))
+            var userId = _userIdFromTokenProvider.GetUserIdFromToken(filterContext.HttpContext.Request, Settings.Key);
+            var userAccesses = (await _accessesByUserIdProvider.GetAccessesByUserIdAsync(userId))
                 .Cast<int>();
             var accessIntersections = userAccesses.Intersect(accesses);
 
