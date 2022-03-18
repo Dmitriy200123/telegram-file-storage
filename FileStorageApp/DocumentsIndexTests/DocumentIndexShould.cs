@@ -4,9 +4,9 @@ using System.Linq;
 using DocumentsIndex;
 using DocumentsIndex.Config;
 using DocumentsIndex.Factories;
-using DocumentsIndex.Model;
 using FluentAssertions;
 using NUnit.Framework;
+#pragma warning disable CS8618
 
 namespace DocumentsIndexTests
 {
