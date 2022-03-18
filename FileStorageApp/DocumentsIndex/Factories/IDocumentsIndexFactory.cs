@@ -1,4 +1,6 @@
-﻿namespace DocumentsIndex.Factories
+﻿using Nest;
+
+namespace DocumentsIndex.Factories
 {
     public interface IDocumentsIndexFactory
     {

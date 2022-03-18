@@ -3,5 +3,6 @@
     public interface IElasticConfig
     {
         string Uri { get; }
+        string Index { get; }
     }
 }

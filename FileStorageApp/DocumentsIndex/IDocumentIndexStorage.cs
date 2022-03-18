@@ -1,14 +1,17 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using DocumentsIndex.Model;
+using Nest;
 
 namespace DocumentsIndex
 {
     public interface IDocumentIndexStorage
     {
-        Task<bool> IndexDocument(Guid documentId, string text);
-        Task<bool> DeleteDocument(Guid documentId);
+        Task<ISearchResponse<ElasticDocument>> Search(string subString);
 
-        ElasticDocument? GetDoc(string text);
+        Task<bool> IndexDocument(byte[] content, Guid guid);
+
+        Task<bool> Delete(Guid guid);
     }
 }

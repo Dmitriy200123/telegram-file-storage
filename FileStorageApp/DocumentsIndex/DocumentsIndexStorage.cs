@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DocumentsIndex.Model;
+using Elasticsearch.Net;
 using Nest;
 
 namespace DocumentsIndex
@@ -15,44 +15,37 @@ namespace DocumentsIndex
             _elasticClient = elasticClient;
         }
 
-        public async Task<bool> IndexDocument(Guid documentId, string text)
+        public async Task<ISearchResponse<ElasticDocument>> Search(string subString)
         {
-            var document = new ElasticDocument
-            {
-                Text = text,
-                Id = Guid.NewGuid()
-            };
-            var result = await _elasticClient.IndexDocumentAsync(document);
-            return result.IsValid;
-        }
-
-        public async Task<bool> DeleteDocument(Guid documentId)
-        {
-            var deleteResponse = await _elasticClient.DeleteByQueryAsync<ElasticDocument>(x => x
-                .Query(qx => qx
-                    .Match(y => y
-                        .Field(f => f.Id)
-                        .Query(documentId.ToString()))));
-            return deleteResponse.IsValid;
-        }
-
-        public ElasticDocument? GetDoc(string text)
-        {
-            var a = _elasticClient.Search<ElasticDocument>(x => x
-                .Query(y => y
-                    .QueryString(m => m
-                        .Query(text)
-                        .Fields(f => f
-                            .Field(z => z.Text)))));
-            var firstHit = a.Hits.FirstOrDefault();
-            return firstHit?.Source;
-        }
-
-        private async void Clear()
-        {
-            var a = await _elasticClient.DeleteByQueryAsync<ElasticDocument>(del => del
-                .Query(q => q.QueryString(qs => qs.Query("*")))
+            var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(a => a.Attachment.Content)
+                        .Query(subString)
+                    )
+                )
             );
+            return searchResponse;
+        }
+
+        public async Task<bool> IndexDocument(byte[] content, Guid guid)
+        {
+            var base64File = Convert.ToBase64String(content);
+            var indexResponse = await _elasticClient.IndexAsync(new ElasticDocument
+                {
+                    Id = guid,
+                    Content = base64File
+                }, i => i
+                    .Pipeline("attachments")
+                    .Refresh(Refresh.WaitFor)
+            );
+            return indexResponse.IsValid;
+        }
+
+        public async Task<bool> Delete(Guid guid)
+        {
+            var response = await _elasticClient.DeleteAsync(new DeleteRequest("index", guid.ToString()));
+            return response.IsValid;
         }
     }
 }

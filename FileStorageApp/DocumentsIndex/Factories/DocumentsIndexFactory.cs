@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using DocumentsIndex.Config;
-using DocumentsIndex.Model;
 using Elasticsearch.Net;
 using Nest;
 
@@ -11,54 +9,31 @@ namespace DocumentsIndex.Factories
     public class DocumentsIndexFactory : IDocumentsIndexFactory
     {
         private readonly IElasticClient _elasticClient;
+        private const string DefaultIndex = "index";
 
-        public DocumentsIndexFactory(IElasticConfig elasticConfig)
+        public DocumentsIndexFactory(IElasticConfig elasticConfig,
+            Func<PutPipelineDescriptor, PutPipelineDescriptor> pipelineDescriptor,
+            Func<CreateIndexDescriptor, CreateIndexDescriptor> mapping)
         {
             var settings = new ConnectionSettings(new Uri(elasticConfig.Uri))
+                .DefaultIndex(DefaultIndex)
                 .DisableDirectStreaming()
-                .DefaultIndex("index")
-                .DefaultFieldNameInferrer(p => p)
                 .PrettyJson()
+                .DefaultFieldNameInferrer(p => p)
                 .OnRequestCompleted(CreateLogging);
+
             _elasticClient = new ElasticClient(settings);
-            CreateMapping();
+
+            if (_elasticClient.Indices.Exists(elasticConfig.Index).Exists)
+                _elasticClient.Indices.Delete(elasticConfig.Index);
+
+            _elasticClient.Indices.Create(elasticConfig.Index, mapping);
+            _elasticClient.Ingest.PutPipeline(elasticConfig.Index, pipelineDescriptor);
         }
 
         public IDocumentIndexStorage CreateDocumentIndexStorage()
         {
             return new DocumentIndexStorage(_elasticClient);
-        }
-
-        private void CreateMapping()
-        {
-            _elasticClient.Indices.Create("document3", c => c
-                .Map<ElasticDocument>(m => m
-                    .Properties(ps => ps
-                        .Text(s => s
-                            .Name(n => n.Text)
-                            .Analyzer("substring_analyzer")
-                        )
-                        .Keyword(k =>
-                            k.Name(n => n.Id))
-                    )
-                )
-                .Settings(s => s
-                    .Analysis(a => a
-                        .Analyzers(analyzer => analyzer
-                            .Custom("substring_analyzer", analyzerDescriptor => analyzerDescriptor
-                                .Tokenizer("standard")
-                                .Filters("lowercase", "substring")
-                            )
-                        )
-                        .TokenFilters(tf => tf
-                            .NGram("substring", filterDescriptor => filterDescriptor
-                                .MinGram(2)
-                                .MaxGram(3)
-                            )
-                        )
-                    )
-                )
-            );
         }
 
         private static void CreateLogging(IApiCallDetails callDetails)
