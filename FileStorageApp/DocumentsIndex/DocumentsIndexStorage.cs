@@ -44,7 +44,7 @@ namespace DocumentsIndex
 
         public async Task<bool> Delete(Guid guid)
         {
-            var response = await _elasticClient.DeleteAsync(new DeleteRequest("index", guid.ToString()));
+            var response = await _elasticClient.DeleteAsync(new DeleteRequest(_elasticClient.ConnectionSettings.DefaultIndex, guid.ToString()));
             return response.IsValid;
         }
     }

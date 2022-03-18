@@ -6,34 +6,27 @@ using Nest;
 
 namespace DocumentsIndex.Factories
 {
-    public class DocumentsIndexFactory : IDocumentsIndexFactory
+    public static class BaseIndexFactory
     {
-        private readonly IElasticClient _elasticClient;
-        private const string DefaultIndex = "index";
-
-        public DocumentsIndexFactory(IElasticConfig elasticConfig,
+        public static IDocumentIndexStorage CreateDocumentIndexStorage(ElasticConfig elasticConfig,
             Func<PutPipelineDescriptor, PutPipelineDescriptor> pipelineDescriptor,
             Func<CreateIndexDescriptor, CreateIndexDescriptor> mapping)
         {
             var settings = new ConnectionSettings(new Uri(elasticConfig.Uri))
-                .DefaultIndex(DefaultIndex)
+                .DefaultIndex(elasticConfig.Index)
                 .DisableDirectStreaming()
                 .PrettyJson()
                 .DefaultFieldNameInferrer(p => p)
                 .OnRequestCompleted(CreateLogging);
 
-            _elasticClient = new ElasticClient(settings);
+            var elasticClient = new ElasticClient(settings);
 
-            if (_elasticClient.Indices.Exists(elasticConfig.Index).Exists)
-                _elasticClient.Indices.Delete(elasticConfig.Index);
+            if (elasticClient.Indices.Exists(elasticConfig.Index).Exists)
+                elasticClient.Indices.Delete(elasticConfig.Index);
 
-            _elasticClient.Indices.Create(elasticConfig.Index, mapping);
-            _elasticClient.Ingest.PutPipeline(elasticConfig.Index, pipelineDescriptor);
-        }
-
-        public IDocumentIndexStorage CreateDocumentIndexStorage()
-        {
-            return new DocumentIndexStorage(_elasticClient);
+            elasticClient.Indices.Create(elasticConfig.Index, mapping);
+            elasticClient.Ingest.PutPipeline(elasticConfig.Index, pipelineDescriptor);
+            return new DocumentIndexStorage(elasticClient);
         }
 
         private static void CreateLogging(IApiCallDetails callDetails)

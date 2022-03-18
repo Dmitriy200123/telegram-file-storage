@@ -1,6 +1,6 @@
 ﻿namespace DocumentsIndex.Config
 {
-    public class ElasticConfig : IElasticConfig
+    public class ElasticConfig
     {
         public ElasticConfig(string uri, string index)
         {

@@ -2,7 +2,7 @@
 
 namespace DocumentsIndex.Factories
 {
-    public interface IDocumentsIndexFactory
+    public interface IBaseIndexFactory
     {
         IDocumentIndexStorage CreateDocumentIndexStorage();
     }
