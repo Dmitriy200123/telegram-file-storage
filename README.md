@@ -22,7 +22,7 @@
 Основная команда для запука: `docker-compose -f docker-compose-dev.yml up --build --force-recreate`
 Поднимет все сервисы приложения.
 
-Для запуска отдельных сервсов можно использовать команду: ` docker-compose -f docker-compose-dev.yml up --build --force-recreate <container-name1> <container-name2> <...>`
+Для запуска отдельных сервисов можно использовать команду: ` docker-compose -f docker-compose-dev.yml up --build --force-recreate <container-name1> <container-name2> <...>`
 
 Список контейнеров: 
  - **s3** - Хранилище S3
