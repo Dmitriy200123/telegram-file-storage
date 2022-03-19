@@ -21,6 +21,7 @@ services:
           cpus: '4'
           memory: 1500M
           
+          
   postgres:
     image: postgres
     container_name: postgres
@@ -79,6 +80,7 @@ services:
       - AWS_SECRET_ACCESS_KEY="123"
     ports:
       - '8080:8080'
+        
         
   elasticsearch:
     build:

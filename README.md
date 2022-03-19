@@ -17,13 +17,36 @@
 **Дополнительная информация о проекте:** https://docs.google.com/document/d/1SwMOaDpWGentIMgjLpeoOnelNBQsUNKo-8OMZnc7q_c/edit?usp=sharing
 
 ## Локальная разработка
-В корне проекта (/FileStorageApp) находится `docker-compose-dev` файл, описывающий развертку всех необходимых сервисов для запуска на локальной машине
+В корне проекта находится `docker-compose-dev` файл, описывающий развертку всех необходимых сервисов для запуска на локальной машине
+
+Основная команда для запука: `docker-compose -f docker-compose-dev.yml up --build --force-recreate`
+Поднимет все сервисы приложения.
+
+Для запуска отдельных сервсов можно использовать команду: ` docker-compose -f docker-compose-dev.yml up --build --force-recreate <container-name1> <container-name2> <...>`
+
+Список контейнеров: 
+ - **s3** - Хранилище S3
+ - **postgres** - БД
+ - **dotnet_backend** - Основной backend приложения
+ - **front** - Frontend часть приложения
+ - **telegram_auth** - Backend часть, отвечающая за авторизацию
+ - **telegram_loader** - Backend часть, отвечающая за коммуникацию с Telegram и загрузкой файлов
+ - **elasticsearch** - Поисковая система ElasticSearch
+ - **kibana** - Интерйефс для взаимодействия с ElasticSearch
+
+
+### Примеры запуска для локальной разработки
+ - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch` - Запустит все для локальной разработки backend части
+   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch telegram_loader` - Дополнительно запустит загрузчик из телеграмм
+ - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch dotnet_backend` - Запустит все для локальной разработки frontend части
+   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch dotnet_backend telegram_loader` - Дополнительно запустит загрузчик из телеграмм
+
+
 
 Запуск конейнеров aws s3 и PostgreSQL:` docker-compose -f docker-compose-dev.yml up --build --force-recreate postgres s3`
 
 ## Боевой запуск
-`docker-compose up`
-и после этого ввести код из telegram, сохраненный в PostreSQL
+`docker-compose up` и после этого ввести код из telegram в отдельную таблицу в PostreSQL
 
 ### Данные для подключения локально:
 
@@ -37,4 +60,8 @@
     user: FileStorageApp
     dbName: FileStorageApp
     password: change
+
+#### ElasticSearch
+    host: localhost
+    port: 9200
 
