@@ -37,13 +37,10 @@
 
 ### Примеры запуска для локальной разработки
  - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch` - Запустит все для локальной разработки backend части
-   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch telegram_loader` - Дополнительно запустит загрузчик из телеграмм
+   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch telegram_loader` - Дополнительно запустит загрузчик из телеграм
  - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch dotnet_backend` - Запустит все для локальной разработки frontend части
-   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch dotnet_backend telegram_loader` - Дополнительно запустит загрузчик из телеграмм
-
-
-
-Запуск конейнеров aws s3 и PostgreSQL:` docker-compose -f docker-compose-dev.yml up --build --force-recreate postgres s3`
+   - `docker-compose -f docker-compose-dev.yml up --build --force-recreate s3 postgres telegram_auth elasticsearch dotnet_backend telegram_loader` - Дополнительно запустит загрузчик из телеграм
+   
 
 ## Боевой запуск
 `docker-compose up` и после этого ввести код из telegram в отдельную таблицу в PostreSQL
