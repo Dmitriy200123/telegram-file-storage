@@ -26,7 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Search", "Search", "{FF50D1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsIndex", "DocumentsIndex\DocumentsIndex.csproj", "{C6C95E17-6285-4B31-A460-120D318AD928}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsIndexTests", "DocumentsIndexTests\DocumentsIndexTests.csproj", "{93B82477-D894-4C01-913E-E86E171E4878}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsIndex.Tests", "DocumentsIndex.Tests\DocumentsIndex.Tests.csproj", "{93B82477-D894-4C01-913E-E86E171E4878}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

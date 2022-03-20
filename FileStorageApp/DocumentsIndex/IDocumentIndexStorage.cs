@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DocumentsIndex.Model;
-using Nest;
 
 namespace DocumentsIndex
 {
     public interface IDocumentIndexStorage
     {
-        Task<ISearchResponse<ElasticDocument>> Search(string subString);
+        Task<IEnumerable<Guid>> SearchBySubstringAsync(string subString);
 
-        Task<bool> IndexDocument(byte[] content, Guid guid);
+        Task<bool> IndexDocumentAsync(Document document);
 
-        Task<bool> Delete(Guid guid);
+        Task<bool> DeleteAsync(Guid guid);
+        Task<IEnumerable<Guid>> SearchByNameAsync(string name);
     }
 }

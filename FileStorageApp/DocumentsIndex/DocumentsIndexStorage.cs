@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DocumentsIndex.Model;
 using Elasticsearch.Net;
@@ -15,7 +17,7 @@ namespace DocumentsIndex
             _elasticClient = elasticClient;
         }
 
-        public async Task<ISearchResponse<ElasticDocument>> Search(string subString)
+        public async Task<IEnumerable<Guid>> SearchBySubstringAsync(string subString)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
@@ -25,27 +27,41 @@ namespace DocumentsIndex
                     )
                 )
             );
-            return searchResponse;
+            return searchResponse.Hits.Select(x => x.Source.Id);
         }
 
-        public async Task<bool> IndexDocument(byte[] content, Guid guid)
+        public async Task<bool> IndexDocumentAsync(Document document)
         {
-            var base64File = Convert.ToBase64String(content);
+            var base64File = Convert.ToBase64String(document.Content);
             var indexResponse = await _elasticClient.IndexAsync(new ElasticDocument
                 {
-                    Id = guid,
-                    Content = base64File
+                    Id = document.Id,
+                    Content = base64File,
+                    Name = document.Name
                 }, i => i
-                    .Pipeline("attachments")
+                    .Pipeline(_elasticClient.ConnectionSettings.DefaultIndex)
                     .Refresh(Refresh.WaitFor)
             );
             return indexResponse.IsValid;
         }
 
-        public async Task<bool> Delete(Guid guid)
+        public async Task<bool> DeleteAsync(Guid guid)
         {
             var response = await _elasticClient.DeleteAsync(new DeleteRequest(_elasticClient.ConnectionSettings.DefaultIndex, guid.ToString()));
             return response.IsValid;
+        }
+
+        public async Task<IEnumerable<Guid>> SearchByNameAsync(string name)
+        {
+            var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                .Query(q => q
+                    .Match(m => m
+                        .Field(a => a.Name)
+                        .Query(name)
+                    )
+                )
+            );
+            return searchResponse.Hits.Select(x => x.Source.Id);
         }
     }
 }

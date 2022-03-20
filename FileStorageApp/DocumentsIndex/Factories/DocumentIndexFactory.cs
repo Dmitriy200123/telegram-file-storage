@@ -1,44 +1,23 @@
 ﻿using System;
 using DocumentsIndex.Config;
 using DocumentsIndex.Model;
+using DocumentsIndex.Pipelines;
 using Nest;
 
 namespace DocumentsIndex.Factories
 {
-    public static class DocumentIndexFactory
+    public class DocumentIndexFactory : BaseIndexFactory, IDocumentIndexFactory
     {
-        private static readonly Func<PutPipelineDescriptor, PutPipelineDescriptor> PipeLineDescriptor = x =>
+        private readonly IPipelineCreator _pipelineCreator;
+
+        public DocumentIndexFactory(IPipelineCreator pipelineCreator)
         {
-            return x.Description("Document attachment pipeline")
-                .Processors(pr => pr
-                    .Attachment<ElasticDocument>(a => a
-                        .Field(f => f.Content)
-                        .TargetField(f => f.Attachment)
-                    )
-                    .Remove<ElasticDocument>(r => r
-                        .Field(ff => ff
-                            .Field(f => f.Content)
-                        )
-                    )
-                );
-        };
-        
+            _pipelineCreator = pipelineCreator;
+        }
+
         private static readonly Func<CreateIndexDescriptor, CreateIndexDescriptor> IndexDescriptor = x =>
         {
-            return x.Settings(s => s
-                    .Analysis(a => a
-                        .Analyzers(ad => ad
-                            .Custom("windows_path_hierarchy_analyzer", ca => ca
-                                .Tokenizer("windows_path_hierarchy_tokenizer")
-                            )
-                        )
-                        .Tokenizers(t => t
-                            .PathHierarchy("windows_path_hierarchy_tokenizer", ph => ph
-                                .Delimiter('\\')
-                            )
-                        )
-                    )
-                )
+            return x
                 .Map<ElasticDocument>(mp => mp
                     .AutoMap()
                     .Properties(ps => ps
@@ -46,6 +25,8 @@ namespace DocumentsIndex.Factories
                             .Name(n => n.Id))
                         .Text(t => t
                             .Name(n => n.Content))
+                        .Text(t => t
+                            .Name(n => n.Name))
                         .Object<Attachment>(a => a
                             .Name(n => n.Attachment)
                             .AutoMap()
@@ -54,9 +35,10 @@ namespace DocumentsIndex.Factories
                 );
         };
 
-        public static IDocumentIndexStorage CreateDocumentIndexStorage(ElasticConfig elasticConfig)
+        public IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig)
         {
-            var storage = BaseIndexFactory.CreateDocumentIndexStorage(elasticConfig, PipeLineDescriptor, IndexDescriptor);
+            var pipeline = _pipelineCreator.CreateElasticDocumentPipeLine();
+            var storage = CreateDocumentIndexStorage(elasticConfig, pipeline, IndexDescriptor);
             return storage;
         }
     }

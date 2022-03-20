@@ -6,9 +6,9 @@ using Nest;
 
 namespace DocumentsIndex.Factories
 {
-    public static class BaseIndexFactory
+    public abstract class BaseIndexFactory
     {
-        public static IDocumentIndexStorage CreateDocumentIndexStorage(ElasticConfig elasticConfig,
+        protected IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig,
             Func<PutPipelineDescriptor, PutPipelineDescriptor> pipelineDescriptor,
             Func<CreateIndexDescriptor, CreateIndexDescriptor> mapping)
         {
