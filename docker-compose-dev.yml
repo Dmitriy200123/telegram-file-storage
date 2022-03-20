@@ -20,6 +20,8 @@ services:
         limits:
           cpus: '4'
           memory: 1500M
+          
+          
   postgres:
     image: postgres
     container_name: postgres
@@ -59,7 +61,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
 
-
   telegram_loader:
     container_name: telegram_loader
     build:
@@ -79,6 +80,41 @@ services:
       - AWS_SECRET_ACCESS_KEY="123"
     ports:
       - '8080:8080'
+        
+        
+  elasticsearch:
+    build:
+      context: ElasticSearch/
+      dockerfile: Dockerfile
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
 
 volumes:
   localstack-vol:
+  elasticsearch-data:
