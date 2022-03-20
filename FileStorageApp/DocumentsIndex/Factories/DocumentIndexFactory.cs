@@ -15,7 +15,7 @@ namespace DocumentsIndex.Factories
 
         public DocumentIndexFactory(IPipelineCreator pipelineCreator)
         {
-            _pipelineCreator = pipelineCreator ?? throw new ArgumentNullException();
+            _pipelineCreator = pipelineCreator ?? throw new ArgumentNullException(nameof(pipelineCreator));
         }
 
         private static readonly Func<CreateIndexDescriptor, CreateIndexDescriptor> IndexDescriptor = x =>

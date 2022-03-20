@@ -21,7 +21,7 @@ namespace DocumentsIndex
         /// <param name="elasticClient">Параметры для создания хранилища</param>
         public DocumentIndexStorage(IElasticClient elasticClient)
         {
-            _elasticClient = elasticClient ?? throw new ArgumentNullException();
+            _elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
 
         /// <inheritdoc />

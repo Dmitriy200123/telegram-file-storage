@@ -19,10 +19,8 @@ namespace DocumentsIndex.Config
         /// <exception cref="ArgumentNullException"></exception>
         public ElasticConfig(string uri, string index)
         {
-            if (uri is null || index is null)
-                throw new ArgumentNullException();
-            Uri = uri;
-            Index = index;
+            Uri = uri ?? throw new ArgumentNullException(nameof(uri));
+            Index = index ?? throw new ArgumentNullException(nameof(index));
         }
     }
 }

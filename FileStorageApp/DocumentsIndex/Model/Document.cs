@@ -28,11 +28,9 @@ namespace DocumentsIndex.Model
         /// <param name="name">Название файла</param>
         public Document(Guid id, byte[] content, string name)
         {
-            if (content is null || name is null)
-                throw new ArgumentNullException();
             Id = id;
-            Content = content;
-            Name = name;
+            Content = content ?? throw new ArgumentNullException(nameof(content));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
     }
 }
