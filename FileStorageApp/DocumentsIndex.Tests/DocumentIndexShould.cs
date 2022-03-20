@@ -29,11 +29,11 @@ namespace DocumentsIndex.Tests
         }
 
         [TearDown]
-        public void TearDown()
+        public async Task TearDown()
         {
-            var searchResponse = _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument).GetAwaiter().GetResult();
+            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
             foreach (var hit in searchResponse)
-                _documentIndexStorage.DeleteAsync(hit);
+                await _documentIndexStorage.DeleteAsync(hit);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace DocumentsIndex.Tests
             var bytes = await ReadBytesFromFileName(DocumentName);
             var document = new Document(expected, bytes, DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
-            var searchResponse = _documentIndexStorage.SearchBySubstringAsync("NEST").GetAwaiter().GetResult();
+            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync("NEST");
 
             var actual = searchResponse.First();
 
@@ -70,7 +70,7 @@ namespace DocumentsIndex.Tests
             var bytes = await ReadBytesFromFileName(DocumentName);
             var document = new Document(expected, bytes, DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
-            var searchResponse = _documentIndexStorage.SearchByNameAsync(DocumentName).GetAwaiter().GetResult();
+            var searchResponse = await _documentIndexStorage.SearchByNameAsync(DocumentName);
 
             var actual = searchResponse.First();
 
