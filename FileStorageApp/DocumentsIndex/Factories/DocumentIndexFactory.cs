@@ -6,6 +6,9 @@ using Nest;
 
 namespace DocumentsIndex.Factories
 {
+   /// <summary>
+   /// Класс отвечающий за создание эластик клиента
+   /// </summary>
     public class DocumentIndexFactory : BaseIndexFactory, IDocumentIndexFactory
     {
         private readonly IPipelineCreator _pipelineCreator;
@@ -34,7 +37,7 @@ namespace DocumentsIndex.Factories
                     )
                 );
         };
-
+        /// <inheritdoc />
         public IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig)
         {
             var pipeline = _pipelineCreator.CreateElasticDocumentPipeLine();

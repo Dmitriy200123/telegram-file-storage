@@ -6,6 +6,9 @@ using Nest;
 
 namespace DocumentsIndex.Factories
 {
+    /// <summary>
+    /// Базовый класс для создания индексации
+    /// </summary>
     public abstract class BaseIndexFactory
     {
         protected IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig,
@@ -21,10 +24,9 @@ namespace DocumentsIndex.Factories
 
             var elasticClient = new ElasticClient(settings);
 
-            if (elasticClient.Indices.Exists(elasticConfig.Index).Exists)
-                elasticClient.Indices.Delete(elasticConfig.Index);
-
-            elasticClient.Indices.Create(elasticConfig.Index, mapping);
+            if (!elasticClient.Indices.Exists(elasticConfig.Index).Exists)
+                elasticClient.Indices.Create(elasticConfig.Index, mapping);
+            
             elasticClient.Ingest.PutPipeline(elasticConfig.Index, pipelineDescriptor);
             return new DocumentIndexStorage(elasticClient);
         }

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DocumentsIndex;
 using DocumentsIndex.Config;
 using DocumentsIndex.Factories;
 using DocumentsIndex.Model;
@@ -12,7 +11,7 @@ using NUnit.Framework;
 
 #pragma warning disable CS8618
 
-namespace DocumentsIndexTests
+namespace DocumentsIndex.Tests
 {
     public class DocumentIndexShould
     {

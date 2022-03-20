@@ -8,15 +8,23 @@ using Nest;
 
 namespace DocumentsIndex
 {
+    /// <summary>
+    /// Хранилище отвечающее за работу с документами
+    /// </summary>
     public class DocumentIndexStorage : IDocumentIndexStorage
     {
         private readonly IElasticClient _elasticClient;
 
+        /// <summary>
+        /// Конструктор создающий хранилище
+        /// </summary>
+        /// <param name="elasticClient">Параметры для создания хранилища</param>
         public DocumentIndexStorage(IElasticClient elasticClient)
         {
             _elasticClient = elasticClient;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Guid>> SearchBySubstringAsync(string subString)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
@@ -30,6 +38,7 @@ namespace DocumentsIndex
             return searchResponse.Hits.Select(x => x.Source.Id);
         }
 
+        /// <inheritdoc />
         public async Task<bool> IndexDocumentAsync(Document document)
         {
             var base64File = Convert.ToBase64String(document.Content);
@@ -45,12 +54,16 @@ namespace DocumentsIndex
             return indexResponse.IsValid;
         }
 
+        /// <inheritdoc />
         public async Task<bool> DeleteAsync(Guid guid)
         {
-            var response = await _elasticClient.DeleteAsync(new DeleteRequest(_elasticClient.ConnectionSettings.DefaultIndex, guid.ToString()));
+            var response =
+                await _elasticClient.DeleteAsync(new DeleteRequest(_elasticClient.ConnectionSettings.DefaultIndex,
+                    guid.ToString()));
             return response.IsValid;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<Guid>> SearchByNameAsync(string name)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
