@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {ChangeEvent, memo, useState} from 'react';
 import "./Select.scss";
 import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 
@@ -49,14 +49,20 @@ export const Select: React.FC<Props> = memo(({
                        onClick={onChange}>{elem.label}</li>;
         })
 
+    function onChange(e: ChangeEvent<HTMLInputElement>) {
+        const value = e.target.value;
+        changeText(value);
+        if (!isMulti)
+            setValue(name, value)
+    }
+
     return (
         <OutsideAlerter className={className} onOutsideClick={() => {
             changeOpen(false);
         }}>
             <div className={"select"}>
-                <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text} onChange={(e) => {
-                    changeText(e.target.value)
-                }} placeholder={(options && calcPlaceholder(values, options)) ?? placeholder}/>
+                <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text} onChange={onChange}
+                       placeholder={(options && calcPlaceholder(values, options)) ?? placeholder}/>
                 <ul className={"select__list " + (isOpen ? "select__list_open" : "")} onBlur={() => changeOpen(false)}>
                     <div className="select__scroll">
                         {ui}
