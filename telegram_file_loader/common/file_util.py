@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import config
+from postgres.models.external_models.file import ExternalFileType
 from telethon.tl.types import DocumentAttributeFilename, Message, MessageMediaDocument
 
 
@@ -37,9 +39,7 @@ class FileUtil:
 
     @staticmethod
     def __get_file_type(mime_type: str) -> str:
-        telegram_file_type = mime_type.split('/')[0]
+        if mime_type in config.SUPPORTED_TEXT_FILE_TYPES:
+            return ExternalFileType.text_document
 
-        if telegram_file_type == 'application' or telegram_file_type == 'text':
-            return 'document'
-
-        return telegram_file_type
+        return ExternalFileType.from_str(mime_type.split('/')[0])

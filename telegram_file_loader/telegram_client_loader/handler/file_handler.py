@@ -4,7 +4,6 @@ from common.file_util import FileUtil
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
 from postgres.models.external_models import File
-from postgres.models.external_models.file import type_map
 from pydantic import AnyUrl
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
@@ -50,7 +49,7 @@ class FileHandler(BaseHandler):
         telegram_file = File(
             name=filename,
             extension=extension,
-            type=type_map[file_type],
+            type=file_type,
             upload_date=message.date,
             sender_telegram_id=sender_id,
             chat_telegram_id=chat_id,

@@ -14,6 +14,8 @@ async def init():
     s3_client = S3Client(bucket_name=config.BUCKET_NAME)
     await telegram_client_loader.start(pg_adapter=adapter, s3_client=s3_client)
 
+    print('loaded success')
+
 
 def main():
     if sys.platform == 'win32':
