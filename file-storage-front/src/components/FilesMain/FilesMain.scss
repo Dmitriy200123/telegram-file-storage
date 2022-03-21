@@ -1,3 +1,4 @@
+@import "src/Variables";
 .files-main {
   &__content {
     background: #E5E5E5;
@@ -8,76 +9,69 @@
     width: 100%;
     padding: 18px 0 18px 25px;
     text-align: left;
-    color: #1976D3;
+     color: #1976D3;
     font-weight: normal;
     font-size: 1.28em;
   }
 }
 
 .files {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   background: white;
   text-align: left;
 
-  //&__item:not(:nth-last-child(-n + 5)), &__filter {
-  //  border-bottom: 1px #E9E9E9 solid;
-  //}
+  &__files {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  }
 
   &__title {
     padding: 23px 0;
     font-size: 1.15em;
   }
 
-  &__filter {
-    &_text {
-      & input {
-        width: 100%;
-        height: 40px;
-        border: 1px solid #CED4DA;
-        border-radius: 4px;
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-    }
-
-    padding-bottom: 25px;
-
-    &_search{
+  &__filters{
+    padding: 32px 32px 26px;
+    background: $menu-color;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    &-main{
+      position: relative;
       display: flex;
-      & div:first-child{
+      gap: 16px;
+      & .files__filter {
         flex: 1 1 auto;
       }
-      & button{
-        margin-left: 20px;
-        background: none;
-        border: none;
-        &:hover {
-          cursor: pointer;
-          & > svg path {
-            stroke: black;
-          }
-        }
+
+      & input {
+        padding-left: 44px;
+      }
+    }
+
+    &-add{
+      align-self: flex-start;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+
+      &_hidden{
+        display: none;
       }
     }
   }
 
-  &__title {
+  &__reset{
     color: white;
-  }
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 13px;
 
-  &__title, &__filter {
-    background: #1976D3;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  &__title:first-of-type, &__filter:first-of-type {
-    padding-left: 20px;
-  }
-
-  &__title:last-of-type, &__filter_last {
-    padding-right: 20px;
+    &:hover{
+      cursor: pointer;
+      color: black;
+    }
   }
 
   &__item {
@@ -91,6 +85,53 @@
     }
     &_relative{
       position: relative;
+    }
+  }
+
+  &__btn-search{
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background: none;
+    border: none;
+    position: absolute;
+    z-index: 1;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    &:hover{
+      cursor: pointer;
+      color: $menu-color;
+    }
+  }
+
+  &__btn-open-filter{
+    width: 168px;
+    background: white;
+    border: 1px solid #CED4DA;
+    border-radius: 4px;
+    font-size: 1em;
+    color: black;
+    display: flex;
+    gap: 11px;
+    align-items: center;
+    line-height: 20px;
+    padding: 0 12px;
+    &:active, &:focus, &:hover{
+      cursor: pointer;
+      box-shadow: 0px 0px 0px 2px rgba(87, 161, 237, 0.6);
+      outline: 0;
+      outline-offset: 0;
+    }
+
+    & span {
+      margin-top: -3px;
+    }
+
+    &-close {
+      margin-left: auto;
     }
   }
 }
