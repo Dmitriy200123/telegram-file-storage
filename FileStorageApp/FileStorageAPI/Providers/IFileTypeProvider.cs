@@ -10,7 +10,7 @@ namespace FileStorageAPI.Providers
         /// <summary>
         /// Возвращает тип файла по его расширению
         /// </summary>
-        /// <param name="extension">расширение файла</param>
-        FileType GetFileType(string extension);
+        /// <param name="fileName">расширение файла</param>
+        FileType GetFileType(string fileName);
     }
 }
