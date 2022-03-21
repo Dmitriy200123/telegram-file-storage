@@ -1,5 +1,4 @@
 import config
-import postgres
 from clients.s3_client import S3Client
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
@@ -17,10 +16,7 @@ from telethon import TelegramClient
 from urlextract import URLExtract
 
 
-async def start():
-    db_manager = postgres.start(max_connections=config.MAX_DB_CONNECTION)
-    adapter = Adapter(db_manager)
-    s3_client = S3Client(bucket_name=config.BUCKET_NAME)
+async def start(pg_adapter: Adapter, s3_client: S3Client):
     url_extractor = URLExtract()
 
     telegram_client = TelegramClient(
@@ -30,12 +26,12 @@ async def start():
     )
     await TelegramSetting.configure_telegram_client(telegram_client, config.NUMBER)
 
-    chat_repository = ChatRepository(adapter)
-    file_sender_repository = FileSenderRepository(adapter)
-    file_repository = FileRepository(adapter, s3_client)
-    sender_to_chat_repository = SenderToChatRepository(adapter)
+    chat_repository = ChatRepository(pg_adapter)
+    file_sender_repository = FileSenderRepository(pg_adapter)
+    file_repository = FileRepository(pg_adapter, s3_client)
+    sender_to_chat_repository = SenderToChatRepository(pg_adapter)
     url_repository = UrlRepository(url_extractor)
-    tag_repository = TagRepository(adapter)
+    tag_repository = TagRepository(pg_adapter)
 
     loader_interactor = LoaderInteractor(
         chat_repository=chat_repository,
@@ -59,3 +55,5 @@ async def start():
         chat_interactor
     )
     chat_handler = ChatHandler(telegram_client, chat_interactor)
+
+    return telegram_client

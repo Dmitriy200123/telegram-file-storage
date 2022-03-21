@@ -1,3 +1,8 @@
+# Общие настройки
+TEST_MODE = False
+TEST_USERS_TO_CREATE_CHAT = []
+TEST_CHAT_NAME = 'Test Chat'
+
 # Настройки базы
 DB_HOST = 'localhost'
 DB_PORT = 5432
