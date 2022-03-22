@@ -5,6 +5,7 @@
     border-radius: 4px;
     font-size: 1em;
     /*margin: 2px;*/
+    padding:  7px 12px;
 }
 
 .input:active, .input:focus, .input:hover {
