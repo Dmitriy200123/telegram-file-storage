@@ -96,37 +96,7 @@ export const filesSlice = createSlice({
         }
 
     },
-    extraReducers: {
-
-
-        // [fetchFile.fulfilled.type]: (state, action: PayloadAction<TypeFile>) => {
-        //     state.loading = false;
-        //     state.openFile = action.payload;
-        //     if (state.files.length === 0)
-        //         state.files = [action.payload];
-        // },
-        // [fetchFile.pending.type]: (state, action: PayloadAction) => {
-        //     state.loading = true;
-        // },
-        // [fetchFile.rejected.type]: (state, action: PayloadAction) => {
-        //     state.loading = false;
-        // },
-        //
-        // [fetchFileText.fulfilled.type]: (state: typeof initialState, action: PayloadAction<string>) => {
-        //     state.loading = false;
-        //     if (state.openFile)
-        //         state.openFile.message = action.payload;
-        // },
-        // [fetchFileText.pending.type]: (state: typeof initialState, action: PayloadAction) => {
-        //     state.loading = true;
-        // },
-        // [fetchFileText.rejected.type]: (state: typeof initialState, action: PayloadAction) => {
-        //     state.loading = false;
-        // },
-
-
-        //endregion
-    }
+    extraReducers: {}
 })
 
 
