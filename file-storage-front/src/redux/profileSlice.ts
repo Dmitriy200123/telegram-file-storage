@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {MessageType, MessageTypeEnum, Rights, TokensType} from "../models/File";
-import {fetchAuthGitlab, fetchIsAuth, fetchLogout, fetchLogoutTelegram} from "./thunks/profileThunks";
 import {updateAuthToken} from "./api/api";
 import {fetchRightsCurrentUser, fetchUserCurrent} from "./thunks/rightsThunks";
 
@@ -27,8 +26,37 @@ export const profileSlice = createSlice({
         },
         setLoading(state, payload: PayloadAction<boolean>) {
             state.loading = payload.payload
-        }
+        },
+        setUserCurrent(state, action: PayloadAction<{ name: string, hasTelegram: boolean, avatar: string | null }>) {
+            state.hasTelegram = action.payload.hasTelegram;
+        },
+        setRightsCurrentUser(state, action: PayloadAction<Rights[]>) {
+            state.rights = action.payload;
+        },
 
+        setIsAuth(state, payload: PayloadAction<boolean>) {
+            state.isAuth = payload.payload;
+        },
+        setTokensToLocalStorage(state, action: PayloadAction<TokensType>) {
+            localStorage.setItem("jwtToken", action.payload.jwtToken);
+            localStorage.setItem("refreshToken", action.payload.refreshToken);
+            updateAuthToken();
+        },
+        setAuthGitlab(state, action: PayloadAction<TokensType>) {
+            localStorage.setItem("jwtToken", action.payload.jwtToken);
+            localStorage.setItem("refreshToken", action.payload.refreshToken);
+            updateAuthToken();
+        },
+
+        setLogoutTelegram(state, payload: PayloadAction<boolean>) {
+            state.hasTelegram = payload.payload;
+        },
+        setLogout() {
+            localStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+            sessionStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+            localStorage.removeItem("jwtToken");
+            localStorage.removeItem("refreshToken");
+        }
     },
     extraReducers: {
         [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string, hasTelegram: boolean, avatar: string | null }>) => {
@@ -53,97 +81,6 @@ export const profileSlice = createSlice({
         [fetchRightsCurrentUser.rejected.type]: (state) => {
             state.loading = false;
         },
-
-
-        [fetchIsAuth.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
-            state.loading = false;
-            state.isAuth = true;
-            localStorage.setItem("jwtToken", action.payload.jwtToken);
-            localStorage.setItem("refreshToken", action.payload.refreshToken);
-            updateAuthToken();
-        },
-        [fetchIsAuth.pending.type]: (state) => {
-            state.loading = true;
-        },
-        [fetchIsAuth.rejected.type]: (state) => {
-            state.loading = false;
-            state.isAuth = false;
-        },
-
-        [fetchAuthGitlab.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
-            state.isAuth = true;
-            localStorage.setItem("jwtToken", action.payload.jwtToken);
-            localStorage.setItem("refreshToken", action.payload.refreshToken);
-            updateAuthToken();
-        },
-        [fetchAuthGitlab.pending.type]: (state, action) => {
-        },
-        [fetchAuthGitlab.rejected.type]: (state, action) => {
-            state.isAuth = false;
-        },
-
-        [fetchLogout.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
-            state.loading = false;
-            state.isAuth = false;
-            localStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
-            sessionStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
-            localStorage.removeItem("jwtToken");
-            localStorage.removeItem("refreshToken");
-        },
-        [fetchLogout.pending.type]: (state, action) => {
-            state.loading = true;
-        },
-        [fetchLogout.rejected.type]: (state, action) => {
-            state.loading = false;
-        },
-
-        [fetchLogoutTelegram.fulfilled.type]: (state) => {
-            state.loading = false;
-            state.hasTelegram = false;
-        },
-        [fetchLogout.pending.type]: (state) => {
-            state.loading = true;
-        },
-        [fetchLogout.rejected.type]: (state) => {
-            state.loading = false;
-        },
-
-
-        // [fetchRemoveFile.fulfilled.type]: (state) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно удален файл"}];
-        // },
-        // [fetchEditFileName.fulfilled.type]: (state) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
-        // },
-        // [fetchEditFileName.fulfilled.type]: (state) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}];
-        // },
-
-
-        // [fetchRemoveFile.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        // },
-        // [fetchEditFileName.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        // },
-        // [fetchFile.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-
-        // [fetchFileText.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        // },
-        //
-        // [postCustomFile.fulfilled.type]: (state, _) => {
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Message, value: "Успешно загружен"}];
-        //     state.loading = false;
-        // },
-        // [postCustomFile.pending.type]: (state, _) => {
-        //     state.loading = true;
-        // },
-        // [postCustomFile.rejected.type]: (state, action: PayloadAction<string>) => {
-        //     state.loading = false;
-        //     state.messages = [...state.messages, {type: MessageTypeEnum.Error, value: action.payload}];
-        // },
     }
 });
 

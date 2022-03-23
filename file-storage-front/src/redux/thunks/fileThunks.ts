@@ -6,21 +6,9 @@ import {profileSlice} from "../profileSlice";
 import {editorSlice} from "../editorSlice";
 import {filesSlice} from "../filesSlice"
 
-const {addMessage, setLoading:setLoadingProfile} = profileSlice.actions;
+const {addMessage, setLoading: setLoadingProfile} = profileSlice.actions;
 const {setFile} = editorSlice.actions;
 const {setFiles, changeFileName, closeModal, removeFile, setLoading} = filesSlice.actions;
-
-// export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
-//     try {
-//         dispatch(setLoading(true));
-//         dispatch(setFilesTypes(await fetchConfig(`/api/files/types`)));
-//         dispatch(setLoading(false));
-//     } catch (err) {
-//         dispatch(setLoading(false));
-//         dispatch( addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить типы файлов"}))
-//     }
-// }
-
 
 export const fetchFile = (id: string) => async (dispatch: AppDispatch) => {
     try {
@@ -47,15 +35,6 @@ export const postFile = (formData: FormData) => async (dispatch: AppDispatch) =>
         dispatch(setLoading(false));
     }
 }
-
-// export const postFile = createAsyncThunk("file/post", async (formData: FormData, thunkAPI) => {
-//     try {
-//         return await fPostFile("/api/files", formData);
-//     } catch (err) {
-//         return thunkAPI.rejectWithValue("Не удалось загрузить файл");
-//     }
-// });
-
 
 export const postCustomFile = ({
                                    contentType,
@@ -91,6 +70,7 @@ export const fetchEditFileName = (args: { id: string, fileName: string }) => asy
         dispatch(changeFileName(args));
         dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно изменено имя файла"}));
         dispatch(setLoading(false));
+        dispatch(closeModal());
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось переименовать файл"}));
         dispatch(closeModal());
@@ -124,22 +104,14 @@ export const fetchDownloadLink = (id: string) => async (dispatch: AppDispatch) =
         dispatch(setLoading(false))
     }
 }
-// export const fetchDownloadLink  = createAsyncThunk("file/downloadlink", async (id: string, thunkAPI) => {
-//     try {
-//         const link = await fetchConfigText(`/api/files/${id}/downloadlink`, {method: "GET"});
-//         window.open(link);
-//     } catch (err) {
-//         return thunkAPI.rejectWithValue("Не удалось загрузить ссылку на файл");
-//     }
-// });
 
 export const fetchFileText = ({id, type}: { id: string, type: number }) => async (dispatch: AppDispatch) => {
     try {
         dispatch(setLoading(true));
         if (type === 5)
-             await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
+            await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
         else if (type === 4)
-             await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
+            await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
         dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно загрузилось!"}))
         dispatch(setLoading(false));
     } catch (err) {
@@ -147,18 +119,3 @@ export const fetchFileText = ({id, type}: { id: string, type: number }) => async
         dispatch(setLoading(false));
     }
 }
-
-//
-// export const fetchFileText = createAsyncThunk("file/readtext", async ({
-//                                                                           id,
-//                                                                           type
-//                                                                       }: { id: string, type: number }, thunkAPI) => {
-//     try {
-//         if (type === 5 || type === 4)
-//             return await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
-//         // else if (type === 4)
-//         //     return await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
-//     } catch (err) {
-//         return thunkAPI.rejectWithValue("Не удалось загрузить текст файла");
-//     }
-// });
