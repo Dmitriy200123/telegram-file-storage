@@ -22,9 +22,9 @@ export const fetchAuth = async (url: string, config?: any) => {
     });
 
 
-    if(response.ok)
+    // if(response.ok)
         return await response.json();
-    throw Error();
+    // throw Error();
 };
 
 
