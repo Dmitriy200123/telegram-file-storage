@@ -38,8 +38,19 @@ namespace DocumentsIndex
         /// <returns></returns>
         Task<bool> DeleteAsync(Guid guid);
 
+        /// <summary>
+        /// Поиск подстроки в тексте или имени файла
+        /// </summary>
+        /// <param name="query">подстрока для поиска</param>
+        /// <returns></returns>
         Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query);
 
+        /// <summary>
+        /// Проверки содержания подстрок в названии документа с заданным идентификатором
+        /// </summary>
+        /// <param name="documentId">Идентификатор документа</param>
+        /// <param name="subStrings">Подстроки для поиска</param>
+        /// <returns></returns>
         Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings);
     }
 }

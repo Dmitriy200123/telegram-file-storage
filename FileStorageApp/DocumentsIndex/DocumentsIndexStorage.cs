@@ -30,12 +30,13 @@ namespace DocumentsIndex
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
-                    .Match(m => m
-                        .Field(a => a.Attachment.Content)
+                    .QueryString(m => m
+                        .Fields(f => f
+                            .Field(p => p.Attachment.Content))
                         .Query(subString)
+                        .Analyzer(Analyzers.DocumentNgramAnalyzer)
                     )
-                )
-            );
+                ));
             return searchResponse.Hits.Select(x => x.Source.Id);
         }
 
@@ -63,47 +64,70 @@ namespace DocumentsIndex
                     guid.ToString()));
             return response.IsValid;
         }
-
+        
+        /// <inheritdoc />
         public async Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query)
         {
-            var names = await SearchByNameAsync(query);
-            var texts = await SearchBySubstringAsync(query);
-            var result = names.Concat(texts).Distinct();
-            return result;
+            var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                .Query(q =>
+                    q.QueryString(m => m
+                        .Fields(f => f
+                            .Field(p => p.Attachment.Content))
+                        .Query(query)
+                        .Analyzer(Analyzers.DocumentNgramAnalyzer)
+                    )
+                    || q.QueryString(m => m
+                        .Fields(f => f
+                            .Field(p => p.Name))
+                        .Query(query)
+                        .Analyzer(Analyzers.DocumentNgramAnalyzer))
+                ));
+            return searchResponse.Hits.Select(x => x.Source.Id);
         }
 
+        /// <inheritdoc />
         public async Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings)
         {
-            var searchResponses = await Task.WhenAll(subStrings
-                .Select(x =>
-                {
-                    return _elasticClient.SearchAsync<ElasticDocument>(s => s
-                        .Query(q => q
-                            .QueryString(c => c
-                                .Fields(f => f
-                                    .Field(p => p.Name))
-                                .Query(x)
-                                .Analyzer(Analyzers.DocumentNgramAnalyzer)
-                            )
-                        )
-                    );
-                }));
-            var hits = searchResponses.SelectMany(x => x.Hits);
-            return hits.Any(x => x.Source.Id == documentId);
-        }
+            var searchResponses = await _elasticClient
+                .SearchAsync<ElasticDocument>(s => s
+                    .Query(q => CreateForSubStrings(q, subStrings)
+                                && q.Bool(b => b
+                                    .Must(m => m
+                                        .Match(ma => ma
+                                            .Field(f => f.Id)
+                                            .Query(documentId.ToString()))))
+                    )
+                );
 
+            return searchResponses.Hits.Any();
+        }
+        
         /// <inheritdoc />
         public async Task<IEnumerable<Guid>> SearchByNameAsync(string name)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
-                    .Match(m => m
-                        .Field(a => a.Name)
+                    .QueryString(m => m
+                        .Fields(f => f
+                            .Field(p => p.Name))
                         .Query(name)
-                    )
+                        .Analyzer(Analyzers.DocumentNgramAnalyzer))
                 )
             );
             return searchResponse.Hits.Select(x => x.Source.Id);
         }
+        
+        private QueryContainer CreateForSubStrings(
+            QueryContainerDescriptor<ElasticDocument> descriptor, string[] subStrings)
+        {
+            return subStrings
+                .Aggregate(new QueryContainer(), (current, subString) => current || descriptor
+                    .QueryString(c => c
+                        .Fields(f => f
+                            .Field(p => p.Name))
+                        .Query(subString)
+                        .Analyzer(Analyzers.DocumentNgramAnalyzer)));
+        }
+
     }
 }
