@@ -76,7 +76,35 @@ namespace DocumentsIndex.Tests
 
             actual.Should().Be(expected);
         }
+        
+        [Test]
+        public async Task FindInTextAndNameAsync_SuccessFound_ThenCalled()
+        {
+            var expected = Guid.NewGuid();
+            var bytes = await ReadBytesFromFileName(DocumentName);
+            var document = new Document(expected, bytes, DocumentName);
+            await _documentIndexStorage.IndexDocumentAsync(document);
+            
+            var documentName = await _documentIndexStorage.FindInTextAndNameAsync(DocumentName);
+            var documentContent = await _documentIndexStorage.FindInTextAndNameAsync("attachments");
 
+            documentName.Should().BeEquivalentTo(documentContent);
+        }
+        
+        [TestCase(true, "ex", "doc")]
+        [TestCase(false, "aboba", "hfdjkass")]
+        public async Task IsContainsInNameAsync_ReturnCorrect_ThenCalled(bool expected, params string[] text)
+        {
+            var guid = Guid.NewGuid();
+            var bytes = await ReadBytesFromFileName(DocumentName);
+            var document = new Document(guid, bytes, DocumentName);
+            await _documentIndexStorage.IndexDocumentAsync(document);
+            
+            var documentName = await _documentIndexStorage.IsContainsInNameAsync(guid, text);
+
+            documentName.Should().Be(expected);
+        }
+        
         private static async Task<byte[]> ReadBytesFromFileName(string fileName)
         {
             var stream = File.OpenRead($"{Directory.GetCurrentDirectory()}/FilesForTest/{fileName}");

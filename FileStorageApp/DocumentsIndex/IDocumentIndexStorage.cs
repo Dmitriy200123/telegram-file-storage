@@ -37,5 +37,9 @@ namespace DocumentsIndex
         /// <param name="guid">Идентификатор документа, который нужно удалить</param>
         /// <returns></returns>
         Task<bool> DeleteAsync(Guid guid);
+
+        Task<IEnumerable<Guid>> FindInTextAndNameAsync(string query);
+
+        Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings);
     }
 }

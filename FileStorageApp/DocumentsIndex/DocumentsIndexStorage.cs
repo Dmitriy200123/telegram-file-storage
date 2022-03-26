@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DocumentsIndex.Model;
 using Elasticsearch.Net;
 using Nest;
+using Analyzers = DocumentsIndex.Constants.Analyzers;
 
 namespace DocumentsIndex
 {
@@ -63,6 +64,35 @@ namespace DocumentsIndex
             return response.IsValid;
         }
 
+        public async Task<IEnumerable<Guid>> FindInTextAndNameAsync(string query)
+        {
+            var names = await SearchByNameAsync(query);
+            var texts = await SearchBySubstringAsync(query);
+            var result = names.Concat(texts).Distinct();
+            return result;
+        }
+
+        public async Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings)
+        {
+            var searchResponses = await Task.WhenAll(subStrings
+                .Select(x =>
+                {
+                    return _elasticClient.SearchAsync<ElasticDocument>(s => s
+                        .Query(q => q
+                            .QueryString(c => c
+                                .Fields(f => f
+                                    .Field(p => p.Name))
+                                .Query(x)
+                                .Analyzer(Analyzers.DocumentNgramAnalyzer)
+                            )
+                        ));
+                }));
+
+            return searchResponses
+                .SelectMany(x => x.Hits)
+                .Any(x => x.Source.Id == documentId);
+        }
+
         /// <inheritdoc />
         public async Task<IEnumerable<Guid>> SearchByNameAsync(string name)
         {
@@ -77,4 +107,12 @@ namespace DocumentsIndex
             return searchResponse.Hits.Select(x => x.Source.Id);
         }
     }
+    /*var searchResponse2 = await _elasticClient.SearchAsync<ElasticDocument>(s => s
+                .Query(q => q
+                    .Term(t => t
+                        .Value(subStrings)
+                        .Field(f => f.Name)
+                    )
+                )
+            );*/
 }
