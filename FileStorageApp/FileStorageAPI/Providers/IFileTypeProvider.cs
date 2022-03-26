@@ -8,9 +8,9 @@ namespace FileStorageAPI.Providers
     public interface IFileTypeProvider
     {
         /// <summary>
-        /// Возвращает тип файла по его расширению
+        /// Возвращает тип файла по его имени
         /// </summary>
-        /// <param name="fileName">расширение файла</param>
+        /// <param name="fileName">Полное имя файла</param>
         FileType GetFileType(string fileName);
     }
 }
