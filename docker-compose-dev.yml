@@ -2,12 +2,14 @@ version: '3.9'
 
 services:
   s3:
-    image: localstack/localstack
+    image: localstack/localstack:0.13
     container_name: s3
     ports:
       - 4566:4566
       - 9090:8080
     environment:
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=123
       - SERVICES=s3,sns,sqs
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
@@ -33,6 +35,7 @@ services:
       - "5432:5432"
     volumes:
       - ./DbScripts/fileStorageTables.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg-data:/var/lib/postgresql/data
 
   dotnet_backend:
     container_name: dotnet_backend
@@ -117,4 +120,5 @@ services:
 
 volumes:
   localstack-vol:
+  pg-data:
   elasticsearch-data:

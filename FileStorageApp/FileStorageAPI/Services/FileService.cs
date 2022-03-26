@@ -156,7 +156,7 @@ namespace FileStorageAPI.Services
                 Id = Guid.NewGuid(),
                 Name = uploadFile.FileName,
                 Extension = Path.GetExtension(uploadFile.FileName),
-                Type = _fileTypeProvider.GetFileType(uploadFile.Headers["Content-Type"]),
+                Type = _fileTypeProvider.GetFileType(uploadFile.FileName),
                 UploadDate = DateTime.Now,
                 FileSenderId = fileSender.Id
             };

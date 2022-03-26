@@ -1,4 +1,6 @@
-﻿using FileStorageApp.Data.InfoStorage.Enums;
+﻿using System.Collections.Generic;
+using FileStorageApp.Data.InfoStorage.Enums;
+using Microsoft.Extensions.Configuration;
 
 namespace FileStorageAPI.Providers
 {
@@ -6,13 +8,19 @@ namespace FileStorageAPI.Providers
     public class FileTypeProvider : IFileTypeProvider
     {
         /// <inheritdoc />
-        public FileType GetFileType(string extension)
+        public FileType GetFileType(string fileName)
         {
-            if (extension.Contains("image"))
+            var mimeType = MimeTypes.GetMimeType(fileName);
+            var fileTypes = Settings.Configuration.GetSection("SupportedFileTypes").Get<List<string>>();
+            
+            if (fileTypes.Contains(mimeType))
+                return FileType.TextDocument;
+            
+            if (mimeType.Contains("image"))
                 return FileType.Image;
-            if (extension.Contains("video"))
+            if (mimeType.Contains("video"))
                 return FileType.Video;
-            if (extension.Contains("audio"))
+            if (mimeType.Contains("audio"))
                 return FileType.Audio;
             return FileType.Document;
         }

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
@@ -39,7 +40,7 @@ namespace FileStorageAPI.Tests
             var config = new AmazonS3Config
             {
                 ServiceURL = Config["S3serviceUrl"],
-                ForcePathStyle = true
+                ForcePathStyle = true,
             };
             var s3Config = new S3FilesStorageOptions(Config["S3accessKey"], Config["S3secretKey"],
                 Config["S3bucketName"], config, S3CannedACL.PublicReadWrite,
@@ -210,6 +211,7 @@ namespace FileStorageAPI.Tests
         [TestCase("audio.mp3", "audio/mpeg")]
         [TestCase("image.png", "image/png")]
         [TestCase("video.mp4", "video/mp4")]
+        [TestCase("text_document.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")]
         public async Task PostFile_ReturnFileInfo_ThenCalled(string fileName, string contentType)
         {
             using var apiClient = CreateHttpClient();
