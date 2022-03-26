@@ -41,7 +41,6 @@ namespace FileStorageAPI.Tests
             {
                 ServiceURL = Config["S3serviceUrl"],
                 ForcePathStyle = true,
-                RegionEndpoint = RegionEndpoint.EUWest2
             };
             var s3Config = new S3FilesStorageOptions(Config["S3accessKey"], Config["S3secretKey"],
                 Config["S3bucketName"], config, S3CannedACL.PublicReadWrite,

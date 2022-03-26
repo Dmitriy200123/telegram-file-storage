@@ -45,9 +45,6 @@
 
     <ItemGroup>
       <Content Remove="appsettings.Development.json" />
-      <None Include="appsettings.Development.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <Content Remove="appsettings.json" />
       <None Include="appsettings.Docker.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
