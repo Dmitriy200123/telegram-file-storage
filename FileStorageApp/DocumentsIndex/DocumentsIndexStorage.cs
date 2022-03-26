@@ -64,7 +64,7 @@ namespace DocumentsIndex
             return response.IsValid;
         }
 
-        public async Task<IEnumerable<Guid>> FindInTextAndNameAsync(string query)
+        public async Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query)
         {
             var names = await SearchByNameAsync(query);
             var texts = await SearchBySubstringAsync(query);
@@ -85,12 +85,11 @@ namespace DocumentsIndex
                                 .Query(x)
                                 .Analyzer(Analyzers.DocumentNgramAnalyzer)
                             )
-                        ));
+                        )
+                    );
                 }));
-
-            return searchResponses
-                .SelectMany(x => x.Hits)
-                .Any(x => x.Source.Id == documentId);
+            var hits = searchResponses.SelectMany(x => x.Hits);
+            return hits.Any(x => x.Source.Id == documentId);
         }
 
         /// <inheritdoc />
@@ -107,12 +106,4 @@ namespace DocumentsIndex
             return searchResponse.Hits.Select(x => x.Source.Id);
         }
     }
-    /*var searchResponse2 = await _elasticClient.SearchAsync<ElasticDocument>(s => s
-                .Query(q => q
-                    .Term(t => t
-                        .Value(subStrings)
-                        .Field(f => f.Name)
-                    )
-                )
-            );*/
 }

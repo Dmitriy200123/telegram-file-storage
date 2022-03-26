@@ -38,7 +38,7 @@ namespace DocumentsIndex
         /// <returns></returns>
         Task<bool> DeleteAsync(Guid guid);
 
-        Task<IEnumerable<Guid>> FindInTextAndNameAsync(string query);
+        Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query);
 
         Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings);
     }
