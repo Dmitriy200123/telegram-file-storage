@@ -1,8 +1,25 @@
 # Общие настройки
 SUPPORTED_TEXT_FILE_TYPES = [
+    'application/vnd.ms-powerpoint.slideshow.macroenabled.12',
+    'application/vnd.ms-powerpoint.presentation.macroenabled.12',
+    'application/msword', 'application/rtf',
+    'application/vnd.oasis.opendocument.presentation',
+    'application/vnd.ms-excel', 'text/plain',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/html',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
     'application/pdf',
-    'text/plain'
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.text',
+    'application/mbox',
+    'application/xml',
+    'application/vnd.ms-powerpoint',
+    # optional
+    'application/vnd.ms-outlook',
+    'application/vnd.apple.pages',
+    'application/vnd.apple.keynote',
 ]
 
 # Настройки базы
