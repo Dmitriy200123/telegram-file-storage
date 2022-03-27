@@ -17,7 +17,8 @@ const optionsDate = [
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            // dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date()),
         },
         label: 'Сегодня'
@@ -30,13 +31,13 @@ const optionsDate = [
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 6))
         }, label: 'За последние 7 дней'
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 29))
         }, label: 'За последние 30 дней'
     },

@@ -35,10 +35,9 @@ const FilesMain = () => {
     }, [currentPage])
 
 
-    const {handleSubmit, formState: {errors}, setValue, getValues} = useForm<TypeSelectFilters>();
+    const {handleSubmit, formState:{ errors},setValue, getValues, reset} = useForm<TypeSelectFilters>();
     const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
-
         const form = {
             take: filesInPage,
             fileName: formData.fileName,
@@ -48,39 +47,31 @@ const FilesMain = () => {
             chatIds: formData.chatIds,
         };
 
-
         dispatch(fetchFiles({
             skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
             ...form
         }));
-
     };
 
     const onChangeForm = handleSubmit(dispatchValuesForm);
-
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}
                                                               types={filesTypes} fetchFiles={onChangeForm}/>);
 
     const setValueForm = (name: string, value: any) => {
         setValue(name as "fileName" | "senderIds" | "date" | "chatIds" | "categories", value, {
-            shouldValidate: true,
-            shouldDirty: true
+            shouldValidate: true
         });
     }
-
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Файлы</h2>
             <div className={"files-main__content"}>
                 <form className={"files"} onSubmit={onChangeForm}>
-                    <h3 className={"files__title"}>Название</h3>
-                    <h3 className={"files__title"}>Дата</h3>
-                    <h3 className={"files__title"}>Формат</h3>
-                    <h3 className={"files__title"}>Отправитель</h3>
-                    <h3 className={"files__title"}>Чаты</h3>
-                    <Filters setValueForm={setValueForm} getValues={getValues}/>
-                    {FragmentsFiles}
+                    <Filters setValueForm={setValueForm} getValues={getValues} reset={reset}/>
+                    <div className={"files__files"}>
+                        {FragmentsFiles}
+                    </div>
                 </form>
             </div>
             <Paginator paginator={paginator}/>
