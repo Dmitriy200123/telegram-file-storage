@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using DocumentsIndex.Model;
 using Microsoft.AspNetCore.Http;
@@ -32,18 +33,19 @@ namespace SearchDocumentsAPI.Controllers
         /// Индексирует документ.
         /// </summary>
         [HttpPost]
-        [SwaggerResponse(StatusCodes.Status200OK, "Документ проиндексировался")]
+        [SwaggerResponse(StatusCodes.Status204NoContent, "Документ проиндексировался")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если документ не удалось проиндексировать")]
         [DisableRequestSizeLimit]
         [RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
         public async Task<IActionResult> IndexDocument([FromBody] Document document)
         {
-            var success = await _documentsIndexService.IndexDocumentAsync(document);
+            var result = await _documentsIndexService.IndexDocumentAsync(document);
 
-            return success switch
+            return result.ResponseCode switch
             {
-                true => Ok(),
-                false => BadRequest()
+                HttpStatusCode.NoContent => NoContent(),
+                HttpStatusCode.BadRequest => BadRequest(result.Message),
+                _ => throw new ArgumentException("Unknown response code")
             };
         }
 
@@ -51,16 +53,17 @@ namespace SearchDocumentsAPI.Controllers
         /// Удаляет документ из индексирования.
         /// </summary>
         [HttpDelete("{id:guid}")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Документ удален из индексации")]
+        [SwaggerResponse(StatusCodes.Status204NoContent, "Документ удален из индексации")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если документ не удален")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _documentsIndexService.DeleteAsync(id);
+            var result = await _documentsIndexService.DeleteAsync(id);
 
-            return success switch
+            return result.ResponseCode switch
             {
-                true => Ok(),
-                false => BadRequest()
+                HttpStatusCode.NoContent => NoContent(),
+                HttpStatusCode.BadRequest => BadRequest(result.Message),
+                _ => throw new ArgumentException("Unknown response code")
             };
         }
     }

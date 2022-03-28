@@ -52,7 +52,7 @@ namespace SearchDocumentAPI.Tests
         [Test]
         public async Task IndexDocument_ReturnOK_ThenCalled()
         {
-            const HttpStatusCode expected = HttpStatusCode.OK;
+            const HttpStatusCode expected = HttpStatusCode.NoContent;
 
             var id = Guid.NewGuid();
             var bytes = await ReadBytesFromFileName(DocumentName);
@@ -73,7 +73,7 @@ namespace SearchDocumentAPI.Tests
         [Test]
         public async Task DeleteDocumentById_SuccessfullyDelete_ThenCalled()
         {
-            const HttpStatusCode expected = HttpStatusCode.OK;
+            const HttpStatusCode expected = HttpStatusCode.NoContent;
             
             var id = Guid.NewGuid();
             var bytes = await ReadBytesFromFileName(DocumentName);
@@ -105,7 +105,5 @@ namespace SearchDocumentAPI.Tests
             await stream.CopyToAsync(memoryStream);
             return memoryStream.ToArray();
         }
-        
-        
     }
 }

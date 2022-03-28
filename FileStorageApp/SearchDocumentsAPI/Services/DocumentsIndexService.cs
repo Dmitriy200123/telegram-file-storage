@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DocumentsIndex;
 using DocumentsIndex.Model;
+using FileStorageAPI;
 
 namespace SearchDocumentsAPI.Services
 {
@@ -21,10 +22,23 @@ namespace SearchDocumentsAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> IndexDocumentAsync(Document document) =>
-            await _documentIndexStorage.IndexDocumentAsync(document);
+        public async Task<RequestResult<Document>> IndexDocumentAsync(Document document)
+        {
+            var success = await _documentIndexStorage.IndexDocumentAsync(document);
+
+            return success
+                ? RequestResult.NoContent<Document>()
+                : RequestResult.BadRequest<Document>("Invalid document");
+        }
 
         /// <inheritdoc />
-        public async Task<bool> DeleteAsync(Guid id) => await _documentIndexStorage.DeleteAsync(id);
+        public async Task<RequestResult<Document>> DeleteAsync(Guid id)
+        {
+            var success = await _documentIndexStorage.DeleteAsync(id);
+            
+            return success
+                ? RequestResult.NoContent<Document>()
+                : RequestResult.BadRequest<Document>("Invalid id");
+        }
     }
 }
