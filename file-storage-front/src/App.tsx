@@ -40,7 +40,6 @@ const App: FC = () => {
     const messages = useAppSelector((state) => state.profile.messages);
     const loading = useAppSelector((state) => state.profile.loading);
     const isAuth = useAppSelector((state) => state.profile.isAuth);
-
     useEffect(() => {
         dispatch(fetchIsAuth());
     }, []);

@@ -9,7 +9,7 @@ const initialState = {
     name: "Полина Антоновна",
     hasTelegram: false,
     avatar: null as string | null,
-    loading: true,
+    loading: false,
     messages: [] as Array<MessageType>,
     rights: [] as null | Rights[],
 }
