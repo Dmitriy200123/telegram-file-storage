@@ -18,7 +18,7 @@ export const fetchIsAuth = () => async (dispatch: AppDispatch) => {
         dispatch(setLoading(true));
         const tokens: TokensType = {jwtToken, refreshToken};
         const data: TokensType = await fetchAuth("/auth/gitlab/refresh", {body: tokens, method: "POST"});
-        dispatch(setIsAuth(false));
+        dispatch(setIsAuth(true));
         dispatch(setTokensToLocalStorage(data));
     } catch (e) {
         dispatch(setLoading(false));
@@ -30,6 +30,7 @@ export const fetchAuthGitlab = (token: TokensType) => async (dispatch: AppDispat
     try {
         const data: TokensType = await fetchAuth("/auth/gitlab", {token: token});
         dispatch(setAuthGitlab(data));
+        dispatch(setIsAuth(true));
     } catch (e) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось войти с помощью гитлаба"}));
     }
