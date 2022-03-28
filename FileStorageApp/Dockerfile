@@ -10,10 +10,12 @@ COPY InfoStorage/*.csproj ./InfoStorage/
 COPY DataBaseFiller/*.csproj ./DataBaseFiller/
 COPY JwtAuth/*.csproj ./JwtAuth/
 COPY TelegramAuth/*.csproj ./TelegramAuth/
+COPY DocumentsIndex/*.csproj ./DocumentsIndex/
 
 COPY FileStorageAPI.Tests/*.csproj ./FileStorageAPI.Tests/
 COPY FilesStorageTests/*.csproj ./FilesStorageTests/
 COPY InfoStorage.Tests/*.csproj ./InfoStorage.Tests/
+COPY DocumentsIndex.Tests/*.csproj ./DocumentsIndex.Tests/
 #
 RUN dotnet restore
 #
