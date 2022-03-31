@@ -9,7 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using SearchDocumentsAPI.Services;
+using SearchDocumentsAPI.Services.DocumentsIndex;
+using SearchDocumentsAPI.Services.DocumentsSearch;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 namespace SearchDocumentsAPI
@@ -61,6 +62,7 @@ namespace SearchDocumentsAPI
             services.AddSingleton<IPipelineCreator, PipelineCreator>();
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
             services.AddSingleton<IDocumentsIndexService, DocumentsIndexService>();
+            services.AddSingleton<IDocumentsSearchService, DocumentsSearchService>();
             services.AddSingleton(provider =>
             {
                 // TODO: в конфиг

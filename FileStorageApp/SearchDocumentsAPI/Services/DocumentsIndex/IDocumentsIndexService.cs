@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using DocumentsIndex.Model;
+using DocumentsIndex.Contracts;
 using FileStorageAPI;
 
-namespace SearchDocumentsAPI.Services
+namespace SearchDocumentsAPI.Services.DocumentsIndex
 {
     /// <summary>
     /// Сервис для взаимодействия с индексацией документов.
