@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DocumentsIndex;
 using DocumentsIndex.Config;
+using DocumentsIndex.Contracts;
 using DocumentsIndex.Factories;
-using DocumentsIndex.Model;
 using DocumentsIndex.Pipelines;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
@@ -50,7 +50,7 @@ namespace SearchDocumentAPI.Tests
         }
 
         [Test]
-        public async Task IndexDocument_ReturnOK_ThenCalled()
+        public async Task IndexDocument_NoContent_ThenCalled()
         {
             const HttpStatusCode expected = HttpStatusCode.NoContent;
 
@@ -62,7 +62,7 @@ namespace SearchDocumentAPI.Tests
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.PostAsync($"/api/documentIndex", stringContent);
+            var response = await apiClient.PostAsync($"/api/documents/indexDocument", stringContent);
 
             response.EnsureSuccessStatusCode();
             var actual = response.StatusCode;
@@ -71,7 +71,7 @@ namespace SearchDocumentAPI.Tests
         }
         
         [Test]
-        public async Task DeleteDocumentById_SuccessfullyDelete_ThenCalled()
+        public async Task DeleteDocumentById_NoContent_ThenCalled()
         {
             const HttpStatusCode expected = HttpStatusCode.NoContent;
             
@@ -81,7 +81,7 @@ namespace SearchDocumentAPI.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
             
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.DeleteAsync($"/api/documentIndex/{id}");
+            var response = await apiClient.DeleteAsync($"/api/documents/indexDocument/{id}");
 
             response.EnsureSuccessStatusCode();
             var actual = response.StatusCode;
