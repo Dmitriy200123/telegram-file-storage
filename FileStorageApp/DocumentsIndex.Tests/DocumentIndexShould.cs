@@ -112,12 +112,13 @@ namespace DocumentsIndex.Tests
             actual.Should().BeEmpty();
         }
 
+        [TestCase(true, "exam")]
+        [TestCase(true, "example")]
         [TestCase(true, "exa", "doc")]
+        [TestCase(true, "zzzz", "one")]
         [TestCase(false, "aboba", "hfdjkass")]
         [TestCase(false, "z")]
         [TestCase(false, "amzz")]
-        [TestCase(true, "exam")]
-        [TestCase(true, "example")]
         [TestCase(false, "dex")]
         public async Task IsContainsInNameAsync_ReturnCorrect_ThenCalled(bool expected, params string[] text)
         {
