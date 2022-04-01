@@ -24,8 +24,8 @@ namespace DocumentsIndex.Tests
         public void Setup()
         {
             _config = new ElasticConfig("http://localhost:9200", "testindex");
-            var factory = new DocumentIndexFactory(new PipelineCreator());
-            _documentIndexStorage = factory.CreateDocumentIndexStorage(_config);
+            var factory = new DocumentIndexFactory(new PipelineCreator(), _config);
+            _documentIndexStorage = factory.CreateDocumentIndexStorage();
         }
 
         [TearDown]

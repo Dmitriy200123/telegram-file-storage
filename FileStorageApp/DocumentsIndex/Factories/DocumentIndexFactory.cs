@@ -15,10 +15,12 @@ namespace DocumentsIndex.Factories
     public class DocumentIndexFactory : BaseIndexFactory, IDocumentIndexFactory
     {
         private readonly IPipelineCreator _pipelineCreator;
+        private readonly IElasticConfig _elasticConfig;
 
-        public DocumentIndexFactory(IPipelineCreator pipelineCreator)
+        public DocumentIndexFactory(IPipelineCreator pipelineCreator, IElasticConfig elasticConfig)
         {
             _pipelineCreator = pipelineCreator ?? throw new ArgumentNullException(nameof(pipelineCreator));
+            _elasticConfig = elasticConfig ?? throw new ArgumentNullException(nameof(elasticConfig));
         }
 
         private static readonly Func<CreateIndexDescriptor, CreateIndexDescriptor> IndexDescriptor = x =>
@@ -66,10 +68,10 @@ namespace DocumentsIndex.Factories
         };
 
         /// <inheritdoc />
-        public IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig)
+        public IDocumentIndexStorage CreateDocumentIndexStorage()
         {
             var pipeline = _pipelineCreator.CreateElasticDocumentPipeLine();
-            var storage = CreateDocumentIndexStorage(elasticConfig, pipeline, IndexDescriptor);
+            var storage = CreateDocumentIndexStorage(_elasticConfig, pipeline, IndexDescriptor);
             return storage;
         }
     }
