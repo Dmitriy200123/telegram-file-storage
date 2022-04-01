@@ -48,7 +48,7 @@ namespace DocumentsIndex
                 {
                     Id = document.Id,
                     Content = base64File,
-                    Name = document.Name
+                    Name = document.Name.ReplaceDelimitersToWhiteSpaces()
                 }, i => i
                     .Pipeline(_elasticClient.ConnectionSettings.DefaultIndex)
                     .Refresh(Refresh.WaitFor)

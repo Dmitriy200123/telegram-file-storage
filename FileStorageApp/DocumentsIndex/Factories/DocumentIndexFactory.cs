@@ -27,7 +27,7 @@ namespace DocumentsIndex.Factories
         {
             var nGramFilters = new List<string> {"lowercase", "asciifolding"};
             return x.Settings(st => st
-                        .Setting(UpdatableIndexSettings.MaxNGramDiff, 18)
+                        .Setting(UpdatableIndexSettings.MaxNGramDiff, 17)
                         .Analysis(an => an
                             .Analyzers(anz => anz
                                 .Custom(Analyzers.DocumentNgramAnalyzer, cc => cc
@@ -35,8 +35,8 @@ namespace DocumentsIndex.Factories
                                     .Filters(nGramFilters))
                             )
                             .Tokenizers(tz => tz
-                                .NGram(Tokenizers.DocumentNgramTokenizer, td => td
-                                    .MinGram(2)
+                                .EdgeNGram(Tokenizers.DocumentNgramTokenizer, td => td
+                                    .MinGram(3)
                                     .MaxGram(20)
                                     .TokenChars(
                                         TokenChar.Letter,
