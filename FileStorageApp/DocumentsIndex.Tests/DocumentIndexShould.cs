@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,13 +18,15 @@ namespace DocumentsIndex.Tests
     {
         private IElasticConfig _config;
         private IDocumentIndexStorage _documentIndexStorage;
-        private const string WordThatContainsDocument = "NEST";
-        private const string DocumentName = "example_one.docx";
+        private static string _resourcePath;
+        private const string WordThatContainsDocument = "toolkit";
+        private const string DocumentName = "testWORD.docx";
 
         [SetUp]
         public void Setup()
         {
             _config = new ElasticConfig("http://localhost:9200", "testindex");
+            _resourcePath = $"{Directory.GetCurrentDirectory()}/FilesForTest";
             var factory = new DocumentIndexFactory(new PipelineCreator(), _config);
             _documentIndexStorage = factory.CreateDocumentIndexStorage();
         }
@@ -39,26 +42,24 @@ namespace DocumentsIndex.Tests
         [Test]
         public async Task IndexDocumentBySubstring_SuccessfullyUpload_ThenCalled()
         {
-            var expected = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(expected, bytes, DocumentName);
+            var expectedGuid = Guid.NewGuid();
+            var document = await GetDocumentModelByFilename(DocumentName, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
-            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync("NEST");
+            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
 
             var actual = searchResponse.First();
 
-            actual.Should().Be(expected);
+            actual.Should().Be(expectedGuid);
         }
 
         [Test]
         public async Task DeleteDocument_SuccessfullyDelete_ThenCalled()
         {
-            var guid = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(guid, bytes, DocumentName);
+            var expectedGuid = Guid.NewGuid();
+            var document = await GetDocumentModelByFilename(DocumentName, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var actual = await _documentIndexStorage.DeleteAsync(guid);
+            var actual = await _documentIndexStorage.DeleteAsync(expectedGuid);
 
             actual.Should().BeTrue();
         }
@@ -66,15 +67,14 @@ namespace DocumentsIndex.Tests
         [Test]
         public async Task IndexDocumentByName_SuccessfullyUpload_ThenCalled()
         {
-            var expected = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(expected, bytes, DocumentName);
+            var expectedGuid = Guid.NewGuid();
+            var document = await GetDocumentModelByFilename(DocumentName, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
             var searchResponse = await _documentIndexStorage.SearchByNameAsync(DocumentName);
 
             var actual = searchResponse.First();
 
-            actual.Should().Be(expected);
+            actual.Should().Be(expectedGuid);
         }
 
         [TestCase(DocumentName)]
@@ -86,32 +86,44 @@ namespace DocumentsIndex.Tests
         [TestCase("one")]
         public async Task FindInTextOrNameAsync_SuccessFound_ThenCalled(string query)
         {
-            var expected = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(expected, bytes, DocumentName);
+            var document = await GetDocumentModelByFilename(DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
+            var documentName = await _documentIndexStorage.FindInTextOrNameAsync(DocumentName);
+            var documentContent = await _documentIndexStorage.FindInTextOrNameAsync(WordThatContainsDocument);
             var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
             actual.Should().NotBeEmpty();
         }
 
-        [TestCase("aboba")]
-        [TestCase("mons")]
-        [TestCase("dex")]
-        [TestCase("es")]
-        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled(string query)
+        [Test]
+        [TestCaseSource(nameof(AllTestFiles))]
+        public async Task FindInTextOrNameAsync_SuccessFoundAllSupportedFiles_ThenCalled(string filename)
         {
-            var expected = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(expected, bytes, DocumentName);
+            var expectedGuid = Guid.NewGuid();
+            var document = await GetDocumentModelByFilename(filename, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
+            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
+
+            var actual = searchResponse.First(); 
+            
+            searchResponse.Count().Should().Be(1);
+            actual.Should().Be(expectedGuid);
+        }
+
+        [Test]
+        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled()
+        {
+            var document = await GetDocumentModelByFilename(DocumentName);
+            await _documentIndexStorage.IndexDocumentAsync(document);
+
+            var actual = await _documentIndexStorage.FindInTextOrNameAsync("aboba");
 
             actual.Should().BeEmpty();
         }
 
+        [TestCase(true, "est", "doc")]
         [TestCase(true, "exam")]
         [TestCase(true, "example")]
         [TestCase(true, "exa", "doc")]
@@ -123,8 +135,7 @@ namespace DocumentsIndex.Tests
         public async Task IsContainsInNameAsync_ReturnCorrect_ThenCalled(bool expected, params string[] text)
         {
             var guid = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(guid, bytes, DocumentName);
+            var document = await GetDocumentModelByFilename(DocumentName, guid);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
             var actual = await _documentIndexStorage.IsContainsInNameAsync(guid, text);
@@ -135,9 +146,7 @@ namespace DocumentsIndex.Tests
         [Test]
         public async Task IsContainsInNameAsync_ReturnFalse_ThenIncorrectId()
         {
-            var guid = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(guid, bytes, DocumentName);
+            var document = await GetDocumentModelByFilename(DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
             var actual = await _documentIndexStorage.IsContainsInNameAsync(Guid.NewGuid(), new[] {"doc"});
@@ -147,10 +156,27 @@ namespace DocumentsIndex.Tests
 
         private static async Task<byte[]> ReadBytesFromFileName(string fileName)
         {
-            var stream = File.OpenRead($"{Directory.GetCurrentDirectory()}/FilesForTest/{fileName}");
+            var stream = File.OpenRead($"{_resourcePath}/{fileName}");
             var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
             return memoryStream.ToArray();
+        }
+
+        private static async Task<Document> GetDocumentModelByFilename(string filename, Guid? guid = null)
+        {
+            var resultGuid = guid ?? Guid.NewGuid();
+            var bytes = await ReadBytesFromFileName(filename);
+            return new Document(resultGuid, bytes, filename);
+        }
+
+
+        static IEnumerable<string> AllTestFiles()
+        {
+            var directoryInfo = new DirectoryInfo($"{Directory.GetCurrentDirectory()}/FilesForTest");
+            foreach (var file in directoryInfo.GetFiles())
+            {
+                yield return file.Name;
+            }
         }
     }
 }
