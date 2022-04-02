@@ -31,11 +31,8 @@ namespace SearchDocumentAPI.Tests
         public void Setup()
         {
             _applicationFactory = new WebApplicationFactory<Startup>()
-                .WithWebHostBuilder(builder =>
-                {
-                    builder.UseEnvironment("Debug");
-                });
-            
+                .WithWebHostBuilder(builder => { builder.UseEnvironment("Debug"); });
+
             _config = new ElasticConfig("http://localhost:9200", "testindex");
             var factory = new DocumentIndexFactory(new PipelineCreator());
             _documentIndexStorage = factory.CreateDocumentIndexStorage(_config);
@@ -53,10 +50,8 @@ namespace SearchDocumentAPI.Tests
         public async Task IndexDocument_NoContent_ThenCalled()
         {
             const HttpStatusCode expected = HttpStatusCode.NoContent;
-
-            var id = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(id, bytes, DocumentName);
+            
+            var document = await CreateDocumentAsync();
 
             var json = JsonConvert.SerializeObject(document);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
@@ -65,30 +60,36 @@ namespace SearchDocumentAPI.Tests
             var response = await apiClient.PostAsync($"/api/documents/indexDocument", stringContent);
 
             response.EnsureSuccessStatusCode();
-            var actual = response.StatusCode;
 
-            actual.Should().Be(expected);
+            response.StatusCode.Should().Be(expected);
         }
-        
+
         [Test]
         public async Task DeleteDocumentById_NoContent_ThenCalled()
         {
             const HttpStatusCode expected = HttpStatusCode.NoContent;
             
-            var id = Guid.NewGuid();
-            var bytes = await ReadBytesFromFileName(DocumentName);
-            var document = new Document(id, bytes, DocumentName);
+            var document = await CreateDocumentAsync();
             await _documentIndexStorage.IndexDocumentAsync(document);
-            
+
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.DeleteAsync($"/api/documents/indexDocument/{id}");
+            var response = await apiClient.DeleteAsync($"/api/documents/indexDocument/{document.Id}");
 
             response.EnsureSuccessStatusCode();
-            var actual = response.StatusCode;
 
-            actual.Should().Be(expected);
+            response.StatusCode.Should().Be(expected);
         }
-        
+
+        private static async Task<Document> CreateDocumentAsync(Guid id = default, string documentName = DocumentName)
+        {
+            if (id == default)
+                id = Guid.NewGuid();
+            
+            var bytes = await ReadBytesFromFileName(documentName);
+            
+            return new Document(id, bytes, documentName);
+        }
+
         private HttpClient CreateHttpClient()
         {
             var client = _applicationFactory.CreateClient();
@@ -97,7 +98,7 @@ namespace SearchDocumentAPI.Tests
                 .Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return client;
         }
-        
+
         private static async Task<byte[]> ReadBytesFromFileName(string fileName)
         {
             var stream = File.OpenRead($"{Directory.GetCurrentDirectory()}/FilesForTest/{fileName}");

@@ -14,7 +14,6 @@ namespace DocumentsIndex.Contracts
         /// <summary>
         /// Id файла (эквивалентен Id, который лежит в БД и хранилище файлов)
         /// </summary>
-
         [Required]
         public Guid Id { get; set; }
 

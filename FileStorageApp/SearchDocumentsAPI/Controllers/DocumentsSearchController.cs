@@ -10,9 +10,9 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SearchDocumentsAPI.Controllers
 {
     /// <summary>
-    /// Управление поиском документов в ElasticSearch
+    /// API поиска текстовых документов.
     /// </summary>
-    [Route("api/documents")]
+    [Route("api/search/documents")]
     [SwaggerTag("Поиск документов")]
     [ApiController]
     public class DocumentsSearchController : ControllerBase
@@ -30,9 +30,9 @@ namespace SearchDocumentsAPI.Controllers
         }
 
         /// <summary>
-        /// Ищет документы по названию и содержимому.
+        /// Ищет документы по названию или содержимому.
         /// </summary>
-        [HttpGet("search")]
+        [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает список id совпадающий документов", typeof(IEnumerable<Guid>))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
         public async Task<IActionResult> FindMatchingDocuments([FromQuery] string query)
@@ -47,14 +47,14 @@ namespace SearchDocumentsAPI.Controllers
         }
 
         /// <summary>
-        /// Проверяет, содержится ли один из текстов в названии документа.
+        /// Проверяет, содержится ли одна из строк в названии документа.
         /// </summary>
-        [HttpPost("{documentId:guid}/containsInName")]
+        [HttpGet("{documentId:guid}/containsInName")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает результат проверки", typeof(bool))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        public async Task<IActionResult> ContainsInDocumentName(Guid documentId, [FromBody] string[] texts)
+        public async Task<IActionResult> ContainsInDocumentName(Guid documentId, [FromQuery] params string[] queries)
         {
-            var result = await _documentsSearchService.ContainsInDocumentNameByIdAsync(documentId, texts);
+            var result = await _documentsSearchService.ContainsInDocumentNameByIdAsync(documentId, queries);
 
             return result.ResponseCode switch
             {

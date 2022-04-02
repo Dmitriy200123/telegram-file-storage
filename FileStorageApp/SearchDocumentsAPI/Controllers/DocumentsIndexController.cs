@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SearchDocumentsAPI.Controllers
 {
     /// <summary>
-    /// Управление индексакцией документов в ElasticSearch
+    /// API индексакции текстовых документов.
     /// </summary>
     [Route("api/documents/indexDocument")]
     [SwaggerTag("Индексирование документов")]

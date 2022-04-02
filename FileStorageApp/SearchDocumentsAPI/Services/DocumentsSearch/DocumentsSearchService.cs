@@ -29,9 +29,9 @@ namespace SearchDocumentsAPI.Services.DocumentsSearch
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<bool>> ContainsInDocumentNameByIdAsync(Guid documentId, string[] texts)
+        public async Task<RequestResult<bool>> ContainsInDocumentNameByIdAsync(Guid documentId, string[] queries)
         {
-            var contains = await _documentIndexStorage.IsContainsInNameAsync(documentId, texts);
+            var contains = await _documentIndexStorage.IsContainsInNameAsync(documentId, queries);
 
             return RequestResult.Ok(contains);
         }

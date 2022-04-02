@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using DocumentsIndex;
 using DocumentsIndex.Config;
@@ -54,7 +54,7 @@ namespace SearchDocumentAPI.Tests
 
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.GetAsync($"api/documents/search?query={query}");
+            var response = await apiClient.GetAsync($"api/search/documents?query={query}");
 
             response.EnsureSuccessStatusCode();
 
@@ -65,15 +65,14 @@ namespace SearchDocumentAPI.Tests
         }
 
         [TestCaseSource(typeof(APIDocumentSearchData), nameof(APIDocumentSearchData.TextsContainsInDocumentNameSource))]
-        public async Task TextsContainsInDocumentName_OK_ThenCalled(Document document, string[] texts, bool expected)
+        public async Task QueriesContainsInDocumentName_OK_ThenCalled(Document document, string[] queries, bool expected)
         {
             await _documentIndexStorage.IndexDocumentAsync(document);
             
-            var json = JsonConvert.SerializeObject(texts);
-            var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var queryContent = string.Join("&", queries.Select(query => $"queries={query}"));
             
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.PostAsync($"api/documents/{document.Id}/containsInName", stringContent);
+            var response = await apiClient.GetAsync($"api/search/documents/{document.Id}/containsInName?{queryContent}");
             
             response.EnsureSuccessStatusCode();
             

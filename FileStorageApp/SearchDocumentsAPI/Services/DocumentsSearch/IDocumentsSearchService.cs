@@ -6,7 +6,7 @@ using FileStorageAPI;
 namespace SearchDocumentsAPI.Services.DocumentsSearch
 {
     /// <summary>
-    /// Сервис для работы с поиском документов.
+    /// Сервис для работы с поиском текстовым документов.
     /// </summary>
     public interface IDocumentsSearchService
     {
@@ -18,11 +18,11 @@ namespace SearchDocumentsAPI.Services.DocumentsSearch
         Task<RequestResult<IEnumerable<Guid>>> FindMatchingDocumentsAsync(string query);
         
         /// <summary>
-        /// Проверяет, содержится ли один из текстов в названии документе по id
+        /// Проверяет, содержится ли одна из строк в названии документа по id.
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        /// <param name="texts">Список текстов</param>
+        /// <param name="queries">Список строк</param>
         /// <returns></returns>
-        Task<RequestResult<bool>> ContainsInDocumentNameByIdAsync(Guid documentId, string[] texts);
+        Task<RequestResult<bool>> ContainsInDocumentNameByIdAsync(Guid documentId, string[] queries);
     }
 }
