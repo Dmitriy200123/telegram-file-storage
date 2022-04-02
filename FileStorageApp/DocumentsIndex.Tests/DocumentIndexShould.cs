@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentsIndex.Config;
-using DocumentsIndex.Contracts;
 using DocumentsIndex.Factories;
+using DocumentsIndex.Model;
 using DocumentsIndex.Pipelines;
 using FluentAssertions;
 using NUnit.Framework;
@@ -26,9 +26,8 @@ namespace DocumentsIndex.Tests
         public void Setup()
         {
             _config = new ElasticConfig("http://localhost:9200", "testindex");
-
-            var factory = new DocumentIndexFactory(new PipelineCreator());
-            _documentIndexStorage = factory.CreateDocumentIndexStorage(_config);
+            var factory = new DocumentIndexFactory(new PipelineCreator(), _config);
+            _documentIndexStorage = factory.CreateDocumentIndexStorage();
         }
 
         [TearDown]
@@ -91,9 +90,8 @@ namespace DocumentsIndex.Tests
 
             var documentName = await _documentIndexStorage.FindInTextOrNameAsync(DocumentName);
             var documentContent = await _documentIndexStorage.FindInTextOrNameAsync(WordThatContainsDocument);
-            var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
-            actual.Should().NotBeEmpty();
+            documentName.Should().BeEquivalentTo(documentContent);
         }
 
         [Test]
@@ -112,22 +110,24 @@ namespace DocumentsIndex.Tests
             actual.Should().Be(expectedGuid);
         }
 
-        [Test]
-        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled()
+        [TestCase("aboba")]
+        [TestCase("mons")]
+        [TestCase("dex")]
+        [TestCase("es")]
+        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled(string query)
         {
             var document = await GetDocumentModelByFilename(DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var actual = await _documentIndexStorage.FindInTextOrNameAsync("aboba");
+            var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
             actual.Should().BeEmpty();
         }
 
-        [TestCase(true, "est", "doc")]
-        [TestCase(true, "exam")]
-        [TestCase(true, "example")]
-        [TestCase(true, "exa", "doc")]
-        [TestCase(true, "zzzz", "one")]
+        [TestCase(true, "test")]
+        [TestCase(true, "testWORD")]
+        [TestCase(true, "te", "doc")]
+        [TestCase(true, "tes", "ORD")]
         [TestCase(false, "aboba", "hfdjkass")]
         [TestCase(false, "z")]
         [TestCase(false, "amzz")]
