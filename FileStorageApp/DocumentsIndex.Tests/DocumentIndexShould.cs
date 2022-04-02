@@ -31,9 +31,9 @@ namespace DocumentsIndex.Tests
         [TearDown]
         public async Task TearDown()
         {
-            /*var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
+            var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
             foreach (var hit in searchResponse)
-                await _documentIndexStorage.DeleteAsync(hit);*/
+                await _documentIndexStorage.DeleteAsync(hit);
         }
 
         [Test]
