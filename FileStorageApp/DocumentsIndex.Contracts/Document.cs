@@ -1,23 +1,26 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace DocumentsIndex.Model
+namespace DocumentsIndex.Contracts
 {
     public class Document
     {
         /// <summary>
         /// Все байты прочитанные из файла
         /// </summary>
+        [Required]
         public byte[] Content { get; set; }
 
         /// <summary>
         /// Id файла (эквивалентен Id, который лежит в БД и хранилище файлов)
         /// </summary>
-
+        [Required]
         public Guid Id { get; set; }
 
         /// <summary>
         /// Название файла
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>

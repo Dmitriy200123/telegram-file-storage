@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API;
 using FileStorageAPI.Models;
 
 namespace FileStorageAPI.Services

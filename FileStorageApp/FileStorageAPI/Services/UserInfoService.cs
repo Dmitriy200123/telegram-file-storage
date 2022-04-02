@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;

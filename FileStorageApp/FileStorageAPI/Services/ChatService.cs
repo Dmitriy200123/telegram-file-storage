@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FileStorageApp.Data.InfoStorage.Factories;
 using System.Threading.Tasks;
+using API;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Models;
 using ChatInDb = FileStorageApp.Data.InfoStorage.Models.Chat;
