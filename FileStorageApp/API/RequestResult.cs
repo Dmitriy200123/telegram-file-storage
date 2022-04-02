@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace FileStorageAPI
+namespace API
 {
     /// <summary>
     /// Класс для упрощения взаимодействия между контроллерами и сервисами.

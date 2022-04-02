@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using API;
 using DocumentsIndex;
-using FileStorageAPI;
 
 namespace SearchDocumentsAPI.Services.DocumentsSearch
 {

@@ -57,7 +57,7 @@ namespace SearchDocumentAPI.Tests
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.PostAsync($"/api/documents/indexDocument", stringContent);
+            var response = await apiClient.PostAsync($"/api/index/documents", stringContent);
 
             response.EnsureSuccessStatusCode();
 
@@ -73,7 +73,7 @@ namespace SearchDocumentAPI.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.DeleteAsync($"/api/documents/indexDocument/{document.Id}");
+            var response = await apiClient.DeleteAsync($"/api/index/documents/{document.Id}");
 
             response.EnsureSuccessStatusCode();
 

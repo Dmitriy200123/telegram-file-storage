@@ -12,7 +12,7 @@ namespace SearchDocumentsAPI.Controllers
     /// <summary>
     /// API индексакции текстовых документов.
     /// </summary>
-    [Route("api/documents/indexDocument")]
+    [Route("api/index/documents")]
     [SwaggerTag("Индексирование документов")]
     [ApiController]
     public class DocumentsIndexController : ControllerBase
