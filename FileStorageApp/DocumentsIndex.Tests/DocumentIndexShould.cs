@@ -18,7 +18,7 @@ namespace DocumentsIndex.Tests
     {
         private IElasticConfig _config;
         private IDocumentIndexStorage _documentIndexStorage;
-        private static string _resourcePath;
+        private static readonly string ResourcePath = $"{Directory.GetCurrentDirectory()}/FilesForTest";
         private const string WordThatContainsDocument = "toolkit";
         private const string DocumentName = "testWORD.docx";
 
@@ -26,9 +26,9 @@ namespace DocumentsIndex.Tests
         public void Setup()
         {
             _config = new ElasticConfig("http://localhost:9200", "testindex");
-            _resourcePath = $"{Directory.GetCurrentDirectory()}/FilesForTest";
-            var factory = new DocumentIndexFactory(new PipelineCreator(), _config);
-            _documentIndexStorage = factory.CreateDocumentIndexStorage();
+
+            var factory = new DocumentIndexFactory(new PipelineCreator());
+            _documentIndexStorage = factory.CreateDocumentIndexStorage(_config);
         }
 
         [TearDown]
@@ -105,10 +105,10 @@ namespace DocumentsIndex.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
 
             var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
-
+            searchResponse.Should().HaveCount(1);
+            
             var actual = searchResponse.First(); 
             
-            searchResponse.Count().Should().Be(1);
             actual.Should().Be(expectedGuid);
         }
 
@@ -156,7 +156,7 @@ namespace DocumentsIndex.Tests
 
         private static async Task<byte[]> ReadBytesFromFileName(string fileName)
         {
-            var stream = File.OpenRead($"{_resourcePath}/{fileName}");
+            var stream = File.OpenRead($"{ResourcePath}/{fileName}");
             var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
             return memoryStream.ToArray();
@@ -172,7 +172,7 @@ namespace DocumentsIndex.Tests
 
         static IEnumerable<string> AllTestFiles()
         {
-            var directoryInfo = new DirectoryInfo($"{Directory.GetCurrentDirectory()}/FilesForTest");
+            var directoryInfo = new DirectoryInfo(ResourcePath);
             foreach (var file in directoryInfo.GetFiles())
             {
                 yield return file.Name;

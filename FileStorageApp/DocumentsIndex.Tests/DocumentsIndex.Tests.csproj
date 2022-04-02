@@ -59,9 +59,6 @@
       <None Update="FilesForTest\testXML.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="FilesForTest\example_one.docx">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>

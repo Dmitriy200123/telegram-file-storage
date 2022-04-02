@@ -35,5 +35,10 @@ namespace DocumentsIndex.Contracts
             Content = content ?? throw new ArgumentNullException(nameof(content));
             Name = name ?? throw new ArgumentNullException(nameof(name));
         }
+        
+        public override string ToString()
+        {
+            return $"Document: {Name}";
+        }
     }
 }

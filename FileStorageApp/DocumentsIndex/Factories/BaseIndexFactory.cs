@@ -38,7 +38,7 @@ namespace DocumentsIndex.Factories
                 {
                     Console.WriteLine(
                         $"{callDetails.HttpMethod} {callDetails.Uri} \n" +
-                        $"{Encoding.UTF8.GetString(callDetails.RequestBodyInBytes)}");
+                        $"{Encoding.UTF8.GetString(callDetails.RequestBodyInBytes)[..500]}");
                 }
                 else
                 {
@@ -50,7 +50,7 @@ namespace DocumentsIndex.Factories
                 if (callDetails.ResponseBodyInBytes != null)
                 {
                     Console.WriteLine($"Status: {callDetails.HttpStatusCode}\n" +
-                                      $"{Encoding.UTF8.GetString(callDetails.ResponseBodyInBytes)}\n" +
+                                      $"{Encoding.UTF8.GetString(callDetails.ResponseBodyInBytes)[..500]}\n" +
                                       $"{new string('-', 30)}\n");
                 }
                 else
