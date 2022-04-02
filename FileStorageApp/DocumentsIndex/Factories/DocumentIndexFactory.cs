@@ -15,17 +15,19 @@ namespace DocumentsIndex.Factories
     public class DocumentIndexFactory : BaseIndexFactory, IDocumentIndexFactory
     {
         private readonly IPipelineCreator _pipelineCreator;
+        private readonly IElasticConfig _elasticConfig;
 
-        public DocumentIndexFactory(IPipelineCreator pipelineCreator)
+        public DocumentIndexFactory(IPipelineCreator pipelineCreator, IElasticConfig elasticConfig)
         {
             _pipelineCreator = pipelineCreator ?? throw new ArgumentNullException(nameof(pipelineCreator));
+            _elasticConfig = elasticConfig ?? throw new ArgumentNullException(nameof(elasticConfig));
         }
 
         private static readonly Func<CreateIndexDescriptor, CreateIndexDescriptor> IndexDescriptor = x =>
         {
             var nGramFilters = new List<string> {"lowercase", "asciifolding"};
             return x.Settings(st => st
-                        .Setting(UpdatableIndexSettings.MaxNGramDiff, 18)
+                        .Setting(UpdatableIndexSettings.MaxNGramDiff, 17)
                         .Analysis(an => an
                             .Analyzers(anz => anz
                                 .Custom(Analyzers.DocumentNgramAnalyzer, cc => cc
@@ -33,8 +35,8 @@ namespace DocumentsIndex.Factories
                                     .Filters(nGramFilters))
                             )
                             .Tokenizers(tz => tz
-                                .NGram(Tokenizers.DocumentNgramTokenizer, td => td
-                                    .MinGram(2)
+                                .EdgeNGram(Tokenizers.DocumentNgramTokenizer, td => td
+                                    .MinGram(3)
                                     .MaxGram(20)
                                     .TokenChars(
                                         TokenChar.Letter,
@@ -66,10 +68,10 @@ namespace DocumentsIndex.Factories
         };
 
         /// <inheritdoc />
-        public IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig)
+        public IDocumentIndexStorage CreateDocumentIndexStorage()
         {
             var pipeline = _pipelineCreator.CreateElasticDocumentPipeLine();
-            var storage = CreateDocumentIndexStorage(elasticConfig, pipeline, IndexDescriptor);
+            var storage = CreateDocumentIndexStorage(_elasticConfig, pipeline, IndexDescriptor);
             return storage;
         }
     }

@@ -26,7 +26,7 @@ namespace DocumentsIndex.Factories
 
             if (!elasticClient.Indices.Exists(elasticConfig.Index).Exists)
                 elasticClient.Indices.Create(elasticConfig.Index, mapping);
-            
+
             elasticClient.Ingest.PutPipeline(elasticConfig.Index, pipelineDescriptor);
             return new DocumentIndexStorage(elasticClient);
         }

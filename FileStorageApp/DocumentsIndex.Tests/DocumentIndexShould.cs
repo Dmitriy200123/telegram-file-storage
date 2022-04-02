@@ -24,8 +24,8 @@ namespace DocumentsIndex.Tests
         public void Setup()
         {
             _config = new ElasticConfig("http://localhost:9200", "testindex");
-            var factory = new DocumentIndexFactory(new PipelineCreator());
-            _documentIndexStorage = factory.CreateDocumentIndexStorage(_config);
+            var factory = new DocumentIndexFactory(new PipelineCreator(), _config);
+            _documentIndexStorage = factory.CreateDocumentIndexStorage();
         }
 
         [TearDown]
@@ -77,35 +77,49 @@ namespace DocumentsIndex.Tests
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public async Task FindInTextOrNameAsync_SuccessFound_ThenCalled()
+        [TestCase(DocumentName)]
+        [TestCase("attachments")]
+        [TestCase("NEST")]
+        [TestCase("and")]
+        [TestCase("example")]
+        [TestCase("exam")]
+        [TestCase("one")]
+        public async Task FindInTextOrNameAsync_SuccessFound_ThenCalled(string query)
         {
             var expected = Guid.NewGuid();
             var bytes = await ReadBytesFromFileName(DocumentName);
             var document = new Document(expected, bytes, DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var documentName = await _documentIndexStorage.FindInTextOrNameAsync(DocumentName);
-            var documentContent = await _documentIndexStorage.FindInTextOrNameAsync("attachments");
+            var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
-            documentName.Should().BeEquivalentTo(documentContent);
+            actual.Should().NotBeEmpty();
         }
-        
-        [Test]
-        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled()
+
+        [TestCase("aboba")]
+        [TestCase("mons")]
+        [TestCase("dex")]
+        [TestCase("es")]
+        public async Task FindInTextOrNameAsync_UnsuccessFound_ThenCalled(string query)
         {
             var expected = Guid.NewGuid();
             var bytes = await ReadBytesFromFileName(DocumentName);
             var document = new Document(expected, bytes, DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var actual = await _documentIndexStorage.FindInTextOrNameAsync("aboba");
+            var actual = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
             actual.Should().BeEmpty();
         }
 
-        [TestCase(true, "ex", "doc")]
+        [TestCase(true, "exam")]
+        [TestCase(true, "example")]
+        [TestCase(true, "exa", "doc")]
+        [TestCase(true, "zzzz", "one")]
         [TestCase(false, "aboba", "hfdjkass")]
+        [TestCase(false, "z")]
+        [TestCase(false, "amzz")]
+        [TestCase(false, "dex")]
         public async Task IsContainsInNameAsync_ReturnCorrect_ThenCalled(bool expected, params string[] text)
         {
             var guid = Guid.NewGuid();

@@ -12,6 +12,6 @@ namespace DocumentsIndex.Factories
         /// </summary>
         /// <param name="elasticConfig">Конфигурация для создания клиента эластика</param>
         /// <returns></returns>
-        IDocumentIndexStorage CreateDocumentIndexStorage(IElasticConfig elasticConfig);
+        IDocumentIndexStorage CreateDocumentIndexStorage();
     }
 }
