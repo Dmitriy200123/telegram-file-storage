@@ -1,0 +1,48 @@
+BenchmarkDotNet=v0.13.1, OS=macOS Monterey 12.2.1 (21D62) [Darwin 21.3.0]
+Intel Core i7-9750H CPU 2.60GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=5.0.400
+  [Host]     : .NET 5.0.9 (5.0.921.35908), X64 RyuJIT
+  Job-KTIPQX : .NET 5.0.9 (5.0.921.35908), X64 RyuJIT
+
+DocumentCountModifer = 100
+IterationCount=10  LaunchCount=10  RunStrategy=ColdStart  
+WarmupCount=0  
+
+|                        Method |                                          fileName |     Mean |    Error |   StdDev |   Median |      Max |      P95 |
+|------------------------------ |-------------------------------------------------- |---------:|---------:|---------:|---------:|---------:|---------:|
+|    IndexFileSearchByNameAsync | Curabitur fringilla(...)ibh dolor eget nunc [105] | 21.82 ms | 14.31 ms | 42.20 ms | 7.950 ms | 166.3 ms | 147.9 ms |
+| IndexFileSearchByContentAsync | Curabitur fringilla(...)ibh dolor eget nunc [105] | 21.86 ms | 13.89 ms | 40.97 ms | 8.246 ms | 156.7 ms | 141.7 ms |
+|    IndexFileSearchByNameAsync |                                        consistent | 19.74 ms | 14.38 ms | 42.41 ms | 5.659 ms | 150.9 ms | 147.1 ms |
+| IndexFileSearchByContentAsync |                                        consistent | 19.07 ms | 14.03 ms | 41.38 ms | 5.517 ms | 152.7 ms | 140.5 ms |
+|    IndexFileSearchByNameAsync |                                               doc | 18.67 ms | 13.95 ms | 41.14 ms | 4.857 ms | 147.9 ms | 139.5 ms |
+| IndexFileSearchByContentAsync |                                               doc | 15.11 ms | 11.12 ms | 32.79 ms | 4.127 ms | 116.8 ms | 112.8 ms |
+|    IndexFileSearchByNameAsync |                                              docx | 17.53 ms | 13.37 ms | 39.41 ms | 4.386 ms | 140.8 ms | 134.9 ms |
+| IndexFileSearchByContentAsync |                                              docx | 15.04 ms | 11.32 ms | 33.37 ms | 3.926 ms | 126.9 ms | 113.4 ms |
+|    IndexFileSearchByNameAsync |                                             lorem | 18.16 ms | 13.86 ms | 40.87 ms | 4.543 ms | 164.8 ms | 136.5 ms |
+| IndexFileSearchByContentAsync |                                             lorem | 14.71 ms | 11.00 ms | 32.45 ms | 3.921 ms | 118.2 ms | 109.8 ms |
+|    IndexFileSearchByNameAsync |                                               pdf | 17.36 ms | 13.37 ms | 39.42 ms | 4.209 ms | 143.1 ms | 132.7 ms |
+| IndexFileSearchByContentAsync |                                               pdf | 15.07 ms | 11.25 ms | 33.17 ms | 3.924 ms | 118.4 ms | 114.3 ms |
+|    IndexFileSearchByNameAsync |                                              test | 17.76 ms | 13.73 ms | 40.50 ms | 4.331 ms | 149.4 ms | 137.3 ms |
+|    IndexFileSearchByNameAsync |                                              test | 17.34 ms | 13.32 ms | 39.28 ms | 4.265 ms | 139.5 ms | 133.7 ms |
+| IndexFileSearchByContentAsync |                                              test | 17.74 ms | 13.64 ms | 40.21 ms | 4.224 ms | 155.9 ms | 134.6 ms |
+| IndexFileSearchByContentAsync |                                              test | 17.29 ms | 13.40 ms | 39.50 ms | 4.005 ms | 139.6 ms | 134.6 ms |
+|    IndexFileSearchByNameAsync |                                           toolkit | 14.99 ms | 11.22 ms | 33.08 ms | 3.928 ms | 117.7 ms | 113.6 ms |
+| IndexFileSearchByContentAsync |                                           toolkit | 17.39 ms | 13.31 ms | 39.24 ms | 4.295 ms | 140.5 ms | 133.6 ms |
+|    IndexFileSearchByNameAsync |                                               txt | 14.97 ms | 11.26 ms | 33.20 ms | 3.847 ms | 120.4 ms | 113.6 ms |
+| IndexFileSearchByContentAsync |                                               txt | 14.79 ms | 11.16 ms | 32.92 ms | 3.931 ms | 115.7 ms | 113.1 ms |
+
+// * Legends *
+  fileName : Value of the 'fileName' parameter
+  Mean     : Arithmetic mean of all measurements
+  Error    : Half of 99.9% confidence interval
+  StdDev   : Standard deviation of all measurements
+  Median   : Value separating the higher half of all measurements (50th percentile)
+  Max      : Maximum
+  P95      : Percentile 95
+  1 ms     : 1 Millisecond (0.001 sec)
+
+// ***** BenchmarkRunner: End *****
+// ** Remained 0 benchmark(s) to run **
+Run time: 00:02:51 (171.89 sec), executed benchmarks: 20
+
+Global total time: 00:02:57 (177.57 sec), executed benchmarks: 20

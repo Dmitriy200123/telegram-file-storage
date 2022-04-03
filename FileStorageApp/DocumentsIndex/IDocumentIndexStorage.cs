@@ -15,14 +15,14 @@ namespace DocumentsIndex
         /// </summary>
         /// <param name="subString">подстрока по которой происходит поиск</param>
         /// <returns></returns>
-        Task<IEnumerable<Guid>> SearchBySubstringAsync(string subString);
+        Task<List<Guid>> SearchBySubstringAsync(string subString);
 
         /// <summary>
         /// Поиск документов по названию
         /// </summary>
         /// <param name="name">имя документа, которое необходимо найти</param>
         /// <returns></returns>
-        Task<IEnumerable<Guid>> SearchByNameAsync(string name);
+        Task<List<Guid>> SearchByNameAsync(string name);
 
         /// <summary>
         /// Индексация (добавление) документа в эластик
@@ -43,7 +43,7 @@ namespace DocumentsIndex
         /// </summary>
         /// <param name="query">подстрока для поиска</param>
         /// <returns></returns>
-        Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query);
+        Task<List<Guid>> FindInTextOrNameAsync(string query);
 
         /// <summary>
         /// Проверки содержания подстрок в названии документа с заданным идентификатором

@@ -1,0 +1,44 @@
+// * Summary *
+
+BenchmarkDotNet=v0.13.1, OS=macOS Monterey 12.2.1 (21D62) [Darwin 21.3.0]
+Intel Core i7-9750H CPU 2.60GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=5.0.400
+  [Host]     : .NET 5.0.9 (5.0.921.35908), X64 RyuJIT
+  Job-JDXRFJ : .NET 5.0.9 (5.0.921.35908), X64 RyuJIT
+
+IterationCount=5  LaunchCount=5  RunStrategy=ColdStart  
+WarmupCount=0  
+
+|         Method |                          document |       Mean |     Error |   StdDev |        Max |
+|--------------- |---------------------------------- |-----------:|----------:|---------:|-----------:|
+| IndexFileAsync |           Document: testEXCEL.xls |   890.7 ms | 193.33 ms | 258.1 ms | 1,042.1 ms |
+| IndexFileAsync |          Document: testEXCEL.xlsx |   864.1 ms | 207.83 ms | 277.4 ms | 1,016.6 ms |
+| IndexFileAsync |           Document: testHTML.html |   859.7 ms | 214.51 ms | 286.4 ms | 1,018.9 ms |
+| IndexFileAsync | Document: testNPEOpenDocument.odt |   858.4 ms | 215.26 ms | 287.4 ms | 1,014.5 ms |
+| IndexFileAsync |             Document: testPDF.pdf |   865.8 ms | 206.14 ms | 275.2 ms | 1,017.1 ms |
+| IndexFileAsync |        Document: testPDFLarge.pdf | 1,061.5 ms |  98.46 ms | 131.4 ms | 1,337.2 ms |
+| IndexFileAsync |             Document: testPPT.ppt |   862.4 ms | 209.56 ms | 279.8 ms | 1,020.3 ms |
+| IndexFileAsync |            Document: testPPT.pptm |   861.6 ms | 212.94 ms | 284.3 ms | 1,014.9 ms |
+| IndexFileAsync |            Document: testPPT.pptx |   863.5 ms | 207.37 ms | 276.8 ms | 1,015.6 ms |
+| IndexFileAsync |       Document: testPPTLarge.pptx | 1,055.4 ms |  89.49 ms | 119.5 ms | 1,303.1 ms |
+| IndexFileAsync |             Document: testRTF.rtf |   857.8 ms | 218.60 ms | 291.8 ms | 1,017.6 ms |
+| IndexFileAsync |             Document: testTXT.txt |   870.9 ms | 199.21 ms | 265.9 ms | 1,022.5 ms |
+| IndexFileAsync |        Document: testTXTLarge.txt |   878.2 ms | 188.51 ms | 251.7 ms | 1,013.5 ms |
+| IndexFileAsync |            Document: testWORD.doc |   868.8 ms | 200.63 ms | 267.8 ms | 1,022.8 ms |
+| IndexFileAsync |           Document: testWORD.docx |   874.1 ms | 193.39 ms | 258.2 ms | 1,016.1 ms |
+| IndexFileAsync |      Document: testWORDLarge.docx |   876.2 ms | 193.68 ms | 258.6 ms | 1,023.8 ms |
+| IndexFileAsync |             Document: testXML.xml |   871.6 ms | 197.88 ms | 264.2 ms | 1,018.5 ms |
+
+// * Legends *
+  document : Value of the 'document' parameter
+  Mean     : Arithmetic mean of all measurements
+  Error    : Half of 99.9% confidence interval
+  StdDev   : Standard deviation of all measurements
+  Max      : Maximum
+  1 ms     : 1 Millisecond (0.001 sec)
+
+// ***** BenchmarkRunner: End *****
+// ** Remained 0 benchmark(s) to run **
+Run time: 00:07:22 (442.25 sec), executed benchmarks: 17
+
+Global total time: 00:07:28 (448.28 sec), executed benchmarks: 17
