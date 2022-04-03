@@ -19,7 +19,6 @@ namespace DocumentsIndex.Benchmarks
     {
         private static readonly string ResourcePath = $"{Directory.GetCurrentDirectory()}/TestFiles";
         protected IDocumentIndexStorage DocumentIndexStorage;
-        protected List<Guid> UsedFilesGuids;
 
         protected bool CreateManyDocumentsIndexes;
         protected int DocumentCountModifer = 10;
@@ -35,7 +34,6 @@ namespace DocumentsIndex.Benchmarks
             var config = new ElasticConfig("http://localhost:9200", "testindex");
             var factory = new DocumentIndexFactory(new PipelineCreator(), config);
             DocumentIndexStorage = factory.CreateDocumentIndexStorage();
-            UsedFilesGuids = new List<Guid>();
             if (CreateManyDocumentsIndexes)
             {
                 for (var i = 0; i < DocumentCountModifer; i++)
@@ -43,7 +41,6 @@ namespace DocumentsIndex.Benchmarks
                     foreach (var document in AllTestFiles)
                     {
                         await DocumentIndexStorage.IndexDocumentAsync(document);
-                        UsedFilesGuids.Add(document.Id);
                     }
                 }
             }
@@ -52,10 +49,9 @@ namespace DocumentsIndex.Benchmarks
         [GlobalCleanup]
         public async Task CleanupAsync()
         {
-            foreach (var guid in UsedFilesGuids)
-            {
-                await DocumentIndexStorage.DeleteAsync(guid);
-            }
+            var searchResponse = await DocumentIndexStorage.SearchBySubstringAsync("");
+            foreach (var hit in searchResponse)
+                await DocumentIndexStorage.DeleteAsync(hit);
         }
 
         private static async Task<Document> LoadFileByFilenameAsync(string fileName)

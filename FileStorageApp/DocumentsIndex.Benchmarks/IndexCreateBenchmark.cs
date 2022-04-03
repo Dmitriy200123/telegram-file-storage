@@ -12,10 +12,7 @@ namespace DocumentsIndex.Benchmarks
         [ArgumentsSource(nameof(AllTestFiles))]
         public async Task<bool> IndexFileAsync(Document document)
         {
-            var result = await DocumentIndexStorage.IndexDocumentAsync(document);
-            UsedFilesGuids.Add(document.Id);
-
-            return result;
+            return await DocumentIndexStorage.IndexDocumentAsync(document);
         }
     }
 }

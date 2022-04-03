@@ -102,8 +102,8 @@ namespace DocumentsIndex.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
 
             var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
-            searchResponse.Should().HaveCount(1);
 
+            searchResponse.Should().HaveCount(1);
             searchResponse.Should().NotBeEmpty();
             var actual = searchResponse.First();
             actual.Should().Be(expectedGuid);
@@ -148,7 +148,7 @@ namespace DocumentsIndex.Tests
             var document = await GetDocumentModelByFilename(DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var actual = await _documentIndexStorage.IsContainsInNameAsync(Guid.NewGuid(), new[] {"doc"});
+            var actual = await _documentIndexStorage.IsContainsInNameAsync(Guid.NewGuid(), new[] { "doc" });
 
             actual.Should().BeFalse();
         }
@@ -169,7 +169,7 @@ namespace DocumentsIndex.Tests
         }
 
 
-        static IEnumerable<string> AllTestFiles()
+        private static IEnumerable<string> AllTestFiles()
         {
             var directoryInfo = new DirectoryInfo(ResourcePath);
             foreach (var file in directoryInfo.GetFiles())

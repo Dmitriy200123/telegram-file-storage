@@ -6,8 +6,8 @@ namespace DocumentsIndex.Benchmarks
     {
         public static void Main(string[] args)
         {
-            // var summary = BenchmarkRunner.Run<IndexCreateBenchmark>();
-            var summary = BenchmarkRunner.Run<IndexSearchBenchmark>();
+            _ = BenchmarkRunner.Run<IndexCreateBenchmark>();
+            // _ = BenchmarkRunner.Run<IndexSearchBenchmark>();
         }
     }
 }
