@@ -30,6 +30,7 @@ namespace FileStorageAPI.Tests
         private readonly IRightsFilter _fakeRightsFilter;
         private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
         private readonly ISenderFormTokenProvider _senderFormTokenProvider;
+        private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
         private const string SenderId = "00000000-0000-0000-0000-000000000001";
 
         protected BaseShould(FakeAuthUser fakeAuthUser = null)
@@ -42,8 +43,10 @@ namespace FileStorageAPI.Tests
                 FullName = "Загрузчик с сайта",
             };
             _userIdFromTokenProvider = A.Fake<IUserIdFromTokenProvider>();
+            _accessesByUserIdProvider = A.Fake<IAccessesByUserIdProvider>();
             A.CallTo(() => _userIdFromTokenProvider.GetUserIdFromToken(A<HttpRequest>.Ignored, A<byte[]>.Ignored))
                 .Returns(Guid.Parse(SenderId));
+            A.CallTo(() => _accessesByUserIdProvider.GetAccessesByUserIdAsync(A<Guid>.Ignored)).Returns(new Accesses[] { Accesses.ViewAnyFiles });
             _fakeRightsFilter = A.Fake<IRightsFilter>();
             A.CallTo(() => _fakeRightsFilter.CheckRightsAsync(A<ActionExecutingContext>.Ignored, A<int[]>.Ignored))
                 .Returns(true);
@@ -62,6 +65,7 @@ namespace FileStorageAPI.Tests
                         services.AddFakeAuthentication();
                         services.AddSingleton(_userIdFromTokenProvider);
                         services.AddSingleton(_senderFormTokenProvider);
+                        services.AddSingleton(_accessesByUserIdProvider);
                     });
                 });
 
