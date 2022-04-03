@@ -63,13 +63,12 @@ namespace SearchDocumentsAPI
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
             services.AddSingleton<IDocumentsIndexService, DocumentsIndexService>();
             services.AddSingleton<IDocumentsSearchService, DocumentsSearchService>();
+            // TODO: в конфиг
+            services.AddSingleton<IElasticConfig>(_ => new ElasticConfig("http://localhost:9200", "testindex"));
             services.AddSingleton(provider =>
             {
-                // TODO: в конфиг
-                var config = new ElasticConfig("http://localhost:9200", "testindex");
                 var factory = provider.GetRequiredService<IDocumentIndexFactory>();
-
-                return factory.CreateDocumentIndexStorage(config);
+                return factory.CreateDocumentIndexStorage();
             });
         }
         

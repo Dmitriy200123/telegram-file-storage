@@ -27,7 +27,7 @@ namespace DocumentsIndex
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Guid>> SearchBySubstringAsync(string subString)
+        public async Task<List<Guid>> SearchBySubstringAsync(string subString)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
@@ -38,7 +38,7 @@ namespace DocumentsIndex
                         .Analyzer(Analyzers.DocumentNgramAnalyzer)
                     )
                 ));
-            return searchResponse.Hits.Select(x => x.Source.Id);
+            return searchResponse.Hits.Select(x => x.Source.Id).ToList();
         }
 
         /// <inheritdoc />
@@ -67,7 +67,7 @@ namespace DocumentsIndex
         }
         
         /// <inheritdoc />
-        public async Task<IEnumerable<Guid>> FindInTextOrNameAsync(string query)
+        public async Task<List<Guid>> FindInTextOrNameAsync(string query)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q =>
@@ -83,7 +83,7 @@ namespace DocumentsIndex
                         .Query(query)
                         .Analyzer(Analyzers.DocumentNgramAnalyzer))
                 ));
-            return searchResponse.Hits.Select(x => x.Source.Id);
+            return searchResponse.Hits.Select(x => x.Source.Id).ToList();
         }
 
         /// <inheritdoc />
@@ -104,7 +104,7 @@ namespace DocumentsIndex
         }
         
         /// <inheritdoc />
-        public async Task<IEnumerable<Guid>> SearchByNameAsync(string name)
+        public async Task<List<Guid>> SearchByNameAsync(string name)
         {
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
@@ -115,7 +115,7 @@ namespace DocumentsIndex
                         .Analyzer(Analyzers.DocumentNgramAnalyzer))
                 )
             );
-            return searchResponse.Hits.Select(x => x.Source.Id);
+            return searchResponse.Hits.Select(x => x.Source.Id).ToList();
         }
         
         private QueryContainer CreateForSubStrings(

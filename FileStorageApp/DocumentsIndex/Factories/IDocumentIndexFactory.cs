@@ -1,6 +1,4 @@
-﻿using DocumentsIndex.Config;
-
-namespace DocumentsIndex.Factories
+﻿namespace DocumentsIndex.Factories
 {
     /// <summary>
     /// Фабрика создающий объект для взаимодействия с хранилищем

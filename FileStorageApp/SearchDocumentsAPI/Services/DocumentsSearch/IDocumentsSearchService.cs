@@ -15,7 +15,7 @@ namespace SearchDocumentsAPI.Services.DocumentsSearch
         /// </summary>
         /// <param name="query">Запрос поиска</param>
         /// <returns></returns>
-        Task<RequestResult<IEnumerable<Guid>>> FindMatchingDocumentsAsync(string query);
+        Task<RequestResult<List<Guid>>> FindMatchingDocumentsAsync(string query);
         
         /// <summary>
         /// Проверяет, содержится ли одна из строк в названии документа по id.

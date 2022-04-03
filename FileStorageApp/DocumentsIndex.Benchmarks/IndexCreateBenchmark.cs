@@ -3,31 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
-using BenchmarkDotNet.Exporters;
-using BenchmarkDotNet.Exporters.Csv;
-using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using DocumentsIndex.Config;
+using DocumentsIndex.Contracts;
 using DocumentsIndex.Factories;
-using DocumentsIndex.Model;
 using DocumentsIndex.Pipelines;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
-using Npgsql.Replication.PgOutput.Messages;
 
 namespace DocumentsIndex.Benchmarks
 {
     [Config(typeof(Config))]
     public class BaseIndexBenchmark
     {
-        public static readonly string ResourcePath = $"{Directory.GetCurrentDirectory()}/TestFiles";
-        public IDocumentIndexStorage ElasticClient;
-        public static List<Guid> UsedFilesGuids = new();
+        private static readonly string ResourcePath = $"{Directory.GetCurrentDirectory()}/TestFiles";
+        protected IDocumentIndexStorage ElasticClient;
+        protected static readonly List<Guid> UsedFilesGuids = new();
 
         private const bool CreateManyDocumentsIndexes = false;
         private const int DocumentCountModifer = 10;
@@ -46,8 +40,8 @@ namespace DocumentsIndex.Benchmarks
         public async void Init()
         {
             var config = new ElasticConfig("http://localhost:9200", "testindex");
-            var factory = new DocumentIndexFactory(new PipelineCreator());
-            ElasticClient = factory.CreateDocumentIndexStorage(config);
+            var factory = new DocumentIndexFactory(new PipelineCreator(), config);
+            ElasticClient = factory.CreateDocumentIndexStorage();
             if (CreateManyDocumentsIndexes)
             {
                 for (var i = 0; i < DocumentCountModifer; i++)
@@ -110,10 +104,6 @@ namespace DocumentsIndex.Benchmarks
     [SimpleJob(RunStrategy.ColdStart, targetCount: 10, launchCount: 10, warmupCount: 0)]
     public class IndexSearchBenchmark : BaseIndexBenchmark
     {
-        
-        private const bool CreateManyDocumentsIndexes = true;
-        private const int DocumentCountModifer = 100;
-        
         [Benchmark]
         [ArgumentsSource(nameof(GetRandomWords))]
         public async Task<int> IndexFileSearchByNameAsync(string fileName)

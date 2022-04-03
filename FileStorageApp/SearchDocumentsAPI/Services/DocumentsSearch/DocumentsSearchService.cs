@@ -21,7 +21,7 @@ namespace SearchDocumentsAPI.Services.DocumentsSearch
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<IEnumerable<Guid>>> FindMatchingDocumentsAsync(string query)
+        public async Task<RequestResult<List<Guid>>> FindMatchingDocumentsAsync(string query)
         {
             var documentIds = await _documentIndexStorage.FindInTextOrNameAsync(query);
 

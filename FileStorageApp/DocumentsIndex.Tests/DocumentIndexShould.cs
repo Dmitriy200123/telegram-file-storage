@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DocumentsIndex.Config;
+using DocumentsIndex.Contracts;
 using DocumentsIndex.Factories;
-using DocumentsIndex.Model;
 using DocumentsIndex.Pipelines;
 using FluentAssertions;
 using NUnit.Framework;
@@ -46,9 +46,8 @@ namespace DocumentsIndex.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
             var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
 
-            var actual = searchResponse.First();
-
-            actual.Should().Be(expectedGuid);
+            searchResponse.Should().NotBeEmpty();
+            searchResponse.First().Should().Be(expectedGuid);
         }
 
         [Test]
@@ -71,8 +70,8 @@ namespace DocumentsIndex.Tests
             await _documentIndexStorage.IndexDocumentAsync(document);
             var searchResponse = await _documentIndexStorage.SearchByNameAsync(DocumentName);
 
+            searchResponse.Should().NotBeEmpty();
             var actual = searchResponse.First();
-
             actual.Should().Be(expectedGuid);
         }
 
@@ -104,9 +103,9 @@ namespace DocumentsIndex.Tests
 
             var searchResponse = await _documentIndexStorage.SearchBySubstringAsync(WordThatContainsDocument);
             searchResponse.Should().HaveCount(1);
-            
-            var actual = searchResponse.First(); 
-            
+
+            searchResponse.Should().NotBeEmpty();
+            var actual = searchResponse.First();
             actual.Should().Be(expectedGuid);
         }
 
