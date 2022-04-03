@@ -23,14 +23,14 @@ namespace DocumentsIndex.Benchmarks
         protected IDocumentIndexStorage ElasticClient;
         protected static readonly List<Guid> UsedFilesGuids = new();
 
-        private const bool CreateManyDocumentsIndexes = false;
-        private const int DocumentCountModifer = 10;
-        
+        protected bool CreateManyDocumentsIndexes;
+        protected int DocumentCountModifer = 10;
+
         private class Config : ManualConfig
         {
             public Config()
             {
-                AddColumn( StatisticColumn.Max);
+                AddColumn(StatisticColumn.Max);
                 SummaryStyle = SummaryStyle.Default.WithMaxParameterColumnWidth(50);
             }
         }
@@ -104,6 +104,11 @@ namespace DocumentsIndex.Benchmarks
     [SimpleJob(RunStrategy.ColdStart, targetCount: 10, launchCount: 10, warmupCount: 0)]
     public class IndexSearchBenchmark : BaseIndexBenchmark
     {
+        public IndexSearchBenchmark()
+        {
+            CreateManyDocumentsIndexes = true;
+        }
+
         [Benchmark]
         [ArgumentsSource(nameof(GetRandomWords))]
         public async Task<int> IndexFileSearchByNameAsync(string fileName)
