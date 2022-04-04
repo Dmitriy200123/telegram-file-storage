@@ -20,6 +20,7 @@ import {fetchRightsCurrentUser, fetchRightsDescription, fetchUserCurrent} from "
 import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
 import {fetchFilesTypes} from "./redux/thunks/mainThunks";
+import DocsClasses from "./components/DocsClasses/DocsClasses";
 
 const store = setupStore();
 
@@ -88,6 +89,7 @@ const Main: FC = () => {
                         {rights?.includes(Rights["Загружать файлы"]) &&
                         <Route path={"/load/"} component={LoadFileMain}/>}
                     </>}
+                    <Route path={"/docs/classes"} component={DocsClasses}/>
                 </Switch>
             </div>
             {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
