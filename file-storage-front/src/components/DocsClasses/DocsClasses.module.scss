@@ -1,13 +1,31 @@
 @import "src/Variables";
 
-.block{
+.block {
   display: flex;
   flex-direction: column;
-  background: #C9E4FF;
   flex: 1 1 auto;
 }
 
-.h2{
+
+.background {
+  padding: 32px;
+  background: #C9E4FF;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.content {
+  flex: 1 1 auto;
+  background: white;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.h2 {
   background: white;
   color: $menu-color;
   padding: 18px 32px;
@@ -16,16 +34,7 @@
   font-size: 18px;
 }
 
-.content{
-  flex: 1 1 auto;
-  background: white;
-  margin: 32px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-}
-
-.controls{
+.controls {
   padding-top: 8px;
   display: flex;
   align-items: center;
@@ -36,13 +45,15 @@
   white-space: nowrap;
 }
 
-.classes {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
 .classesEmpty {
   margin: auto;
   align-self: center;
+}
+
+
+.classes {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  position: relative;
 }

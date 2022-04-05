@@ -46,8 +46,7 @@ const App: FC = () => {
     }, []);
 
     return (<div className="App app">
-        {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        <Main/>
     </div>)
 }
 
