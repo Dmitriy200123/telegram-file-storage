@@ -11,23 +11,25 @@ class BaseClient:
     raise_for_status: bool = True
 
     def get_session(self) -> ClientSession:
-        return ClientSession(json_serialize=partial(dumps, reject_bytes=False))
+        return ClientSession(json_serialize=partial(dumps, reject_bytes=False, default=str))
 
     async def request(
             self,
             method: str,
             path: Optional[str] = None,
             **params,
-    ) -> dict:
+    ) -> str:
         full_url = urljoin(self.base_url, path)
 
-        async with self.get_session().request(method=method, url=full_url, **params) as response:
-            await response.read()
+        async with self.get_session() as session:
+            async with session.request(method=method, url=full_url, **params) as response:
+                text_response = await response.text()
+                print(f'Get response {text_response=}')
 
-            if self.raise_for_status:
-                response.raise_for_status()
+                if self.raise_for_status:
+                    response.raise_for_status()
 
-            return await response.json()
+                return text_response
 
     async def get(self, *args, **kwargs):
         return await self.request('GET', *args, **kwargs)

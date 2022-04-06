@@ -34,7 +34,7 @@ class LoaderInteractor(BaseInteractor):
         chat: Chat = await self.chat_repository.find_by_telegram_id(file_external.chat_telegram_id)
         file_info: File = await self.file_repository.create_or_get(file_external, chat.Id, file_sender.Id)
 
-        await self.file_repository.save_file(file, file_info.Id)
+        return await self.file_repository.save_file(file, file_info.Id)
 
     async def save_url(self, url: AnyUrl, sender_id: int, chat_id: int):
         name: str = self.get_url_name(url)
