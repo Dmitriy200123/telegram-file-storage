@@ -8,18 +8,22 @@ type Props = {
     className?: string,
     value: string,
     setValue: (name: string, value: any) => void, options: Array<{ value: any, label: string }> | undefined,
-    placeholder?: string, isMulti?: boolean
+    placeholder?: string,
+    isMulti?: boolean,
+
 }
 export const SelectText: React.FC<Props> = memo(({
-                                                 name,
-                                                 className,
-                                                 value,
-                                                 setValue,
-                                                 options,
-                                                 placeholder,
-                                             }) => {
+                                                     name,
+                                                     className,
+                                                     value,
+                                                     setValue,
+                                                     options,
+                                                     placeholder,
+                                                 }) => {
+
     if (placeholder === undefined || placeholder === null)
-        placeholder = "Введите текст";
+        placeholder = "Поиск файла по названию"
+
     const [isOpen, changeOpen] = useState(false);
     const regexp = new RegExp(`${value}`, 'i');
     const ui = options?.filter((elem) => !!elem.label.match(regexp))
