@@ -42,17 +42,32 @@ services:
     build:
       context: FileStorageApp/
       dockerfile: Dockerfile
+      target: runtime_FileStorageAPI
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5001
       - ASPNETCORE_ENVIRONMENT=Docker
     ports:
       - '5001:5001'
 
+  dotnet_search_backend:
+    container_name: dotnet_search_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+      target: runtime_SearchDocumentsAPI
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5002
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - '5002:5002' 
+  
+
   front:
     container_name: front
     build:
       context: file-storage-front/
-      dockerfile: Dockerfile_develop
+      dockerfile: Dockerfile
+      target: start_local
     ports:
       - '3000:3000'
 
