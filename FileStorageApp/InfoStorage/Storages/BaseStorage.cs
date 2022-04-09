@@ -26,6 +26,15 @@ namespace FileStorageApp.Data.InfoStorage.Storages
                 .HasMany(sender => sender.Chats)
                 .WithMany(chat => chat.Senders)
                 .UsingEntity(builder => builder.ToTable("SenderAndChat"));
+
+            modelBuilder
+                .Entity<DocumentClassification>()
+                .HasIndex(classification => classification.Name)
+                .IsUnique();
+
+            modelBuilder
+                .Entity<DocumentClassificationWord>()
+                .HasAlternateKey(word => new { word.ClassificationId, word.Value });
         }
 
         public async Task<bool> AddAsync(T entity, bool writeException = true)

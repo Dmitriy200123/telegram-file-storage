@@ -9,13 +9,4 @@
     <ItemGroup>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Storages\AccessStorage\IRightsStorage.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Storages\AccessStorage" />
-    </ItemGroup>
-
 </Project>

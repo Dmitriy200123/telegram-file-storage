@@ -1,5 +1,6 @@
 ﻿using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Storages.Chats;
+using FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications;
 using FileStorageApp.Data.InfoStorage.Storages.Files;
 using FileStorageApp.Data.InfoStorage.Storages.FileSenders;
 using FileStorageApp.Data.InfoStorage.Storages.MarkedTextsTags;
@@ -28,5 +29,8 @@ namespace FileStorageApp.Data.InfoStorage.Factories
         public IMarkedTextTagsStorage CreateMarkedTextTagsStorage() => new MarkedTextTagsStorage(_dataBaseConfig);
 
         public IRightsStorage CreateRightsStorage() => new RightsStorage(_dataBaseConfig);
+
+        public IDocumentClassificationStorage CreateDocumentClassificationStorage() =>
+            new DocumentClassificationStorage(_dataBaseConfig);
     }
 }
