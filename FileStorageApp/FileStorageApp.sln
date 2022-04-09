@@ -32,7 +32,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsIndex.Benchmarks",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocumentsAPI", "SearchDocumentsAPI\SearchDocumentsAPI.csproj", "{17B189F4-E69B-4E33-AE5F-0312278CB312}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocumentAPI.Tests", "SearchDocumentAPI.Tests\SearchDocumentAPI.Tests.csproj", "{229A1150-CAF0-40C8-9DF5-C65B002FF1C8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchDocumentsAPI.Tests", "SearchDocumentsAPI.Tests\SearchDocumentsAPI.Tests.csproj", "{229A1150-CAF0-40C8-9DF5-C65B002FF1C8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{E160F0F6-39EF-4E30-817F-0CBFC653A154}"
 EndProject

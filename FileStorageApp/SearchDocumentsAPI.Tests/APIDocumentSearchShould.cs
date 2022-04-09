@@ -13,10 +13,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using SearchDocumentAPI.Tests.Data;
-using SearchDocumentsAPI;
+using SearchDocumentsAPI.Tests.Data;
 
-namespace SearchDocumentAPI.Tests
+namespace SearchDocumentsAPI.Tests
 {
     public class APIDocumentSearchShould
     {
