@@ -9,7 +9,9 @@ import {useHistory} from "react-router-dom";
 
 const {closeModal} = filesSlice.actions;
 
-export const ModalConfirm: React.FC<{ id: string, callbackAccept?: ((...args:any) => void) | null}> = ({id, callbackAccept}) => {
+type PropsType = { id: string, callbackAccept?: ((...args: any) => void) | null }
+
+export const ModalConfirm: React.FC<PropsType> = ({id, callbackAccept}) => {
     const history = useHistory();
     const dispatch = useDispatch();
     return (
@@ -30,4 +32,3 @@ export const ModalConfirm: React.FC<{ id: string, callbackAccept?: ((...args:any
         </Modal>
     )
 }
-

@@ -1,9 +1,8 @@
-@import "src/Variables";
+@import "../../../Variables";
 
 
 .classesItem {
   &__name {
-    align-self: start;
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
@@ -23,7 +22,6 @@
   &__btn {
     position: absolute;
     right: 10px;
-    top: 10px;
 
     background: none;
     border: none;
@@ -71,8 +69,9 @@
   &__modalItem {
     display: flex;
     align-items: center;
+    text-decoration: none;
 
-    &:not(:last-of-type) {
+    &:not(:last-child) {
       margin-bottom: 10px;
     }
 

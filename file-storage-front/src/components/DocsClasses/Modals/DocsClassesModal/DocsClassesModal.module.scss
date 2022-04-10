@@ -1,0 +1,77 @@
+@import "../../../../Variables";
+
+.content {
+  width: 100%;
+  max-width: 622px;
+}
+
+.h2 {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+  margin-bottom: 24px;
+}
+
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter_class {
+}
+
+.label {
+  color: #434854;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+
+.tags {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+  overflow: hidden;
+  max-height: 70px;
+}
+
+.tagsBtn {
+  background: none;
+  border: none;
+  color: $menu-color;
+  cursor: pointer;
+
+  &:hover {
+    color: $menu-color-hover;
+  }
+}
+
+.tag {
+  background: #C9E4FF;
+  border-radius: 4px;
+  padding: 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.btns {
+  justify-content: flex-end;
+  display: flex;
+  gap: 8px;
+}
+

@@ -1,0 +1,37 @@
+@import "src/Variables";
+
+.tag {
+  background: #C9E4FF;
+  border-radius: 4px;
+  padding: 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  overflow: hidden;
+
+  height: 22px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.input {
+  background: none;
+  outline: none;
+  border: none;
+  width: auto;
+}
+
+.cross {
+  cursor: pointer;
+}
+
+.createBtn {
+  padding: 0 8px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+
+  height: 22px;
+}

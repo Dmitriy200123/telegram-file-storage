@@ -23,6 +23,7 @@
   flex-direction: column;
   margin-bottom: 32px;
   text-align: left;
+  color: #434854;
 }
 
 .h2 {
@@ -52,8 +53,19 @@
 
 
 .classes {
-  flex: 1 1 auto;
+  margin-top: 41px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr 200px;
   position: relative;
+
+  & tr, thead, tbody {
+    display: contents;
+  }
+
+  & td {
+    padding-top: 17px;
+    padding-bottom: 19px;
+    border-top: 1px solid #E9ECEF;
+    border-bottom: 1px solid #E9ECEF;
+  }
 }

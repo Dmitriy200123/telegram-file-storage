@@ -1,7 +1,6 @@
 @import "src/Variables";
 
 .App {
-  text-align: center;
   font-size: 16px;
 }
 
@@ -35,7 +34,8 @@
   display: flex;
   justify-content: flex-end
 }
-.header__logout{
+
+.header__logout {
   padding: 0;
   margin-right: 28px;
   border: none;
@@ -48,7 +48,7 @@
   align-items: center
 }
 
-.header__logout:hover, .header__logout:hover path{
+.header__logout:hover, .header__logout:hover path {
   cursor: pointer;
   color: $menu-color-hover;
   fill: $menu-color-hover;

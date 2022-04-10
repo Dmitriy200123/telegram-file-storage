@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from 'react';
 import './App.css';
 import './App.scss';
-import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
@@ -9,8 +9,6 @@ import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
-import {StartPage} from "./components/StartPage/StartPage";
-import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
@@ -88,14 +86,13 @@ const Main: FC = () => {
                         {rights?.includes(Rights["Загружать файлы"]) &&
                         <Route path={"/load/"} component={LoadFileMain}/>}
                     </>}
-                    <Route path={"/docs/classes"} component={DocsClasses}/>
+                    <Route path={"/docs-сlasses"} component={DocsClasses}/>
                 </Switch>
             </div>
             {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
         </div>
     </>)
 }
-
 
 
 export default FileStorageApp;
