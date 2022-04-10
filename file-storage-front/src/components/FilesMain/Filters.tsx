@@ -9,7 +9,6 @@ import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {DefaultValues, KeepStateOptions, UseFormGetValues} from "react-hook-form";
 import {TypeSelectFilters} from "./FilesMain";
 import {SelectText} from "../utils/Inputs/SelectText";
-import {InputText} from "../utils/Inputs/Text/InputText";
 
 type TypeProps = {
     setValueForm: (name: string, value: any) => void,
@@ -44,11 +43,15 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
             <button className={"files__btn-search"} type="submit"><Search/></button>
             <SelectText name={"fileName"} className={"files__filter files__filter_select"}
                         setValue={setValueForm}
-                        value={getValues("fileName") || ""} options={optionsName} isMulti={false}/>
+                        value={getValues("fileName") || ""}
+                        placeholder={valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1
+                            ? "Поиск файла по названию или содержимому" : "Поиск файла по названию"}
+                        options={optionsName} isMulti={false}/>
             <button className={"files__btn-open-filter"} type="button" onClick={() => changeIsOpen(!isOpen)}>
                 <Settings/>
                 <span>Фильтр</span>
                 {isOpen && <Cross className={"files__btn-open-filter-close"}/>}
+
             </button>
         </div>
         {isOpen && <div className={"files__filters-add"}>
@@ -65,11 +68,11 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
                 <Select name={"categories"} className={"files__filter files__filter_select"}
                         setValue={setValueForm} placeholder={"Формат"}
                         values={valuesCategories} options={optionsCategory} isMulti={true}/>
-                {!!valuesCategories?.length && <>
+
+                {valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1 && <>
                     <Select name={"1"} className={"files__filter files__filter_select"}
-                            setValue={setValueForm} placeholder={"Категория"}
+                            setValue={setValueForm} placeholder={"Классификация"}
                             values={null} options={options} isMulti={true}/>
-                    <InputText placeholder={"Слово в тексте"} style={{width: "auto"}}/>
                 </>}
             </div>
             <button className={"files__reset"} type="reset" onClick={onReset}>

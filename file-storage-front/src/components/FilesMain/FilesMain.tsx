@@ -65,7 +65,7 @@ const FilesMain = () => {
     }
     return (
         <div className={"files-main"}>
-            <h2 className={"files-main__title"}>Файлы</h2>
+            <h2 className={"files-main__title"}>Поиск файлов</h2>
             <div className={"files-main__content"}>
                 <form className={"files"} onSubmit={onChangeForm}>
                     <Filters setValueForm={setValueForm} getValues={getValues} reset={reset}/>
