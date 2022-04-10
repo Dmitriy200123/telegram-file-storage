@@ -4,7 +4,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
-using DocumentsIndex;
 using DocumentsIndex.Config;
 using DocumentsIndex.Factories;
 using DocumentsIndex.Pipelines;
@@ -85,6 +84,7 @@ namespace FileStorageAPI
 
             services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
+            services.AddSingleton(provider => provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
             services.AddSingleton<IPipelineCreator, PipelineCreator>();
             services.AddSingleton<IElasticConfig>(new ElasticConfig("http://localhost:9200", "testindex"));
             RegisterProviders(services);

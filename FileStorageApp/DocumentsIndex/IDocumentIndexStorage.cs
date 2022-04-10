@@ -6,7 +6,7 @@ using DocumentsIndex.Contracts;
 namespace DocumentsIndex
 {
     /// <summary>
-    /// Хранилище файлов в эластике
+    /// Хранилище текстовых файлов с поиском по содержимому
     /// </summary>
     public interface IDocumentIndexStorage
     {
