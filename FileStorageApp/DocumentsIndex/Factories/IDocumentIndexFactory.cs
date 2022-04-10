@@ -8,7 +8,6 @@
         /// <summary>
         /// Метод создающий объект для взаимодействия с хранилищем
         /// </summary>
-        /// <param name="elasticConfig">Конфигурация для создания клиента эластика</param>
         /// <returns></returns>
         IDocumentIndexStorage CreateDocumentIndexStorage();
     }

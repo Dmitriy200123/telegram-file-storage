@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API;
+using DocumentsIndex;
+using DocumentsIndex.Contracts;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Extensions;
@@ -32,6 +34,7 @@ namespace FileStorageAPI.Services
         private readonly ISenderFormTokenProvider _senderFormTokenProvider;
         private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
         private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
+        private readonly IDocumentIndexStorage _documentIndexStorage;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
@@ -45,6 +48,7 @@ namespace FileStorageAPI.Services
         /// <param name="senderFormTokenProvider"></param>
         /// <param name="userIdFromTokenProvider">Поставщик для получения Id пользователя из токена</param>
         /// <param name="accessesByUserIdProvider">Поставщик для получения прав пользователя по Id</param>
+        /// <param name="documentIndexStorage">Хранилище текстовых файлов с поиском по содержимому</param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
@@ -53,7 +57,8 @@ namespace FileStorageAPI.Services
             IDownloadLinkProvider downloadLinkProvider,
             ISenderFormTokenProvider senderFormTokenProvider,
             IAccessesByUserIdProvider accessesByUserIdProvider,
-            IUserIdFromTokenProvider userIdFromTokenProvider)
+            IUserIdFromTokenProvider userIdFromTokenProvider, 
+            IDocumentIndexStorage documentIndexStorage)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
@@ -69,6 +74,7 @@ namespace FileStorageAPI.Services
                                         throw new ArgumentNullException(nameof(accessesByUserIdProvider));
             _userIdFromTokenProvider = userIdFromTokenProvider ??
                                        throw new ArgumentNullException(nameof(userIdFromTokenProvider));
+            _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
         }
 
         /// <inheritdoc />
@@ -168,7 +174,16 @@ namespace FileStorageAPI.Services
             if (!await UploadFile(file, memoryStream))
                 return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to database");
 
-            var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
+            if (file.Type == FileType.TextDocument)
+            {
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var document = new Document(file.Id, memoryStream.ToArray(), file.Name);
+                if (!await _documentIndexStorage.IndexDocumentAsync(document))
+                    return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to elastic");
+            }
+
+
+            var chat = new Chat { Id = Guid.Empty, Name = "Ручная загрузка файла" };
             file.Chat = chat;
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
             file.FileSender = await fileSenderStorage.GetByIdAsync(fileSender.Id);
@@ -189,6 +204,17 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<(string uri, FileInfo info)>($"File with identifier {id} not found");
             file.Name = fileName;
             await filesStorage.UpdateAsync(file);
+            if (file.Type == FileType.TextDocument)
+            {
+                using var physicalStorage = await _filesStorageFactory.CreateAsync();
+                var stream = await physicalStorage.GetFileStreamAsync(id.ToString());
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                await _documentIndexStorage.DeleteAsync(id);
+                var document = new Document(file.Id, memoryStream.ToArray(), file.Name);
+                if(!await _documentIndexStorage.IndexDocumentAsync(document))
+                    return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to elastic");
+            }
 
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(id, fileName);
 
@@ -204,9 +230,10 @@ namespace FileStorageAPI.Services
             using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
             try
             {
-                var file = await filesStorage.DeleteAsync(id);
+                var deleteResult = await filesStorage.DeleteAsync(id);
                 await physicalFilesStorage.DeleteFileAsync(id.ToString());
-                return file
+                await _documentIndexStorage.DeleteAsync(id);
+                return deleteResult
                     ? RequestResult.NoContent<FileInfo>()
                     : RequestResult.InternalServerError<FileInfo>($"Something wrong with dataBase");
             }
