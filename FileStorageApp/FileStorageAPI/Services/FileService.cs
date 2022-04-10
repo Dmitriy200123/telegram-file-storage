@@ -176,14 +176,14 @@ namespace FileStorageAPI.Services
 
             if (file.Type == FileType.TextDocument)
             {
-                memoryStream.Position = 0;
+                memoryStream.Seek(0, SeekOrigin.Begin);
                 var document = new Document(file.Id, memoryStream.ToArray(), file.Name);
-                if(!await _documentIndexStorage.IndexDocumentAsync(document))
+                if (!await _documentIndexStorage.IndexDocumentAsync(document))
                     return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to elastic");
             }
-            
 
-            var chat = new Chat {Id = Guid.Empty, Name = "Ручная загрузка файла"};
+
+            var chat = new Chat { Id = Guid.Empty, Name = "Ручная загрузка файла" };
             file.Chat = chat;
             using var fileSenderStorage = _infoStorageFactory.CreateFileSenderStorage();
             file.FileSender = await fileSenderStorage.GetByIdAsync(fileSender.Id);
