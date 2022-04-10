@@ -44,7 +44,8 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
             <SelectText name={"fileName"} className={"files__filter files__filter_select"}
                         setValue={setValueForm}
                         value={getValues("fileName") || ""}
-                        placeholder={isOpen ? "Поиск файла по названию или слову содержащийся в нём" : "Поиск файла по названию"}
+                        placeholder={valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1
+                            ? "Поиск файла по названию или содержимому" : "Поиск файла по названию"}
                         options={optionsName} isMulti={false}/>
             <button className={"files__btn-open-filter"} type="button" onClick={() => changeIsOpen(!isOpen)}>
                 <Settings/>
@@ -68,10 +69,9 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
                         setValue={setValueForm} placeholder={"Формат"}
                         values={valuesCategories} options={optionsCategory} isMulti={true}/>
 
-
-                {!!valuesCategories?.length && (valuesCategories.includes('6') && valuesCategories.length === 1) && <>
+                {valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1 && <>
                     <Select name={"1"} className={"files__filter files__filter_select"}
-                            setValue={setValueForm} placeholder={"Категория"}
+                            setValue={setValueForm} placeholder={"Классификация"}
                             values={null} options={options} isMulti={true}/>
                 </>}
             </div>
