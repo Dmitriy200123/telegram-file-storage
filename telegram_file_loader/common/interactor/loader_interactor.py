@@ -1,5 +1,6 @@
 from io import BytesIO
 
+from clients.documents_index_client import DocumentsIndexClient
 from common.interactor.base_interactor import BaseInteractor
 from common.repository.chat_repository import ChatRepository
 from common.repository.file_repository import FileRepository
@@ -15,18 +16,20 @@ class LoaderInteractor(BaseInteractor):
     DEFAULT_ENCODE = 'utf-8'
 
     def __init__(
-        self,
-        chat_repository: ChatRepository,
-        file_sender_repository: FileSenderRepository,
-        file_repository: FileRepository,
-        url_repository: UrlRepository,
-        tag_repository: TagRepository
+            self,
+            chat_repository: ChatRepository,
+            file_sender_repository: FileSenderRepository,
+            file_repository: FileRepository,
+            url_repository: UrlRepository,
+            tag_repository: TagRepository,
+            documents_index_client: DocumentsIndexClient,
     ):
         super(LoaderInteractor, self).__init__(
             chat_repository, url_repository, tag_repository)
 
         self.file_sender_repository = file_sender_repository
         self.file_repository = file_repository
+        self.documents_index_client = documents_index_client
 
     async def save_file(self, file_external: FileExternal, file: BytesIO):
         file_sender: FileSender = await self.file_sender_repository \
@@ -34,7 +37,14 @@ class LoaderInteractor(BaseInteractor):
         chat: Chat = await self.chat_repository.find_by_telegram_id(file_external.chat_telegram_id)
         file_info: File = await self.file_repository.create_or_get(file_external, chat.Id, file_sender.Id)
 
-        return await self.file_repository.save_file(file, file_info.Id)
+        uuid = await self.file_repository.save_file(file, file_info.Id)
+
+        if file_external.type is FileTypeEnum.TextDocument:
+            await self.documents_index_client.index_document(
+                document_id=str(uuid),
+                name=file_external.name,
+                content=file
+            )
 
     async def save_url(self, url: AnyUrl, sender_id: int, chat_id: int):
         name: str = self.get_url_name(url)

@@ -1,10 +1,10 @@
 
 import pytest
-from clients.search_documents_api_client import SearchDocumentsClient
+from clients.documents_index_client import DocumentsIndexClient
 
 
 @pytest.fixture(scope='session')
 def search_documents_client():
-    client = SearchDocumentsClient()
+    client = DocumentsIndexClient()
 
     return client

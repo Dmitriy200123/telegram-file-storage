@@ -7,7 +7,7 @@ from clients.base_client import BaseClient
 
 
 @dataclasses.dataclass
-class SearchDocumentsClient(BaseClient):
+class DocumentsIndexClient(BaseClient):
     base_url: str = config.SEARCH_DOCUMENT_URL
     index_url = base_url + '/index'
 

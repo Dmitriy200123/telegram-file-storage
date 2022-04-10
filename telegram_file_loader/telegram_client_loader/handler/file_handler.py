@@ -1,10 +1,9 @@
 from io import BytesIO
 
-from clients.search_documents_api_client import SearchDocumentsClient
 from common.file_util import FileUtil
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
-from postgres.models.external_models import File, FileTypeEnum
+from postgres.models.external_models import File
 from pydantic import AnyUrl
 from telegram_client_loader.handler.base_handler import BaseHandler
 from telethon import TelegramClient
@@ -19,7 +18,6 @@ class FileHandler(BaseHandler):
             telegram_client: TelegramClient,
             loader_interactor: LoaderInteractor,
             chat_interactor: ChatInteractor,
-            search_document_client: SearchDocumentsClient,
     ):
         super(FileHandler, self).__init__(
             telegram_client, loader_interactor
@@ -27,7 +25,6 @@ class FileHandler(BaseHandler):
 
         self.loader_interactor = loader_interactor
         self.chat_interactor = chat_interactor
-        self.search_document_client = search_document_client
         self.run()
 
     async def _handle_new_message_with_media(self, message: Message):
@@ -38,10 +35,7 @@ class FileHandler(BaseHandler):
         await self.chat_interactor.add_new_users(filtered_users, telegram_file.chat_telegram_id)
 
         file: BytesIO = await self._download_file(message)
-        uuid = await self.loader_interactor.save_file(telegram_file, file)
-
-        if telegram_file.type is FileTypeEnum.TextDocument:
-            await self.search_document_client.index_document(document_id=uuid, name=telegram_file.name, content=file)
+        await self.loader_interactor.save_file(telegram_file, file)
 
     @staticmethod
     def __get_telegram_file(message: Message) -> File:
