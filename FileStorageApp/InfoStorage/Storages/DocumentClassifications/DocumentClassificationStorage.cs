@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
     internal class DocumentClassificationStorage : BaseStorage<DocumentClassification>,
         IDocumentClassificationStorage
     {
+        private DbSet<DocumentClassificationWord> ClassificationWords { get; set; }
+
         public DocumentClassificationStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
             Database.EnsureCreated();
@@ -31,67 +34,68 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             int skip,
             int take,
             bool includeClassificationWords = false
+        ) => AddOptionsInQuery(DbSet, includeClassificationWords, skip, take)
+            .Where(classification => classification.Name.ToLower().Contains(query.ToLower()))
+            .ToListAsync();
+
+        private static IQueryable<DocumentClassification> AddOptionsInQuery(
+            IQueryable<DocumentClassification> query,
+            bool useInclude = false,
+            int? skip = null,
+            int? take = null
         )
         {
-            var queryable = DbSet.AsQueryable();
+            if (useInclude)
+                query = query.Include(x => x.ClassificationWords);
 
-            if (includeClassificationWords)
-                queryable = queryable.Include(classification => classification.ClassificationWords);
+            if (skip != null)
+                query = query.Skip(skip.Value);
 
-            return queryable
-                .Skip(skip)
-                .Take(take)
-                .Where(classification => classification.Name.ToLower().Contains(query.ToLower()))
-                .ToListAsync();
+            if (take != null)
+                query = query.Take(take.Value);
+
+            return query;
         }
 
-        public async Task<bool> AddWordAsync(Guid id, DocumentClassificationWord classificationWord)
+        public async Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord)
         {
-            var classification = await GetByIdAsync(id);
+            var isAlreadyExist = ClassificationWords
+                .Where(word => word.ClassificationId == classificationId)
+                .Any(word => word.Value == classificationWord.Value);
 
-            if (classification.ClassificationWords.Any(word => word.Value == classificationWord.Value))
-                throw new ArgumentException(
+            if (isAlreadyExist)
+                throw new AlreadyExistException(
                     $"{nameof(DocumentClassificationWord)} with value {classificationWord.Value} already exist"
                 );
 
-            classificationWord.Classification = classification;
-            classification.ClassificationWords.Add(classificationWord);
+            classificationWord.ClassificationId = classificationId;
 
-            return await UpdateAsync(classification);
+            await ClassificationWords.AddAsync(classificationWord);
+
+            return await TrySaveChangesAsync();
         }
 
-        public async Task<bool> DeleteWordAsync(Guid id, Guid wordId)
+        public async Task<bool> DeleteWordAsync(Guid classificationId, Guid wordId)
         {
-            var classification = await GetByIdAsync(id);
-            var classificationWord = classification.ClassificationWords.FirstOrDefault(word => word.Id == wordId);
+            var classificationWord = ClassificationWords
+                .FirstOrDefault(word => word.ClassificationId == classificationId && word.Id == wordId);
 
             if (classificationWord == null)
                 return false;
-            
-            classification.ClassificationWords.Remove(classificationWord);
-                
-            return await UpdateAsync(classification);
+
+            ClassificationWords.Remove(classificationWord);
+
+            return await TrySaveChangesAsync();
         }
 
-        public Task<int> GetCountByQueryAsync(string query)
-        {
-            return DbSet
-                .Where(classification => classification.Name.Contains(query))
-                .CountAsync();
-        }
+        public Task<int> GetCountByQueryAsync(string query) => DbSet
+            .Where(classification => classification.Name.ToLower().Contains(query.ToLower()))
+            .CountAsync();
 
-        public async Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid id)
-        {
-            var classification = await DbSet
-                .Include(classification => classification.ClassificationWords)
-                .FirstOrDefaultAsync(classification => classification.Id == id);
+        public Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid classificationId) => ClassificationWords
+            .Where(word => word.ClassificationId == classificationId)
+            .ToListAsync();
 
-            return classification.ClassificationWords.ToList();
-        }
-
-        public Task<List<DocumentClassification>> GetAllAsync()
-        {
-            return DbSet.ToListAsync();
-        }
+        public Task<List<DocumentClassification>> GetAllAsync() => DbSet.ToListAsync();
     }
 }

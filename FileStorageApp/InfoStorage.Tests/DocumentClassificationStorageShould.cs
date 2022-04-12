@@ -42,7 +42,7 @@ namespace InfoStorage.Tests
 
         [TestCase("Test classification", "joke")]
         [TestCase("Aboa", "model")]
-        public async Task CreateDocumentClassificationTable_ShouldInitialize(string classificationName, string word)
+        public async Task AddDocumentClassificationTable_ShouldAdd(string classificationName, string word)
         {
             var classification = new DocumentClassification
             {
@@ -106,7 +106,7 @@ namespace InfoStorage.Tests
                 .Select(word => new DocumentClassificationWord
                     {
                         Id = Guid.NewGuid(),
-                        Classification = classification,
+                        ClassificationId = classificationId,
                         Value = word
                     }
                 )
@@ -120,8 +120,8 @@ namespace InfoStorage.Tests
             using var storage1 = _infoStorageFactory.CreateDocumentClassificationStorage();
             var actualClassification = await storage1.FindByIdAsync(classificationId, true);
             var actualWords = actualClassification.ClassificationWords;
-            
-           actualWords
+
+            actualWords
                 .Should()
                 .BeEquivalentTo(
                     documentsWords,
@@ -133,7 +133,7 @@ namespace InfoStorage.Tests
                 actualWord.Classification.Should().NotBeNull();
             }
         }
-        
+
         [TestCase("Document", "oCu")]
         [TestCase("Valley", "val")]
         [TestCase("abodovada", "BodoVada")]
@@ -147,16 +147,12 @@ namespace InfoStorage.Tests
                 Id = Guid.NewGuid(),
                 Name = classificationName
             };
-            
-            var randomClassification = new DocumentClassification
-            {
-                Id = Guid.NewGuid(),
-                Name = "random"
-            };
 
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
             await storage.AddAsync(classification);
-            await storage.AddAsync(randomClassification);
+
+            await AddClassification(Guid.NewGuid(), "random");
+            await AddClassification(Guid.NewGuid(), "random1");
 
             using var storage1 = _infoStorageFactory.CreateDocumentClassificationStorage();
             var actualClassifications = await storage1.FindByQueryAsync(query, 0, 10);
@@ -164,15 +160,166 @@ namespace InfoStorage.Tests
             actualClassifications.Should().HaveCount(1);
             actualClassifications.FirstOrDefault().Should().BeEquivalentTo(classification);
         }
-        
+
         [TestCase("abodovada")]
         [TestCase("doaqewv")]
         [TestCase("document")]
-        public async Task DeleteClassification_ShouldDelete(
-            string classificationName
-        )
+        public async Task DeleteClassification_ShouldDelete(string classificationName)
         {
             var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            var deleted = await storage.DeleteAsync(classificationId);
+
+            deleted.Should().BeTrue();
+
+            var classification = await storage.GetAllAsync();
+
+            classification.Should().BeEmpty();
+        }
+
+        [TestCase("abodovada", "gnome")]
+        [TestCase("doaqewv", "abob")]
+        [TestCase("document", "lol")]
+        public async Task AddWordWithoutId_ShouldAdd(string classificationName, string wordValue)
+        {
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            var word = new DocumentClassificationWord
+            {
+                Value = wordValue
+            };
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            var result = await storage.AddWordAsync(classificationId, word);
+
+            result.Should().BeTrue();
+
+            var classification = await storage.FindByIdAsync(classificationId, true);
+            var actualWord = classification.ClassificationWords.First();
+
+            actualWord.Value.Should().Be(wordValue);
+            actualWord.ClassificationId.Should().Be(classificationId);
+        }
+
+        [TestCase("abodovada", "gnome")]
+        [TestCase("doaqewv", "abob")]
+        [TestCase("document", "lol")]
+        public async Task AddWordWithId_ShouldAdd(string classificationName, string wordValue)
+        {
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            var wordId = Guid.NewGuid();
+            var word = new DocumentClassificationWord
+            {
+                Id = wordId,
+                Value = wordValue,
+                ClassificationId = classificationId
+            };
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            var result = await storage.AddWordAsync(classificationId, word);
+
+            result.Should().BeTrue();
+
+            var classification = await storage.FindByIdAsync(classificationId, true);
+            var actualWord = classification.ClassificationWords.First();
+
+            actualWord.Value.Should().Be(wordValue);
+            actualWord.Id.Should().Be(wordId);
+            actualWord.ClassificationId.Should().Be(classificationId);
+        }
+
+        [TestCase("abodovada", "gnome")]
+        [TestCase("doaqewv", "abob")]
+        [TestCase("document", "lol")]
+        public async Task DeleteWord_ShouldDelete(string classificationName, string wordValue)
+        {
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            var wordId = Guid.NewGuid();
+            var word = new DocumentClassificationWord { Id = wordId, Value = wordValue };
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+
+            await storage.AddWordAsync(classificationId, word);
+
+            var deleted = await storage.DeleteWordAsync(classificationId, wordId);
+            deleted.Should().BeTrue();
+
+            var classification = await storage.FindByIdAsync(classificationId, true);
+            classification.ClassificationWords.Should().BeEmpty();
+        }
+
+        [TestCase("a", 1, "aboba")]
+        [TestCase("Ab", 3, "aBob", "ABIdo", "AbBb")]
+        [TestCase("do", 2, "OdOb", "aqaq", "qWe", "toDO")]
+        [TestCase("do", 0, "aqaq", "qWe")]
+        public async Task GetCountByQuery_ShouldCorrectCount(
+            string query,
+            int expected,
+            params string[] classificationNames
+        )
+        {
+            foreach (var name in classificationNames)
+                await AddClassification(Guid.NewGuid(), name);
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            var count = await storage.GetCountByQueryAsync(query);
+
+            count.Should().Be(expected);
+        }
+
+        [TestCase("abodovada", "gnome", "abob")]
+        [TestCase("doaqewv", "abob", "moqw", "fasc")]
+        [TestCase("document", "lol")]
+        public async Task GetWords_ShouldGetCorrectWords(string classificationName, params string[] wordValues)
+        {
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+
+            foreach (var wordValue in wordValues)
+            {
+                var word = new DocumentClassificationWord { Value = wordValue };
+                await storage.AddWordAsync(classificationId, word);
+            }
+
+            var actualWords = await storage.GetWordsByIdAsync(classificationId);
+
+            actualWords.Should().HaveCount(wordValues.Length);
+            actualWords.Select(word => word.Value).Should().BeEquivalentTo(wordValues);
+
+            var classificationIds = actualWords.Select(word => word.ClassificationId);
+
+            foreach (var actualId in classificationIds)
+                actualId.Should().Be(classificationId);
+        }
+        
+        [TestCase("document", "lol")]
+        [TestCase("aboba", "dobw")]
+        [TestCase("qwer", "holive")]
+        public async Task RenameClassification_ShouldRenamed(string classificationName, string newClassificationName)
+        {
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, classificationName);
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            var classification = await storage.FindByIdAsync(classificationId);
+
+            classification.Name = newClassificationName;
+            await storage.UpdateAsync(classification);
+
+            classification = await storage.FindByIdAsync(classificationId);
+            classification.Name.Should().Be(newClassificationName);
+        }
+
+        private async Task AddClassification(Guid classificationId, string classificationName)
+        {
             var classification = new DocumentClassification
             {
                 Id = classificationId,
@@ -181,11 +328,6 @@ namespace InfoStorage.Tests
 
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
             await storage.AddAsync(classification);
-
-            using var storage1 = _infoStorageFactory.CreateDocumentClassificationStorage();
-            var deleted = await storage1.DeleteAsync(classificationId);
-
-            deleted.Should().BeTrue();
         }
     }
 }

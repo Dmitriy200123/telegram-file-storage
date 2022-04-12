@@ -16,12 +16,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             bool includeClassificationWords = false
         );
 
-        Task<bool> AddWordAsync(Guid id, DocumentClassificationWord classificationWord);
-        Task<bool> DeleteWordAsync(Guid id, Guid wordId);
+        Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord);
+        
+        Task<bool> DeleteWordAsync(Guid classificationId, Guid wordId);
 
         Task<int> GetCountByQueryAsync(string query);
         
-        Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid id);
+        Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid classificationId);
         
         public Task<List<DocumentClassification>> GetAllAsync();
     }

@@ -135,25 +135,24 @@ alter table "CodeForTelegramLoader"
 
 create table "DocumentClassifications"
 (
-    "Id"   uuid not null
+    "Id"   uuid         not null
         constraint "PK_DocumentClassifications"
             primary key,
-    "Name" text not null
+    "Name" varchar(255) not null
+        constraint "AK_DocumentClassifications_Name"
+            unique
 );
 
 alter table "DocumentClassifications"
     owner to "FileStorageApp";
 
-create unique index "IX_DocumentClassifications_Name"
-    on "DocumentClassifications" ("Name");
-
 create table "DocumentClassificationWords"
 (
-    "Id"               uuid not null
+    "Id"               uuid         not null
         constraint "PK_DocumentClassificationWords"
             primary key,
-    "Value"            text not null,
-    "ClassificationId" uuid not null
+    "Value"            varchar(255) not null,
+    "ClassificationId" uuid         not null
         constraint "FK_DocumentClassificationWords_DocumentClassifications_Classif~"
             references "DocumentClassifications"
             on delete cascade,
