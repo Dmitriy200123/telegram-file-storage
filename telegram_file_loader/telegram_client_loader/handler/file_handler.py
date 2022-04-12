@@ -14,10 +14,10 @@ from telethon.tl.types import MessageMediaDocument, User
 class FileHandler(BaseHandler):
 
     def __init__(
-        self,
-        telegram_client: TelegramClient,
-        loader_interactor: LoaderInteractor,
-        chat_interactor: ChatInteractor
+            self,
+            telegram_client: TelegramClient,
+            loader_interactor: LoaderInteractor,
+            chat_interactor: ChatInteractor,
     ):
         super(FileHandler, self).__init__(
             telegram_client, loader_interactor

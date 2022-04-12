@@ -1,4 +1,5 @@
 import config
+from clients.documents_index_client import DocumentsIndexClient
 from clients.s3_client import S3Client
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
@@ -16,7 +17,7 @@ from telethon import TelegramClient
 from urlextract import URLExtract
 
 
-async def start(pg_adapter: Adapter, s3_client: S3Client):
+async def start(pg_adapter: Adapter, s3_client: S3Client, documents_index_client: DocumentsIndexClient):
     url_extractor = URLExtract()
 
     telegram_client = TelegramClient(
@@ -38,7 +39,8 @@ async def start(pg_adapter: Adapter, s3_client: S3Client):
         file_repository=file_repository,
         file_sender_repository=file_sender_repository,
         url_repository=url_repository,
-        tag_repository=tag_repository
+        tag_repository=tag_repository,
+        documents_index_client=documents_index_client
     )
     chat_interactor = ChatInteractor(
         chat_repository=chat_repository,
@@ -50,9 +52,9 @@ async def start(pg_adapter: Adapter, s3_client: S3Client):
     )
 
     loader = FileHandler(
-        telegram_client,
-        loader_interactor,
-        chat_interactor
+        telegram_client=telegram_client,
+        loader_interactor=loader_interactor,
+        chat_interactor=chat_interactor,
     )
     chat_handler = ChatHandler(telegram_client, chat_interactor)
 

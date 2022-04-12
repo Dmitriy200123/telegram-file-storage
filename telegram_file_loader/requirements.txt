@@ -40,6 +40,7 @@ six==1.16.0
 Telethon==1.24.0
 toml==0.10.2
 typing-extensions==3.10.0.2
+ujson==5.1.0
 urlextract==1.4.0
 urllib3==1.26.7
 virtualenv==20.10.0
