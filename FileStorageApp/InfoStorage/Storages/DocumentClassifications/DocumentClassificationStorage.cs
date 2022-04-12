@@ -16,7 +16,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
         public DocumentClassificationStorage(IDataBaseConfig dataBaseConfig) : base(dataBaseConfig)
         {
-            Database.EnsureCreated();
         }
 
         public Task<DocumentClassification> FindByIdAsync(Guid id, bool includeClassificationWords = false)
