@@ -74,10 +74,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             return await TrySaveChangesAsync();
         }
 
-        public async Task<bool> DeleteWordAsync(Guid classificationId, Guid wordId)
+        public async Task<bool> DeleteWordAsync(Guid wordId)
         {
-            var classificationWord = ClassificationWords
-                .FirstOrDefault(word => word.ClassificationId == classificationId && word.Id == wordId);
+            var classificationWord = ClassificationWords.FirstOrDefault(word => word.Id == wordId);
 
             if (classificationWord == null)
                 return false;

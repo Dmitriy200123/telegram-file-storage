@@ -247,7 +247,7 @@ namespace InfoStorage.Tests
 
             await storage.AddWordAsync(classificationId, word);
 
-            var deleted = await storage.DeleteWordAsync(classificationId, wordId);
+            var deleted = await storage.DeleteWordAsync(wordId);
             deleted.Should().BeTrue();
 
             var classification = await storage.FindByIdAsync(classificationId, true);

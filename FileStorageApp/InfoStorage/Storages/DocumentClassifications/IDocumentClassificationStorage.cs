@@ -18,7 +18,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
         Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord);
         
-        Task<bool> DeleteWordAsync(Guid classificationId, Guid wordId);
+        Task<bool> DeleteWordAsync(Guid wordId);
 
         Task<int> GetCountByQueryAsync(string query);
         
