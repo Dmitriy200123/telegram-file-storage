@@ -12,23 +12,19 @@ export function updateAuthToken() {
     });
 }
 
-export const fetchData = async (url: string) => {
-    const response = await fetch(baseUrl + url, {
-        headers: myHeaders
-    });
-    return await response.json();
-};
-
-export const fetchConfig = async (url: string, config?: any) => {
+const doRequest = async (url: string, config?: any) => {
     const {params, method, body} = config || {}
     const paramsString = queryParams(params);
     const respUrl = baseUrl + url + (paramsString.length > 0 ? "?" + paramsString : "");
-    const response = await fetch(respUrl, {
+    return await fetch(respUrl, {
         method: method ?? "GET",
         body: JSON.stringify(body),
         headers: myHeaders,
     });
+}
 
+export const fetchConfig = async (url: string, config?: any) => {
+    const response = await doRequest(url, config);
     if (response.ok)
         return await response.json();
     throw Error();
@@ -51,15 +47,7 @@ export const fPostFile = async (url: string, body?: any) => {
 };
 
 export const fetchConfigText = async (url: string, config?: any) => {
-    const {params, method, body} = config || {}
-    const paramsString = queryParams(params);
-    const respUrl = baseUrl + url + (paramsString.length > 0 ? "?" + paramsString : "");
-    const response = await fetch(respUrl, {
-        method: method ?? "GET",
-        body: JSON.stringify(body),
-        headers: myHeaders,
-    });
-
+    const response = await doRequest(url, config);
     if (response.ok)
         return await response.text();
     throw Error();

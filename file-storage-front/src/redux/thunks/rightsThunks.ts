@@ -1,10 +1,10 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchConfig, fetchData} from "../api/api";
+import {fetchConfig} from "../api/api";
 
 
 export const fetchAllUsers = createAsyncThunk("users-info/users", async (_, thunkAPI) => {
     try {
-        const data = await fetchData("/users");
+        const data = await fetchConfig("/users");
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не получилось");
@@ -14,7 +14,7 @@ export const fetchAllUsers = createAsyncThunk("users-info/users", async (_, thun
 
 export const fetchUserCurrent = createAsyncThunk("users-info/current", async (_, thunkAPI) => {
     try {
-        const data = await fetchData("/users/current");
+        const data = await fetchConfig("/users/current");
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не получилось");
@@ -23,7 +23,7 @@ export const fetchUserCurrent = createAsyncThunk("users-info/current", async (_,
 
 export const fetchRightsCurrentUser = createAsyncThunk("rights/current", async (_, thunkAPI) => {
     try {
-        const data = await fetchData("/rights/currentUserRights");
+        const data = await fetchConfig("/rights/currentUserRights");
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не получилось");
@@ -32,7 +32,7 @@ export const fetchRightsCurrentUser = createAsyncThunk("rights/current", async (
 
 export const fetchRightsUserById = createAsyncThunk("rights/user", async (id: string, thunkAPI) => {
     try {
-        const data = await fetchData(`/rights/userRights?userId=${id}`);
+        const data = await fetchConfig(`/rights/userRights?userId=${id}`);
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не получилось");
@@ -41,7 +41,7 @@ export const fetchRightsUserById = createAsyncThunk("rights/user", async (id: st
 
 export const fetchRightsDescription = createAsyncThunk("rights/description", async (_, thunkAPI) => {
     try {
-        return await fetchData("/rights/description");
+        return await fetchConfig("/rights/description");
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
     }
@@ -51,6 +51,7 @@ export const fetchRightsDescription = createAsyncThunk("rights/description", asy
 export const postSetRightsUser = createAsyncThunk("rights/set", async (args: { userId: string, grant?: Array<string | number>, revoke?: Array<string | number> }, thunkAPI) => {
     try {
         const data = await fetchConfig("/rights/set", {method: "POST", body: args});
+        thunkAPI.dispatch(fetchRightsCurrentUser());
         return data;
     } catch (e) {
         return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");

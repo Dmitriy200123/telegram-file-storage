@@ -1,3 +1,27 @@
+# Общие настройки
+SUPPORTED_TEXT_FILE_TYPES = [
+    'application/vnd.ms-powerpoint.slideshow.macroenabled.12',
+    'application/vnd.ms-powerpoint.presentation.macroenabled.12',
+    'application/msword', 'application/rtf',
+    'application/vnd.oasis.opendocument.presentation',
+    'application/vnd.ms-excel', 'text/plain',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/html',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.oasis.opendocument.spreadsheet',
+    'application/vnd.oasis.opendocument.text',
+    'application/mbox',
+    'application/xml',
+    'application/vnd.ms-powerpoint',
+    # optional
+    'application/vnd.ms-outlook',
+    'application/vnd.apple.pages',
+    'application/vnd.apple.keynote',
+]
+
 # Настройки базы
 DB_HOST = 'localhost'
 DB_PORT = 5432
@@ -17,3 +41,5 @@ S3_URL_EXPIRES_IN_SECONDS = 60 * 60
 API_ID = 13673260
 API_HASH = '4c6c01da1fc915ffb51e4147bfae915c'
 NUMBER = '+6287812030334'
+
+SEARCH_DOCUMENT_URL = 'http://localhost:5002/api'

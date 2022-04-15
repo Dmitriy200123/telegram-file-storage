@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -25,13 +26,17 @@ namespace FileStorageAPI.RightsFilters
         /// <summary>
         /// Фильтрация.
         /// </summary>
-        /// <param name="filterContext">Контекст</param>
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        /// <param name="context">Контекст</param>
+        /// <param name="next">Делегат</param>
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var rightsFilter = filterContext.HttpContext.RequestServices.GetRequiredService<IRightsFilter>();
+            var rightsFilter = context.HttpContext.RequestServices.GetRequiredService<IRightsFilter>();
+            var isCorrect = await rightsFilter.CheckRightsAsync(context, _accesses);
 
-            if (!rightsFilter.CheckRights(filterContext, _accesses))
-                filterContext.Result = new ForbidResult();
+            if (!isCorrect)
+                context.Result = new ForbidResult();
+
+            await base.OnActionExecutionAsync(context, next);
         }
     }
 }

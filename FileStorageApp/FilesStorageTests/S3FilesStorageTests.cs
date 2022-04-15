@@ -102,7 +102,7 @@ namespace FilesStorageTests
 
             await sut.SaveFileAsync(key, fileStream);
 
-            var response = await sut.GetFile(key);
+            var response = await sut.GetFileStreamAsync(key);
             var dataResponse = new byte[response.Length];
             response.Read(dataResponse);
 

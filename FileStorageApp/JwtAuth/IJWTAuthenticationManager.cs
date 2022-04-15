@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace JwtAuth
@@ -18,6 +17,6 @@ namespace JwtAuth
         /// </summary>
         /// <param name="username">Пользователь для которого создается токен и рефреш токен</param>
         /// <param name="claims">Клаймы</param>
-        Task<AuthenticationResponse> Authenticate(string username, IEnumerable<Claim> claims);
+        Task<AuthenticationResponse> Authenticate(string username, params Claim[] claims);
     }
 }

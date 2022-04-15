@@ -7,7 +7,8 @@ import error from "../../../assets/error.svg";
 import success from "../../../assets/success.svg";
 
 const {clearMessage} = profileSlice.actions;
-export const Messages: React.FC<{ className?: string, messages: Array<MessageType> }> = ({messages, className}) => {
+type PropsType = { className?: string, messages: Array<MessageType> };
+export const Messages: React.FC<PropsType> = ({messages, className}) => {
     const messagesUi = messages.map(({value, type}, index) => <Message key={index} type={type} value={value}
                                                                        index={index}/>);
 

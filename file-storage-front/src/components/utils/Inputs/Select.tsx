@@ -1,19 +1,18 @@
-import React, {memo, useState} from 'react';
+import React, {ChangeEvent, memo, useState} from 'react';
 import "./Select.scss";
 import {OutsideAlerter} from "../OutSideAlerter/OutSideAlerter";
 
 //todo: fix updates redraw
 type Props = {
-    name: string, onChangeForm: any,
-    className?: string, register: any, values: any, setValue: any, options: Array<{ value: any, label: string }> | undefined,
+    name: string,
+    className?: string,
+    values: any,
+    setValue: (name: string, value: any) => void, options: Array<{ value: any, label: string }> | undefined,
     placeholder?: string, isMulti?: boolean
 }
-
 export const Select: React.FC<Props> = memo(({
                                                  name,
-                                                 onChangeForm,
                                                  className,
-                                                 register,
                                                  values,
                                                  setValue,
                                                  options,
@@ -43,7 +42,6 @@ export const Select: React.FC<Props> = memo(({
                         setValue(name, elem.value)
                 }
 
-                // onChangeForm();
             }
             const isActive = (isMulti ? (values?.includes(elem.value)) : (values === elem.value));
             return <li key={elem.value}
@@ -51,31 +49,35 @@ export const Select: React.FC<Props> = memo(({
                        onClick={onChange}>{elem.label}</li>;
         })
 
+    function onChange(e: ChangeEvent<HTMLInputElement>) {
+        const value = e.target.value;
+        changeText(value);
+        if (!isMulti)
+            setValue(name, value)
+    }
+
     return (
         <OutsideAlerter className={className} onOutsideClick={() => {
             changeOpen(false);
         }}>
             <div className={"select"}>
-                <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text} onChange={(e) => {
-                    changeText(e.target.value)
-                }} placeholder={(options && calcPlaceholder(values, options)) ?? placeholder}/>
+                <input className={"select__field"} onClick={() => changeOpen(!isOpen)} value={text} onChange={onChange}
+                       placeholder={(options && calcPlaceholder(values, options)) ?? placeholder}/>
                 <ul className={"select__list " + (isOpen ? "select__list_open" : "")} onBlur={() => changeOpen(false)}>
                     <div className="select__scroll">
                         {ui}
                     </div>
                 </ul>
-                <select multiple={isMulti} {...register(name, {onChange: () => onChangeForm})}/>
             </div>
         </OutsideAlerter>
     )
 })
 
-const calcPlaceholder = (values: Array<string | number> | string, options:Array<{ value: any, label: string }> ) => {
+const calcPlaceholder = (values: Array<string | number> | string, options: Array<{ value: any, label: string }>) => {
     if (values instanceof Array) {
         return values.length === 0 ? null
-            :values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
-    }
-    else {
+            : values.map(e => options.find((opt) => opt.value === e)?.label).join(", ");
+    } else {
         return options?.find(e => e.value === values)?.label;
     }
 }

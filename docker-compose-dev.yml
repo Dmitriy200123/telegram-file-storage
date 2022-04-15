@@ -2,12 +2,14 @@ version: '3.9'
 
 services:
   s3:
-    image: localstack/localstack
+    image: localstack/localstack:0.13
     container_name: s3
     ports:
       - 4566:4566
       - 9090:8080
     environment:
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=123
       - SERVICES=s3,sns,sqs
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
@@ -33,23 +35,39 @@ services:
       - "5432:5432"
     volumes:
       - ./DbScripts/fileStorageTables.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg-data:/var/lib/postgresql/data
 
   dotnet_backend:
     container_name: dotnet_backend
     build:
       context: FileStorageApp/
       dockerfile: Dockerfile
+      target: runtime_FileStorageAPI
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5001
       - ASPNETCORE_ENVIRONMENT=Docker
     ports:
       - '5001:5001'
 
+  dotnet_search_backend:
+    container_name: dotnet_search_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+      target: runtime_SearchDocumentsAPI
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5002
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - '5002:5002' 
+  
+
   front:
     container_name: front
     build:
       context: file-storage-front/
-      dockerfile: Dockerfile_develop
+      dockerfile: Dockerfile
+      target: start_local
     ports:
       - '3000:3000'
 
@@ -117,4 +135,5 @@ services:
 
 volumes:
   localstack-vol:
+  pg-data:
   elasticsearch-data:

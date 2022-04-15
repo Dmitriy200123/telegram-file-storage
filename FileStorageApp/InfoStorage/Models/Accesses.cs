@@ -31,9 +31,15 @@ namespace FileStorageApp.Data.InfoStorage.Models
         Delete = 3,
 
         /// <summary>
-        /// Возможность изменять права пользователей
+        /// Возможность управления пользователями и их правами
         /// </summary>
-        [Description("Редактировать права других пользователей")]
-        Admin = 4,
+        [Description("Управлять пользователями и их правами")]
+        UserAccessesManagement = 4,
+        
+        /// <summary>
+        /// Возможность просматривать любые файлы
+        /// </summary>
+        [Description("Просматривать файлы из любых чатов")]
+        ViewAnyFiles = 5
     }
 }

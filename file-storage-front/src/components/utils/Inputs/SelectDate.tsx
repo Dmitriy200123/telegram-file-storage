@@ -17,7 +17,8 @@ const optionsDate = [
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            // dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date()),
         },
         label: 'Сегодня'
@@ -30,13 +31,13 @@ const optionsDate = [
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 6))
         }, label: 'За последние 7 дней'
     },
     {
         value: {
-            dateTo: createDateISO(new Date().setDate(new Date().getDate() + 1)),
+            dateTo: null,
             dateFrom: createDateISO(new Date().setDate(new Date().getDate() - 29))
         }, label: 'За последние 30 дней'
     },
@@ -44,16 +45,14 @@ const optionsDate = [
 ];
 
 type PropsDate = {
-    name: string, onChangeForm: any,
-    className?: string, register: any, values: any, setValue: any,
+    name: string,
+    className?: string,values: any, setValue: (name: string, value: any) => void,
     placeholder?: string, isMulti?: boolean
 };
 
 export const SelectTime: React.FC<PropsDate> = ({
                                                     name,
-                                                    onChangeForm,
                                                     className,
-                                                    register,
                                                     values,
                                                     setValue,
                                                     placeholder,
@@ -112,7 +111,6 @@ export const SelectTime: React.FC<PropsDate> = ({
                             : ui}
                     </div>
                 </ul>
-                <select multiple={true} {...register(name, {onChange: () => onChangeForm})}/>
             </div>
         </OutsideAlerter>
     )

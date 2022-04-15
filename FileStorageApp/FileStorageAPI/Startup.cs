@@ -4,6 +4,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
+using DocumentsIndex.Config;
+using DocumentsIndex.Factories;
+using DocumentsIndex.Pipelines;
 using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
@@ -80,6 +83,10 @@ namespace FileStorageAPI
             services.AddCors();
 
             services.AddSingleton<IRightsFilter, RightsFilter>();
+            services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
+            services.AddSingleton(provider => provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
+            services.AddSingleton<IPipelineCreator, PipelineCreator>();
+            services.AddSingleton<IElasticConfig>(new ElasticConfig("http://localhost:9200", "testindex"));
             RegisterProviders(services);
             RegisterAuth(services, tokenKey, key);
             RegisterDtoConverters(services);
@@ -135,7 +142,11 @@ namespace FileStorageAPI
             app.UseCookiePolicy();
             app.UseRouting();
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials());
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -197,6 +208,7 @@ namespace FileStorageAPI
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
             services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
             services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
+            services.AddSingleton<IAccessesByUserIdProvider, AccessesByUserIdProvider>();
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)

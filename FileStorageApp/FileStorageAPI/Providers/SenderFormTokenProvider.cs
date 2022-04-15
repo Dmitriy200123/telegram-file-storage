@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,12 @@ namespace FileStorageAPI.Providers
             var sendersStorage = _infoStorageFactory.CreateFileSenderStorage();
             var usersStorage = _infoStorageFactory.CreateUsersStorage();
             var user = await usersStorage.GetByIdAsync(userId);
-            var sender = await sendersStorage.GetByTelegramIdAsync(user!.TelegramId!.Value, true);
+            
+            if (user == null)
+                throw new InvalidOperationException("User not found");
+            
+            var sender = await sendersStorage.GetByTelegramIdAsync(user.TelegramId!.Value, true);
+
             return sender;
         }
     }

@@ -5,15 +5,20 @@ import {fetchDownloadLink, fetchEditFileName, fetchFile, fetchFileText, fetchRem
 
 const initialState = {
     chats: null as null | Array<Chat>,
-    senders: [{id:"123", fullName:"имя", telegramUserName:"телега"}, {id:"124", fullName:"имя2", telegramUserName:"телега"}, {id:"125", fullName:"имя3", telegramUserName:"телега"}] as null | Array<Sender>,
+    senders: [{id: "123", fullName: "имя", telegramUserName: "телега"}, {
+        id: "124",
+        fullName: "имя2",
+        telegramUserName: "телега"
+    }, {id: "125", fullName: "имя3", telegramUserName: "телега"}] as null | Array<Sender>,
     filesNames: null as string[] | null,
     loading: false,
     files: [] as Array<TypeFile>,
-    openFile: null as null | (TypeFile & {message?:string}) | undefined,
+    openFile: null as null | (TypeFile & { message?: string }) | undefined,
     modalConfirm: {
         isOpen: false,
         id: null as null | string,
         content: null as null | ModalContent,
+        callbackAccept: null as null | AnyFuncType | undefined,
     },
     paginator: {
         count: 1,
@@ -21,8 +26,8 @@ const initialState = {
         currentPage: 1
     } as TypePaginator,
     filesCount: 0,
-    filesTypes: undefined as undefined | ExpandingObject<string>,
-}
+    filesTypes: {} as ExpandingObject<string>,
+};
 
 export const filesSlice = createSlice({
     name: "files",
@@ -31,11 +36,13 @@ export const filesSlice = createSlice({
         closeModal(state) {
             state.modalConfirm.isOpen = false;
             state.modalConfirm.id = null
+            state.modalConfirm.callbackAccept = null;
         },
-        openModal(state, payload: PayloadAction<{ id: string, content: ModalContent }>) {
+        openModal(state, payload: PayloadAction<{ id: string, content: ModalContent, callbackAccept?: AnyFuncType }>) {
             state.modalConfirm.isOpen = true;
             state.modalConfirm.id = payload.payload.id;
             state.modalConfirm.content = payload.payload.content;
+            state.modalConfirm.callbackAccept = payload.payload.callbackAccept;
         },
         setOpenFile(state, payload: PayloadAction<TypeFile>) {
             state.openFile = payload.payload;
@@ -46,6 +53,9 @@ export const filesSlice = createSlice({
         },
         changePaginatorPage(state, action: PayloadAction<number>) {
             state.paginator.currentPage = action.payload;
+        },
+        setLoading(state, action: PayloadAction<boolean>){
+            state.loading = action.payload;
         },
     },
     extraReducers: {
@@ -78,10 +88,9 @@ export const filesSlice = createSlice({
         },
 
 
-
-        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{id:string, name:string}>>) => {
-            const types:ExpandingObject<string> = {};
-            action.payload.forEach(({id,name}) => {
+        [fetchFilesTypes.fulfilled.type]: (state, action: PayloadAction<Array<{ id: string, name: string }>>) => {
+            const types: ExpandingObject<string> = {};
+            action.payload.forEach(({id, name}) => {
                 types[id] = name;
             });
 
@@ -96,10 +105,8 @@ export const filesSlice = createSlice({
         // },
 
 
-
-
         //region FileThunks
-        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files:Array<TypeFile>, filesCount: string | number }>) => {
+        [fetchFiles.fulfilled.type]: (state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) => {
             state.loading = false;
             state.files = action.payload.files;
 
@@ -194,6 +201,6 @@ export const filesSlice = createSlice({
 });
 
 
-
+type AnyFuncType = (...args:any) => void;
 
 export default filesSlice.reducer;

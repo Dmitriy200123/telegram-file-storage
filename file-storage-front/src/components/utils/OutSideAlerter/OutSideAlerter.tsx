@@ -18,7 +18,7 @@ function useOutsideAlerter(ref:RefObject<HTMLInputElement>, onOutsideClick:() =>
 }
 
 
-export const OutsideAlerter = (props: { className?:string, onOutsideClick: () => void, children?: any }) => {
+export const OutsideAlerter = (props: { className?:string, onOutsideClick: () => void, children?: React.ReactElement<any, any> }) => {
     const wrapperRef = useRef(null);
     useOutsideAlerter(wrapperRef, props.onOutsideClick);
     return <div ref={wrapperRef} className={props.className}>{props.children}</div>;

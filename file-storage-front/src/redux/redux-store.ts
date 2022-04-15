@@ -19,7 +19,9 @@ export const setupStore = () => {
         reducer: rootReducer,
         middleware: (getDefaultMiddleware) => getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions:["editor/setFile"]
+                ignoredActions: ["editor/setFile", "files/openModal",
+                    "file/remove/fulfilled", "file/remove/pending", "file/remove/resolve"],
+                ignoredActionPaths: ['file/remove'],
             }
         }).concat(Api.middleware)
     })

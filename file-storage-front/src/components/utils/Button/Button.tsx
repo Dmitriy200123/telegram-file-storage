@@ -13,8 +13,11 @@ type Props = {
 export const Button: React.FC<Props> = ({
                                             children,
                                             className, style, type,
-    onClick
+                                            onClick
                                         }) => {
-    return <button onClick={onClick} style={style} className={styles.button + " " + (className ? className : "") + (type ? " " + type : "")}>{children}</button>
+    return <button onClick={onClick} style={style}
+                   className={styles.button + " " + (className ?? "") + (type ? ` ${type}` :  "")}>
+        {children}
+    </button>
 }
 

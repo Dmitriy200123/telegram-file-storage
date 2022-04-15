@@ -45,7 +45,7 @@ namespace FilesStorage
             return new File(GetDownloadStringFromKey(key, fileName).Replace("s3", "localhost"), key);
         }
 
-        public async Task<Stream> GetFile(string key)
+        public async Task<Stream> GetFileStreamAsync(string key)
         {
             var request = new GetObjectRequest
             {

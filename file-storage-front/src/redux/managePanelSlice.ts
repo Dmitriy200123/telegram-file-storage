@@ -6,12 +6,12 @@ type UserType = { id: string, name: string };
 const initialState = {
     users: null as null | UserType[],
     modal: {
-        idUser: null as string | null ,
+        idUser: null as string | null,
         isOpen: false,
-        name: null as undefined | null | string ,
+        name: null as undefined | null | string,
         rights: [] as Array<Rights>,
     },
-    allRights: null as null | Array<{ name: string, id: number }>,
+    allRights: [] as Array<{ name: string, id: number }>,
 }
 
 export const managePanelSlice = createSlice({

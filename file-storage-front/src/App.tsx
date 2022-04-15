@@ -4,7 +4,7 @@ import './App.scss';
 import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
-import {OpenedFile} from "./components/FilesMain/File/OpenFile";
+import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
@@ -21,18 +21,35 @@ import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
 import {fetchFilesTypes} from "./redux/thunks/mainThunks";
 
+const store = setupStore();
+
+function FileStorageApp() {
+    return (
+        <BrowserRouter>
+            <Provider store={store}>
+                <App/>
+            </Provider>
+        </BrowserRouter>
+    );
+}
+
+
 const App: FC = () => {
     const dispatch = useDispatch();
-    const {profile} = useAppSelector((state) => state);
-    const {messages, loading} = profile;
+    const messages = useAppSelector((state) => state.profile.messages);
+    const loading = useAppSelector((state) => state.profile.loading);
+    const isAuth = useAppSelector((state) => state.profile.isAuth);
+
     useEffect(() => {
         dispatch(fetchIsAuth());
-    }, [])
+    }, []);
+
     return (<div className="App app">
         {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {profile.isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        {isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
     </div>)
 }
+
 
 const Main: FC = () => {
     const dispatch = useAppDispatch();
@@ -43,11 +60,14 @@ const Main: FC = () => {
         dispatch(fetchRightsCurrentUser());
     }, [])
     localStorage.setItem("flag", "false");
-    const {filesReducer, profile} = useAppSelector((state) => state);
-    const {rights, hasTelegram} = profile;
-    const {loading, modalConfirm} = filesReducer;
-    const {isOpen, id, content} = modalConfirm;
-    const Content = modalContents[content || 0];
+
+    const rights = useAppSelector((state) => state.profile.rights);
+    const hasTelegram = useAppSelector((state) => state.profile.hasTelegram);
+
+    const loading = useAppSelector((state) => state.filesReducer.loading);
+    const modalConfirm = useAppSelector((state) => state.filesReducer.modalConfirm);
+    const {isOpen, id, content, callbackAccept} = modalConfirm;
+    const ModalComponent = modalContents[content || 0];
     return (<>
         <Navbar className={"app__navbar"}/>
         {loading && <Loading/>}
@@ -62,7 +82,7 @@ const Main: FC = () => {
                     <Route path={"/Profile"} component={Profile}/>
                     {hasTelegram && <>
                         <Route exact path={"/files"} component={FilesMain}/>
-                        <Route path={"/file/:id"} component={OpenedFile}/>
+                        <Route path={"/file/:id"} component={OpenedFileContainer}/>
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}
                         {rights?.includes(Rights["Загружать файлы"]) &&
@@ -70,22 +90,11 @@ const Main: FC = () => {
                     </>}
                 </Switch>
             </div>
-            {isOpen && id && <Content id={id}/>}
+            {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
         </div>
     </>)
 }
 
 
-const store = setupStore();
-
-function FileStorageApp() {
-    return (
-        <BrowserRouter>
-            <Provider store={store}>
-                <App/>
-            </Provider>
-        </BrowserRouter>
-    );
-}
 
 export default FileStorageApp;

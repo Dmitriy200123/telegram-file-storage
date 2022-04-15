@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using API;
 using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -74,11 +74,7 @@ namespace FileStorageAPI.Services
 
             var userName = user!.Id.ToString();
             var claimName = new Claim(ClaimTypes.Name, userName);
-            var userRights = user.Rights;
-            var accessJson = JsonConvert.SerializeObject(userRights.Select(x => x.Access).ToList());
-            var claimAccess = new Claim(ClaimTypes.Role, accessJson);
-            var claims = new[] {claimName, claimAccess};
-            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, claims);
+            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, claimName);
 
             return jwtToken;
         }

@@ -20,6 +20,9 @@ namespace FileStorageApp.Data.InfoStorage.Enums
         Link = 4,
 
         [Description("Сообщение с пометкой")]
-        Text = 5
+        Text = 5,
+            
+        [Description("Текстовый документ")]
+        TextDocument = 6
     }
 }

@@ -15,6 +15,7 @@ class FileTypeEnum(int, Enum):
     Image = 3
     Link = 4
     Text = 5
+    TextDocument = 6
 
 
 class File(BaseModel):

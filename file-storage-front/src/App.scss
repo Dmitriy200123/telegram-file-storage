@@ -1,7 +1,62 @@
-//@import "src/Variables";
+@import "src/Variables";
 
-//.app{
-//    &__content-components{
-//        background: $background;
-//    }
-//}
+.App {
+  text-align: center;
+  font-size: 16px;
+}
+
+.app {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+.app__messages {
+  position: fixed;
+  right: 1vw;
+  top: 5vh;
+}
+
+.app__navbar {
+  width: 225px;
+}
+
+.app__content {
+  flex: 1 1 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: #1976D2;
+  min-height: 56px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end
+}
+.header__logout{
+  padding: 0;
+  margin-right: 28px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 0.875rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 4px;
+  align-items: center
+}
+
+.header__logout:hover, .header__logout:hover path{
+  cursor: pointer;
+  color: $menu-color-hover;
+  fill: $menu-color-hover;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: local("Akrobat"),
+  url("fonts/Inter/Inter-Regular.ttf");
+  font-weight: normal;
+}

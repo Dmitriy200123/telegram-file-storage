@@ -116,13 +116,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление файла в хранилище. Требуется право "Admin" или "Upload".
+        /// Добавление файла в хранилище. Требуется право "Upload".
         /// </summary>
         /// <param name="file">Файл</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPost]
         [DisableRequestSizeLimit, RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
-        [RightsFilter(Accesses.Upload, Accesses.Admin)]
+        [RightsFilter(Accesses.Upload)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию о созданном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostFile([FromForm] IFormFile file)
@@ -139,13 +139,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Обновление названия файла. Требуется право "Admin" или "Rename".
+        /// Обновление названия файла. Требуется право "Rename".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <param name="fileName">Новое имя файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpPut("{id:guid}")]
-        [RightsFilter(Accesses.Rename, Accesses.Admin)]
+        [RightsFilter(Accesses.Rename)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает информацию об обновленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> PutFile(Guid id, [FromBody] UpdateFile fileName)
@@ -161,12 +161,12 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Удаление файла. Требуется право "Admin" или "Delete".
+        /// Удаление файла. Требуется право "Delete".
         /// </summary>
         /// <param name="id">Идентификатор файла</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpDelete("{id:guid}")]
-        [RightsFilter(Accesses.Delete, Accesses.Admin)]
+        [RightsFilter(Accesses.Delete)]
         [SwaggerResponse(StatusCodes.Status204NoContent, "Возвращает информацию об удаленном файле", typeof(FileInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если файл с таким идентификатором не найден", typeof(string))]
         public async Task<IActionResult> DeleteFile(Guid id)
@@ -264,7 +264,7 @@ namespace FileStorageAPI.Controllers
         /// <param name="textData">Данные для загрузки (сообщение)</param>
         /// <returns></returns>
         [HttpPost("upload/text")]
-        [RightsFilter(Accesses.Upload, Accesses.Admin)]
+        [RightsFilter(Accesses.Upload)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданного сообщении", typeof(Guid))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostMessage([FromBody] UploadTextData textData)
@@ -287,7 +287,7 @@ namespace FileStorageAPI.Controllers
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         [HttpPost("upload/link")]
-        [RightsFilter(Accesses.Upload, Accesses.Admin)]
+        [RightsFilter(Accesses.Upload)]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает id созданной ссылке", typeof(Guid))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Может выкинуться, если что-то не так с бд")]
         public async Task<IActionResult> PostLink([FromBody] UploadTextData textData)

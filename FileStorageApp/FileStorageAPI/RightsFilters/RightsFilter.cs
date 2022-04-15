@@ -1,26 +1,35 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
-using System.Security.Claims;
-using JwtAuth;
+using System.Threading.Tasks;
+using FileStorageAPI.Providers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 
 namespace FileStorageAPI.RightsFilters
 {
     internal class RightsFilter : IRightsFilter
     {
-        public bool CheckRights(ActionExecutingContext filterContext, IEnumerable<int> accesses)
-        {
-            var authHeader = filterContext.HttpContext.Request.Headers[HeaderNames.Authorization];
-            var userToken = authHeader.ToString().Split(' ')[1];
-            var principal = TokenHelper.GetPrincipalFromToken(userToken, Settings.Key);
-            var accessClaims = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role);
-            if (accessClaims is null)
-                return false;
+        private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
+        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
-            var accessArray = JsonConvert.DeserializeObject<List<int>>(accessClaims!.Value);
-            return accessArray is not null && accessArray.Intersect(accesses).Any();
+        public RightsFilter(
+            IAccessesByUserIdProvider accessesByUserIdProvider,
+            IUserIdFromTokenProvider userIdFromTokenProvider
+        )
+        {
+            _accessesByUserIdProvider = accessesByUserIdProvider ??
+                                        throw new ArgumentNullException(nameof(accessesByUserIdProvider));
+            _userIdFromTokenProvider = userIdFromTokenProvider ??
+                                       throw new ArgumentNullException(nameof(userIdFromTokenProvider));
+        }
+
+        public async Task<bool> CheckRightsAsync(ActionExecutingContext filterContext, int[] accesses)
+        {
+            var userId = _userIdFromTokenProvider.GetUserIdFromToken(filterContext.HttpContext.Request, Settings.Key);
+            var userAccesses = (await _accessesByUserIdProvider.GetAccessesByUserIdAsync(userId))
+                .Cast<int>();
+            var accessIntersections = userAccesses.Intersect(accesses);
+
+            return accesses.Length == accessIntersections.Count();
         }
     }
 }

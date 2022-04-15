@@ -32,7 +32,7 @@ namespace JwtAuth
         }
 
         /// <inheritdoc />
-        public async Task<AuthenticationResponse> Authenticate(string username, IEnumerable<Claim> claims)
+        public async Task<AuthenticationResponse> Authenticate(string username, params Claim[] claims)
         {
             var token = GenerateTokenString(DateTime.UtcNow, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
