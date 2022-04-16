@@ -4,7 +4,8 @@ import {fetchChats, fetchFiles, fetchFilters} from "./thunks/mainThunks";
 import {
     fetchDownloadLink,
     fetchEditFileName,
-    fetchFile, fetchFileText,
+    fetchFile,
+    fetchFileText,
     fetchRemoveFile,
     postCustomFile,
     postFile
@@ -34,10 +35,10 @@ export const profileSlice = createSlice({
 
     },
     extraReducers: {
-        [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string , hasTelegram: boolean, avatar: string | null}>) => {
+        [fetchUserCurrent.fulfilled.type]: (state, action: PayloadAction<{ name: string, hasTelegram: boolean, avatar: string | null }>) => {
             state.name = action.payload.name;
             state.hasTelegram = action.payload.hasTelegram;
-            state.avatar =  action.payload.avatar;
+            state.avatar = action.payload.avatar;
         },
         [fetchUserCurrent.pending.type]: (state) => {
             state.loading = true;
@@ -88,8 +89,8 @@ export const profileSlice = createSlice({
         [fetchLogout.fulfilled.type]: (state, action: PayloadAction<TokensType>) => {
             state.loading = false;
             state.isAuth = false;
-            localStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
-            sessionStorage.removeItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+            localStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
+            sessionStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
             localStorage.removeItem("jwtToken");
             localStorage.removeItem("refreshToken");
         },

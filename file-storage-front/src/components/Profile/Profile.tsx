@@ -12,9 +12,9 @@ export const Profile: FC = memo(() => {
     const hasTelegram = useAppSelector((state) => state.profile.hasTelegram);
 
     function onAuth() {
-        let dataAuthGit = localStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+        let dataAuthGit = localStorage.getItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
         if (!dataAuthGit)
-            dataAuthGit = sessionStorage.getItem("oidc.user:https://git.66bit.ru:392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda");
+            dataAuthGit = sessionStorage.getItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
         if (dataAuthGit) {
             const json = JSON.parse(dataAuthGit);
             window.open(`https://t.me/sixty_six_bit_bot?start=${json?.access_token}`);
