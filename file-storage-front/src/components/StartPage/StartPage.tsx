@@ -31,10 +31,10 @@ export const StartPage: FC = memo(() => {
         <div>
             {clicked && <GitlabAuth
                 host="https://git.66bit.ru"
-                application_id="392b8f8766b8da0f5f64edaa50b89b633d302ab0fd7f94aa482d5510e1a97cda"
+                application_id={process.env.REACT_APP_ID as string}
                 redirect_uri={process.env.REACT_APP_REDIRECT_URL as string}
                 scope="api openid profile email"
-                secret={"3446700f6a9e418bee18bbd32f4df0fc6e2749182faaf3bebbbc3ebd4c5b1325"}
+                secret={process.env.REACT_APP_SECRET as string}
             />
             }
             <div className={"start-page"}>
