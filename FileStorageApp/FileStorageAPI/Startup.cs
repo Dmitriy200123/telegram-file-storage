@@ -160,6 +160,7 @@ namespace FileStorageAPI
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
             services.AddSingleton<IUserConverter, UserConverter>();
+            services.AddSingleton<IDocumentToFileConverter, DocumentToFileConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -199,6 +200,7 @@ namespace FileStorageAPI
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IUserInfoService, UserInfoService>();
             services.AddSingleton<IRightsService, RightsService>();
+            services.AddSingleton<IDocumentsService, DocumentsService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)

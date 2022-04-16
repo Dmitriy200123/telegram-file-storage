@@ -15,8 +15,8 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Возвращает весь список файлов.
         /// </summary>
-        Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters, int skip,
-            int take, HttpRequest request);
+        Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters, int? skip,
+            int? take, HttpRequest request);
 
         /// <summary>
         /// Возвращает информацию о файле по его идентификатору.

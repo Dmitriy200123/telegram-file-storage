@@ -79,7 +79,7 @@ namespace FileStorageAPI.Services
 
         /// <inheritdoc />
         public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters,
-            int skip, int take, HttpRequest request)
+            int? skip, int? take, HttpRequest request)
         {
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
