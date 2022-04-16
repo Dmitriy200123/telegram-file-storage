@@ -6,17 +6,15 @@ services:
     container_name: s3
     ports:
       - 4566:4566
-      - 9090:8080
     environment:
       - AWS_ACCESS_KEY_ID=123
       - AWS_SECRET_ACCESS_KEY=123
       - SERVICES=s3,sns,sqs
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
-      - DEFAULT_REGION=eu-west-2
-      - PORT_WEB_UI=8080
     volumes:
       - "localstack-vol:/tmp/localstack"
+      - "./DbScripts/initS3.sh:/docker-entrypoint-initaws.d/buckets.sh"
     deploy:
       resources:
         limits:
@@ -94,8 +92,10 @@ services:
       - DB_USER=FileStorageApp
       - DB_PASS=change
       - S3_URL=http://s3:4566
+      - BUCKET_NAME=test
       - AWS_ACCESS_KEY_ID="123"
       - AWS_SECRET_ACCESS_KEY="123"
+      - SEARCH_DOCUMENT_URL=http://dotnet_search_backend:5002/api
     ports:
       - '8080:8080'
         
