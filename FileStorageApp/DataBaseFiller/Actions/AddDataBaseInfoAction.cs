@@ -36,7 +36,7 @@ namespace DataBaseFiller.Actions
             };
             var amazonConfig = new S3FilesStorageOptions(Config["S3accessKey"], Config["S3secretKey"],
                 Config["S3bucketName"], config, S3CannedACL.PublicReadWrite,
-                TimeSpan.FromHours(1));
+                TimeSpan.FromHours(1),Config["S3host"],Config["S3hostReal"]);
             _filesStorageFactory = new S3FilesStorageFactory(amazonConfig);
         }
 
