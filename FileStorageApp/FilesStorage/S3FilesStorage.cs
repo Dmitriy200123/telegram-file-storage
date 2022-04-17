@@ -42,7 +42,11 @@ namespace FilesStorage
                 throw new FileNotFoundException($"Not found file with key={key} in bucket={_options.BucketName}");
 
 
-            return new File(GetDownloadStringFromKey(key, fileName).Replace("s3", "localhost"), key);
+            return new File(
+                GetDownloadStringFromKey(key, fileName)
+                    .Replace(_options.S3Host, _options.S3HostReal),
+                key
+            );
         }
 
         public async Task<Stream> GetFileStreamAsync(string key)
