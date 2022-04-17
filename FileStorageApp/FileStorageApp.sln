@@ -42,6 +42,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsIndex.Contracts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", "{73C6A1FF-4B1A-485D-8E00-D2E026AD6727}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DocumentСlassifications", "DocumentСlassifications", "{BF704669-E5CE-4D3A-BD01-636C2406ACFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentClassificationsAPI", "DocumentClassificationsAPI\DocumentClassificationsAPI.csproj", "{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +71,7 @@ Global
 		{F7546DF6-E509-4E0F-AE68-20A4AB88003A} = {E160F0F6-39EF-4E30-817F-0CBFC653A154}
 		{72313028-46E8-4C0C-A7CF-F989AC4AB8DD} = {FF50D1FC-9A3D-4F38-BFDF-08C3B9133316}
 		{73C6A1FF-4B1A-485D-8E00-D2E026AD6727} = {E160F0F6-39EF-4E30-817F-0CBFC653A154}
+		{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE} = {BF704669-E5CE-4D3A-BD01-636C2406ACFB}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5E9344F5-B34C-4115-93D8-EFB699FF5910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -145,5 +150,9 @@ Global
 		{73C6A1FF-4B1A-485D-8E00-D2E026AD6727}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73C6A1FF-4B1A-485D-8E00-D2E026AD6727}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73C6A1FF-4B1A-485D-8E00-D2E026AD6727}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA0F6536-6FA4-4353-90ED-8ED157ECA5EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

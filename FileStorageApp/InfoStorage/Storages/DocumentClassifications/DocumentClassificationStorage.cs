@@ -18,42 +18,40 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
         {
         }
 
-        public Task<DocumentClassification> FindByIdAsync(Guid id, bool includeClassificationWords = false)
+        public async Task<DocumentClassification?> FindByIdAsync(Guid id, bool includeClassificationWords = false)
         {
             var queryable = DbSet.AsQueryable();
 
             if (includeClassificationWords)
                 queryable = queryable.Include(classification => classification.ClassificationWords);
 
-            return queryable.FirstOrDefaultAsync(classification => classification.Id == id);
+            return await queryable.FirstOrDefaultAsync(classification => classification.Id == id);
         }
 
         public Task<List<DocumentClassification>> FindByQueryAsync(
-            string query,
+            string? query,
             int skip,
             int take,
             bool includeClassificationWords = false
-        ) => AddOptionsInQuery(DbSet, includeClassificationWords, skip, take)
-            .Where(classification => classification.Name.ToLower().Contains(query.ToLower()))
-            .ToListAsync();
+        ) => AddOptionsInQuery(DbSet, query, includeClassificationWords, skip, take).ToListAsync();
 
-        private static IQueryable<DocumentClassification> AddOptionsInQuery(
-            IQueryable<DocumentClassification> query,
-            bool useInclude = false,
-            int? skip = null,
-            int? take = null
-        )
+        public async Task<bool> RenameAsync(Guid id, string newName)
         {
-            if (useInclude)
-                query = query.Include(x => x.ClassificationWords);
+            var classification = await FindByIdAsync(id);
 
-            if (skip != null)
-                query = query.Skip(skip.Value);
+            if (classification == null)
+                throw new NotFoundException($"{nameof(DocumentClassification)} with Id {id} not found");
 
-            if (take != null)
-                query = query.Take(take.Value);
+            var classificationWithNewName = DbSet
+                .Where(documentClassification => documentClassification.Name == newName)
+                .FirstOrDefaultAsync();
 
-            return query;
+            if (classificationWithNewName != null)
+                throw new AlreadyExistException($"{nameof(DocumentClassification)} with Name {newName} already exist");
+
+            classification.Name = newName;
+
+            return await UpdateAsync(classification);
         }
 
         public async Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord)
@@ -76,19 +74,40 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
         public async Task<bool> DeleteWordAsync(Guid wordId)
         {
-            var classificationWord = ClassificationWords.FirstOrDefault(word => word.Id == wordId);
+            var classificationWord = await ClassificationWords.FirstOrDefaultAsync(word => word.Id == wordId);
 
             if (classificationWord == null)
-                return false;
+                throw new NotFoundException($"Not found {nameof(DocumentClassificationWord)} with Id {wordId}");
 
             ClassificationWords.Remove(classificationWord);
 
             return await TrySaveChangesAsync();
         }
 
-        public Task<int> GetCountByQueryAsync(string query) => DbSet
-            .Where(classification => classification.Name.ToLower().Contains(query.ToLower()))
-            .CountAsync();
+        public Task<int> GetCountByQueryAsync(string? query) => AddOptionsInQuery(DbSet, query).CountAsync();
+
+        private static IQueryable<DocumentClassification> AddOptionsInQuery(
+            IQueryable<DocumentClassification> queryable,
+            string? query = null,
+            bool useInclude = false,
+            int? skip = null,
+            int? take = null
+        )
+        {
+            if (query != null)
+                queryable = queryable.Where(classification => classification.Name.ToLower().Contains(query.ToLower()));
+
+            if (useInclude)
+                queryable = queryable.Include(x => x.ClassificationWords);
+
+            if (skip != null)
+                queryable = queryable.Skip(skip.Value);
+
+            if (take != null)
+                queryable = queryable.Take(take.Value);
+
+            return queryable;
+        }
 
         public Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid classificationId) => ClassificationWords
             .Where(word => word.ClassificationId == classificationId)
