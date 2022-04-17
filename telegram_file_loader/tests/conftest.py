@@ -3,6 +3,8 @@ import sys
 
 import postgres
 import pytest
+from clients.documents_index_client import DocumentsIndexClient
+from clients.documents_search_client import DocumentsSearchClient
 from postgres.models.db_models import Chat, Code, File, FileSender, SenderToChat
 from postgres.models.db_models.marked_text_tags import MarkedTextTags
 from postgres.pg_adapter import Adapter
@@ -47,3 +49,17 @@ def clean_db(init_db):
     SenderToChat.truncate_table(cascade=True)
     MarkedTextTags.truncate_table(cascade=True)
     Code.truncate_table(cascade=True)
+
+
+@pytest.fixture(scope='session')
+def search_documents_client():
+    client = DocumentsSearchClient()
+
+    return client
+
+
+@pytest.fixture(scope='session')
+def index_documents_client():
+    client = DocumentsIndexClient()
+
+    return client
