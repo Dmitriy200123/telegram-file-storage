@@ -8,14 +8,11 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
-using FileStorageAPI.Converters;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
-using Chat = FileStorageAPI.Models.Chat;
-using File = FileStorageApp.Data.InfoStorage.Models.File;
 using FileInfo = FileStorageAPI.Models.FileInfo;
 
 namespace FileStorageAPI.Tests
@@ -24,12 +21,6 @@ namespace FileStorageAPI.Tests
     {
         private readonly IFilesStorageFactory _filesStorageFactory;
         private const string FileSenderId = "00000000-0000-0000-0000-000000000001";
-        
-        private static readonly ISenderConverter SenderConverter = new SenderConverter();
-        private static readonly IChatConverter ChatConverter = new ChatConverter();
-
-        private static readonly IFileInfoConverter FilesConverter =
-            new FileInfoConverter(ChatConverter, SenderConverter);
 
         private readonly IsoDateTimeConverter _dateTimeConverter = new() {DateTimeFormat = "dd.MM.yyyy HH:mm:ss"};
         
@@ -75,12 +66,12 @@ namespace FileStorageAPI.Tests
             using var apiClient = CreateHttpClient();
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
-            var expectedFileId = await UploadFile();
+            await UploadFile();
             var response = await apiClient.GetAsync($"/api/files/documents?skip=0&take=2&phrase=good");
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<List<Models.FileInfo>>(responseString,_dateTimeConverter);
+            var actual = JsonConvert.DeserializeObject<List<FileInfo>>(responseString,_dateTimeConverter);
             actual.Should().NotBeEmpty();
         }
         
@@ -128,31 +119,6 @@ namespace FileStorageAPI.Tests
             var form = new MultipartFormDataContent {{new StreamContent(stream), "file", fileName}};
             form.First().Headers.ContentType = new MediaTypeHeaderValue(contentType);
             return form;
-        }
-
-        private File CreateFile(Guid fileGuid)
-        {
-            return new File
-            {
-                Id = fileGuid,
-                Name = "test",
-                Extension = "test",
-                TypeId = 0,
-                UploadDate = new DateTime(2021, 11, 20, 19, 16, 11),
-                FileSenderId = Guid.Parse(FileSenderId),
-                ChatId = null
-            };
-        }
-
-        private FileSender CreateFileSender()
-        {
-            return new FileSender
-            {
-                Id = Guid.Parse(FileSenderId),
-                TelegramId = 0,
-                TelegramUserName = "Test",
-                FullName = "Test",
-            };
         }
     }
 }

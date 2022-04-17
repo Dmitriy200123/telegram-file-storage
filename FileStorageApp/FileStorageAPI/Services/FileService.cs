@@ -341,7 +341,7 @@ namespace FileStorageAPI.Services
 
         /// <inheritdoc />
         public async Task<RequestResult<int>> GetDocumentsCountByParametersAndIds(FileSearchParameters fileSearchParameters, 
-            List<Guid> guidsToFind, HttpRequest request)
+            List<Guid>? guidsToFind, HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var sender = await GetNotNullSenderAsync(request);
@@ -356,7 +356,7 @@ namespace FileStorageAPI.Services
 
         /// <inheritdoc />
         public async Task<RequestResult<List<FileInfo>>> GetDocumentsByParametersAndIds(
-            FileSearchParameters fileSearchParameters, List<Guid> fileIds, HttpRequest request, int skip, int take)
+            FileSearchParameters fileSearchParameters, List<Guid>? fileIds, HttpRequest request, int skip, int take)
         {
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");

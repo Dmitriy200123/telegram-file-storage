@@ -108,7 +108,7 @@ namespace FileStorageAPI.Services
         /// <param name="request">запрос</param>
         /// <returns></returns>
         Task<RequestResult<int>> GetDocumentsCountByParametersAndIds(FileSearchParameters fileSearchParameters,
-            List<Guid> guidsToFind, HttpRequest request);
+            List<Guid>? guidsToFind, HttpRequest request);
 
         /// <summary>
         /// Метод который по фильтрам возвращает информацию о файлах являющихся документами
@@ -120,6 +120,6 @@ namespace FileStorageAPI.Services
         /// <param name="take">сколько документов взять</param>
         /// <returns></returns>
         Task<RequestResult<List<FileInfo>>> GetDocumentsByParametersAndIds(
-            FileSearchParameters fileSearchParameters, List<Guid> fileIds, HttpRequest request, int skip, int take);
+            FileSearchParameters fileSearchParameters, List<Guid>? fileIds, HttpRequest request, int skip, int take);
     }
 }

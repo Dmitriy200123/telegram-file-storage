@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API;
 using DocumentsIndex;
@@ -18,7 +17,7 @@ namespace FileStorageAPI.Services
         private readonly IDocumentIndexStorage _documentIndexStorage;
 
         /// <summary>
-        /// Сервис отвечающий за работу с документами
+        /// Инициализирует новый экземпляр класса <see cref="DocumentsService"/>.
         /// </summary>
         /// <param name="documentToFileConverter">Преобразователь модели поиска документа в модель поиска файла</param>
         /// <param name="fileService">Сервис отвечающий за работу с файлами</param>
@@ -38,8 +37,8 @@ namespace FileStorageAPI.Services
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
             
-            var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
-            var filesCount = await _fileService.GetDocumentsCountByParametersAndIds(convertedParameters, foundedDocuments, request);
+            var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            var filesCount = await _fileService.GetDocumentsCountByParametersAndIds(fileSearchParameters, foundedDocuments, request);
 
             return RequestResult.Ok(filesCount.Value);
         }
@@ -50,8 +49,8 @@ namespace FileStorageAPI.Services
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
             
-            var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
-            var fileInfo = await _fileService.GetDocumentsByParametersAndIds(convertedParameters, foundedDocuments, request, skip, take);
+            var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            var fileInfo = await _fileService.GetDocumentsByParametersAndIds(fileSearchParameters, foundedDocuments, request, skip, take);
 
             return fileInfo;
         }

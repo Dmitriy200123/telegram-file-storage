@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Http;
 namespace FileStorageAPI.Services
 {
     /// <summary>
-    /// Сервис для взаимодействия с файлами загруженных во внешний анализатор
+    /// Сервис для взаимодействия с файлами типа "Текстовый документ".
     /// </summary>
     public interface IDocumentsService
     {
         /// <summary>
-        /// Возвращает кол-вой файлов по заданным параметрам
+        /// Возвращает количество файлов типа "Текстовый документ" по заданным параметрам
         /// </summary>
         /// <param name="documentSearchParameters">Параметры для поиска</param>
         /// <param name="request">Запрос</param>
@@ -20,7 +20,7 @@ namespace FileStorageAPI.Services
         Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters documentSearchParameters, HttpRequest request);
         
         /// <summary>
-        /// Возвращает весь список документов.
+        /// Возвращает файлы типа "Текстовый документ".
         /// </summary>
         Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
     }
