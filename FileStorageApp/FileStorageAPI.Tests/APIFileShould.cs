@@ -363,15 +363,5 @@ namespace FileStorageAPI.Tests
                 FullName = "Test",
             };
         }
-
-        private Chat CreateChat()
-        {
-            return new Chat
-            {
-                Id = Guid.Empty,
-                Name = "Ручная загрузка файла",
-                ImageId = Guid.Empty
-            };
-        }
     }
 }
