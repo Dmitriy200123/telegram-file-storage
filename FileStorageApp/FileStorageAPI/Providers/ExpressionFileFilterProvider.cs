@@ -22,5 +22,16 @@ namespace FileStorageAPI.Providers
                         (parameters.ChatIds == null || x.ChatId != null && parameters.ChatIds.Contains(x.ChatId.Value) ||
                         x.ChatId == null && parameters.ChatIds.Contains(Guid.Empty));
         }
+
+        /// <inheritdoc />
+        public Expression<Func<File, bool>> GetDocumentExpression(FileSearchParameters parameters, List<Guid>? fileIds, List<Guid>? chatsId = null)
+        {
+            var basicExpression = GetExpression(parameters, chatsId);
+            Expression<Func<File, bool>> currentExpression = x => fileIds == null || fileIds.Contains(x.Id);
+
+            var bodyResult = Expression.AndAlso(basicExpression, currentExpression);
+            var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, basicExpression.Parameters.First());
+            return lambda;
+        }
     }
 }

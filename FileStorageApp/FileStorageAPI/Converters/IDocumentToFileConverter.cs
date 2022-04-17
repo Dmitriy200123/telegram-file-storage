@@ -12,6 +12,6 @@ namespace FileStorageAPI.Converters
         /// </summary>
         /// <param name="parameters">модель поиска документа</param>
         /// <returns></returns>
-        FileSearchParameters ConvertFile(DocumentSearchParameters parameters);
+        FileSearchParameters ToFileSearchParameters(DocumentSearchParameters parameters);
     }
 }

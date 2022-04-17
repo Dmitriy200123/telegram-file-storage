@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using API;
@@ -79,23 +80,16 @@ namespace FileStorageAPI.Services
 
         /// <inheritdoc />
         public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(FileSearchParameters fileSearchParameters,
-            int? skip, int? take, HttpRequest request)
+            int skip, int take, HttpRequest request)
         {
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
-
-            var sender = await GetNotNullSenderAsync(request);
-            using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
-            var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
+            var chatsId = await GetUserChats(request);
+           
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
-            var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
-            SetFileChat(filesFromDataBase);
-            var convertedFiles = filesFromDataBase
-                .Select(_fileInfoConverter.ConvertFileInfo)
-                .ToList();
+            var files = await GetFileInfoFromStorage(expression, skip, take);
 
-            return RequestResult.Ok(convertedFiles);
+            return RequestResult.Ok(files);
         }
 
         /// <inheritdoc />
@@ -341,6 +335,55 @@ namespace FileStorageAPI.Services
                 return RequestResult.InternalServerError<(string uri, Guid Guid)>("Can't add to database");
             var downloadLink = await _downloadLinkProvider.GetDownloadLinkAsync(file.Id, file.Name);
             return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<int>> GetDocumentsCountByParametersAndIds(FileSearchParameters fileSearchParameters, 
+            List<Guid> guidsToFind, HttpRequest request)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var sender = await GetNotNullSenderAsync(request);
+            
+            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
+            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, guidsToFind, chatsId);
+            var filesCount = await filesStorage.GetFilesCountAsync(expression);
+
+            return RequestResult.Ok(filesCount);
+        }
+
+        /// <inheritdoc />
+        public async Task<RequestResult<List<FileInfo>>> GetDocumentsByParametersAndIds(
+            FileSearchParameters fileSearchParameters, List<Guid> guidsToFind, HttpRequest request, int skip, int take)
+        {
+            if (skip < 0 || take < 0)
+                return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
+            var chatsId = await GetUserChats(request);
+           
+            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, chatsId);
+            var files = await GetFileInfoFromStorage(expression, skip, take);
+
+            return RequestResult.Ok(files);
+        }
+
+        private async Task<List<FileInfo>> GetFileInfoFromStorage(Expression<Func<DataBaseFile, bool>> expression,
+            int? skip, int? take)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
+            SetFileChat(filesFromDataBase);
+            var convertedFiles = filesFromDataBase
+                .Select(_fileInfoConverter.ConvertFileInfo)
+                .ToList();
+            return convertedFiles;
+        }
+
+        private async Task<List<Guid>?> GetUserChats(HttpRequest request)
+        {
+            var sender = await GetNotNullSenderAsync(request);
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            return hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
         }
 
         private async Task<bool> UploadFile(DataBaseFile file, Stream stream)

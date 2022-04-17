@@ -7,7 +7,7 @@ namespace FileStorageAPI.Converters
     public class DocumentToFileConverter : IDocumentToFileConverter
     {
         /// <inheritdoc />
-        public FileSearchParameters ConvertFile( DocumentSearchParameters parameters)
+        public FileSearchParameters ToFileSearchParameters( DocumentSearchParameters parameters)
         {
             return new()
             {

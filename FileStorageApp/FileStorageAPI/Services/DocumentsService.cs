@@ -33,44 +33,33 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters fileSearchParameters,
+        public async Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters documentSearchParameters,
             HttpRequest request)
         {
-            var convertedParameters = _documentToFileConverter.ConvertFile(fileSearchParameters);
-            var filesCount = await _fileService.GetFileInfosAsync(convertedParameters, null, null, request);
+            if (documentSearchParameters.Phrase is null)
+                return RequestResult.BadRequest<int>("Request should contains phrase to find");
+            
+            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(documentSearchParameters.Phrase);
+            
+            var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            var filesCount = await _fileService.GetDocumentsCountByParametersAndIds(convertedParameters, foundedDocuments, request);
 
-            if (filesCount.Value is null)
-                return RequestResult.InternalServerError<int>("Something wrong with request");
-
-            if (fileSearchParameters.Phrase is null)
-                return RequestResult.Ok(filesCount.Value.Count);
-
-            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(fileSearchParameters.Phrase);
-
-            var filteredFiles = filesCount.Value
-                .Where(x => foundedDocuments.Contains(x.FileId))
-                .ToList();
-
-            return RequestResult.Ok(filteredFiles.Count);
+            return RequestResult.Ok(filesCount.Value);
         }
 
         /// <inheritdoc />
         public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(
-            DocumentSearchParameters fileSearchParameters, int skip, int take, HttpRequest request)
+            DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request)
         {
-            var convertedParameters = _documentToFileConverter.ConvertFile(fileSearchParameters);
-            var fileInfo = await _fileService.GetFileInfosAsync(convertedParameters, skip, take, request);
+            if (documentSearchParameters.Phrase is null)
+                return RequestResult.BadRequest<List<FileInfo>>("Request should contains phrase to find");
+            
+            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(documentSearchParameters.Phrase);
+            
+            var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            var fileInfo = await _fileService.GetDocumentsByParametersAndIds(convertedParameters, foundedDocuments, request, skip, take);
 
-            if (fileSearchParameters.Phrase is null || fileInfo.Value is null)
-                return fileInfo;
-
-            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(fileSearchParameters.Phrase);
-
-            var filteredFiles = fileInfo.Value
-                .Where(x => foundedDocuments.Contains(x.FileId))
-                .ToList();
-
-            return RequestResult.Ok(filteredFiles);
+            return fileInfo;
         }
     }
 }
