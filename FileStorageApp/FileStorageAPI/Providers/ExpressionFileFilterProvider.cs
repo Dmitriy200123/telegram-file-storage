@@ -26,11 +26,13 @@ namespace FileStorageAPI.Providers
         /// <inheritdoc />
         public Expression<Func<File, bool>> GetDocumentExpression(FileSearchParameters parameters, List<Guid>? fileIds, List<Guid>? chatsId = null)
         {
+            parameters.FileName = null;
+            var param = Expression.Parameter(typeof(File), "x");
             var basicExpression = GetExpression(parameters, chatsId);
             Expression<Func<File, bool>> currentExpression = x => fileIds == null || fileIds.Contains(x.Id);
 
-            var bodyResult = Expression.AndAlso(basicExpression, currentExpression);
-            var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, basicExpression.Parameters.First());
+            var bodyResult = Expression.AndAlso(Expression.Invoke(basicExpression, param), Expression.Invoke(currentExpression, param));
+            var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, param);
             return lambda;
         }
     }

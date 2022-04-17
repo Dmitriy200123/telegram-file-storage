@@ -36,10 +36,7 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters documentSearchParameters,
             HttpRequest request)
         {
-            if (documentSearchParameters.Phrase is null)
-                return RequestResult.BadRequest<int>("Request should contains phrase to find");
-            
-            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(documentSearchParameters.Phrase);
+            var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
             
             var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
             var filesCount = await _fileService.GetDocumentsCountByParametersAndIds(convertedParameters, foundedDocuments, request);
@@ -51,15 +48,19 @@ namespace FileStorageAPI.Services
         public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(
             DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request)
         {
-            if (documentSearchParameters.Phrase is null)
-                return RequestResult.BadRequest<List<FileInfo>>("Request should contains phrase to find");
-            
-            var foundedDocuments = await _documentIndexStorage.FindInTextOrNameAsync(documentSearchParameters.Phrase);
+            var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
             
             var convertedParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
             var fileInfo = await _fileService.GetDocumentsByParametersAndIds(convertedParameters, foundedDocuments, request, skip, take);
 
             return fileInfo;
+        }
+
+        private async Task<List<Guid>?> TryFindInIndexStorage(string? phrase)
+        {
+            if (phrase is null)
+                return null;
+            return await _documentIndexStorage.FindInTextOrNameAsync(phrase);
         }
     }
 }
