@@ -42,4 +42,4 @@ API_ID = 13673260
 API_HASH = '4c6c01da1fc915ffb51e4147bfae915c'
 NUMBER = '+6287812030334'
 
-SEARCH_DOCUMENT_URL = 'http://localhost:5002/api'
+DOCUMENTS_API_URL = 'http://localhost:5002/api'
