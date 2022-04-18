@@ -11,11 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Storages\AccessStorage\IRightsStorage.cs" />
+      <ProjectReference Include="..\Data\Data.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Storages\AccessStorage" />
-    </ItemGroup>
-
 </Project>

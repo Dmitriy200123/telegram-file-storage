@@ -2,7 +2,7 @@
 using System.Text;
 using DocumentsIndex.Contracts;
 
-namespace SearchDocumentAPI.Tests.Data
+namespace SearchDocumentsAPI.Tests.Data
 {
     public static class APIDocumentSearchData
     {

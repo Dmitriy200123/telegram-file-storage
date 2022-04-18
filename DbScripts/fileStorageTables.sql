@@ -132,3 +132,33 @@ create table "CodeForTelegramLoader"
 
 alter table "CodeForTelegramLoader"
     owner to "FileStorageApp";
+
+create table "DocumentClassifications"
+(
+    "Id"   uuid         not null
+        constraint "PK_DocumentClassifications"
+            primary key,
+    "Name" varchar(255) not null
+        constraint "AK_DocumentClassifications_Name"
+            unique
+);
+
+alter table "DocumentClassifications"
+    owner to "FileStorageApp";
+
+create table "DocumentClassificationWords"
+(
+    "Id"               uuid         not null
+        constraint "PK_DocumentClassificationWords"
+            primary key,
+    "Value"            varchar(255) not null,
+    "ClassificationId" uuid         not null
+        constraint "FK_DocumentClassificationWords_DocumentClassifications_Classif~"
+            references "DocumentClassifications"
+            on delete cascade,
+    constraint "AK_DocumentClassificationWords_ClassificationId_Value"
+        unique ("ClassificationId", "Value")
+);
+
+alter table "DocumentClassificationWords"
+    owner to "FileStorageApp";

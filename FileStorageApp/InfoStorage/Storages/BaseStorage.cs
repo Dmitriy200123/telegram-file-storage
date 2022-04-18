@@ -26,6 +26,14 @@ namespace FileStorageApp.Data.InfoStorage.Storages
                 .HasMany(sender => sender.Chats)
                 .WithMany(chat => chat.Senders)
                 .UsingEntity(builder => builder.ToTable("SenderAndChat"));
+
+            modelBuilder
+                .Entity<DocumentClassification>()
+                .HasAlternateKey(classification => classification.Name);
+
+            modelBuilder
+                .Entity<DocumentClassificationWord>()
+                .HasAlternateKey(word => new { word.ClassificationId, word.Value });
         }
 
         public async Task<bool> AddAsync(T entity, bool writeException = true)
@@ -34,17 +42,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
                 throw new ArgumentNullException(nameof(entity));
 
             await DbSet.AddAsync(entity);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                if (writeException)
-                    Console.WriteLine(e);
-                return false;
-            }
+            return await TrySaveChangesAsync();
         }
 
         public async Task<bool> UpdateAsync(T entity)
@@ -53,16 +51,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages
                 throw new ArgumentNullException(nameof(entity));
 
             DbSet.Update(entity);
-            try
-            {
-                await SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
+            return await TrySaveChangesAsync();
         }
 
         public async Task<bool> DeleteAsync(Guid id)
@@ -72,6 +61,11 @@ namespace FileStorageApp.Data.InfoStorage.Storages
                 throw new ArgumentException($"There is no entity with ID {id} in the database");
 
             DbSet.Remove(entity);
+            return await TrySaveChangesAsync();
+        }
+
+        protected async Task<bool> TrySaveChangesAsync()
+        {
             try
             {
                 await SaveChangesAsync();
