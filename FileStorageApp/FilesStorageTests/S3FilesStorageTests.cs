@@ -27,7 +27,7 @@ namespace FilesStorageTests
             _sutFactory = new S3FilesStorageFactory(new S3FilesStorageOptions(Config["AccessKey"]
                 , Config["SecretKey"],
                 Config["BucketName"], config, S3CannedACL.PublicReadWrite,
-                TimeSpan.FromHours(1)));
+                TimeSpan.FromHours(1), Config["S3host"],Config["S3hostReal"]));
         }
 
         [TearDown]
