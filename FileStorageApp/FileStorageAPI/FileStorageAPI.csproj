@@ -43,6 +43,7 @@
       <ProjectReference Include="..\FilesStorage\FilesStorage.csproj" />
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
       <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
+      <ProjectReference Include="..\RightServices\RightServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>

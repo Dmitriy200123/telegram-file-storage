@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Http;
 
-namespace FileStorageAPI.Providers
+namespace RightServices
 {
     /// <summary>
     /// Провайдер идентификатора пользователя по токену аутентификации.

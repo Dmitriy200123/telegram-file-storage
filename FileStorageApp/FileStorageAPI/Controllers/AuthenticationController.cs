@@ -6,6 +6,7 @@ using JwtAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RightServices;
 using Swashbuckle.AspNetCore.Annotations;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 

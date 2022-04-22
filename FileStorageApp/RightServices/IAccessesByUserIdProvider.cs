@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Models;
 
-namespace FileStorageAPI.Providers
+namespace RightServices
 {
     /// <summary>
     /// Провайдер для получения прав пользователя по Id пользователя

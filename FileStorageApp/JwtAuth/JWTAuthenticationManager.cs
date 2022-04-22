@@ -52,7 +52,8 @@ namespace JwtAuth
                 Subject = new ClaimsIdentity(claims),
                 Expires = expires.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                    SecurityAlgorithms.HmacSha256Signature),
+                Audience = "storage"
             };
 
             return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
