@@ -1,11 +1,9 @@
 ﻿using System.Linq;
-using DocumentClassificationsAPI.Models;
-using DocumentClassification = FileStorageApp.Data.InfoStorage.Contracts.Classification;
-using DocumentClassificationWord = FileStorageApp.Data.InfoStorage.Contracts.ClassificationWord;
+using FileStorageApp.Data.InfoStorage.Models;
 
-namespace DocumentClassificationsAPI.Mappers
+namespace FileStorageApp.Data.InfoStorage.Contracts
 {
-    internal static class DocumentClassificationMapper
+    internal static class ClassificationMapper
     {
         public static Classification ToClassification(this DocumentClassification documentClassification)
         {
@@ -21,8 +19,17 @@ namespace DocumentClassificationsAPI.Mappers
                 ClassificationWords = words
             };
         }
+        
+        public static ClassificationWord ToClassificationWord(
+            this DocumentClassificationWord documentClassificationWord
+        ) => new()
+        {
+            Id = documentClassificationWord.Id,
+            Value = documentClassificationWord.Value,
+            ClassificationId = documentClassificationWord.ClassificationId
+        };
 
-        public static DocumentClassification ToDocumentClassification(this ClassificationInsert classification)
+        public static DocumentClassification ToDocumentClassification(this Classification classification)
         {
             var words = classification
                 .ClassificationWords
@@ -31,22 +38,19 @@ namespace DocumentClassificationsAPI.Mappers
 
             return new DocumentClassification
             {
+                Id = classification.Id,
                 Name = classification.Name,
                 ClassificationWords = words
             };
         }
 
         public static DocumentClassificationWord ToDocumentClassificationWord(
-            this ClassificationWordInsert classificationWord
-        ) => new() { Value = classificationWord.Value };
-
-        public static ClassificationWord ToClassificationWord(
-            this DocumentClassificationWord documentClassificationWord
+            this ClassificationWord classificationWord
         ) => new()
         {
-            Id = documentClassificationWord.Id,
-            Value = documentClassificationWord.Value,
-            ClassificationId = documentClassificationWord.ClassificationId
+            Id = classificationWord.Id,
+            Value = classificationWord.Value,
+            ClassificationId = classificationWord.ClassificationId
         };
     }
 }
