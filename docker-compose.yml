@@ -43,9 +43,10 @@ services:
     build:
       context: file-storage-front/
       dockerfile: Dockerfile
-      target: start_prod
     ports:
       - '3000:3000'
+    depends_on:
+      - dotnet_backend
 
   telegram_auth:
     container_name: telegram_auth
