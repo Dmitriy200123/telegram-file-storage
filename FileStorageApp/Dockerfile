@@ -16,6 +16,8 @@ COPY InfoStorage/*.csproj ./InfoStorage/
 COPY JwtAuth/*.csproj ./JwtAuth/
 COPY TelegramAuth/*.csproj ./TelegramAuth/
 COPY DocumentsIndex/*.csproj ./DocumentsIndex/
+COPY RightServices/*.csproj ./RightServices/
+COPY TokenGenerator/*.csproj ./TokenGenerator/
 
 COPY API/*.csproj ./API/
 COPY Data/*.csproj ./Data/
@@ -43,8 +45,8 @@ COPY DocumentsIndex.Contracts/. ./DocumentsIndex.Contracts
 COPY DocumentsIndex/. ./DocumentsIndex/
 COPY SearchDocumentsAPI/. ./SearchDocumentsAPI
 COPY DocumentClassificationsAPI/. ./DocumentClassificationsAPI
-COPY DocumentClassificationsAPI/. ./ttttttt
-
+COPY RightServices/. ./RightServices/
+COPY TokenGenerator/. ./TokenGenerator/
 
 # Собираем часть с основным апи
 FROM build AS build_FileStorageAPI
