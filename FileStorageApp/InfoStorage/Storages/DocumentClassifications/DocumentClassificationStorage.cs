@@ -33,7 +33,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
             var documentClassification = await queryable.FirstOrDefaultAsync(classification => classification.Id == id);
 
-            return documentClassification.ToClassification();
+            return documentClassification?.ToClassification();
         }
 
         public Task<List<Classification>> FindByQueryAsync(

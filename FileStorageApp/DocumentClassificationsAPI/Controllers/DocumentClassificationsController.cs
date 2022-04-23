@@ -53,7 +53,6 @@ namespace DocumentClassificationsAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(result.Value),
                 HttpStatusCode.NotFound => NotFound(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -82,7 +81,6 @@ namespace DocumentClassificationsAPI.Controllers
             return result.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(result.Value),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -96,7 +94,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Возвращается, если классификация с таким именем уже существует", typeof(string))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        public async Task<IActionResult> AddClassifications([FromBody] ClassificationInsert classification)
+        public async Task<IActionResult> AddClassification([FromBody] ClassificationInsert classification)
         {
             var result = await _classificationsService.AddClassificationAsync(classification);
 
@@ -104,7 +102,6 @@ namespace DocumentClassificationsAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(),
                 HttpStatusCode.BadRequest => BadRequest(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -118,7 +115,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        public async Task<IActionResult> DeleteClassifications(Guid classificationId)
+        public async Task<IActionResult> DeleteClassification(Guid classificationId)
         {
             var result = await _classificationsService.DeleteClassificationAsync(classificationId);
 
@@ -126,7 +123,6 @@ namespace DocumentClassificationsAPI.Controllers
             {
                 HttpStatusCode.NoContent => NoContent(),
                 HttpStatusCode.NotFound => NotFound(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -142,7 +138,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        public async Task<IActionResult> RenameClassification(Guid classificationId, [FromBody] string newName)
+        public async Task<IActionResult> RenameClassification(Guid classificationId, [FromBody, Required] string newName)
         {
             var result = await _classificationsService.RenameClassificationAsync(classificationId, newName);
 
@@ -150,7 +146,6 @@ namespace DocumentClassificationsAPI.Controllers
             {
                 HttpStatusCode.OK => Ok(),
                 HttpStatusCode.BadRequest => BadRequest(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 HttpStatusCode.NotFound => NotFound(result.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
@@ -171,7 +166,6 @@ namespace DocumentClassificationsAPI.Controllers
             return result.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(result.Value),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -200,7 +194,6 @@ namespace DocumentClassificationsAPI.Controllers
                 HttpStatusCode.OK => Ok(),
                 HttpStatusCode.BadRequest => BadRequest(result.Message),
                 HttpStatusCode.NotFound => NotFound(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -220,9 +213,8 @@ namespace DocumentClassificationsAPI.Controllers
 
             return result.ResponseCode switch
             {
-                HttpStatusCode.OK => NoContent(),
+                HttpStatusCode.NoContent => NoContent(),
                 HttpStatusCode.NotFound => NotFound(result.Message),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
@@ -243,7 +235,6 @@ namespace DocumentClassificationsAPI.Controllers
             return result.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(result.Value),
-                HttpStatusCode.Forbidden => Forbid("Bearer"),
                 HttpStatusCode.NotFound => NotFound(result.Value),
                 _ => throw new ArgumentException("Unknown response code")
             };
