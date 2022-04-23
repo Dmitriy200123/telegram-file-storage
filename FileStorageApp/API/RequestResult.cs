@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace API
 {
@@ -135,6 +136,15 @@ namespace API
         public static RequestResult<T> Forbidden<T>(string message)
         {
             return new RequestResult<T>(HttpStatusCode.Forbidden, message);
+        }
+
+        public static RequestResult<T2> EditReturnValueIfExist<T2, T>(this RequestResult<T> basicRequest, Func<T?, T2> func)
+        {
+            if (basicRequest.Value == null)
+                return new RequestResult<T2>(basicRequest.ResponseCode, basicRequest.Message);
+            
+            var changedValue = func(basicRequest.Value);
+            return new RequestResult<T2>(basicRequest.ResponseCode, changedValue);
         }
     }
 }

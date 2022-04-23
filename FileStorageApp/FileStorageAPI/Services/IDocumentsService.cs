@@ -22,6 +22,6 @@ namespace FileStorageAPI.Services
         /// <summary>
         /// Возвращает файлы типа "Текстовый документ".
         /// </summary>
-        Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
+        Task<RequestResult<List<DocumentInfo>>> GetFileInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
     }
 }

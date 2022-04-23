@@ -17,7 +17,6 @@ namespace RightServices
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="RightsFilterAttribute"/>.
         /// </summary>
-        /// <param name="key">ключ, которым был сгенерирован токен</param>
         /// <param name="accesses">Требуемые доступы</param>
         public RightsFilterAttribute(params Accesses[] accesses)
         {

@@ -32,9 +32,11 @@ namespace JwtAuth
         }
 
         /// <inheritdoc />
-        public async Task<AuthenticationResponse> Authenticate(string username, params Claim[] claims)
+        public async Task<AuthenticationResponse> Authenticate(string username,DateTime expires = default, params Claim[] claims)
         {
-            var token = GenerateTokenString(DateTime.UtcNow, claims);
+            if(expires == default)
+                expires = DateTime.Now;
+            var token = GenerateTokenString(expires, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var userId = Guid.Parse(username);

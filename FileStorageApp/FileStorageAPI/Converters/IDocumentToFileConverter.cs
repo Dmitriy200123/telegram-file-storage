@@ -13,5 +13,12 @@ namespace FileStorageAPI.Converters
         /// <param name="parameters">модель поиска документа</param>
         /// <returns></returns>
         FileSearchParameters ToFileSearchParameters(DocumentSearchParameters parameters);
+
+        /// <summary>
+        /// Преобразовывает модель файла в модель документа
+        /// </summary>
+        /// <param name="fileInfo">модель файла</param>
+        /// <returns></returns>
+        DocumentInfo ToDocumentModel(FileInfo fileInfo);
     }
 }
