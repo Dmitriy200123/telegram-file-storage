@@ -26,6 +26,18 @@ services:
     ports:
       - '5002:5002'
 
+  dotnet_classification_backend:
+    container_name: dotnet_classification_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+      target: runtime_DocumentClassificationsAPI
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
+      - ASPNETCORE_ENVIRONMENT=Release
+    ports:
+      - '5003:5003'
+
   front:
     container_name: front
     build:
@@ -58,8 +70,3 @@ services:
       - DB_PASS=mlonDNBDFPqC
       - S3_URL=http://students.66bit.ru:19000
       - BUCKET_NAME=filestore
-    ports:
-      - '8080:8080'
-    depends_on:
-      - front
-      - dotnet_backend

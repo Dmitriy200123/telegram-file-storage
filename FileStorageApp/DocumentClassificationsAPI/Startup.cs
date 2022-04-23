@@ -26,9 +26,15 @@ namespace DocumentClassificationsAPI
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            var mainCatalog = Directory.GetParent(env.ContentRootPath)?.FullName;
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .SetBasePath($"{mainCatalog}/Config")
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -121,12 +127,13 @@ namespace DocumentClassificationsAPI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Docker"))
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocumentClassificationsAPI v1"));
             }
+            
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
