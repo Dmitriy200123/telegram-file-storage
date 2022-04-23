@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -15,13 +16,13 @@ namespace TokenGenerator
             .AddJsonFile("appsettings.json")
             .Build();
         
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var arguments = GetKeyFromArgs(args);
             var storage = new InfoStorageFactory(CreateDataBaseConfig());
             var refreshTokenGenerator = new RefreshTokenGenerator();
             var userStorage = storage.CreateUsersStorage();
-            var newUser = CreateNewUser(userStorage, arguments);
+            var newUser = await CreateNewUserAsync(userStorage, arguments);
             
             var claimName = new Claim(ClaimTypes.Name, newUser.ToString());
             var tokenGenerator = new JwtAuthenticationManager(Configuration["TokenKey"], refreshTokenGenerator, storage);
@@ -49,7 +50,7 @@ namespace TokenGenerator
             return new DataBaseConfig(connectionString);
         }
 
-        private static Guid CreateNewUser(IUsersStorage usersStorage, string name)
+        private static async Task<Guid> CreateNewUserAsync(IUsersStorage usersStorage, string name)
         {
             var guid = Guid.NewGuid();
             var user = new User
@@ -61,7 +62,7 @@ namespace TokenGenerator
                 Avatar = "https://static.detmir.st/media_out/383/198/3198383/1500/0.jpg?1572577221104",
                 Name = name
             };
-            usersStorage.AddAsync(user).GetAwaiter().GetResult();
+            await usersStorage.AddAsync(user);
             return guid;
         }
     }
