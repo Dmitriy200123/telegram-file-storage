@@ -11,7 +11,6 @@ using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
-using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -29,6 +28,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RightServices;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 using AuthenticationService = FileStorageAPI.Services.AuthenticationService;
@@ -64,12 +64,13 @@ namespace FileStorageAPI
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
+                        ValidateIssuerSigningKey = false,
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = true,
                     };
                 });
 
@@ -83,6 +84,7 @@ namespace FileStorageAPI
             services.AddCors();
 
             services.AddSingleton<IRightsFilter, RightsFilter>();
+            services.AddSingleton(new RightsSettings(Settings.Key));
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
             services.AddSingleton(provider => provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
             services.AddSingleton<IPipelineCreator, PipelineCreator>();

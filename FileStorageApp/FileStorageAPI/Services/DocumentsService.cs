@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API;
 using DocumentsIndex;
@@ -44,7 +45,7 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<FileInfo>>> GetFileInfosAsync(
+        public async Task<RequestResult<List<DocumentInfo>>> GetFileInfosAsync(
             DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request)
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
@@ -52,7 +53,7 @@ namespace FileStorageAPI.Services
             var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
             var fileInfo = await _fileService.GetDocumentsByParametersAndIds(fileSearchParameters, foundedDocuments, request, skip, take);
 
-            return fileInfo;
+            return fileInfo.EditReturnValueIfExist(x => x!.Select(_documentToFileConverter.ToDocumentModel).ToList());
         }
 
         private async Task<List<Guid>?> TryFindInIndexStorage(string? phrase)

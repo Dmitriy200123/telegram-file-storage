@@ -1,13 +1,21 @@
 using System;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using DocumentClassificationsAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
@@ -26,6 +34,39 @@ namespace DocumentClassificationsAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            
+             
+            var tokenKey = Configuration["TokenKey"];
+            var key = Encoding.ASCII.GetBytes(tokenKey);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = true,
+                    };
+                });
+            services.ConfigureApplicationCookie(options =>
+                {
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized);
+                }
+            );
+            services.AddCors();
+
+            
             ConfigureSwagger(services);
             ConfigureDependencies(services);
         }
@@ -87,14 +128,32 @@ namespace DocumentClassificationsAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocumentClassificationsAPI v1"));
             }
 
-            app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
             app.UseRouting();
+
+            app.UseCors(builder => builder
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .SetIsOriginAllowed(_ => true)
+                .AllowCredentials());
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
+        
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
+            context =>
+            {
+                if (statusCode != HttpStatusCode.Forbidden && statusCode != HttpStatusCode.Unauthorized)
+                    return Task.CompletedTask;
+                context.Response.Clear();
+                context.Response.StatusCode = (int) statusCode;
+                return Task.CompletedTask;
+            };
     }
 #pragma warning restore CS1591
 }

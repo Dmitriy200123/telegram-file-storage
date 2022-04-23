@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FileStorageAPI.RightsFilters
+namespace RightServices
 {
     /// <summary>
     /// Атрибут для контроля доступа пользователей к API.

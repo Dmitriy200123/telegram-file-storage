@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 
-namespace FileStorageAPI.Providers
+namespace RightServices
 {
     /// <inheritdoc />
     public class AccessesByUserIdProvider : IAccessesByUserIdProvider

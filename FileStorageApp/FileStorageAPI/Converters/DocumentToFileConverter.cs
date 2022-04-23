@@ -22,5 +22,18 @@ namespace FileStorageAPI.Converters
                 }
             };
         }
+
+        /// <inheritdoc />
+        public DocumentInfo ToDocumentModel(FileInfo fileInfo)
+        {
+            return new DocumentInfo
+            {
+                DocumentId = fileInfo.FileId,
+                DocumentName = fileInfo.FileName,
+                Sender = fileInfo.Sender,
+                UploadDate = fileInfo.UploadDate,
+                Chat = fileInfo.Chat
+            };
+        }
     }
 }

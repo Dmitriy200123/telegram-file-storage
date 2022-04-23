@@ -39,7 +39,7 @@ namespace JwtAuth
             if (refreshCred.RefreshToken != refreshToken)
                 return null;
 
-            return await _jWtAuthenticationManager.Authenticate(userName, principal.Claims.ToArray());
+            return await _jWtAuthenticationManager.Authenticate(userName, default, principal.Claims.ToArray());
         }
     }
 }

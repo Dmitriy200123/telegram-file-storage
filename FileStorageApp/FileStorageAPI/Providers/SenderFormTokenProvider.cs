@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
+using RightServices;
 
 namespace FileStorageAPI.Providers
 {

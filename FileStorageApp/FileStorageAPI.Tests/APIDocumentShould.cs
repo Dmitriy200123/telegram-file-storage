@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
+using FileStorageAPI.Models;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -71,7 +72,7 @@ namespace FileStorageAPI.Tests
 
             response.EnsureSuccessStatusCode();
             var responseString = await response.Content.ReadAsStringAsync();
-            var actual = JsonConvert.DeserializeObject<List<FileInfo>>(responseString,_dateTimeConverter);
+            var actual = JsonConvert.DeserializeObject<List<DocumentInfo>>(responseString,_dateTimeConverter);
             actual.Should().NotBeEmpty();
         }
         
@@ -91,7 +92,7 @@ namespace FileStorageAPI.Tests
         }
         
        
-        public async Task<FileInfo?> UploadFile()
+        public async Task<DocumentInfo?> UploadFile()
         {
             using var apiClient = CreateHttpClient();
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
@@ -109,7 +110,7 @@ namespace FileStorageAPI.Tests
             var response = await apiClient.PostAsync("/api/files/", form);
             var responseString = await response.Content.ReadAsStringAsync();
 
-            var actual = JsonConvert.DeserializeObject<FileInfo>(responseString,_dateTimeConverter);
+            var actual = JsonConvert.DeserializeObject<DocumentInfo>(responseString,_dateTimeConverter);
             return actual;
         }
 

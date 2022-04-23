@@ -4,7 +4,7 @@ using JwtAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
-namespace FileStorageAPI.Providers
+namespace RightServices
 {
     /// <inheritdoc />
     public class UserIdFromTokenProvider : IUserIdFromTokenProvider
