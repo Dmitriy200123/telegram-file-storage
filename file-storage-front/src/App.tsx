@@ -19,6 +19,8 @@ import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
 import {fetchFilesTypes} from "./redux/thunks/mainThunks";
 import DocsClasses from "./components/DocsClasses/DocsClasses";
+import {StartPage} from "./components/StartPage/StartPage";
+import {Messages} from "./components/utils/Messages/Messages";
 
 const store = setupStore();
 
@@ -44,7 +46,8 @@ const App: FC = () => {
     }, []);
 
     return (<div className="App app">
-        <Main/>
+        {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
+        {isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
     </div>)
 }
 
