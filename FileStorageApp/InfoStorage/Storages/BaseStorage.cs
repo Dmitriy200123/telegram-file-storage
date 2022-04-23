@@ -29,7 +29,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages
 
             modelBuilder
                 .Entity<DocumentClassification>()
-                .HasAlternateKey(classification => classification.Name);
+                .HasIndex(classification => classification.Name)
+                .IsUnique();
 
             modelBuilder
                 .Entity<DocumentClassificationWord>()

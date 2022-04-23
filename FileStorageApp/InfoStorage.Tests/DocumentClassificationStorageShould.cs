@@ -118,6 +118,8 @@ namespace InfoStorage.Tests
 
             using var storage1 = _infoStorageFactory.CreateDocumentClassificationStorage();
             var actualClassification = await storage1.FindByIdAsync(classificationId, true);
+            actualClassification.Should().NotBeNull();
+            
             var actualWords = actualClassification.ClassificationWords;
 
             actualWords
@@ -189,8 +191,11 @@ namespace InfoStorage.Tests
             result.Should().BeTrue();
 
             var classification = await storage.FindByIdAsync(classificationId, true);
-            var actualWord = classification.ClassificationWords.First();
+            classification.Should().NotBeNull();
+            
+            var actualWord = classification.ClassificationWords.FirstOrDefault();
 
+            actualWord.Should().NotBeNull();
             actualWord.Value.Should().Be(wordValue);
             actualWord.ClassificationId.Should().Be(classificationId);
         }
@@ -217,8 +222,11 @@ namespace InfoStorage.Tests
             result.Should().BeTrue();
 
             var classification = await storage.FindByIdAsync(classificationId, true);
-            var actualWord = classification.ClassificationWords.First();
+            classification.Should().NotBeNull();
+            
+            var actualWord = classification.ClassificationWords.FirstOrDefault();
 
+            actualWord.Should().NotBeNull();
             actualWord.Value.Should().Be(wordValue);
             actualWord.Id.Should().Be(wordId);
             actualWord.ClassificationId.Should().Be(classificationId);
@@ -242,6 +250,8 @@ namespace InfoStorage.Tests
             deleted.Should().BeTrue();
 
             var classification = await storage.FindByIdAsync(classificationId, true);
+            
+            classification.Should().NotBeNull();
             classification.ClassificationWords.Should().BeEmpty();
         }
 
@@ -306,7 +316,8 @@ namespace InfoStorage.Tests
 
             using var storage1 = _infoStorageFactory.CreateDocumentClassificationStorage();
             var classification = await storage1.FindByIdAsync(classificationId);
-            
+
+            classification.Should().NotBeNull();
             classification.Name.Should().Be(newClassificationName);
         }
 
