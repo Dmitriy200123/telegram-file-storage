@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using DocumentClassificationsAPI.Models;
 using DocumentClassificationsAPI.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -18,7 +17,6 @@ namespace DocumentClassificationsAPI.Controllers
     [Route("api/documentClassifications")]
     [SwaggerTag("Классификации документов")]
     [ApiController]
-    [Authorize]
     public class DocumentClassificationsController : ControllerBase
     {
         private readonly IDocumentClassificationsService _classificationsService;
