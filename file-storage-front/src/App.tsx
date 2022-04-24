@@ -46,8 +46,7 @@ const App: FC = () => {
     }, []);
 
     return (<div className="App app">
-        {!!messages.length && <Messages messages={messages} className={"app__messages"}/>}
-        {isAuth ? <Main/> : loading ? "Загрузка..." : <StartPage/>}
+        <Main/>
     </div>)
 }
 
@@ -81,6 +80,7 @@ const Main: FC = () => {
                  style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
                     <Route path={"/Profile"} component={Profile}/>
+                    <Route path={"/docs-сlasses"} component={DocsClasses} exact={true}/>
                     {hasTelegram && <>
                         <Route exact path={"/files"} component={FilesMain}/>
                         <Route path={"/file/:id"} component={OpenedFileContainer}/>
@@ -89,7 +89,6 @@ const Main: FC = () => {
                         {rights?.includes(Rights["Загружать файлы"]) &&
                         <Route path={"/load/"} component={LoadFileMain}/>}
                     </>}
-                    <Route path={"/docs-сlasses"} component={DocsClasses}/>
                 </Switch>
             </div>
             {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
