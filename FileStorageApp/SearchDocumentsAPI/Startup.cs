@@ -29,9 +29,15 @@ namespace SearchDocumentsAPI
 #pragma warning disable CS1591
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration;
+            var mainCatalog = Directory.GetParent(env.ContentRootPath)?.FullName;
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .SetBasePath($"{mainCatalog}/Config")
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -102,7 +108,7 @@ namespace SearchDocumentsAPI
             });
         }
 
-        private static void ConfigureDependencies(IServiceCollection services)
+        private void ConfigureDependencies(IServiceCollection services)
         {
             services.AddSingleton<IPipelineCreator, PipelineCreator>();
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();

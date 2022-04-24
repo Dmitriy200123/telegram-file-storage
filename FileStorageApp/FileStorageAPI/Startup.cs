@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,9 +41,15 @@ namespace FileStorageAPI
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            var mainCatalog = Directory.GetParent(env.ContentRootPath)?.FullName;
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .SetBasePath($"{mainCatalog}/Config")
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -86,9 +93,12 @@ namespace FileStorageAPI
             services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton(new RightsSettings(Settings.Key));
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
-            services.AddSingleton(provider => provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
+            services.AddSingleton(provider =>
+                provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
             services.AddSingleton<IPipelineCreator, PipelineCreator>();
-            services.AddSingleton<IElasticConfig>(new ElasticConfig("http://localhost:9200", "testindex"));
+            services.AddSingleton<IElasticConfig>(
+                new ElasticConfig(Configuration["ElasticSearchUrl"], Configuration["ElasticSearchIndex"])
+            );
             RegisterProviders(services);
             RegisterAuth(services, tokenKey, key);
             RegisterDtoConverters(services);
@@ -189,7 +199,7 @@ namespace FileStorageAPI
                 var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
                 return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
                     config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
-                    TimeSpan.FromHours(1), config["S3host"],config["S3hostReal"]);
+                    TimeSpan.FromHours(1), config["S3host"], config["S3hostReal"]);
             });
             services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
         }
