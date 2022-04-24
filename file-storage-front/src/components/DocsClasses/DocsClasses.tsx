@@ -34,16 +34,23 @@ const DocsClasses: FC<PropsType> = (props) => {
     const classifications = useAppSelector(state => state.classesDocs.classifications);
     const count = useAppSelector(state => state.classesDocs.count);
     const [filters, setFilters] = useState({page: 1, take: 3, query: undefined as undefined | string});
-    useEffect(() => {
+
+    function fetchClasses() {
         dispatch(fetchCountClassifications(filters.query));
         dispatch(fetchClassifications({skip: filters.take * (filters.page - 1), take: filters.take, query: filters.query}));
+    }
+
+    useEffect(() => {
+        fetchClasses();
     }, [filters]);
 
     useEffect(() => {
-        if (classifications !== null && classifications.length === 0) {
-            if (filters.page > 1)
-                setFilters((prev) => ({...prev, page: prev.page - 1}))
+        if (classifications === null || classifications.length !== 0) {
+            return fetchClasses();
         }
+
+        if (filters.page > 1)
+            setFilters((prev) => ({...prev, page: prev.page - 1}))
     }, [classifications?.length])
 
     function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
