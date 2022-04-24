@@ -1,4 +1,4 @@
-const baseUrl = process.env.REACT_APP_BACKEND_URL;
+const baseUrl = "http://localhost:5003";
 
 export let myHeaders = new Headers({
     'Content-Type': 'application/json',

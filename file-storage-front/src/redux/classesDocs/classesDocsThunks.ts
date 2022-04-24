@@ -5,7 +5,7 @@ import {ClassificationType} from "../../models/Classification";
 
 const {setCount, setClassifications} = classesDocsSlice.actions;
 
-export const fetchCountClassifications = (query: string) => async (dispatch: AppDispatch) => {
+export const fetchCountClassifications = (query?: string) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
         const count = +await fetchConfigText(`/api/documentClassifications/count`, {method: "GET", body: query});

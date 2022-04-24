@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect} from 'react';
 import {InputText} from "../utils/Inputs/Text/InputText";
 import {Button} from "../utils/Button/Button";
 import classes from "./DocsClasses.module.scss";
@@ -9,6 +9,7 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {classesDocsSlice} from "../../redux/classesDocs/classesDocsSlice";
 import {Route, Switch} from "react-router-dom";
 import OpenClassItem from "./OpenClassItem/OpenClassItem";
+import {fetchCountClassifications} from "../../redux/classesDocs/classesDocsThunks";
 
 type PropsType = {}
 
@@ -30,6 +31,10 @@ const DocsClassesPage: FC<PropsType> = (props) => {
 
 const DocsClasses: FC<PropsType> = (props) => {
     const dispatch = useAppDispatch();
+    const count = useAppSelector(state => state.classesDocs.count);
+    useEffect(() => {
+       dispatch(fetchCountClassifications());
+    },[])
     
     return (
         <div className={classes.block}>
@@ -43,7 +48,7 @@ const DocsClasses: FC<PropsType> = (props) => {
                     </div>
                     <ClassesItems/>
                 </div>
-                <Paginator paginator={{count: 10, currentPage: 1, filesInPage: 10}}/>
+                <Paginator paginator={{count: count, currentPage: 1, filesInPage: 10}}/>
             </div>
 
         </div>
