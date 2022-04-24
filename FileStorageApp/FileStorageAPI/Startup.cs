@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,6 +53,7 @@ namespace FileStorageAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
             Settings.SetUpSettings(Configuration, key, CreateDataBaseConfig());
@@ -80,8 +80,6 @@ namespace FileStorageAPI
                         RequireExpirationTime = true,
                     };
                 });
-
-            services.AddSingleton(Configuration);
             services.ConfigureApplicationCookie(options =>
                 {
                     options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);

@@ -39,9 +39,9 @@ namespace DocumentClassificationsAPI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
             services.AddControllers();
-            
-             
+
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
             services.AddAuthentication(x =>
@@ -72,7 +72,7 @@ namespace DocumentClassificationsAPI
             );
             services.AddCors();
 
-            
+
             ConfigureSwagger(services);
             ConfigureDependencies(services);
         }
@@ -121,7 +121,8 @@ namespace DocumentClassificationsAPI
                                    $"Port={configuration["DbPort"]};" +
                                    $"Password={configuration["DbPassword"]};" +
                                    "SSLMode=Prefer";
-            
+
+
             return new DataBaseConfig(connectionString);
         }
 
@@ -133,7 +134,7 @@ namespace DocumentClassificationsAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DocumentClassificationsAPI v1"));
             }
-            
+
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
@@ -151,14 +152,14 @@ namespace DocumentClassificationsAPI
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
-        
+
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
             context =>
             {
                 if (statusCode != HttpStatusCode.Forbidden && statusCode != HttpStatusCode.Unauthorized)
                     return Task.CompletedTask;
                 context.Response.Clear();
-                context.Response.StatusCode = (int) statusCode;
+                context.Response.StatusCode = (int)statusCode;
                 return Task.CompletedTask;
             };
     }

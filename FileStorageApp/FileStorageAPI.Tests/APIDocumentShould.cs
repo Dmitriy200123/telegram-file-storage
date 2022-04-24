@@ -14,7 +14,6 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
-using FileInfo = FileStorageAPI.Models.FileInfo;
 
 namespace FileStorageAPI.Tests
 {
