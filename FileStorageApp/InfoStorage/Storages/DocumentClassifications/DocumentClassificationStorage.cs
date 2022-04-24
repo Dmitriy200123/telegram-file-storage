@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data;
 using FileStorageApp.Data.InfoStorage.Config;
+using FileStorageApp.Data.InfoStorage.Contracts;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,43 +19,52 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
         {
         }
 
-        public async Task<DocumentClassification?> FindByIdAsync(Guid id, bool includeClassificationWords = false)
+        public Task<bool> AddAsync(Classification classification)
+        {
+            return AddAsync(classification.ToDocumentClassification());
+        }
+
+        public async Task<Classification?> FindByIdAsync(Guid id, bool includeClassificationWords = false)
         {
             var queryable = DbSet.AsQueryable();
 
             if (includeClassificationWords)
                 queryable = queryable.Include(classification => classification.ClassificationWords);
 
-            return await queryable.FirstOrDefaultAsync(classification => classification.Id == id);
+            var documentClassification = await queryable.FirstOrDefaultAsync(classification => classification.Id == id);
+
+            return documentClassification?.ToClassification();
         }
 
-        public Task<List<DocumentClassification>> FindByQueryAsync(
+        public Task<List<Classification>> FindByQueryAsync(
             string? query,
             int skip,
             int take,
             bool includeClassificationWords = false
-        ) => AddOptionsInQuery(DbSet, query, includeClassificationWords, skip, take).ToListAsync();
+        ) => AddOptionsInQuery(DbSet, query, includeClassificationWords, skip, take)
+            .Select(documentClassification => documentClassification.ToClassification())
+            .ToListAsync();
 
         public async Task<bool> RenameAsync(Guid id, string newName)
         {
-            var classification = await FindByIdAsync(id);
+            var classification = await GetByIdAsync(id);
 
             if (classification == null)
-                throw new NotFoundException($"{nameof(DocumentClassification)} with Id {id} not found");
+                throw new NotFoundException($"{nameof(Classification)} with Id {id} not found");
 
-            var classificationWithNewName = DbSet
+            var classificationWithNewName = await DbSet
                 .Where(documentClassification => documentClassification.Name == newName)
                 .FirstOrDefaultAsync();
 
             if (classificationWithNewName != null)
-                throw new AlreadyExistException($"{nameof(DocumentClassification)} with Name {newName} already exist");
+                throw new AlreadyExistException($"{nameof(Classification)} with Name {newName} already exist");
 
             classification.Name = newName;
 
             return await UpdateAsync(classification);
         }
 
-        public async Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord)
+        public async Task<bool> AddWordAsync(Guid classificationId, ClassificationWord classificationWord)
         {
             var isAlreadyExist = ClassificationWords
                 .Where(word => word.ClassificationId == classificationId)
@@ -62,12 +72,16 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
             if (isAlreadyExist)
                 throw new AlreadyExistException(
-                    $"{nameof(DocumentClassificationWord)} with value {classificationWord.Value} already exist"
+                    $"{nameof(ClassificationWord)} with value {classificationWord.Value} already exist"
                 );
 
-            classificationWord.ClassificationId = classificationId;
+            var classificationExist = await ContainsAsync(classificationId);
 
-            await ClassificationWords.AddAsync(classificationWord);
+            if (!classificationExist)
+                throw new NotFoundException($"{nameof(Classification)} with Id {classificationId} not found");
+
+            classificationWord.ClassificationId = classificationId;
+            await ClassificationWords.AddAsync(classificationWord.ToDocumentClassificationWord());
 
             return await TrySaveChangesAsync();
         }
@@ -109,10 +123,21 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             return queryable;
         }
 
-        public Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid classificationId) => ClassificationWords
-            .Where(word => word.ClassificationId == classificationId)
-            .ToListAsync();
+        public async Task<List<ClassificationWord>> GetWordsByIdAsync(Guid classificationId)
+        {
+            var classification = await GetByIdAsync(classificationId);
 
-        public Task<List<DocumentClassification>> GetAllAsync() => DbSet.ToListAsync();
+            if (classification == null)
+                throw new NotFoundException($"{nameof(DocumentClassification)} with Id {classificationId} not found");
+
+            return await ClassificationWords
+                .Where(word => word.ClassificationId == classificationId)
+                .Select(word => word.ToClassificationWord())
+                .ToListAsync();
+        }
+
+        public Task<List<Classification>> GetAllAsync() => DbSet
+            .Select(documentClassification => documentClassification.ToClassification())
+            .ToListAsync();
     }
 }

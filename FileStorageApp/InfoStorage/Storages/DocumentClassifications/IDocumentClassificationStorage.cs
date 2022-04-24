@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FileStorageApp.Data.InfoStorage.Models;
+using FileStorageApp.Data.InfoStorage.Contracts;
 
 namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 {
-    public interface IDocumentClassificationStorage : IDisposable, IInfoStorage<DocumentClassification>
+    public interface IDocumentClassificationStorage : IDisposable
     {
-        Task<DocumentClassification?> FindByIdAsync(Guid id, bool includeClassificationWords = false);
+        Task<bool> AddAsync(Classification classification);
+
+        Task<bool> DeleteAsync(Guid id);
+
+        Task<Classification?> FindByIdAsync(Guid id, bool includeClassificationWords = false);
         
-        Task<List<DocumentClassification>> FindByQueryAsync(
+        Task<List<Classification>> FindByQueryAsync(
             string? query,
             int skip,
             int take,
@@ -18,14 +22,14 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
         Task<bool> RenameAsync(Guid id, string newName);
 
-        Task<bool> AddWordAsync(Guid classificationId, DocumentClassificationWord classificationWord);
+        Task<bool> AddWordAsync(Guid classificationId, ClassificationWord classificationWord);
         
         Task<bool> DeleteWordAsync(Guid wordId);
 
         Task<int> GetCountByQueryAsync(string? query);
         
-        Task<List<DocumentClassificationWord>> GetWordsByIdAsync(Guid classificationId);
+        Task<List<ClassificationWord>> GetWordsByIdAsync(Guid classificationId);
         
-        public Task<List<DocumentClassification>> GetAllAsync();
+        public Task<List<Classification>> GetAllAsync();
     }
 }

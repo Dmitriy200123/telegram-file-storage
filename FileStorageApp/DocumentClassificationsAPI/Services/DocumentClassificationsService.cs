@@ -7,7 +7,8 @@ using Data;
 using DocumentClassificationsAPI.Mappers;
 using DocumentClassificationsAPI.Models;
 using FileStorageApp.Data.InfoStorage.Factories;
-using FileStorageApp.Data.InfoStorage.Models;
+using DocumentClassification = FileStorageApp.Data.InfoStorage.Contracts.Classification;
+using DocumentClassificationWord = FileStorageApp.Data.InfoStorage.Contracts.ClassificationWord;
 
 namespace DocumentClassificationsAPI.Services
 {
@@ -22,7 +23,8 @@ namespace DocumentClassificationsAPI.Services
         /// <param name="infoStorageFactory">Фабрика хранилищ</param>
         public DocumentClassificationsService(IInfoStorageFactory infoStorageFactory)
         {
-            _infoStorageFactory = infoStorageFactory;
+            _infoStorageFactory = infoStorageFactory ??
+                                  throw new ArgumentNullException(nameof(infoStorageFactory));
         }
 
         /// <inheritdoc />
@@ -35,7 +37,7 @@ namespace DocumentClassificationsAPI.Services
             var documentClassification = await storage.FindByIdAsync(id, includeClassificationWords);
 
             return documentClassification == null
-                ? RequestResult.BadRequest<Classification>($"{nameof(Classification)} with Id {id} not found")
+                ? RequestResult.NotFound<Classification>($"{nameof(Classification)} with Id {id} not found")
                 : RequestResult.Ok(documentClassification.ToClassification());
         }
 
@@ -97,7 +99,7 @@ namespace DocumentClassificationsAPI.Services
             }
             catch (ArgumentException exception)
             {
-                return RequestResult.BadRequest<bool>(exception.Message);
+                return RequestResult.NotFound<bool>(exception.Message);
             }
         }
 
@@ -115,11 +117,11 @@ namespace DocumentClassificationsAPI.Services
                         $"Cannot rename {nameof(DocumentClassification)} with Id {id}"
                     );
             }
-            catch (Exception exception) when (exception is NotFoundException)
+            catch (NotFoundException exception)
             {
-                return RequestResult.BadRequest<bool>(exception.Message);
+                return RequestResult.NotFound<bool>(exception.Message);
             }
-            catch (Exception exception) when (exception is AlreadyExistException)
+            catch (AlreadyExistException exception)
             {
                 return RequestResult.BadRequest<bool>(exception.Message);
             }
@@ -157,6 +159,10 @@ namespace DocumentClassificationsAPI.Services
             {
                 return RequestResult.BadRequest<bool>(exception.Message);
             }
+            catch (NotFoundException exception)
+            {
+                return RequestResult.NotFound<bool>(exception.Message);
+            }
         }
 
         /// <inheritdoc />
@@ -176,7 +182,7 @@ namespace DocumentClassificationsAPI.Services
             }
             catch (NotFoundException exception)
             {
-                return RequestResult.BadRequest<bool>(exception.Message);
+                return RequestResult.NotFound<bool>(exception.Message);
             }
         }
 
@@ -186,10 +192,18 @@ namespace DocumentClassificationsAPI.Services
         )
         {
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
-            var documentClassificationWords = await storage.GetWordsByIdAsync(classificationId);
-            var classificationWords = documentClassificationWords.Select(word => word.ToClassificationWord());
 
-            return RequestResult.Ok(classificationWords);
+            try
+            {
+                var documentClassificationWords = await storage.GetWordsByIdAsync(classificationId);
+                var classificationWords = documentClassificationWords.Select(word => word.ToClassificationWord());
+
+                return RequestResult.Ok(classificationWords);
+            }
+            catch (NotFoundException exception)
+            {
+                return RequestResult.NotFound<IEnumerable<ClassificationWord>>(exception.Message);
+            }
         }
     }
 }

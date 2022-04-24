@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FileStorageApp.Data.InfoStorage.Models
 {
     [Table("DocumentClassifications")]
-    public class DocumentClassification : IModel
+    internal class DocumentClassification : IModel
     {
         [Key]
         public Guid Id { get; set; }

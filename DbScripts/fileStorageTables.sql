@@ -139,12 +139,13 @@ create table "DocumentClassifications"
         constraint "PK_DocumentClassifications"
             primary key,
     "Name" varchar(255) not null
-        constraint "AK_DocumentClassifications_Name"
-            unique
 );
 
 alter table "DocumentClassifications"
     owner to "FileStorageApp";
+
+create unique index "IX_DocumentClassifications_Name"
+    on "DocumentClassifications" ("Name");
 
 create table "DocumentClassificationWords"
 (
