@@ -1,12 +1,18 @@
-import React, {FC, memo} from 'react';
+import React, {FC, memo, useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
 import {ReactComponent as Edit} from "../../../assets/edit.svg";
 import classes from "./OpenClassItem.module.scss";
 import {Button} from "../../utils/Button/Button";
 import {ReactComponent as Delete} from "../../../assets/delete.svg";
 import {classesDocsSlice} from "../../../redux/classesDocs/classesDocsSlice";
-import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
+import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import Tag, {CreateTag} from "./Tag/Tag";
+import {ClassificationType} from "../../../models/Classification";
+import {
+    fetchClassification,
+    fetchDeleteToClassificationWord,
+    postAddToClassificationWord
+} from "../../../redux/classesDocs/classesDocsThunks";
 
 const {openModal} = classesDocsSlice.actions
 
@@ -20,96 +26,70 @@ interface match<Params extends { [K in keyof Params]?: string } = {}> {
 type PropsType = { match: match<{ id: string }> }
 
 const OpenClassItemContainer: React.FC<PropsType> = memo(({match}) => {
+    console.log("СТЭЭЭС")
     const id = match.params["id"];
     const dispatch = useAppDispatch();
+    const classifications = useAppSelector(state => state.classesDocs.classifications);
+    const [classification, setClassification] = useState<ClassificationType | null>(null);
+    useEffect(() => {
+        if (classifications === null || classifications.length === 0) {
+            dispatch(fetchClassification(id));
+            return;
+        }
+        const found = classifications.find(e => e.id === id);
+        if (found) {
+            setClassification(found);
+        } else {
+            dispatch(fetchClassification(id));
+            //todo: req
+        }
+    }, [id, classifications])
+
 
     function openRename() {
-        dispatch(openModal({type: "edit"}));
+        dispatch(openModal({type: "edit", args: {id: id, name: classification?.name || ""}}));
     }
 
+
     return (
-        <OpenClassItem openRename={openRename}/>
+        <OpenClassItem openRename={openRename} classification={classification}/>
     );
 });
 
-type PropsTypeOpen = { openRename: () => void }
+type PropsTypeOpen = { openRename: () => void, classification: ClassificationType | null }
 
 
-const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename}) => {
+const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => {
+    const dispatch = useAppDispatch();
+    if (!classification)
+        return <>Нихуя тут нет, идите нахуй</>;
+
+    function createTag(value: string) {
+        dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
+    }
+
+    const tags = classification.classificationWords?.map(c => {
+        function renameTag(e: string) {
+        }
+
+        function removeTag() {
+            // @ts-ignore
+            dispatch(fetchDeleteToClassificationWord({classId: classification.id, tagId: c.id}))
+        }
+
+        return <Tag key={c.id} tag={c} renameTag={renameTag} removeTag={removeTag}/>
+    });
+
     return <div className={classes.classItem}>
         <div className={classes.classItem__header}>
-            <h2 className={classes.classItem__title}>Техническое задание</h2>
+            <h2 className={classes.classItem__title}>Классификация документов</h2>
             <Link className={classes.classItem__close} to={"/docs-сlasses"}/>
         </div>
         <div className={classes.classItem__content}>
-            <h3 onClick={openRename} className={classes.classItem__contentTitle}>{"Категория"} {<Edit/>}</h3>
+            <h3 onClick={openRename} className={classes.classItem__contentTitle}>{classification.name} {<Edit/>}</h3>
             <div className={classes.classItem__tags}>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <Tag/>
-                <CreateTag/>
+                {tags}
+                <CreateTag setTag={createTag}/>
             </div>
 
             <div className={classes.classItem__btns}>

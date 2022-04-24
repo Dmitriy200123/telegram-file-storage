@@ -80,7 +80,6 @@ const DocsClasses: FC<PropsType> = (props) => {
     );
 };
 
-
 const Empty = () => {
     return <div className={classes.classesEmpty}>Классификации документов пока не созданы</div>;
 }

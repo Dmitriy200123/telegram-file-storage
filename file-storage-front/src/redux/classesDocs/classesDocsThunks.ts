@@ -1,9 +1,10 @@
-import {fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfig, fetchConfigText} from "../api/apiDocsClasses";
 import {AppDispatch} from "../redux-store";
 import {classesDocsSlice} from "./classesDocsSlice";
 import {ClassificationType} from "../../models/Classification";
 
-const {setCount, setClassifications, renameClassification, deleteClassification} = classesDocsSlice.actions;
+const {setCount, setClassifications, renameClassification, deleteClassification, setClassification,
+removeClassificationTag, addClassificationTag, } = classesDocsSlice.actions;
 
 export const fetchCountClassifications = (query?: string) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
@@ -21,7 +22,7 @@ type FetchClassificationsType = {
     skip: number,
     take: number,
     query?: string,
-    includeClassificationWords?:boolean
+    includeClassificationWords?: boolean
 }
 
 export const fetchClassifications = (args: FetchClassificationsType) => async (dispatch: AppDispatch) => {
@@ -43,7 +44,26 @@ export const fetchClassifications = (args: FetchClassificationsType) => async (d
     }
 };
 
-export const fetchRenameClassification = ({id, name}: {id:string, name: string}) => async (dispatch: AppDispatch) => {
+export const fetchClassification = (id:string ) => async (dispatch: AppDispatch) => {
+    try {
+        const classification: ClassificationType = await fetchConfig(`/api/documentClassifications/${id}`, {
+            method: "GET",
+            params: {includeClassificationWords: true}
+        });
+
+        dispatch(setClassification(classification));
+    } catch (err) {
+        // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+    } finally {
+        // dispatch(setLoading(false));
+    }
+};
+
+
+export const fetchRenameClassification = ({
+                                              id,
+                                              name
+                                          }: { id: string, name: string }) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
         await fetchConfigText(`/api/documentClassifications/${id}`, {
@@ -58,7 +78,7 @@ export const fetchRenameClassification = ({id, name}: {id:string, name: string})
     }
 };
 
-export const fetchDeleteClassification = ({id}: {id:string}) => async (dispatch: AppDispatch) => {
+export const fetchDeleteClassification = ({id}: { id: string }) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
         await fetchConfigText(`/api/documentClassifications/${id}`, {
@@ -72,7 +92,9 @@ export const fetchDeleteClassification = ({id}: {id:string}) => async (dispatch:
     }
 };
 
-export const addClassifications = (classification: Omit<ClassificationType, "id">) => async (dispatch: AppDispatch) => {
+type PostClassType = { "name": string, "classificationWords": { "value": string }[] }
+
+export const addClassification = (classification: PostClassType) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
         await fetchConfig(`/api/documentClassifications`, {
@@ -87,13 +109,29 @@ export const addClassifications = (classification: Omit<ClassificationType, "id"
 };
 
 
-export const addToClassificationWord = (args: { id: string, value: string }) => async (dispatch: AppDispatch) => {
+export const postAddToClassificationWord = (args: { classId: string, value: string }) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
-        await fetchConfig(`/api/documentClassifications/${args.id}/words`, {
+        await fetchConfigText(`/api/documentClassifications/${args.classId}/words`, {
             method: "POST",
-            body: args.value
+            body: {value: args.value}
         });
+        dispatch(addClassificationTag({...args, tagId: "1"}))
+        // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+    } catch (err) {
+        // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+    } finally {
+        // dispatch(setLoading(false));
+    }
+};
+
+export const fetchDeleteToClassificationWord = (args: { classId: string, tagId: string}) => async (dispatch: AppDispatch) => {
+    // dispatch(setLoading(true));
+    try {
+        await fetchConfigText(`/api/documentClassifications/words/${args.tagId}`, {
+            method: "DELETE",
+        });
+        dispatch(removeClassificationTag(args))
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))

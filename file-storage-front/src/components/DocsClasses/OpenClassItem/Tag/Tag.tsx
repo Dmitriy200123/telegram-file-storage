@@ -2,14 +2,19 @@ import React, {ChangeEvent, FC, memo, useEffect, useRef, useState} from 'react';
 import classes from "./Tag.module.scss";
 import {ReactComponent as Cross} from "./../../../../assets/cross.svg";
 import {Button} from "../../../utils/Button/Button";
+import {ClassificationType} from "../../../../models/Classification";
+import {set} from "react-hook-form";
 
-type PropsType = {}
+type PropsType = {
+    tag: NonNullable<ClassificationType["classificationWords"]>[0],
+    renameTag: (e: string) => void,
+    removeTag: () => void
+}
 
 
-const Tag: FC<PropsType> = memo(() => {
-    const start = "text"
+const Tag: FC<PropsType> = memo(({tag, renameTag, removeTag}) => {
     const input = useRef<HTMLInputElement>(null);
-    const [text, setText] = useState(start);
+    const [text, setText] = useState(tag.value);
 
     useEffect(() => {
         if (input.current) {
@@ -26,25 +31,33 @@ const Tag: FC<PropsType> = memo(() => {
         input.current.style.width = Math.max(input.current.scrollWidth, 10) + "px";
     }
 
+    function onBlur() {
+        if (text.length > 0)
+            renameTag(text);
+    }
+
+
     return <div className={classes.tag}>
-        <input ref={input} value={text} onChange={onChange} className={classes.input}/>
-        <Cross className={classes.cross}/>
+        <input ref={input} value={text} onChange={onChange} className={classes.input} onBlur={onBlur}/>
+        <Cross className={classes.cross} onClick={removeTag}/>
     </div>;
 });
 
-export const CreateTag: FC = () => {
+export const CreateTag: FC<{ setTag: (value: string) => void }> = ({setTag}) => {
     const [editMode, setEditMode] = useState(false);
+
     return (!editMode ?
         <Button onClick={() => setEditMode(true)} className={classes.createBtn} type={"white"}>Добавить</Button> :
-        <TagCreate callback={() => setEditMode(false)}/>);
+        <TagCreate close={() => setEditMode(false)} setTag={setTag}/>);
 }
 
 
 type PropsTagCreateType = {
-    callback: () => void
+    close: () => void,
+    setTag: (e:string) => void
 }
 
-export const TagCreate: FC<PropsTagCreateType> = memo(({callback}) => {
+export const TagCreate: FC<PropsTagCreateType> = memo(({close, setTag}) => {
     const input = useRef<HTMLInputElement>(null);
     const [text, setText] = useState("");
 
@@ -64,8 +77,14 @@ export const TagCreate: FC<PropsTagCreateType> = memo(({callback}) => {
         input.current.style.width = Math.max(input.current.scrollWidth, 10) + "px";
     }
 
+    function onBlur() {
+        if (text.length > 0)
+            setTag(text);
+        close();
+    }
+
     return <div className={classes.tag}>
-        <input ref={input} value={text} onChange={onChange} className={classes.input} onBlur={callback}/>
+        <input ref={input} value={text} onChange={onChange} className={classes.input} onBlur={onBlur}/>
     </div>;
 });
 

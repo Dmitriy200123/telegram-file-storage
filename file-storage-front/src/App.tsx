@@ -80,7 +80,7 @@ const Main: FC = () => {
                  style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
                     <Route path={"/Profile"} component={Profile}/>
-                    <Route path={"/docs-сlasses"} component={DocsClasses} exact={true}/>
+                    <Route path={"/docs-сlasses"} component={DocsClasses}/>
                     {hasTelegram && <>
                         <Route exact path={"/files"} component={FilesMain}/>
                         <Route path={"/file/:id"} component={OpenedFileContainer}/>
