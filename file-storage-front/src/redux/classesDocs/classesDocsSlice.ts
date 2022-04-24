@@ -39,6 +39,22 @@ export const classesDocsSlice = createSlice({
         setClassifications(state, payload: PayloadAction<ClassificationType[] | null>) {
             state.classifications = payload.payload;
         },
+        renameClassification(state, payload: PayloadAction<{id:string, name: string}>) {
+            if (!state.classifications)
+                return;
+            state.classifications = state.classifications.map(classification => {
+                if(classification.id === payload.payload.id)
+                    return {...classification, name: payload.payload.name};
+                return classification;
+            });
+        },
+        deleteClassification(state, payload: PayloadAction<{id:string}>) {
+            if (!state.classifications)
+                return;
+            state.classifications = state.classifications.filter(classification => {
+                return classification.id !== payload.payload.id;
+            });
+        },
         closeModal(state) {
             state.modal = {isOpen: false, type: null, args: null};
         },

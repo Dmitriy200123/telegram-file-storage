@@ -3,8 +3,7 @@ import styles from "./Button.module.css";
 import "./Button.scss";
 import CSS from 'csstype';
 
-type Props = {
-    className?: string | null,
+interface Props extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
     style?: CSS.Properties,
     type?: "transparent" | "danger" | "white",
     onClick?: () => void

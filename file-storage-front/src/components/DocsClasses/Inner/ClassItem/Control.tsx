@@ -9,14 +9,20 @@ import {useAppDispatch} from "../../../../utils/hooks/reduxHooks";
 import {Link} from "react-router-dom";
 
 const {openModal} = classesDocsSlice.actions;
-export const Controls: FC<PropsControlType> = memo(({}) => {
+type PropsControlType = {
+    id:string,
+    name:string
+};
+
+
+export const Controls: FC<PropsControlType> = memo(({id, name}) => {
     const [isOpen, changeIsOpen] = useState(false);
     const dispatch = useAppDispatch();
     const openModalRemove = () => {
-        dispatch(openModal({type: "remove"}));
+        dispatch(openModal({type: "remove", args: {id: id}}));
     };
     const openModalRename = () => {
-        dispatch(openModal({type: "edit"}));
+        dispatch(openModal({type: "edit", args: {id: id, name}}));
     }
     const openModalEdit = () => {
         //    todo: redirect
@@ -33,7 +39,7 @@ export const Controls: FC<PropsControlType> = memo(({}) => {
                 <div className={classesItems.controls__modalItem}
                      onClick={openModalRename}>
                     <Rename/><span>Переименовать</span></div>
-                <Link className={classesItems.controls__modalItem} to={"/docs-сlasses/123"}
+                <Link className={classesItems.controls__modalItem} to={`/docs-сlasses/${id}`}
                       onClick={openModalEdit}>
                     <Edit/><span>Редактировать</span></Link>
                 <div className={[classesItems.controls__modalItem, classesItems.controls__modalItem_delete].join(" ")}
@@ -45,4 +51,3 @@ export const Controls: FC<PropsControlType> = memo(({}) => {
     </OutsideAlerter>
 });
 
-type PropsControlType = {};

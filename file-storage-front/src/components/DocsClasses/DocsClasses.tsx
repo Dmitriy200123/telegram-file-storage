@@ -16,7 +16,6 @@ type PropsType = {}
 
 const {openModal, closeModal} = classesDocsSlice.actions
 const DocsClassesPage: FC<PropsType> = (props) => {
-
     const {type, isOpen, args} = useAppSelector((state) => state.classesDocs.modal);
     const dispatch = useAppDispatch();
     return (<>
@@ -39,6 +38,13 @@ const DocsClasses: FC<PropsType> = (props) => {
         dispatch(fetchCountClassifications(filters.query));
         dispatch(fetchClassifications({skip: filters.take * (filters.page - 1), take: filters.take, query: filters.query}));
     }, [filters]);
+
+    useEffect(() => {
+        if (classifications !== null && classifications.length === 0) {
+            if (filters.page > 1)
+                setFilters((prev) => ({...prev, page: prev.page - 1}))
+        }
+    }, [classifications?.length])
 
     function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
         setFilters((prev) => ({...prev, page: 1, query: e.target.value}));

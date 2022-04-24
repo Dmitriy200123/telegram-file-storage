@@ -4,7 +4,7 @@ import {InputText} from "../../../utils/Inputs/Text/InputText";
 import {Button} from "../../../utils/Button/Button";
 
 type Props = {
-    onOutsideClick: () => void
+    onOutsideClick?: () => void
 }
 
 const Create: FC<Props> = ({onOutsideClick}) => {

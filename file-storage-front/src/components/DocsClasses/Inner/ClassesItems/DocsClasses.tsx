@@ -12,7 +12,7 @@ const ClassesItems: FC<PropsType> = memo(({classifications}) => {
         <table className={classes.classes}>
             <tbody>
             {classifications?.map((c) => {
-                return <ClassItem classification={c}/>
+                return <ClassItem key={c.id} classification={c}/>
             })}
             </tbody>
         </table>

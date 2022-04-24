@@ -9,12 +9,11 @@ type PropsControlType = {
 };
 
 export const ClassItem: FC<PropsControlType> = memo(({classification}) => {
-
     return <tr className={classesItems.classesItem}>
         <td className={classesItems.classesItem__name}>{classification.name}</td>
         <td className={classesItems.classesItem__tags}><Tags tags={classification.classificationWords}/></td>
         <td className={classesItems.classesItem__controls}>
-            <Controls/>
+            <Controls id={classification.id} name={classification.name}/>
         </td>
     </tr>
 });

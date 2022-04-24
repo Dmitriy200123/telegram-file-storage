@@ -21,7 +21,7 @@ type PropsType = {
 const DocsClassesModal: FC<PropsType> = ({onOutsideClick, modalType, args}) => {
     const Content = modalsContent[modalType]
     return (<Modal onOutsideClick={onOutsideClick} className={classes.content}>
-            <Content onOutsideClick={onOutsideClick} {...args}/>
+            <Content args={args} onOutsideClick={onOutsideClick} />
         </Modal>
     );
 };
