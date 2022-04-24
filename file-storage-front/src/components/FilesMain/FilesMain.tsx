@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import "./FilesMain.scss"
-import Paginator from '../utils/Paginator/Paginator';
+import PaginatorNeNorm from '../utils/Paginator/PaginatorNeNorm';
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
@@ -74,7 +74,7 @@ const FilesMain = () => {
                     </div>
                 </form>
             </div>
-            <Paginator paginator={paginator}/>
+            <PaginatorNeNorm paginator={paginator}/>
         </div>
     );
 };

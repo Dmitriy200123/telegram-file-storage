@@ -8,7 +8,7 @@ const {setCount, setClassifications} = classesDocsSlice.actions;
 export const fetchCountClassifications = (query?: string) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
-        const count = +await fetchConfigText(`/api/documentClassifications/count`, {method: "GET", body: query});
+        const count = +await fetchConfigText(`/api/documentClassifications/count`, {method: "GET", params: {query}});
         dispatch(setCount(count));
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
@@ -20,11 +20,16 @@ export const fetchCountClassifications = (query?: string) => async (dispatch: Ap
 type FetchClassificationsType = {
     skip: number,
     take: number,
-    query: string,
+    query?: string,
+    includeClassificationWords?:boolean
 }
 
 export const fetchClassifications = (args: FetchClassificationsType) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
+    if (!args.includeClassificationWords) {
+        args.includeClassificationWords = true;
+    }
+
     try {
         const classifications: ClassificationType[] = await fetchConfig(`/api/documentClassifications`, {
             method: "GET",

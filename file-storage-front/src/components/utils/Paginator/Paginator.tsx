@@ -1,46 +1,44 @@
-import React, {memo, useCallback, useEffect} from 'react';
+import React, {FC, memo} from 'react';
 import "./Paginator.scss"
-import {fetchFiles} from "../../../redux/thunks/mainThunks";
-import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
-import {TypePaginator} from "../../../models/File";
-import {filesSlice} from "../../../redux/filesSlice";
 
-const {changePaginatorPage} = filesSlice.actions;
+interface IProps {
+    current: number,
+    count: number,
+    pageHandler: (page:number) => void
+}
 
-const Paginator = memo(({paginator}: { paginator: TypePaginator}) => {
-    const {currentPage,count} = paginator
-    const dispatch = useAppDispatch();
-
+const Paginator:FC<IProps> = memo(({current, count, pageHandler}) => {
     let pages: Array<number> = [];
     const dif = 4;
-    for (let i = Math.max(currentPage - dif, 2); i <= Math.min(currentPage + dif, count - 1); i++) {
+    for (let i = Math.max(current - dif, 2); i <= Math.min(current + dif, count - 1); i++) {
         pages.push(i);
     }
-    const changePage = useCallback((page: number) => dispatch(changePaginatorPage(page)),[]);
 
     if (count <= 1)
         return null;
     return (
         <div className={"paginator"}>
-            <button className={"paginator__item" + ((currentPage === 1) ? " paginator__item_disabled" : "")} disabled={currentPage === 1}
-                    onClick={() => changePage(currentPage - 1)}>←
+            <button className={"paginator__item" + ((current === 1) ? " paginator__item_disabled" : "")}
+                    disabled={current === 1}
+                    onClick={() => pageHandler(current - 1)}>←
             </button>
 
-            <div className={"paginator__item " + (1 === currentPage ? "paginator__item_active" : "")}
-                 onClick={() => changePage(1)}>1
+            <div className={"paginator__item " + (1 === current ? "paginator__item_active" : "")}
+                 onClick={() => pageHandler(1)}>1
             </div>
-            {(currentPage > 2 + dif ) && <div className={"paginator__nothing"}>...</div>}
+            {(current > 2 + dif ) && <div className={"paginator__nothing"}>...</div>}
 
-            {pages.map((e) => <div className={"paginator__item " + (e === currentPage ? "paginator__item_active" : "")}
-                                   onClick={() => changePage(e)} key={e}>{e}</div>)}
+            {pages.map((e) => <div className={"paginator__item " + (e === current ? "paginator__item_active" : "")}
+                                   onClick={() => pageHandler(e)} key={e}>{e}</div>)}
             {count > 1 &&
-            <>{(currentPage < count - dif - 1) && <div className={"paginator__nothing"}>...</div>}
-                <div onClick={() => changePage(count)}
-                     className={"paginator__item " + (count === currentPage ? "paginator__item_active" : "")}>{count}</div>
+            <>{(current < count - dif - 1) && <div className={"paginator__nothing"}>...</div>}
+                <div onClick={() => pageHandler(count)}
+                     className={"paginator__item " + (count === current ? "paginator__item_active" : "")}>{count}</div>
             </>}
 
-            <button className={"paginator__item" + ((currentPage === count) ? " paginator__item_disabled" : "") } disabled={currentPage === count}
-                    onClick={() => changePage(currentPage + 1)}>→
+            <button className={"paginator__item" + ((current === count) ? " paginator__item_disabled" : "") }
+                    disabled={current === count}
+                    onClick={() => pageHandler(current + 1)}>→
             </button>
         </div>
     )
