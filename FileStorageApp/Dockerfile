@@ -30,6 +30,7 @@ COPY InfoStorage.Tests/*.csproj ./InfoStorage.Tests/
 COPY DocumentsIndex.Tests/*.csproj ./DocumentsIndex.Tests/
 COPY DocumentsIndex.Benchmarks/*.csproj ./DocumentsIndex.Benchmarks/
 COPY SearchDocumentsAPI.Tests/*.csproj ./SearchDocumentsAPI.Tests/
+COPY DocumentClassificationsAPI.Tests/*.csproj ./DocumentClassificationsAPI.Tests/
 
 RUN dotnet restore
 #
