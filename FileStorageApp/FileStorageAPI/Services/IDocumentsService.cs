@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using API;
 using FileStorageAPI.Models;
@@ -23,5 +24,17 @@ namespace FileStorageAPI.Services
         /// Возвращает файлы типа "Текстовый документ".
         /// </summary>
         Task<RequestResult<List<DocumentInfo>>> GetFileInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
+        
+        /// <summary>
+        /// Возвращает документ по Id
+        /// </summary>
+        /// <param name="id">Id документа</param>
+        Task<RequestResult<DocumentInfo>> FindDocumentById(Guid id);
+        
+        /// <summary>
+        /// Возвращает классификацию по Id документа
+        /// </summary>
+        /// <param name="documentId">Id документа</param>
+        Task<RequestResult<ClassificationInfo>> FindClassificationByDocumentId(Guid documentId);
     }
 }

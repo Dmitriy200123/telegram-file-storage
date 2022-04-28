@@ -60,12 +60,53 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetDocumentInfos([FromQuery] DocumentSearchParameters documentSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
+            // TODO: Сменить модельку на DocumentInfo
             var files = await _documentsService.GetFileInfosAsync(documentSearchParameters, skip, take, Request);
 
             return files.ResponseCode switch
             {
                 HttpStatusCode.OK => Ok(files.Value),
                 HttpStatusCode.BadRequest => BadRequest(files.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+        
+        /// <summary>
+        /// Возвращает документ по Id
+        /// </summary>
+        /// <param name="documentId">Id документа</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{documentId:guid}")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает документ", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
+        public async Task<IActionResult> FindDocumentById(Guid documentId)
+        {
+            var files = await _documentsService.FindDocumentById(documentId);
+
+            return files.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(files.Value),
+                HttpStatusCode.NotFound => NotFound(files.Message),
+                _ => throw new ArgumentException("Unknown response code")
+            };
+        }
+        
+        /// <summary>
+        /// Возвращает классификацию по Id
+        /// </summary>
+        /// <param name="documentId">Id документа</param>
+        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
+        [HttpGet("{documentId:guid}/classification")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает классификацию", typeof(FileInfo))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
+        public async Task<IActionResult> FindClassificationByDocumentId(Guid documentId)
+        {
+            var files = await _documentsService.FindClassificationByDocumentId(documentId);
+
+            return files.ResponseCode switch
+            {
+                HttpStatusCode.OK => Ok(files.Value),
+                HttpStatusCode.NotFound => NotFound(files.Message),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

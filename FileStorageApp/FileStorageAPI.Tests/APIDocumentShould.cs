@@ -9,6 +9,7 @@ using Amazon.S3;
 using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Models;
+using FileStorageApp.Data.InfoStorage.Contracts;
 using FileStorageApp.Data.InfoStorage.Models;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -58,6 +59,11 @@ namespace FileStorageAPI.Tests
             using var filesStorage = await _filesStorageFactory.CreateAsync();
             foreach (var file in await filesStorage.GetFilesAsync())
                 await filesStorage.DeleteFileAsync(file.Key);
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+
+            foreach (var element in await storage.GetAllAsync())
+                await storage.DeleteAsync(element.Id);
         }
         
         [Test]
@@ -90,7 +96,53 @@ namespace FileStorageAPI.Tests
             actual.Should().Be(1);
         }
         
-       
+        [Test]
+        public async Task FindDocumentById_Ok()
+        {
+            var fileInfo = await UploadFile();
+            
+            using var apiClient = CreateHttpClient();
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}");
+
+            response.EnsureSuccessStatusCode();
+            
+            var responseString = await response.Content.ReadAsStringAsync();
+            var actual = JsonConvert.DeserializeObject<DocumentInfo>(responseString, _dateTimeConverter);
+            
+            actual.Should().NotBeNull();
+            actual.FileId.Should().Be(fileInfo.FileId);
+        }
+        
+        [Test]
+        public async Task FindClassificationByDocumentId_Ok()
+        {
+            var fileInfo = await UploadFile();
+            
+            var classification = new Classification
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test classification"
+            };
+            
+            using var classificationStorage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            await classificationStorage.AddAsync(classification);
+
+            using var fileStorage = _infoStorageFactory.CreateFileStorage();
+            await fileStorage.AddClassificationAsync(fileInfo.FileId, classification.Id);
+
+            using var apiClient = CreateHttpClient();
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}/classification");
+
+            response.EnsureSuccessStatusCode();
+            
+            var responseString = await response.Content.ReadAsStringAsync();
+            var actual = JsonConvert.DeserializeObject<ClassificationInfo>(responseString);
+            
+            actual.Should().NotBeNull();
+            actual.Id.Should().Be(classification.Id);
+            actual.Name.Should().Be(classification.Name);
+        }
+        
         public async Task<DocumentInfo?> UploadFile()
         {
             using var apiClient = CreateHttpClient();
