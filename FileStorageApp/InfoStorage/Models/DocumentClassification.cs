@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FileStorageApp.Data.InfoStorage.Models
 {
     [Table("DocumentClassifications")]
-    internal class DocumentClassification : IModel
+    public class DocumentClassification : IModel
     {
         [Key]
         public Guid Id { get; set; }
@@ -14,8 +14,10 @@ namespace FileStorageApp.Data.InfoStorage.Models
         [Required]
         [MaxLength(255)]
         public string Name { get; set; }
-        
+
         public virtual ICollection<DocumentClassificationWord> ClassificationWords { get; set; } =
             new List<DocumentClassificationWord>();
+
+        public virtual ICollection<File> Documents { get; set; } = new List<File>();
     }
 }

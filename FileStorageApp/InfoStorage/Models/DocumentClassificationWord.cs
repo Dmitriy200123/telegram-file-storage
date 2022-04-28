@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace FileStorageApp.Data.InfoStorage.Models
 {
     [Table("DocumentClassificationWords")]
-    internal class DocumentClassificationWord : IModel
+    public class DocumentClassificationWord : IModel
     {
         [Key]
         public Guid Id { get; set; }

@@ -42,5 +42,10 @@ namespace FileStorageApp.Data.InfoStorage.Models
 
         [ForeignKey("ChatId")]
         public virtual Chat? Chat { get; set; }
+
+        public Guid? ClassificationId { get; set; }
+        
+        [ForeignKey("ClassificationId")]
+        public virtual DocumentClassification? Classification { get; set; }
     }
 }
