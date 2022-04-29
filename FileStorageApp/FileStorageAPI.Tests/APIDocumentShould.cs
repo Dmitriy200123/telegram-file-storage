@@ -102,7 +102,7 @@ namespace FileStorageAPI.Tests
             var fileInfo = await UploadFile();
             
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}");
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.DocumentId}");
 
             response.EnsureSuccessStatusCode();
             
@@ -110,7 +110,7 @@ namespace FileStorageAPI.Tests
             var actual = JsonConvert.DeserializeObject<DocumentInfo>(responseString, _dateTimeConverter);
             
             actual.Should().NotBeNull();
-            actual.FileId.Should().Be(fileInfo.FileId);
+            actual.DocumentId.Should().Be(fileInfo.DocumentId);
         }
         
         [Test]
@@ -128,10 +128,10 @@ namespace FileStorageAPI.Tests
             await classificationStorage.AddAsync(classification);
 
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
-            await fileStorage.AddClassificationAsync(fileInfo.FileId, classification.Id);
+            await fileStorage.AddClassificationAsync(fileInfo.DocumentId, classification.Id);
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}/classification");
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.DocumentId}/classification");
 
             response.EnsureSuccessStatusCode();
             

@@ -33,9 +33,8 @@ namespace FileStorageAPI.Converters
         /// <inheritdoc />
         public DocumentInfo ConvertToDocumentInfo(File file) => new()
         {
-            FileId = file.Id,
-            FileName = file.Name,
-            FileType = file.Type,
+            DocumentId = file.Id,
+            DocumentName = file.Name,
             Sender = _senderConverter.ConvertFileSender(file.FileSender),
             UploadDate = file.UploadDate,
             Chat = _chatConverter.ConvertToChatInApi(file.Chat),

@@ -60,7 +60,6 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetDocumentInfos([FromQuery] DocumentSearchParameters documentSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
-            // TODO: Сменить модельку на DocumentInfo
             var files = await _documentsService.GetFileInfosAsync(documentSearchParameters, skip, take, Request);
 
             return files.ResponseCode switch
