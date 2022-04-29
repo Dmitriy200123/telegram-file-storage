@@ -56,7 +56,7 @@ namespace FileStorageAPI.Tests
             _applicationFactory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
                 {
-                    builder.UseEnvironment("Debug");
+                    builder.UseEnvironment("Development");
                     builder.UseConfiguration(Config);
                     builder.ConfigureServices(services =>
                     {
