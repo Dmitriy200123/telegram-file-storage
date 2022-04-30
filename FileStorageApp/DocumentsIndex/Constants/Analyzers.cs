@@ -2,6 +2,6 @@
 {
     public static class Analyzers
     {
-        public const string DocumentNgramAnalyzer = "ngram_analyzer";
+        public const string CustomAnalyzer = "custom_analyzer";
     }
 }

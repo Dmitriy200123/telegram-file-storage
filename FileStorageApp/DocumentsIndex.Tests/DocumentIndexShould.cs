@@ -68,28 +68,28 @@ namespace DocumentsIndex.Tests
             var expectedGuid = Guid.NewGuid();
             var document = await GetDocumentModelByFilename(DocumentName, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
-            var searchResponse = await _documentIndexStorage.SearchByNameAsync(DocumentName);
+            var searchResponse = await _documentIndexStorage.SearchByNameAsync("testWORD");
 
             searchResponse.Should().NotBeEmpty();
             var actual = searchResponse.First();
             actual.Should().Be(expectedGuid);
         }
-
-        [TestCase(DocumentName)]
-        [TestCase("attachments")]
-        [TestCase("NEST")]
-        [TestCase("and")]
-        [TestCase("example")]
-        [TestCase("exam")]
+        
+        [TestCase("word")]
         [TestCase("one")]
+        [TestCase("success")]
+        [TestCase("текст")]
+        [TestCase("русский")]
+        [TestCase("русская")]
         public async Task FindInTextOrNameAsync_SuccessFound_ThenCalled(string query)
         {
             var document = await GetDocumentModelByFilename(DocumentName);
             await _documentIndexStorage.IndexDocumentAsync(document);
 
-            var documentName = await _documentIndexStorage.FindInTextOrNameAsync(DocumentName);
-            var documentContent = await _documentIndexStorage.FindInTextOrNameAsync(WordThatContainsDocument);
+            var documentName = await _documentIndexStorage.FindInTextOrNameAsync("testWORD");
+            var documentContent = await _documentIndexStorage.FindInTextOrNameAsync(query);
 
+            documentContent.Should().NotBeEmpty();
             documentName.Should().BeEquivalentTo(documentContent);
         }
 
@@ -122,11 +122,8 @@ namespace DocumentsIndex.Tests
 
             actual.Should().BeEmpty();
         }
-
-        [TestCase(true, "test")]
+        
         [TestCase(true, "testWORD")]
-        [TestCase(true, "te", "doc")]
-        [TestCase(true, "tes", "ORD")]
         [TestCase(false, "aboba", "hfdjkass")]
         [TestCase(false, "z")]
         [TestCase(false, "amzz")]
