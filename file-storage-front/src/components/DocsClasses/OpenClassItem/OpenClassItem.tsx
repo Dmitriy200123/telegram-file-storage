@@ -65,7 +65,8 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
         return <>Не найдено</>;
 
     function createTag(value: string) {
-        dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
+        if (classification )
+            dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
     }
 
     function deleteClassification() {

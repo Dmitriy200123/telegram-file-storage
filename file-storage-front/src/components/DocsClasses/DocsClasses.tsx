@@ -14,7 +14,7 @@ import {ReactComponent as PlusIcon} from "./../../assets/plus.svg";
 
 type PropsType = {}
 
-const {openModal, closeModal} = classesDocsSlice.actions
+const {openModal, closeModal, setIsFetchClassifications} = classesDocsSlice.actions
 const DocsClassesPage: FC<PropsType> = (props) => {
     const {type, isOpen, args} = useAppSelector((state) => state.classesDocs.modal);
     const dispatch = useAppDispatch();
@@ -33,6 +33,7 @@ const DocsClasses: FC<PropsType> = (props) => {
     const dispatch = useAppDispatch();
     const classifications = useAppSelector(state => state.classesDocs.classifications);
     const count = useAppSelector(state => state.classesDocs.count);
+    const isFetchClassifications = useAppSelector(state => state.classesDocs.fetchClassifications);
     const [filters, setFilters] = useState({page: 1, take: 3, query: undefined as undefined | string});
 
     function fetchClasses() {
@@ -49,15 +50,29 @@ const DocsClasses: FC<PropsType> = (props) => {
     }, [filters]);
 
     useEffect(() => {
-        if (classifications === null)
-            return ;
-        if (classifications.length !== 0) {
+        if (!isFetchClassifications) {
+            return
+        }
+
+        dispatch(setIsFetchClassifications(false));
+        if (classifications && classifications.length !== 0) {
             return fetchClasses();
         }
 
         if (filters.page > 1)
             setFilters((prev) => ({...prev, page: prev.page - 1}))
-    }, [classifications?.length])
+    }, [isFetchClassifications])
+
+    // useEffect(() => {
+    //     if (classifications === null)
+    //         return ;
+    //     if (classifications.length !== 0) {
+    //         return fetchClasses();
+    //     }
+    //
+    //     if (filters.page > 1)
+    //         setFilters((prev) => ({...prev, page: prev.page - 1}))
+    // }, [classifications?.length])
 
     function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
         setFilters((prev) => ({...prev, page: 1, query: e.target.value}));
@@ -80,7 +95,7 @@ const DocsClasses: FC<PropsType> = (props) => {
                         </Button>
                     </div>
                     {classifications && classifications.length > 0 ? <ClassesItems classifications={classifications}/> :
-                    <Empty/>}
+                        <Empty/>}
                 </div>
                 <Paginator pageHandler={onChangePage} current={filters.page} count={Math.ceil(count / filters.take)}/>
             </div>

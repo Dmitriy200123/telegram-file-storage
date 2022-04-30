@@ -10,7 +10,8 @@ type stateType = {
         args?: any
     },
     count: number,
-    classifications: ClassificationType[] | null
+    classifications: ClassificationType[] | null,
+    fetchClassifications: boolean,
 }
 
 const initialState: stateType = {
@@ -19,7 +20,8 @@ const initialState: stateType = {
         type: null,
     },
     count: 0,
-    classifications: null
+    classifications: null,
+    fetchClassifications: false
 }
 
 export const classesDocsSlice = createSlice({
@@ -33,6 +35,9 @@ export const classesDocsSlice = createSlice({
                 args: payload.payload.args
             }
         },
+        setIsFetchClassifications(state, payload: PayloadAction<boolean>) {
+            state.fetchClassifications = payload.payload;
+        },
         setCount(state, payload: PayloadAction<number>) {
             state.count = payload.payload;
         },
@@ -44,7 +49,6 @@ export const classesDocsSlice = createSlice({
                 ? [...state.classifications, payload.payload]
                 : [payload.payload];
         },
-
         renameClassification(state, payload: PayloadAction<{ id: string, name: string }>) {
             if (!state.classifications)
                 return;

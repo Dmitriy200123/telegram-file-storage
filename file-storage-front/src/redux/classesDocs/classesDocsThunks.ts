@@ -4,7 +4,7 @@ import {classesDocsSlice} from "./classesDocsSlice";
 import {ClassificationType} from "../../models/Classification";
 
 const {setCount, setClassifications, renameClassification, deleteClassification, setClassification, closeModal,
-removeClassificationTag, addClassificationTag, } = classesDocsSlice.actions;
+removeClassificationTag, addClassificationTag, setIsFetchClassifications} = classesDocsSlice.actions;
 
 export const fetchCountClassifications = (query?: string) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
@@ -86,6 +86,7 @@ export const fetchDeleteClassification = ({id}: { id: string }) => async (dispat
             method: "DELETE",
         });
         dispatch(deleteClassification({id}));
+        dispatch(setIsFetchClassifications(true));
         dispatch(closeModal());
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
@@ -106,6 +107,7 @@ export const addClassification = (classification: PostClassType) => async (dispa
 
         // @ts-ignore
         dispatch(setClassifications(classification))
+        dispatch(setIsFetchClassifications(true));
         dispatch(closeModal())
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
@@ -123,6 +125,7 @@ export const postAddToClassificationWord = (args: { classId: string, value: stri
             body: {value: args.value}
         });
         dispatch(addClassificationTag({...args, tagId: "1"}))
+        return "error";
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))

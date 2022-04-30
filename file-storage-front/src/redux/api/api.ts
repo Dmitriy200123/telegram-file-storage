@@ -23,11 +23,15 @@ export const makeDoRequest = (baseUrl: string) => async (url: string, config?: a
 
 export const makeFetchConfig = (doRequest: (url: string, config?: any) => Promise<Response>) => async (url: string, config?: any) => {
     const response = await doRequest(url, config);
+    if (!response.ok)
+        throw Error(await response.text());
     return await response.json();
 };
 
 export const makeFetchConfigText = (doRequest: (url: string, config?: any) => Promise<Response>) => async (url: string, config?: any) => {
     const response = await doRequest(url, config);
+    if (!response.ok)
+        throw Error(await response.text());
     return await response.text();
 };
 
