@@ -9,10 +9,11 @@ import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import Tag, {CreateTag} from "./Tag/Tag";
 import {ClassificationType} from "../../../models/Classification";
 import {
-    fetchClassification,
+    fetchClassification, fetchDeleteClassification,
     fetchDeleteToClassificationWord,
     postAddToClassificationWord
 } from "../../../redux/classesDocs/classesDocsThunks";
+import {ModalContent} from "../../../models/File";
 
 const {openModal} = classesDocsSlice.actions
 
@@ -26,7 +27,6 @@ interface match<Params extends { [K in keyof Params]?: string } = {}> {
 type PropsType = { match: match<{ id: string }> }
 
 const OpenClassItemContainer: React.FC<PropsType> = memo(({match}) => {
-    console.log("СТЭЭЭС")
     const id = match.params["id"];
     const dispatch = useAppDispatch();
     const classifications = useAppSelector(state => state.classesDocs.classifications);
@@ -68,6 +68,11 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
         dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
     }
 
+    function deleteClassification() {
+        if (classification)
+            dispatch(openModal({type: "remove", args: {id: classification.id}}));
+    }
+
     const tags = classification.classificationWords?.map(c => {
         function removeTag() {
             // @ts-ignore
@@ -90,7 +95,7 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
             </div>
 
             <div className={classes.classItem__btns}>
-                <Button
+                <Button onClick={deleteClassification}
                     type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
             </div>
         </div>

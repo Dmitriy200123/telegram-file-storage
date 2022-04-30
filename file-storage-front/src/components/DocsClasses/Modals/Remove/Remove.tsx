@@ -1,9 +1,9 @@
 import React, {FC} from 'react';
 import {Button} from "../../../utils/Button/Button";
 import classes from "../Modal.module.scss";
-import {fetchDeleteClassification, fetchRenameClassification} from "../../../../redux/classesDocs/classesDocsThunks";
-import {fetchRemoveFile} from "../../../../redux/thunks/fileThunks";
+import {fetchDeleteClassification} from "../../../../redux/classesDocs/classesDocsThunks";
 import {useAppDispatch} from "../../../../utils/hooks/reduxHooks";
+import {useHistory} from "react-router-dom";
 
 type PropsType = {
     onOutsideClick?: () => void
@@ -11,10 +11,13 @@ type PropsType = {
 }
 const Remove: FC<PropsType> = ({onOutsideClick, args}) => {
     const dispatch = useAppDispatch();
+    const history = useHistory();
 
     function onSubmit() {
         dispatch(fetchDeleteClassification({ id: args.id}));
         onOutsideClick?.();
+        if (history.location.pathname !== "docs-сlasses")
+            history.push("/docs-сlasses");
     }
 
     return (
