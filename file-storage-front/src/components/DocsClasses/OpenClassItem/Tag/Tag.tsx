@@ -7,38 +7,13 @@ import {set} from "react-hook-form";
 
 type PropsType = {
     tag: NonNullable<ClassificationType["classificationWords"]>[0],
-    renameTag: (e: string) => void,
     removeTag: () => void
 }
 
 
-const Tag: FC<PropsType> = memo(({tag, renameTag, removeTag}) => {
-    const input = useRef<HTMLInputElement>(null);
-    const [text, setText] = useState(tag.value);
-
-    useEffect(() => {
-        if (input.current) {
-            input.current.style.width = "0";
-            input.current.style.width = input.current.scrollWidth + "px";
-        }
-    }, [input.current])
-
-    function onChange(e: ChangeEvent<HTMLInputElement>) {
-        if (!input.current)
-            return;
-        setText(e.target.value);
-        input.current.style.width = "0";
-        input.current.style.width = Math.max(input.current.scrollWidth, 10) + "px";
-    }
-
-    function onBlur() {
-        if (text.length > 0)
-            renameTag(text);
-    }
-
-
+const Tag: FC<PropsType> = memo(({tag,removeTag}) => {
     return <div className={classes.tag}>
-        <input ref={input} value={text} onChange={onChange} className={classes.input} onBlur={onBlur}/>
+        <div  className={classes.input} >{tag.value}</div>
         <Cross className={classes.cross} onClick={removeTag}/>
     </div>;
 });

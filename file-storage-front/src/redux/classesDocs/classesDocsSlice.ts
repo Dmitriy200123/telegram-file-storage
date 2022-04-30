@@ -44,6 +44,7 @@ export const classesDocsSlice = createSlice({
                 ? [...state.classifications, payload.payload]
                 : [payload.payload];
         },
+
         renameClassification(state, payload: PayloadAction<{ id: string, name: string }>) {
             if (!state.classifications)
                 return;

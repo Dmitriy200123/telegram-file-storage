@@ -37,12 +37,18 @@
 
 .tags {
   margin-top: 25px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   margin-bottom: 32px;
-  overflow: hidden;
-  max-height: 70px;
+
+  &Wrapper{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow: hidden;
+    max-height: 70px;
+    &_open{
+      max-height: none;
+    }
+  }
 }
 
 .tagsBtn {
@@ -75,3 +81,24 @@
   gap: 8px;
 }
 
+.btnAddWrapper{
+  position: relative;
+}
+
+.btnAdd{
+  position: absolute;
+  right: 5px;
+  height: 100%;
+  outline: none;
+  background: none;
+  border: none;
+  color: #CFD8E1;
+  font-weight: bold;
+  font-size: 1.3em;
+  cursor: pointer;
+
+  &:hover, &:focus, &:active{
+    color: #000000;
+
+  }
+}

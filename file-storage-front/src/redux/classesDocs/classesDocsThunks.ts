@@ -3,7 +3,7 @@ import {AppDispatch} from "../redux-store";
 import {classesDocsSlice} from "./classesDocsSlice";
 import {ClassificationType} from "../../models/Classification";
 
-const {setCount, setClassifications, renameClassification, deleteClassification, setClassification,
+const {setCount, setClassifications, renameClassification, deleteClassification, setClassification, closeModal,
 removeClassificationTag, addClassificationTag, } = classesDocsSlice.actions;
 
 export const fetchCountClassifications = (query?: string) => async (dispatch: AppDispatch) => {
@@ -71,6 +71,7 @@ export const fetchRenameClassification = ({
             body: name
         });
         dispatch(renameClassification({id, name}));
+        dispatch(closeModal());
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } finally {
@@ -85,6 +86,7 @@ export const fetchDeleteClassification = ({id}: { id: string }) => async (dispat
             method: "DELETE",
         });
         dispatch(deleteClassification({id}));
+        dispatch(closeModal());
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } finally {
@@ -97,10 +99,14 @@ type PostClassType = { "name": string, "classificationWords": { "value": string 
 export const addClassification = (classification: PostClassType) => async (dispatch: AppDispatch) => {
     // dispatch(setLoading(true));
     try {
-        await fetchConfig(`/api/documentClassifications`, {
+        await fetchConfigText(`/api/documentClassifications`, {
             method: "POST",
             body: classification
         });
+
+        // @ts-ignore
+        dispatch(setClassifications(classification))
+        dispatch(closeModal())
     } catch (err) {
         // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } finally {

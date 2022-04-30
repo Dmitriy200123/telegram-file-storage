@@ -1,3 +1,4 @@
+@use "sass:math";
 @import "src/Variables";
 
 .block {
@@ -68,4 +69,12 @@
     border-top: 1px solid #E9ECEF;
     border-bottom: 1px solid #E9ECEF;
   }
+}
+
+.icon {
+  height: 1em;
+  width: 1em;
+  margin-bottom: 0.2em;
+  vertical-align: middle;
+  margin-right: math.div(13em,14);
 }

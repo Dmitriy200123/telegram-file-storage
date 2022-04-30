@@ -1,8 +1,7 @@
-import React, {ChangeEvent, ChangeEventHandler, FC, useEffect, useState} from 'react';
+import React, {ChangeEvent, FC, useEffect, useState} from 'react';
 import {InputText} from "../utils/Inputs/Text/InputText";
 import {Button} from "../utils/Button/Button";
 import classes from "./DocsClasses.module.scss";
-import PaginatorNeNorm from "../utils/Paginator/PaginatorNeNorm";
 import ClassesItems from "./Inner/ClassesItems/DocsClasses";
 import DocsClassesModal from "./Modals/DocsClassesModal/DocsClassesModal";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
@@ -11,6 +10,7 @@ import {Route, Switch} from "react-router-dom";
 import OpenClassItem from "./OpenClassItem/OpenClassItem";
 import {fetchClassifications, fetchCountClassifications} from "../../redux/classesDocs/classesDocsThunks";
 import Paginator from "../utils/Paginator/Paginator";
+import {ReactComponent as PlusIcon} from "./../../assets/plus.svg";
 
 type PropsType = {}
 
@@ -37,7 +37,11 @@ const DocsClasses: FC<PropsType> = (props) => {
 
     function fetchClasses() {
         dispatch(fetchCountClassifications(filters.query));
-        dispatch(fetchClassifications({skip: filters.take * (filters.page - 1), take: filters.take, query: filters.query}));
+        dispatch(fetchClassifications({
+            skip: filters.take * (filters.page - 1),
+            take: filters.take,
+            query: filters.query
+        }));
     }
 
     useEffect(() => {
@@ -45,7 +49,9 @@ const DocsClasses: FC<PropsType> = (props) => {
     }, [filters]);
 
     useEffect(() => {
-        if (classifications === null || classifications.length !== 0) {
+        if (classifications === null)
+            return ;
+        if (classifications.length !== 0) {
             return fetchClasses();
         }
 
@@ -67,11 +73,14 @@ const DocsClasses: FC<PropsType> = (props) => {
             <div className={classes.background}>
                 <div className={classes.content}>
                     <div className={classes.controls}>
-                        <InputText className={classes.controlInput} onChange={onChangeInput}/>
-                        <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>Создать
-                            классификацию</Button>
+                        <InputText className={classes.controlInput} onChange={onChangeInput}
+                                   placeHolder={"Поиск классификации документов"}/>
+                        <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>
+                            <PlusIcon className={classes.icon}/>Создать классификацию
+                        </Button>
                     </div>
-                    <ClassesItems classifications={classifications}/>
+                    {classifications && classifications.length > 0 ? <ClassesItems classifications={classifications}/> :
+                    <Empty/>}
                 </div>
                 <Paginator pageHandler={onChangePage} current={filters.page} count={Math.ceil(count / filters.take)}/>
             </div>

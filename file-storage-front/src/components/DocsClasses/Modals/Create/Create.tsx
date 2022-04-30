@@ -1,10 +1,10 @@
-import React, {ChangeEvent, FC, useState} from 'react';
+import React, {ChangeEvent, FC, memo, useEffect, useRef, useState} from 'react';
 import classes from "./../DocsClassesModal/DocsClassesModal.module.scss";
 import {InputText} from "../../../utils/Inputs/Text/InputText";
 import {Button} from "../../../utils/Button/Button";
-import {ClassificationType} from "../../../../models/Classification";
 import {useAppDispatch} from "../../../../utils/hooks/reduxHooks";
 import {addClassification} from "../../../../redux/classesDocs/classesDocsThunks";
+import classNames from 'classnames';
 
 type Props = {
     onOutsideClick?: () => void
@@ -17,8 +17,10 @@ const Create: FC<Props> = ({onOutsideClick}) => {
     const [name, setName] = useState<string>("");
 
     function saveTag() {
-        if (tag.length > 0)
-            setArray([...array, {value: tag}])
+        if (tag.length > 0 && !array.find((e) => e.value === tag)) {
+            setArray([...array, {value: tag}]);
+            setTag("");
+        }
     }
 
     function onChangeTag(e: ChangeEvent<HTMLInputElement>) {
@@ -29,7 +31,7 @@ const Create: FC<Props> = ({onOutsideClick}) => {
         setName(e.target.value);
     }
 
-    function onSubmit(){
+    function onSubmit() {
         if (name.length === 0)
             return;
         dispatch(addClassification({name: name, classificationWords: array}));
@@ -45,16 +47,11 @@ const Create: FC<Props> = ({onOutsideClick}) => {
                 </div>
                 <div className={[classes.filter, classes.filter_class].join(" ")}>
                     <label className={classes.label}>Слова для классификации</label>
-                    <div>
+                    <div className={classes.btnAddWrapper}>
                         <InputText placeholder={"Введите слово для классификации"} onChange={onChangeTag} value={tag}/>
-                        <Button onClick={saveTag}>Add</Button>
+                        <button onClick={saveTag} className={classes.btnAdd}>{">"}</button>
                     </div>
-                    <div className={classes.tags}>
-                        {array.map(e => {
-                            return <div key={e.value} className={classes.tag}><span>{e.value}</span></div>
-                        })}
-                        <button className={classes.tagsBtn}>Показать все</button>
-                    </div>
+                    <Tags array={array}/>
                 </div>
             </div>
 
@@ -64,6 +61,31 @@ const Create: FC<Props> = ({onOutsideClick}) => {
             </div>
         </div>
     );
-}
+};
+
+
+const Tags: FC<{ array: { value: string }[] }> = memo(({array}) => {
+    const wrapper = useRef<HTMLDivElement>(null);
+    const [isMany, setIsMany] = useState(false);
+    const [isReveal, setIsReveal] = useState(false);
+
+    useEffect(() => {
+        if (wrapper.current && wrapper.current.scrollHeight > 70 ) {
+            setIsMany(true);
+        } else {
+            setIsMany(false);
+            setIsReveal(false);
+        }
+    }, [array])
+
+    return <div className={classes.tags}>
+        <div className={classNames(classes.tagsWrapper, isReveal && classes.tagsWrapper_open)} ref={wrapper}>
+            {array.map(e => {
+                return <div key={e.value} className={classes.tag}><span>{e.value}</span></div>
+            })}
+        </div>
+        {isMany && <button className={classes.tagsBtn} onClick={() => setIsReveal((prev) => !prev)}>Показать все</button>}
+    </div>
+})
 
 export default Create;

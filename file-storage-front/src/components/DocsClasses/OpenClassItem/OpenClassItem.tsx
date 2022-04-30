@@ -62,22 +62,19 @@ type PropsTypeOpen = { openRename: () => void, classification: ClassificationTyp
 const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => {
     const dispatch = useAppDispatch();
     if (!classification)
-        return <>Нихуя тут нет, идите нахуй</>;
+        return <>Не найдено</>;
 
     function createTag(value: string) {
         dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
     }
 
     const tags = classification.classificationWords?.map(c => {
-        function renameTag(e: string) {
-        }
-
         function removeTag() {
             // @ts-ignore
             dispatch(fetchDeleteToClassificationWord({classId: classification.id, tagId: c.id}))
         }
 
-        return <Tag key={c.id} tag={c} renameTag={renameTag} removeTag={removeTag}/>
+        return <Tag key={c.id} tag={c} removeTag={removeTag}/>
     });
 
     return <div className={classes.classItem}>
