@@ -11,11 +11,22 @@ export const Tags: FC<PropsControlType> = memo(({tags}) => {
     const [isOpen, setIsOpen] = useState(false);
     const div = useRef<HTMLDivElement>(null);
     const [isOverflow, setIsOverflow] = useState(false);
-    useEffect(() => {
+
+    function onChangeSize(){
         if (!div.current) {
             return;
         }
         setIsOverflow((div.current.scrollHeight > 30));
+    }
+
+    useEffect(() => {
+        window.addEventListener("resize", onChangeSize);
+        return () => window.removeEventListener("resize", onChangeSize);
+
+    }, []);
+
+    useEffect(() => {
+        onChangeSize()
     }, [div.current])
 
     return <div className={classes.tags}>
