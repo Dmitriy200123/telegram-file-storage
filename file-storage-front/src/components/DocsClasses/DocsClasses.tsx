@@ -63,17 +63,6 @@ const DocsClasses: FC<PropsType> = (props) => {
             setFilters((prev) => ({...prev, page: prev.page - 1}))
     }, [isFetchClassifications])
 
-    // useEffect(() => {
-    //     if (classifications === null)
-    //         return ;
-    //     if (classifications.length !== 0) {
-    //         return fetchClasses();
-    //     }
-    //
-    //     if (filters.page > 1)
-    //         setFilters((prev) => ({...prev, page: prev.page - 1}))
-    // }, [classifications?.length])
-
     function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
         setFilters((prev) => ({...prev, page: 1, query: e.target.value}));
     }
@@ -89,7 +78,7 @@ const DocsClasses: FC<PropsType> = (props) => {
                 <div className={classes.content}>
                     <div className={classes.controls}>
                         <InputText className={classes.controlInput} onChange={onChangeInput}
-                                   placeHolder={"Поиск классификации документов"}/>
+                                   placeholder={"Поиск классификации документов"}/>
                         <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>
                             <PlusIcon className={classes.icon}/>Создать классификацию
                         </Button>
