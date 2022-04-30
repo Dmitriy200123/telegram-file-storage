@@ -84,7 +84,7 @@ const DocsClasses: FC<PropsType> = (props) => {
                         </Button>
                     </div>
                     {classifications && classifications.length > 0 ? <ClassesItems classifications={classifications}/> :
-                        <Empty/>}
+                        <Empty notFound={(filters.query?.length || 0) > 0}/>}
                 </div>
                 <Paginator pageHandler={onChangePage} current={filters.page} count={Math.ceil(count / filters.take)}/>
             </div>
@@ -93,8 +93,8 @@ const DocsClasses: FC<PropsType> = (props) => {
     );
 };
 
-const Empty = () => {
-    return <div className={classes.classesEmpty}>Классификации документов пока не созданы</div>;
+const Empty:FC<{notFound:boolean}> = ({notFound}) => {
+    return <div className={classes.classesEmpty}>Классификации документов {!notFound ? "пока не созданы" : "не найдены"}</div>;
 }
 
 
