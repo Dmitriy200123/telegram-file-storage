@@ -35,6 +35,6 @@ namespace FileStorageAPI.Services
         /// Возвращает классификацию по Id документа
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        Task<RequestResult<ClassificationInfo>> FindClassificationByDocumentId(Guid documentId);
+        Task<RequestResult<ClassificationInfo?>> FindClassificationByDocumentId(Guid documentId);
     }
 }

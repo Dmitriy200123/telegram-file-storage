@@ -28,6 +28,9 @@ namespace FileStorageAPI.Services
         /// <param name="documentToFileConverter">Преобразователь модели поиска документа в модель поиска файла</param>
         /// <param name="fileService">Сервис отвечающий за работу с файлами</param>
         /// <param name="documentIndexStorage">Хранилище проиндексированных документов</param>
+        /// <param name="infoStorageFactory">Фабрика для создания хранилищ</param>
+        /// <param name="fileToDocumentInfoConverter">Конвертер File в DocumentInfo</param>
+        /// <param name="classificationConverter">Конвертер DocumentClassification в ClassificationInfo</param>
         public DocumentsService(
             IDocumentToFileConverter documentToFileConverter, IFileService fileService,
             IDocumentIndexStorage documentIndexStorage,
@@ -90,20 +93,20 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<ClassificationInfo>> FindClassificationByDocumentId(Guid documentId)
+        public async Task<RequestResult<ClassificationInfo?>> FindClassificationByDocumentId(Guid documentId)
         {
             using var storage = _infoStorageFactory.CreateFileStorage();
             var file = await storage.GetByIdAsync(documentId, true);
             
             if (file is not { Type: FileType.TextDocument })
-                return RequestResult.NotFound<ClassificationInfo>($"Not found {nameof(DocumentInfo)} with Id {documentId}");
+                return RequestResult.NotFound<ClassificationInfo?>($"Not found {nameof(DocumentInfo)} with Id {documentId}");
             
             if (file.Classification == null)
-                return RequestResult.NotFound<ClassificationInfo>($"Not found {nameof(ClassificationInfo)} for {nameof(DocumentInfo)} with Id {documentId}");
+                return RequestResult.NotFound<ClassificationInfo?>($"Not found {nameof(ClassificationInfo)} for {nameof(DocumentInfo)} with Id {documentId}");
 
             var classificationInfo = _classificationConverter.ConvertToClassificationInfo(file.Classification);
             
-            return RequestResult.Ok<ClassificationInfo>(classificationInfo);
+            return RequestResult.Ok(classificationInfo);
         }
     }
 }

@@ -38,6 +38,9 @@ namespace FileStorageAPI.Models
         /// </summary>
         public FileType[]? Categories { get; set; }
         
-        // TODO: Добавить поле классификации
+        /// <summary>
+        /// Идентификаторы классификаций
+        /// </summary>
+        public Guid[]? ClassificationIds { get; set; }
     }
 }

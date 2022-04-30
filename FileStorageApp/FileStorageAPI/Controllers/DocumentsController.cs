@@ -91,7 +91,7 @@ namespace FileStorageAPI.Controllers
         }
         
         /// <summary>
-        /// Возвращает классификацию по Id
+        /// Возвращает классификацию по Id документа
         /// </summary>
         /// <param name="documentId">Id документа</param>
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
