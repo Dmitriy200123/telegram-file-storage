@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using DocumentsIndex.Config;
 using DocumentsIndex.Model;
 using DocumentsIndex.Pipelines;
 using Nest;
 using Analyzers = DocumentsIndex.Constants.Analyzers;
-using Tokenizers = DocumentsIndex.Constants.Tokenizers;
 
 namespace DocumentsIndex.Factories
 {
@@ -25,42 +23,51 @@ namespace DocumentsIndex.Factories
 
         private static readonly Func<CreateIndexDescriptor, CreateIndexDescriptor> IndexDescriptor = x =>
         {
-            var nGramFilters = new List<string> {"lowercase", "asciifolding"};
-            return x.Settings(st => st
-                        .Setting(UpdatableIndexSettings.MaxNGramDiff, 17)
-                        .Analysis(an => an
-                            .Analyzers(anz => anz
-                                .Custom(Analyzers.DocumentNgramAnalyzer, cc => cc
-                                    .Tokenizer(Tokenizers.DocumentNgramTokenizer)
-                                    .Filters(nGramFilters))
-                            )
-                            .Tokenizers(tz => tz
-                                .EdgeNGram(Tokenizers.DocumentNgramTokenizer, td => td
-                                    .MinGram(3)
-                                    .MaxGram(20)
-                                    .TokenChars(
-                                        TokenChar.Letter,
-                                        TokenChar.Digit,
-                                        TokenChar.Punctuation,
-                                        TokenChar.Symbol
-                                    )
+            return x
+                    .Settings(s => s
+                        .Analysis(a => a
+                            .Analyzers(an => an
+                                .Custom(Analyzers.CustomAnalyzer, cu =>
+                                    cu.Tokenizer("standard")
+                                        .Filters("lowercase", "russian_stop", "russian_keywords", "russian_stemmer", "english_possessive_stemmer",
+                                            "english_stop",
+                                            "english_stemmer")
                                 )
                             )
-                        )
-                    )
+                            .TokenFilters(tf => tf
+                                .KeywordMarker("russian_keywords", km => km
+                                    .Keywords()
+                                )
+                                .Stop("russian_stop", st => st
+                                    .StopWords("_russian_"))
+                                .Stemmer("russian_stemmer", st => st
+                                    .Language("russian"))
+                                .Stemmer("english_stemmer", st => st
+                                    .Language("english"))
+                                .Stemmer("english_possessive_stemmer", st => st
+                                    .Language("possessive_english"))
+                                .Stop("english_stop", st => st
+                                    .StopWords("_english_"))
+                            )
+                        ))
                     .Map<ElasticDocument>(mp => mp
                         .AutoMap()
                         .Properties(ps => ps
                             .Keyword(k => k
                                 .Name(n => n.Id))
                             .Text(t => t
-                                .Name(n => n.Content))
+                                .Name(n => n.Content)
+                                .Analyzer(Analyzers.CustomAnalyzer))
                             .Text(t => t
                                 .Name(n => n.Name)
-                                .Analyzer(Analyzers.DocumentNgramAnalyzer))
+                                .Analyzer(Analyzers.CustomAnalyzer))
                             .Object<Attachment>(a => a
                                 .Name(n => n.Attachment)
                                 .AutoMap()
+                                .Properties(pp => pp
+                                    .Text(t => t
+                                        .Name(n => n.Content)
+                                        .Analyzer(Analyzers.CustomAnalyzer)))
                             )
                         )
                     )

@@ -35,7 +35,7 @@ namespace DocumentsIndex
                         .Fields(f => f
                             .Field(p => p.Attachment.Content))
                         .Query(subString)
-                        .Analyzer(Analyzers.DocumentNgramAnalyzer)
+                        .Analyzer(Analyzers.CustomAnalyzer)
                     )
                 ));
             return searchResponse.Hits.Select(x => x.Source.Id).ToList();
@@ -75,13 +75,13 @@ namespace DocumentsIndex
                         .Fields(f => f
                             .Field(p => p.Attachment.Content))
                         .Query(query)
-                        .Analyzer(Analyzers.DocumentNgramAnalyzer)
+                        .Analyzer(Analyzers.CustomAnalyzer)
                     )
                     || q.QueryString(m => m
                         .Fields(f => f
                             .Field(p => p.Name))
                         .Query(query)
-                        .Analyzer(Analyzers.DocumentNgramAnalyzer))
+                        .Analyzer(Analyzers.CustomAnalyzer))
                 ));
             return searchResponse.Hits.Select(x => x.Source.Id).ToList();
         }
@@ -112,7 +112,7 @@ namespace DocumentsIndex
                         .Fields(f => f
                             .Field(p => p.Name))
                         .Query(name)
-                        .Analyzer(Analyzers.DocumentNgramAnalyzer))
+                        .Analyzer(Analyzers.CustomAnalyzer))
                 )
             );
             return searchResponse.Hits.Select(x => x.Source.Id).ToList();
@@ -127,7 +127,7 @@ namespace DocumentsIndex
                         .Fields(f => f
                             .Field(p => p.Name))
                         .Query(subString)
-                        .Analyzer(Analyzers.DocumentNgramAnalyzer)));
+                        .Analyzer(Analyzers.CustomAnalyzer)));
         }
 
     }
