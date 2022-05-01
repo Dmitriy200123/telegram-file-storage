@@ -2,12 +2,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
+using FileStorageAPI.Extensions;
 using FileStorageAPI.Models;
 using FileStorageAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using NotFoundResult = API.NotFoundResult;
 
 namespace FileStorageAPI.Controllers
 {
@@ -97,15 +99,15 @@ namespace FileStorageAPI.Controllers
         /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{documentId:guid}/classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает классификацию", typeof(FileInfo))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден. ", typeof(NotFoundResult))]
         public async Task<IActionResult> FindClassificationByDocumentId(Guid documentId)
         {
-            var files = await _documentsService.FindClassificationByDocumentId(documentId);
+            var result = await _documentsService.FindClassificationByDocumentId(documentId);
 
-            return files.ResponseCode switch
+            return result.ResponseCode switch
             {
-                HttpStatusCode.OK => Ok(files.Value),
-                HttpStatusCode.NotFound => NotFound(files.Message),
+                HttpStatusCode.OK => Ok(result.Value),
+                HttpStatusCode.NotFound => NotFound(result.ToNotFoundResult()),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

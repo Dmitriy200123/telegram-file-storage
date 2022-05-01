@@ -97,12 +97,18 @@ namespace FileStorageAPI.Services
         {
             using var storage = _infoStorageFactory.CreateFileStorage();
             var file = await storage.GetByIdAsync(documentId, true);
-            
+
             if (file is not { Type: FileType.TextDocument })
-                return RequestResult.NotFound<ClassificationInfo?>($"Not found {nameof(DocumentInfo)} with Id {documentId}");
-            
+                return RequestResult.NotFoundEntity<ClassificationInfo?>(
+                    $"Not found {nameof(DocumentInfo)} with Id {documentId}",
+                    nameof(DocumentInfo)
+                );
+
             if (file.Classification == null)
-                return RequestResult.NotFound<ClassificationInfo?>($"Not found {nameof(ClassificationInfo)} for {nameof(DocumentInfo)} with Id {documentId}");
+                return RequestResult.NotFoundEntity<ClassificationInfo?>(
+                    $"Not found {nameof(ClassificationInfo)} for {nameof(DocumentInfo)} with Id {documentId}",
+                    nameof(ClassificationInfo)
+                );
 
             var classificationInfo = _classificationConverter.ConvertToClassificationInfo(file.Classification);
             
