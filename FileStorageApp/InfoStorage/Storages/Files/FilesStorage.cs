@@ -73,12 +73,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         }
 
         public Task<List<string>> GetFileNamesAsync() => DbSet.Select(fileInfo => fileInfo.Name).ToListAsync();
+        
         public async Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId)
         {
             var file = await GetByIdAsync(fileId, true);
 
             if (file == null)
-                throw new NotFoundException($"Not found {nameof(File)} with Id {fileId}");
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
 
             if (file.Type != FileType.TextDocument)
                 throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
@@ -87,7 +88,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
                 .FirstOrDefaultAsync(classification => classification.Id == classificationId);
 
             if (classification == null)
-                throw new NotFoundException($"Not found {nameof(Classification)} with Id {classificationId}");
+                throw NotFoundException.NotFoundEntity<Classification>($"Not found {nameof(Classification)} with Id {classificationId}");
 
             file.Classification = classification;
 
@@ -99,7 +100,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             var file = await GetByIdAsync(fileId, true);
 
             if (file == null)
-                throw new NotFoundException($"Not found {nameof(File)} with Id {fileId}");
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
 
             if (file.Type != FileType.TextDocument)
                 throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
@@ -107,7 +108,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             var classification = file.Classification;
 
             if (classification == null)
-                throw new NotFoundException($"Not found {nameof(Classification)} with Id {classificationId} for {nameof(File)} with Id {fileId}");
+                throw NotFoundException.NotFoundEntity<Classification>($"Not found {nameof(Classification)} with Id {classificationId} for {nameof(File)} with Id {fileId}");
 
             file.Classification = null;
 
