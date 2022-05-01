@@ -15,6 +15,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using FileInfo = FileStorageAPI.Models.FileInfo;
 
 namespace FileStorageAPI.Tests
 {
@@ -102,7 +103,7 @@ namespace FileStorageAPI.Tests
             var fileInfo = await UploadFile();
             
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.DocumentId}");
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}");
 
             response.EnsureSuccessStatusCode();
             
@@ -110,7 +111,7 @@ namespace FileStorageAPI.Tests
             var actual = JsonConvert.DeserializeObject<DocumentInfo>(responseString, _dateTimeConverter);
             
             actual.Should().NotBeNull();
-            actual.DocumentId.Should().Be(fileInfo.DocumentId);
+            actual.DocumentId.Should().Be(fileInfo.FileId);
         }
         
         [Test]
@@ -128,10 +129,10 @@ namespace FileStorageAPI.Tests
             await classificationStorage.AddAsync(classification);
 
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
-            await fileStorage.AddClassificationAsync(fileInfo.DocumentId, classification.Id);
+            await fileStorage.AddClassificationAsync(fileInfo.FileId, classification.Id);
 
             using var apiClient = CreateHttpClient();
-            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.DocumentId}/classification");
+            var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}/classification");
 
             response.EnsureSuccessStatusCode();
             
@@ -143,7 +144,7 @@ namespace FileStorageAPI.Tests
             actual.Name.Should().Be(classification.Name);
         }
         
-        public async Task<DocumentInfo?> UploadFile()
+        public async Task<FileInfo?> UploadFile()
         {
             using var apiClient = CreateHttpClient();
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
@@ -161,7 +162,7 @@ namespace FileStorageAPI.Tests
             var response = await apiClient.PostAsync("/api/files/", form);
             var responseString = await response.Content.ReadAsStringAsync();
 
-            var actual = JsonConvert.DeserializeObject<DocumentInfo>(responseString,_dateTimeConverter);
+            var actual = JsonConvert.DeserializeObject<FileInfo>(responseString,_dateTimeConverter);
             return actual;
         }
 
