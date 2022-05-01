@@ -243,6 +243,11 @@ namespace DocumentClassificationsAPI.Tests
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
+            var content = await response.Content.ReadAsStringAsync();
+            var wordId = JsonConvert.DeserializeObject<Guid>(content);
+            
+            wordId.Should().NotBe(Guid.Empty);
+
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
             var classificationWord = (await storage.GetWordsByIdAsync(classificationId)).FirstOrDefault();
 

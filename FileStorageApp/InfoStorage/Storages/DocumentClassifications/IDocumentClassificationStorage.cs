@@ -22,7 +22,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
 
         Task<bool> RenameAsync(Guid id, string newName);
 
-        Task<bool> AddWordAsync(Guid classificationId, ClassificationWord classificationWord);
+        Task<Guid> AddWordAsync(Guid classificationId, ClassificationWord classificationWord);
         
         Task<bool> DeleteWordAsync(Guid wordId);
 

@@ -64,7 +64,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             return await UpdateAsync(classification);
         }
 
-        public async Task<bool> AddWordAsync(Guid classificationId, ClassificationWord classificationWord)
+        public async Task<Guid> AddWordAsync(Guid classificationId, ClassificationWord classificationWord)
         {
             var isAlreadyExist = ClassificationWords
                 .Where(word => word.ClassificationId == classificationId)
@@ -81,9 +81,13 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
                 throw new NotFoundException($"{nameof(Classification)} with Id {classificationId} not found");
 
             classificationWord.ClassificationId = classificationId;
-            await ClassificationWords.AddAsync(classificationWord.ToDocumentClassificationWord());
 
-            return await TrySaveChangesAsync();
+            var documentClassificationWord = classificationWord.ToDocumentClassificationWord();
+            
+            await ClassificationWords.AddAsync(documentClassificationWord);
+            await TrySaveChangesAsync();
+
+            return documentClassificationWord.Id;
         }
 
         public async Task<bool> DeleteWordAsync(Guid wordId)
