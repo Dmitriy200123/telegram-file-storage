@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace API
@@ -25,16 +26,28 @@ namespace API
         public readonly string Message;
 
         /// <summary>
+        /// Словарь дополнительных параметров
+        /// </summary>
+        public readonly Dictionary<ExtraOption, string>? ExtraOptions;
+
+        /// <summary>
         /// Конструктор для случая, когда не получилось успешно выполнить действия.
         /// </summary>
         /// <param name="responseCode"></param>
         /// <param name="message"></param>
         /// <param name="value"></param>
-        public RequestResult(HttpStatusCode responseCode, string message, T value = default!)
+        /// <param name="extraOptions"></param>
+        public RequestResult(
+            HttpStatusCode responseCode,
+            string message,
+            T value = default!,
+            Dictionary<ExtraOption, string> extraOptions = default
+        )
         {
             ResponseCode = responseCode;
             Message = message;
             Value = value;
+            ExtraOptions = extraOptions;
         }
 
         /// <summary>
@@ -43,11 +56,17 @@ namespace API
         /// <param name="responseCode"></param>
         /// <param name="value"></param>
         /// <param name="message"></param>
-        public RequestResult(HttpStatusCode responseCode, T value, string message = "Success")
+        public RequestResult(
+            HttpStatusCode responseCode,
+            T value,
+            string message = "Success",
+            Dictionary<ExtraOption, string> extraOptions = default
+        )
         {
             ResponseCode = responseCode;
             Message = message;
             Value = value;
+            ExtraOptions = extraOptions;
         }
     }
 
@@ -66,6 +85,20 @@ namespace API
         {
             return new RequestResult<T>(HttpStatusCode.NotFound, message);
         }
+
+        /// <summary>
+        /// Следует использовать, когда не получилось найти какую-то сущность.
+        /// </summary>
+        /// <param name="message">Сообщение</param>
+        /// <param name="entityName">Название сущности</param>
+        /// <typeparam name="T">Тип, который возвращает сервис</typeparam>
+        public static RequestResult<T> NotFoundEntity<T>(string message, string entityName)
+        {
+            var extraOptions = new Dictionary<ExtraOption, string> { [ExtraOption.EntityName] = entityName };
+
+            return new RequestResult<T>(HttpStatusCode.NotFound, message, extraOptions: extraOptions);
+        }
+        
 
         /// <summary>
         /// Следует использовать, когда код успешно отработал.
