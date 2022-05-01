@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using DocumentClassificationsAPI.Models;
+using MoreLinq;
 using DocumentClassification = FileStorageApp.Data.InfoStorage.Contracts.Classification;
 using DocumentClassificationWord = FileStorageApp.Data.InfoStorage.Contracts.ClassificationWord;
 
@@ -26,6 +27,7 @@ namespace DocumentClassificationsAPI.Mappers
         {
             var words = classification
                 .ClassificationWords
+                .DistinctBy(insert => insert.Value)
                 .Select(word => word.ToDocumentClassificationWord())
                 .ToList();
 
