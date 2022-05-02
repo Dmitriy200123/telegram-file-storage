@@ -41,9 +41,16 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
             int skip,
             int take,
             bool includeClassificationWords = false
-        ) => AddOptionsInQuery(DbSet, query, includeClassificationWords, skip, take)
-            .Select(documentClassification => documentClassification.ToClassification())
-            .ToListAsync();
+        )
+        {
+            var queryable = DbSet
+                .AsQueryable()
+                .OrderBy(classification => classification.CreatedAt);
+
+            return AddOptionsInQuery(queryable, query, includeClassificationWords, skip, take)
+                .Select(documentClassification => documentClassification.ToClassification())
+                .ToListAsync();
+        }
 
         public async Task<bool> RenameAsync(Guid id, string newName)
         {

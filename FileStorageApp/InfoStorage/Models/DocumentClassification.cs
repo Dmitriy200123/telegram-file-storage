@@ -19,5 +19,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
             new List<DocumentClassificationWord>();
 
         public virtual ICollection<File> Documents { get; set; } = new List<File>();
+        
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

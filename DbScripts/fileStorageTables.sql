@@ -45,10 +45,11 @@ alter table "Users"
 
 create table "DocumentClassifications"
 (
-    "Id"   uuid         not null
+    "Id"        uuid         not null
         constraint "PK_DocumentClassifications"
             primary key,
-    "Name" varchar(255) not null
+    "Name"      varchar(255) not null,
+    "CreatedAt" timestamp    not null
 );
 
 alter table "DocumentClassifications"
