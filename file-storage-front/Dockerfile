@@ -5,6 +5,8 @@ COPY package.json /app/package.json
 RUN npm install --only=prod
 COPY . /app
 
+RUN rm -rf /app/.env
+
 RUN if [ "$Develop" == "true" ]; then \
         cp .env.config.dev /app/.env; \
     else \
