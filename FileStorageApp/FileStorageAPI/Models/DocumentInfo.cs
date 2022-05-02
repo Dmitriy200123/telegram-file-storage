@@ -31,5 +31,10 @@ namespace FileStorageAPI.Models
         /// Чат из которого был отправлен документ
         /// </summary>
         public Chat Chat { get; set; }
+        
+        /// <summary>
+        /// Прикрепленная классификация
+        /// </summary>
+        public ClassificationInfo? Classification { get; set; }
     }
 }

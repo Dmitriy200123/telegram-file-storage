@@ -188,7 +188,7 @@ namespace InfoStorage.Tests
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
             var result = await storage.AddWordAsync(classificationId, word);
 
-            result.Should().BeTrue();
+            result.Should().NotBe(Guid.Empty);
 
             var classification = await storage.FindByIdAsync(classificationId, true);
             classification.Should().NotBeNull();
@@ -219,7 +219,7 @@ namespace InfoStorage.Tests
             using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
             var result = await storage.AddWordAsync(classificationId, word);
 
-            result.Should().BeTrue();
+            result.Should().NotBe(Guid.Empty);
 
             var classification = await storage.FindByIdAsync(classificationId, true);
             classification.Should().NotBeNull();

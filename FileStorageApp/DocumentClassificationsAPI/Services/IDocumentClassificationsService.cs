@@ -66,7 +66,7 @@ namespace DocumentClassificationsAPI.Services
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         /// <param name="classificationWord">Слово</param>
-        Task<RequestResult<bool>> AddWordToClassificationAsync(
+        Task<RequestResult<Guid>> AddWordToClassificationAsync(
             Guid classificationId,
             ClassificationWordInsert classificationWord
         );

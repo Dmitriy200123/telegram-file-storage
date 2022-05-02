@@ -137,7 +137,7 @@ namespace DocumentClassificationsAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<bool>> AddWordToClassificationAsync(
+        public async Task<RequestResult<Guid>> AddWordToClassificationAsync(
             Guid classificationId,
             ClassificationWordInsert classificationWord
         )
@@ -147,21 +147,17 @@ namespace DocumentClassificationsAPI.Services
 
             try
             {
-                var added = await storage.AddWordAsync(classificationId, documentClassificationWord);
+                var wordId = await storage.AddWordAsync(classificationId, documentClassificationWord);
 
-                return added
-                    ? RequestResult.Ok(true)
-                    : throw new InvalidOperationException(
-                        $"Cannot add {nameof(DocumentClassificationWord)} to {nameof(DocumentClassification)} with Id {classificationId}"
-                    );
+                return RequestResult.Ok(wordId);
             }
             catch (AlreadyExistException exception)
             {
-                return RequestResult.BadRequest<bool>(exception.Message);
+                return RequestResult.BadRequest<Guid>(exception.Message);
             }
             catch (NotFoundException exception)
             {
-                return RequestResult.NotFound<bool>(exception.Message);
+                return RequestResult.NotFound<Guid>(exception.Message);
             }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
+using FileStorageApp.Data.InfoStorage.Contracts;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
@@ -152,6 +153,54 @@ namespace InfoStorage.Tests
 
             actual.Should().BeEquivalentTo(expected, options => options.WithStrictOrdering());
         }
+        
+        [Test]
+        public async Task AddClassificationAsync_Added()
+        {
+            var dateTime = DateTime.Now;
+            var file = CreateFile(dateTime, Guid.NewGuid());
+         
+            using var storage = _infoStorageFactory.CreateFileStorage();
+            await storage.AddAsync(file);
+
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, "test");
+
+            var added = await storage.AddClassificationAsync(file.Id, classificationId);
+            added.Should().BeTrue();
+
+            using var secondStorage = _infoStorageFactory.CreateFileStorage();
+            var actualFile = await secondStorage.GetByIdAsync(file.Id, true);
+
+            actualFile.Should().NotBeNull();
+            actualFile.Classification.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task DeleteClassificationAsync_Added()
+        {
+            var dateTime = DateTime.Now;
+            var file = CreateFile(dateTime, Guid.NewGuid());
+         
+            using var storage = _infoStorageFactory.CreateFileStorage();
+            await storage.AddAsync(file);
+
+            var classificationId = Guid.NewGuid();
+            await AddClassification(classificationId, "test");
+
+            var added = await storage.AddClassificationAsync(file.Id, classificationId);
+            added.Should().BeTrue();
+
+            using var secondStorage = _infoStorageFactory.CreateFileStorage();
+            var deleted = await secondStorage.DeleteClassificationAsync(file.Id, classificationId);
+            deleted.Should().BeTrue();
+            
+            using var thirdStorage = _infoStorageFactory.CreateFileStorage();
+            var actualFile = await thirdStorage.GetByIdAsync(file.Id, true);
+
+            actualFile.Should().NotBeNull();
+            actualFile.Classification.Should().BeNull();
+        }
 
         [TearDown]
         public async Task TearDown()
@@ -164,6 +213,11 @@ namespace InfoStorage.Tests
                 await fileStorage.DeleteAsync(elem.Id);
             await chatStorage.DeleteAsync(_chat.Id);
             await fileSenderStorage.DeleteAsync(_fileSender.Id);
+            
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+
+            foreach (var element in await storage.GetAllAsync())
+                await storage.DeleteAsync(element.Id);
         }
 
         private Chat CreateChat(Guid chatId)
@@ -195,12 +249,24 @@ namespace InfoStorage.Tests
                 Id = id,
                 Name = "Substring",
                 Extension = "xlsx",
-                Type = FileType.Document,
+                Type = FileType.TextDocument,
                 UploadDate = dateTime,
                 FileSenderId = _fileSender.Id,
                 ChatId = _chat.Id,
             };
             return file;
+        }
+        
+        private async Task AddClassification(Guid classificationId, string classificationName)
+        {
+            var classification = new Classification()
+            {
+                Id = classificationId,
+                Name = classificationName
+            };
+
+            using var storage = _infoStorageFactory.CreateDocumentClassificationStorage();
+            await storage.AddAsync(classification);
         }
     }
 }

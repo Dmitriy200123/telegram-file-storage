@@ -37,5 +37,10 @@ namespace FileStorageAPI.Models
         /// Категории файлов.
         /// </summary>
         public FileType[]? Categories { get; set; }
+        
+        /// <summary>
+        /// Идентификаторы классификаций
+        /// </summary>
+        public Guid[]? ClassificationIds { get; set; }
     }
 }

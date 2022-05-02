@@ -176,7 +176,7 @@ namespace DocumentClassificationsAPI.Controllers
         /// <param name="classificationId">Id классификации</param>
         /// <param name="classificationWord">Слово</param>
         [HttpPost("{classificationId:guid}/words")]
-        [SwaggerResponse(StatusCodes.Status200OK, "Добавление прошло успешно")]
+        [SwaggerResponse(StatusCodes.Status200OK, "Возвращает идентификатор добавленного слова", typeof(Guid))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Возвращается, если слово в такой квалификации уже существует", typeof(string))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
@@ -191,7 +191,7 @@ namespace DocumentClassificationsAPI.Controllers
 
             return result.ResponseCode switch
             {
-                HttpStatusCode.OK => Ok(),
+                HttpStatusCode.OK => Ok(result.Value),
                 HttpStatusCode.BadRequest => BadRequest(result.Message),
                 HttpStatusCode.NotFound => NotFound(result.Message),
                 _ => throw new ArgumentException("Unknown response code")

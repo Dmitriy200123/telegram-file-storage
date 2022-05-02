@@ -14,10 +14,14 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<File>> GetAllAsync(bool useInclude = false, int? skip = null, int? take = null);
 
-        public Task<File> GetByIdAsync(Guid id, bool useInclude = false);
+        public Task<File?> GetByIdAsync(Guid id, bool useInclude = false);
 
         public Task<int> GetFilesCountAsync(Expression<Func<File, bool>> expression);
 
         public Task<List<string>> GetFileNamesAsync();
+        
+        public Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId);
+        
+        public Task<bool> DeleteClassificationAsync(Guid fileId, Guid classificationId);
     }
 }
