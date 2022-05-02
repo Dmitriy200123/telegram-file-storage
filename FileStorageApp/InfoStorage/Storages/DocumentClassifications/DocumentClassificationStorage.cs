@@ -45,7 +45,7 @@ namespace FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications
         {
             var queryable = DbSet
                 .AsQueryable()
-                .OrderBy(classification => classification.CreatedAt);
+                .OrderByDescending(classification => classification.CreatedAt);
 
             return AddOptionsInQuery(queryable, query, includeClassificationWords, skip, take)
                 .Select(documentClassification => documentClassification.ToClassification())

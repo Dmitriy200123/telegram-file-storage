@@ -1,9 +1,9 @@
-using DocumentClassificationsAPI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace DocumentСlassificationsAPI
+namespace DocumentClassificationsAPI
 {
+#pragma warning disable CS1591
     public class Program
     {
         public static void Main(string[] args)
@@ -15,4 +15,5 @@ namespace DocumentСlassificationsAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
+#pragma warning restore CS1591
 }
