@@ -48,7 +48,7 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters documentSearchParameters,
+        public async Task<RequestResult<int>> GetDocumentsCountAsync(DocumentSearchParameters documentSearchParameters,
             HttpRequest request)
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
@@ -60,7 +60,7 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<RequestResult<List<DocumentInfo>>> GetFileInfosAsync(
+        public async Task<RequestResult<List<DocumentInfo>>> GetDocumentInfosAsync(
             DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request)
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);

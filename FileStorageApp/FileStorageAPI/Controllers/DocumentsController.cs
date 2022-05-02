@@ -42,7 +42,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает количество файлов типа \"Текстовый документ\", содержащихся в хранилище", typeof(int))]
         public async Task<IActionResult> GetDocumentsCount([FromQuery] DocumentSearchParameters fileSearchParameters)
         {
-            var count = await _documentsService.GetFilesCountAsync(fileSearchParameters, Request);
+            var count = await _documentsService.GetDocumentsCountAsync(fileSearchParameters, Request);
 
             return count.ResponseCode switch
             {
@@ -63,7 +63,7 @@ namespace FileStorageAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
         public async Task<IActionResult> GetDocumentInfos([FromQuery] DocumentSearchParameters documentSearchParameters, [FromQuery, Required] int skip, [FromQuery, Required] int take)
         {
-            var files = await _documentsService.GetFileInfosAsync(documentSearchParameters, skip, take, Request);
+            var files = await _documentsService.GetDocumentInfosAsync(documentSearchParameters, skip, take, Request);
 
             return files.ResponseCode switch
             {

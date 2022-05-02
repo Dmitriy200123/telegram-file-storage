@@ -18,19 +18,19 @@ namespace FileStorageAPI.Services
         /// <param name="documentSearchParameters">Параметры для поиска</param>
         /// <param name="request">Запрос</param>
         /// <returns></returns>
-        Task<RequestResult<int>> GetFilesCountAsync(DocumentSearchParameters documentSearchParameters, HttpRequest request);
-        
+        Task<RequestResult<int>> GetDocumentsCountAsync(DocumentSearchParameters documentSearchParameters, HttpRequest request);
+
         /// <summary>
         /// Возвращает файлы типа "Текстовый документ".
         /// </summary>
-        Task<RequestResult<List<DocumentInfo>>> GetFileInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
-        
+        Task<RequestResult<List<DocumentInfo>>> GetDocumentInfosAsync(DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request);
+
         /// <summary>
         /// Возвращает документ по Id
         /// </summary>
         /// <param name="id">Id документа</param>
         Task<RequestResult<DocumentInfo>> FindDocumentById(Guid id);
-        
+
         /// <summary>
         /// Возвращает классификацию по Id документа
         /// </summary>
