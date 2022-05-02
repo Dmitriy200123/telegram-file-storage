@@ -33,7 +33,7 @@ export const StartPage: FC = memo(() => {
                 host={process.env.REACT_APP_HOST as string}
                 application_id={process.env.REACT_APP_ID as string}
                 redirect_uri={process.env.REACT_APP_REDIRECT_URL as string}
-                scope="api openid profile email"
+                scope={"api openid profile email"}
                 secret={process.env.REACT_APP_SECRET as string}
             />
             }

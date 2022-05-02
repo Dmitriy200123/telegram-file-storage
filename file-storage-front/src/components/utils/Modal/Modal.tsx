@@ -1,13 +1,24 @@
-import React, {memo, ReactComponentElement} from 'react';
+import React, {memo, MouseEventHandler, useRef} from 'react';
 import "./Modal.scss"
 import {ModalContent} from "../../../models/File";
 import {ModalConfirm} from "./ModalConfirm";
 import {ModalEdit} from "./ModalEdit";
 
-const Modal:React.FC = memo(({children}) => {
+type PropsType = {
+    onOutsideClick?: () => void
+    className?: string
+}
+const Modal: React.FC<PropsType> = memo(({children, onOutsideClick, className}) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const onOutClick: MouseEventHandler<HTMLDivElement> = (event) => {
+        if (ref.current && !ref.current.contains(event.target as Node)) {
+            onOutsideClick?.();
+        }
+    };
+
     return (
-        <div className={"modal"}>
-            <div className={"modal__content"}>
+        <div className={"modal"} onClick={onOutClick}>
+            <div className={"modal__content" + (className ? ` ${className}` : "")} ref={ref}>
                 {children}
             </div>
         </div>
@@ -17,7 +28,7 @@ const Modal:React.FC = memo(({children}) => {
 export default Modal;
 
 
-export function hocModal <T extends object>(WrappedComponent: React.FC<T>) {
+export function hocModal<T extends object>(WrappedComponent: React.FC<T>) {
     return (props: T) => {
         return <div className={"modal"}>
             <div className={"modal__content"}>
@@ -30,5 +41,5 @@ export function hocModal <T extends object>(WrappedComponent: React.FC<T>) {
 
 export const modalContents = {
     [ModalContent.Remove]: ModalConfirm,
-    [ModalContent.Edit]:ModalEdit,
+    [ModalContent.Edit]: ModalEdit,
 }

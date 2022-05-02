@@ -1,5 +1,3 @@
-const baseUrl = process.env.REACT_APP_BACKEND_URL;
-
 export let myHeaders = new Headers({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
@@ -12,7 +10,7 @@ export function updateAuthToken() {
     });
 }
 
-const doRequest = async (url: string, config?: any) => {
+export const makeDoRequest = (baseUrl: string) => async (url: string, config?: any) => {
     const {params, method, body} = config || {}
     const paramsString = queryParams(params);
     const respUrl = baseUrl + url + (paramsString.length > 0 ? "?" + paramsString : "");
@@ -23,37 +21,21 @@ const doRequest = async (url: string, config?: any) => {
     });
 }
 
-export const fetchConfig = async (url: string, config?: any) => {
+export const makeFetchConfig = (doRequest: (url: string, config?: any) => Promise<Response>) => async (url: string, config?: any) => {
     const response = await doRequest(url, config);
-    if (response.ok)
-        return await response.json();
-    throw Error();
+    if (!response.ok)
+        throw Error(await response.text());
+    return await response.json();
 };
 
-export const fPostFile = async (url: string, body?: any) => {
-    let postHeaders = new Headers({
-        'Authorization': `Bearer ${localStorage.getItem("jwtToken")}`
-    });
-
-    const response = await fetch(baseUrl + url, {
-        method: "POST",
-        headers: postHeaders,
-        body: body,
-    });
-
-    if (response.ok)
-        return await response.text();
-    throw Error();
-};
-
-export const fetchConfigText = async (url: string, config?: any) => {
+export const makeFetchConfigText = (doRequest: (url: string, config?: any) => Promise<Response>) => async (url: string, config?: any) => {
     const response = await doRequest(url, config);
-    if (response.ok)
-        return await response.text();
-    throw Error();
+    if (!response.ok)
+        throw Error(await response.text());
+    return await response.text();
 };
 
-function queryParams(obj: any) {
+function queryParams(obj: { [key: string]: any }) {
     let res = "";
     for (let propName in obj) {
         if (obj[propName] === null || obj[propName] === undefined || obj[propName] === "" || obj[propName]?.length === 0) {
@@ -66,8 +48,4 @@ function queryParams(obj: any) {
     }
     return res.slice(1);
 }
-
-export type ConfigType<T> = {
-    params?: T
-};
 

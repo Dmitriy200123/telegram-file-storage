@@ -1,0 +1,39 @@
+@import "../../../../../Variables";
+
+
+.tags {
+  display: grid;
+  grid-template-columns: auto minmax(73px, 106px);
+  align-items: start;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+
+  &__items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    height: 30px;
+    overflow: hidden;
+
+    &_active {
+      height: auto;
+    }
+  }
+
+  &__item {
+    background: #C9E4FF;
+    border-radius: 4px;
+    padding: 8px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  &__btn {
+
+  }
+}

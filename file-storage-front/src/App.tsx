@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from 'react';
 import './App.css';
 import './App.scss';
-import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
 import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
@@ -9,8 +9,6 @@ import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
 import {modalContents} from "./components/utils/Modal/Modal";
-import {StartPage} from "./components/StartPage/StartPage";
-import {Messages} from "./components/utils/Messages/Messages";
 import {Navbar} from "./components/Navbar/Navbar";
 import Loading from "./components/utils/Loading/Loading";
 import {fetchIsAuth, fetchLogout} from "./redux/thunks/profileThunks";
@@ -20,6 +18,9 @@ import {fetchRightsCurrentUser, fetchRightsDescription, fetchUserCurrent} from "
 import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
 import {fetchFilesTypes} from "./redux/thunks/mainThunks";
+import DocsClasses from "./components/DocsClasses/DocsClasses";
+import {StartPage} from "./components/StartPage/StartPage";
+import {Messages} from "./components/utils/Messages/Messages";
 
 const store = setupStore();
 
@@ -80,6 +81,7 @@ const Main: FC = () => {
                  style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
                 <Switch>
                     <Route path={"/Profile"} component={Profile}/>
+                    <Route path={"/docs-сlasses"} component={DocsClasses}/>
                     {hasTelegram && <>
                         <Route exact path={"/files"} component={FilesMain}/>
                         <Route path={"/file/:id"} component={OpenedFileContainer}/>
@@ -94,7 +96,6 @@ const Main: FC = () => {
         </div>
     </>)
 }
-
 
 
 export default FileStorageApp;

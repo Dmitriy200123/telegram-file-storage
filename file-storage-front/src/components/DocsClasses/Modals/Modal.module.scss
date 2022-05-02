@@ -1,0 +1,19 @@
+@import "src/Variables";
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.title {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.btns {
+  align-self: flex-end;
+  display: flex;
+  gap: 10px;
+}

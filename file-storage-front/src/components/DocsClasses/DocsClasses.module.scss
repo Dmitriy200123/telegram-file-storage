@@ -1,0 +1,80 @@
+@use "sass:math";
+@import "src/Variables";
+
+.block {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+
+.background {
+  padding: 32px;
+  background: #C9E4FF;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.content {
+  flex: 1 1 auto;
+  background: white;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  text-align: left;
+  color: #434854;
+}
+
+.h2 {
+  background: white;
+  color: $menu-color;
+  padding: 18px 32px;
+  text-align: left;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.controls {
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.controlBtn {
+  white-space: nowrap;
+}
+
+.classesEmpty {
+  margin: auto;
+  align-self: center;
+}
+
+
+.classes {
+  margin-top: 41px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 200px;
+  position: relative;
+
+  & tr, thead, tbody {
+    display: contents;
+  }
+
+  & td {
+    padding-top: 17px;
+    padding-bottom: 19px;
+    border-top: 1px solid #E9ECEF;
+    border-bottom: 1px solid #E9ECEF;
+  }
+}
+
+.icon {
+  height: 1em;
+  width: 1em;
+  margin-bottom: 0.2em;
+  vertical-align: middle;
+  margin-right: math.div(13em,14);
+}
