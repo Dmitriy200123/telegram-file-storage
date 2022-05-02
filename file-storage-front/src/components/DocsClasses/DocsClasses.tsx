@@ -15,7 +15,7 @@ import {ReactComponent as PlusIcon} from "./../../assets/plus.svg";
 type PropsType = {}
 
 const {openModal, closeModal, setIsFetchClassifications} = classesDocsSlice.actions
-const DocsClassesPage: FC<PropsType> = (props) => {
+const DocsClassesPage: FC<PropsType> = () => {
     const {type, isOpen, args} = useAppSelector((state) => state.classesDocs.modal);
     const dispatch = useAppDispatch();
     return (<>
@@ -29,12 +29,12 @@ const DocsClassesPage: FC<PropsType> = (props) => {
     );
 };
 
-const DocsClasses: FC<PropsType> = (props) => {
+const DocsClasses: FC<PropsType> = () => {
     const dispatch = useAppDispatch();
     const classifications = useAppSelector(state => state.classesDocs.classifications);
     const count = useAppSelector(state => state.classesDocs.count);
     const isFetchClassifications = useAppSelector(state => state.classesDocs.fetchClassifications);
-    const [filters, setFilters] = useState({page: 1, take: 3, query: undefined as undefined | string});
+    const [filters, setFilters] = useState({page: 1, take: 10, query: undefined as undefined | string});
 
     function fetchClasses() {
         dispatch(fetchCountClassifications(filters.query));
