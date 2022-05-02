@@ -1,6 +1,6 @@
 import {myHeaders} from "./api";
 
-const baseUrl = "http://localhost:5001";
+const baseUrl = process.env.REACT_APP_BACKEND_URL as string;
 
 export const fetchLog = async (url: string) => {
     const response = await fetch(baseUrl + url, {

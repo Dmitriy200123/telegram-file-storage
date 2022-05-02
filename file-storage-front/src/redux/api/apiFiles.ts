@@ -1,6 +1,6 @@
 import {makeDoRequest as doReq, makeFetchConfig, makeFetchConfigText} from "./api";
 
-const baseUrl = "http://localhost:5001";
+const baseUrl = process.env.REACT_APP_BACKEND_URL as string;
 
 const doRequest = doReq(baseUrl);
 export const fetchConfig = makeFetchConfig(doRequest);
