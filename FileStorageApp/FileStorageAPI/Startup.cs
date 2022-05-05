@@ -11,7 +11,6 @@ using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Providers;
-using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -29,6 +28,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RightServices;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 using AuthenticationService = FileStorageAPI.Services.AuthenticationService;
@@ -40,13 +40,20 @@ namespace FileStorageAPI
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env, IConfiguration configuration)
         {
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            var mainCatalog = Directory.GetParent(env.ContentRootPath)?.FullName;
+            var builder = new ConfigurationBuilder()
+                .AddConfiguration(configuration)
+                .SetBasePath($"{mainCatalog}/Config")
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true);
+            Configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration);
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
             Settings.SetUpSettings(Configuration, key, CreateDataBaseConfig());
@@ -64,16 +71,15 @@ namespace FileStorageAPI
                     x.SaveToken = true;
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
+                        ValidateIssuerSigningKey = false,
                         IssuerSigningKey = new SymmetricSecurityKey(key),
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = true,
                     };
                 });
-
-            services.AddSingleton(Configuration);
             services.ConfigureApplicationCookie(options =>
                 {
                     options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden);
@@ -83,10 +89,14 @@ namespace FileStorageAPI
             services.AddCors();
 
             services.AddSingleton<IRightsFilter, RightsFilter>();
+            services.AddSingleton(new RightsSettings(Settings.Key));
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
-            services.AddSingleton(provider => provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
+            services.AddSingleton(provider =>
+                provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
             services.AddSingleton<IPipelineCreator, PipelineCreator>();
-            services.AddSingleton<IElasticConfig>(new ElasticConfig("http://localhost:9200", "testindex"));
+            services.AddSingleton<IElasticConfig>(
+                new ElasticConfig(Configuration["ElasticSearchUrl"], Configuration["ElasticSearchIndex"])
+            );
             RegisterProviders(services);
             RegisterAuth(services, tokenKey, key);
             RegisterDtoConverters(services);
@@ -160,6 +170,10 @@ namespace FileStorageAPI
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
             services.AddSingleton<IUserConverter, UserConverter>();
+            services.AddSingleton<IDocumentToFileConverter, DocumentToFileConverter>();
+            services.AddSingleton<IFileToDocumentInfoConverter, FileToDocumentInfoConverter>();
+            services.AddSingleton<IClassificationToClassificationInfoConverter, 
+                ClassificationToClassificationInfoConverter>();
         }
 
         private static void RegisterInfoStorage(IServiceCollection services)
@@ -186,7 +200,7 @@ namespace FileStorageAPI
                 var configS3 = new AmazonS3Config {ServiceURL = config["S3serviceUrl"], ForcePathStyle = true};
                 return new S3FilesStorageOptions(config["S3accessKey"], config["S3secretKey"],
                     config["S3bucketName"], configS3, S3CannedACL.PublicReadWrite,
-                    TimeSpan.FromHours(1));
+                    TimeSpan.FromHours(1), config["S3host"], config["S3hostReal"]);
             });
             services.AddSingleton<IFilesStorageFactory, S3FilesStorageFactory>();
         }
@@ -199,6 +213,7 @@ namespace FileStorageAPI
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IUserInfoService, UserInfoService>();
             services.AddSingleton<IRightsService, RightsService>();
+            services.AddSingleton<IDocumentsService, DocumentsService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)

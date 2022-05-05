@@ -4,7 +4,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FileStorageAPI.Providers;
-using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Tests.AuthForTests;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
@@ -15,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RightServices;
 
 namespace FileStorageAPI.Tests
 {
@@ -46,7 +46,7 @@ namespace FileStorageAPI.Tests
             _accessesByUserIdProvider = A.Fake<IAccessesByUserIdProvider>();
             A.CallTo(() => _userIdFromTokenProvider.GetUserIdFromToken(A<HttpRequest>.Ignored, A<byte[]>.Ignored))
                 .Returns(Guid.Parse(SenderId));
-            A.CallTo(() => _accessesByUserIdProvider.GetAccessesByUserIdAsync(A<Guid>.Ignored)).Returns(new Accesses[] { Accesses.ViewAnyFiles });
+            A.CallTo(() => _accessesByUserIdProvider.GetAccessesByUserIdAsync(A<Guid>.Ignored)).Returns(new[] { Accesses.ViewAnyFiles });
             _fakeRightsFilter = A.Fake<IRightsFilter>();
             A.CallTo(() => _fakeRightsFilter.CheckRightsAsync(A<ActionExecutingContext>.Ignored, A<int[]>.Ignored))
                 .Returns(true);
@@ -56,7 +56,7 @@ namespace FileStorageAPI.Tests
             _applicationFactory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
                 {
-                    builder.UseEnvironment("Debug");
+                    builder.UseEnvironment("Development");
                     builder.UseConfiguration(Config);
                     builder.ConfigureServices(services =>
                     {

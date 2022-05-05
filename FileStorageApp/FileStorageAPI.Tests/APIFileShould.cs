@@ -43,7 +43,7 @@ namespace FileStorageAPI.Tests
             };
             var s3Config = new S3FilesStorageOptions(Config["S3accessKey"], Config["S3secretKey"],
                 Config["S3bucketName"], config, S3CannedACL.PublicReadWrite,
-                TimeSpan.FromHours(1));
+                TimeSpan.FromHours(1), Config["S3host"],Config["S3hostReal"]);
             _filesStorageFactory = new S3FilesStorageFactory(s3Config);
         }
 
@@ -361,16 +361,6 @@ namespace FileStorageAPI.Tests
                 TelegramId = 0,
                 TelegramUserName = "Test",
                 FullName = "Test",
-            };
-        }
-
-        private Chat CreateChat()
-        {
-            return new Chat
-            {
-                Id = Guid.Empty,
-                Name = "Ручная загрузка файла",
-                ImageId = Guid.Empty
             };
         }
     }

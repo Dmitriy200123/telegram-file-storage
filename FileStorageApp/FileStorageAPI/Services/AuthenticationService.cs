@@ -74,7 +74,7 @@ namespace FileStorageAPI.Services
 
             var userName = user!.Id.ToString();
             var claimName = new Claim(ClaimTypes.Name, userName);
-            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, claimName);
+            var jwtToken = await _jwtAuthenticationManager.Authenticate(userName, default, claimName);
 
             return jwtToken;
         }

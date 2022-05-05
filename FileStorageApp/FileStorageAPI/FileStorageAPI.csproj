@@ -43,15 +43,12 @@
       <ProjectReference Include="..\FilesStorage\FilesStorage.csproj" />
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
       <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
+      <ProjectReference Include="..\RightServices\RightServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Remove="appsettings.Development.json" />
-      <Content Remove="appsettings.json" />
-      <None Include="appsettings.Docker.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Include="appsettings.json">
+      
+      <None Update="Properties\launchSettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

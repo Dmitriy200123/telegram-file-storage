@@ -32,9 +32,11 @@ namespace JwtAuth
         }
 
         /// <inheritdoc />
-        public async Task<AuthenticationResponse> Authenticate(string username, params Claim[] claims)
+        public async Task<AuthenticationResponse> Authenticate(string username,DateTime expires = default, params Claim[] claims)
         {
-            var token = GenerateTokenString(DateTime.UtcNow, claims);
+            if(expires == default)
+                expires = DateTime.Now;
+            var token = GenerateTokenString(expires, claims);
             var refreshToken = _refreshTokenGenerator.GenerateToken();
             using var userStorage = _infoStorageFactory.CreateUsersStorage();
             var userId = Guid.Parse(username);
@@ -52,7 +54,8 @@ namespace JwtAuth
                 Subject = new ClaimsIdentity(claims),
                 Expires = expires.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                    SecurityAlgorithms.HmacSha256Signature),
+                Audience = "storage"
             };
 
             return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));

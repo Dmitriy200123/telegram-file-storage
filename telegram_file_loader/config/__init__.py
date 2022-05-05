@@ -15,6 +15,7 @@ for var in list(locals()):
     if value is None:
         continue
     try:
+        print(f'Found new value for {var=}')
         locals()[var] = ast.literal_eval(value)
     except:  # noqa
         locals()[var] = value

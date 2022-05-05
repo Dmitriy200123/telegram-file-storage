@@ -1,42 +1,6 @@
 version: '3.9'
 
 services:
-  s3:
-    image: localstack/localstack:0.13
-    container_name: s3
-    ports:
-      - 4566:4566
-      - 9090:8080
-    environment:
-      - AWS_ACCESS_KEY_ID=123
-      - AWS_SECRET_ACCESS_KEY=123
-      - SERVICES=s3,sns,sqs
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - DEFAULT_REGION=eu-west-2
-      - PORT_WEB_UI=8080
-    volumes:
-      - "localstack-vol:/tmp/localstack"
-    deploy:
-      resources:
-        limits:
-          cpus: '4'
-          memory: 1500M
-          
-          
-  postgres:
-    image: postgres
-    container_name: postgres
-    environment:
-      - POSTGRES_USER=FileStorageApp
-      - POSTGRES_PASSWORD=change
-      - POSTGRES_DB=FileStorageApp
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./DbScripts/fileStorageTables.sql:/docker-entrypoint-initdb.d/init.sql
-      - pg-data:/var/lib/postgresql/data
-
   dotnet_backend:
     container_name: dotnet_backend
     build:
@@ -61,15 +25,30 @@ services:
     ports:
       - '5002:5002' 
   
+  dotnet_classification_backend:
+    container_name: dotnet_classification_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+      target: runtime_DocumentClassificationsAPI
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - '5003:5003'
+    
 
   front:
     container_name: front
     build:
       context: file-storage-front/
       dockerfile: Dockerfile
-      target: start_local
+      args:
+        Develop: "true"
     ports:
       - '3000:3000'
+    depends_on:
+      - dotnet_backend
 
   telegram_auth:
     container_name: telegram_auth
@@ -94,12 +73,45 @@ services:
       - DB_USER=FileStorageApp
       - DB_PASS=change
       - S3_URL=http://s3:4566
+      - BUCKET_NAME=test
       - AWS_ACCESS_KEY_ID="123"
       - AWS_SECRET_ACCESS_KEY="123"
+      - SEARCH_DOCUMENT_URL=http://dotnet_search_backend:5002/api
+        
+              
+  s3:
+    image: localstack/localstack:0.13
+    container_name: s3
     ports:
-      - '8080:8080'
-        
-        
+      - 4566:4566
+    environment:
+      - AWS_ACCESS_KEY_ID=123
+      - AWS_SECRET_ACCESS_KEY=123
+      - SERVICES=s3,sns,sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "localstack-vol:/tmp/localstack"
+      - "./DbScripts/initS3.sh:/docker-entrypoint-initaws.d/buckets.sh"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 1500M
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=FileStorageApp
+      - POSTGRES_PASSWORD=change
+      - POSTGRES_DB=FileStorageApp
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./DbScripts/fileStorageTables.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg-data:/var/lib/postgresql/data
+
   elasticsearch:
     build:
       context: ElasticSearch/
@@ -123,15 +135,15 @@ services:
       - 9200:9200
       - 9300:9300
 
-  kibana:
-    container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.4.0
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
+#  kibana:
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:7.4.0
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - 5601:5601
+#    depends_on:
+#      - elasticsearch
 
 volumes:
   localstack-vol:

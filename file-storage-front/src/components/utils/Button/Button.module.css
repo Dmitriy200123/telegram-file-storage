@@ -19,3 +19,6 @@
     box-shadow: 0 0 5px #222835;
 }
 
+.button.disabled{
+    background: gray;
+}

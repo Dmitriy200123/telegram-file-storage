@@ -17,9 +17,9 @@ export const StartPage: FC = memo(() => {
 
     useEffect(() => {
         localStorage.setItem("flag", "false");
-        let dataAuthGit = localStorage.getItem(`oidc.user:${process.env.REACT_APP_ID}`);
+        let dataAuthGit = localStorage.getItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
         if (!dataAuthGit)
-            dataAuthGit = sessionStorage.getItem(`oidc.user:${process.env.REACT_APP_ID}`);
+            dataAuthGit = sessionStorage.getItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`);
 
         if (dataAuthGit) {
             const json = JSON.parse(dataAuthGit);
@@ -30,10 +30,10 @@ export const StartPage: FC = memo(() => {
     return (
         <div>
             {clicked && <GitlabAuth
-                host="https://git.66bit.ru"
+                host={process.env.REACT_APP_HOST as string}
                 application_id={process.env.REACT_APP_ID as string}
                 redirect_uri={process.env.REACT_APP_REDIRECT_URL as string}
-                scope="api openid profile email"
+                scope={"api openid profile email"}
                 secret={process.env.REACT_APP_SECRET as string}
             />
             }

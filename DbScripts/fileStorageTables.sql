@@ -43,22 +43,41 @@ create table "Users"
 alter table "Users"
     owner to "FileStorageApp";
 
+create table "DocumentClassifications"
+(
+    "Id"        uuid         not null
+        constraint "PK_DocumentClassifications"
+            primary key,
+    "Name"      varchar(255) not null,
+    "CreatedAt" timestamp    not null
+);
+
+alter table "DocumentClassifications"
+    owner to "FileStorageApp";
+
+create unique index "IX_DocumentClassifications_Name"
+    on "DocumentClassifications" ("Name");
+
 create table "Files"
 (
-    "Id"           uuid         not null
+    "Id"               uuid         not null
         constraint "PK_Files"
             primary key,
-    "Name"         varchar(255) not null,
-    "Extension"    varchar(255),
-    "TypeId"       integer      not null,
-    "UploadDate"   timestamp    not null,
-    "FileSenderId" uuid         not null
+    "Name"             varchar(255) not null,
+    "Extension"        varchar(255),
+    "TypeId"           integer      not null,
+    "UploadDate"       timestamp    not null,
+    "FileSenderId"     uuid         not null
         constraint "FK_Files_FileSenders_FileSenderId"
             references "FileSenders"
             on delete cascade,
-    "ChatId"       uuid
+    "ChatId"           uuid
         constraint "FK_Files_Chats_ChatId"
             references "Chats"
+            on delete restrict,
+    "ClassificationId" uuid
+        constraint "FK_Files_DocumentClassifications_ClassificationId"
+            references "DocumentClassifications"
             on delete restrict
 );
 
@@ -67,6 +86,9 @@ alter table "Files"
 
 create index "IX_Files_ChatId"
     on "Files" ("ChatId");
+
+create index "IX_Files_ClassificationId"
+    on "Files" ("ClassificationId");
 
 create index "IX_Files_FileSenderId"
     on "Files" ("FileSenderId");
@@ -131,4 +153,21 @@ create table "CodeForTelegramLoader"
 );
 
 alter table "CodeForTelegramLoader"
+    owner to "FileStorageApp";
+
+create table "DocumentClassificationWords"
+(
+    "Id"               uuid         not null
+        constraint "PK_DocumentClassificationWords"
+            primary key,
+    "Value"            varchar(255) not null,
+    "ClassificationId" uuid         not null
+        constraint "FK_DocumentClassificationWords_DocumentClassifications_Classif~"
+            references "DocumentClassifications"
+            on delete cascade,
+    constraint "AK_DocumentClassificationWords_ClassificationId_Value"
+        unique ("ClassificationId", "Value")
+);
+
+alter table "DocumentClassificationWords"
     owner to "FileStorageApp";

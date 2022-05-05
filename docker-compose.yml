@@ -26,14 +26,27 @@ services:
     ports:
       - '5002:5002'
 
+  dotnet_classification_backend:
+    container_name: dotnet_classification_backend
+    build:
+      context: FileStorageApp/
+      dockerfile: Dockerfile
+      target: runtime_DocumentClassificationsAPI
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5003
+      - ASPNETCORE_ENVIRONMENT=Release
+    ports:
+      - '5003:5003'
+
   front:
     container_name: front
     build:
       context: file-storage-front/
       dockerfile: Dockerfile
-      target: start_prod
     ports:
       - '3000:3000'
+    depends_on:
+      - dotnet_backend
 
   telegram_auth:
     container_name: telegram_auth
@@ -58,8 +71,3 @@ services:
       - DB_PASS=mlonDNBDFPqC
       - S3_URL=http://students.66bit.ru:19000
       - BUCKET_NAME=filestore
-    ports:
-      - '8080:8080'
-    depends_on:
-      - front
-      - dotnet_backend

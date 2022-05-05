@@ -3,13 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 using FileStorageAPI.Models;
-using FileStorageAPI.Providers;
-using FileStorageAPI.RightsFilters;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RightServices;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FileStorageAPI.Controllers
@@ -34,7 +33,7 @@ namespace FileStorageAPI.Controllers
         public RightsController(IRightsService rightsService, IUserIdFromTokenProvider userIdFromTokenProvider)
         {
             _rightsService = rightsService ?? throw new ArgumentNullException(nameof(rightsService));
-            _userIdFromTokenProvider = userIdFromTokenProvider;
+            _userIdFromTokenProvider = userIdFromTokenProvider ?? throw new ArgumentNullException(nameof(userIdFromTokenProvider));
         }
 
         /// <summary>

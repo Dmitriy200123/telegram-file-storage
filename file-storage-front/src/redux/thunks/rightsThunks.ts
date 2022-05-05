@@ -1,5 +1,5 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchConfig} from "../api/api";
+import {fetchConfig} from "../api/apiFiles";
 
 
 export const fetchAllUsers = createAsyncThunk("users-info/users", async (_, thunkAPI) => {

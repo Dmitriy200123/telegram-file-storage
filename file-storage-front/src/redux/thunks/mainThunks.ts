@@ -1,6 +1,6 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import {Chat} from "../../models/File";
-import {fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfig, fetchConfigText} from "../api/apiFiles";
 
 export const fetchChats = createAsyncThunk("files/chats", async (_, thunkAPI) => {
     try {

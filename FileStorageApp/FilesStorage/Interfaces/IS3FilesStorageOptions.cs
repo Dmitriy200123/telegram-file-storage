@@ -11,5 +11,7 @@ namespace FilesStorage.Interfaces
         AmazonS3Config Config { get; }
         S3CannedACL Permission { get; }
         TimeSpan FileDownloadLinkTtl { get; }
+        string S3Host { get; }
+        string S3HostReal { get; }
     }
 }
