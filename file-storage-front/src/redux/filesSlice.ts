@@ -1,6 +1,7 @@
 import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 
+
 const initialState = {
     chats: null as null | Array<Chat>,
     senders: [{id: "123", fullName: "имя", telegramUserName: "телега"}, {
@@ -65,6 +66,14 @@ export const filesSlice = createSlice({
 
             state.filesTypes = types;
         },
+        setClassificationWord(state, action: PayloadAction<{fileId: string, classification: {id: string, name: string}}>){
+           state.files = state.files.map( e => {
+                if (e.fileId === action.payload.fileId){
+                    return {...e, classification: action.payload.classification}
+                }
+                return e;
+            } )
+        },
         setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) {
             state.chats = action.payload.chats;
             state.senders = action.payload.senders;
@@ -102,6 +111,7 @@ export const filesSlice = createSlice({
         }
 
     },
+
     extraReducers: {}
 })
 

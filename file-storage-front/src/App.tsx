@@ -17,7 +17,7 @@ import {RightsManagerPanel} from "./components/RightsManagerPanel/RightsManagerP
 import {fetchRightsCurrentUser, fetchRightsDescription, fetchUserCurrent} from "./redux/thunks/rightsThunks";
 import {Rights} from "./models/File";
 import {Profile} from "./components/Profile/Profile";
-import {fetchFilesTypes} from "./redux/thunks/mainThunks";
+import {fetchFilesTypes, fetchClassification} from "./redux/thunks/mainThunks";
 import DocsClasses from "./components/DocsClasses/DocsClasses";
 import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
