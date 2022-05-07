@@ -72,7 +72,6 @@ export const filesSlice = createSlice({
             state.filesNames = action.payload.filesNames;
         },
         setFiles(state, action: PayloadAction<{ files: Array<TypeFile>, filesCount: string | number }>) {
-            state.loading = false;
             state.files = action.payload.files;
             const pagesCount = Math.ceil((+action.payload.filesCount / state.paginator.filesInPage));
             state.filesCount = +action.payload.filesCount;
