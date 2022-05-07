@@ -38,7 +38,7 @@ export type TypeFile = {
         "name": string,
         "imageId"?: string
     },
-    downloadLink?: string
+    url?: string
 }
 
 export type Chat = {

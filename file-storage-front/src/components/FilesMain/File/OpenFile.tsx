@@ -1,4 +1,4 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import "./File.scss"
 import {ReactComponent as Svg} from "../../../assets/download.svg";
 import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
@@ -9,6 +9,7 @@ import {ReactComponent as Edit} from "../../../assets/edit.svg";
 import {ReactComponent as Delete} from "../../../assets/delete.svg";
 import {filesSlice} from "../../../redux/filesSlice";
 import {Button} from "../../utils/Button/Button";
+import {fetchConfigText} from "../../../redux/api/apiFiles";
 
 const {openModal} = filesSlice.actions;
 
@@ -49,6 +50,23 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes}) =>
     const {fileName, fileType, sender, chat, uploadDate, message} = file;
     const canRename = rights?.includes(Rights["Переименовывать файлы"]);
 
+    const [urlFile, setUrlFile] = useState<string | null>(null);
+
+    async function getUrlFile() {
+        const link = await fetchConfigText(`/api/files/${id}/downloadlink`, {method: "GET"});
+        const blob = await fetch(link);
+        const binaryData = []
+        binaryData.push(await blob.blob())
+        const url = window.URL.createObjectURL(new Blob(binaryData,
+            // {type: 'multipart/form-data'}
+        ))
+        setUrlFile(url)
+    }
+
+    useEffect(() => {
+        getUrlFile()
+    }, [])
+
     function openRename() {
         dispatch(openModal({id: id, content: ModalContent.Edit}));
     }
@@ -69,6 +87,8 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes}) =>
                 {message && <div className="file__item">
                     <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
                 </div>}
+                {urlFile && <embed src={urlFile} width="100%"
+                        height="375"/>}
                 <div className={"file__btns"}>
                     {+fileType !== 5 && +fileType !== 4 && <button className="file__btn" onClick={() => {
                         dispatch(fetchDownloadLink(id))
@@ -77,15 +97,26 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes}) =>
                         <Svg/>
                     </button>}
                     {rights?.includes(Rights["Удалять файлы"]) &&
-                    <Button onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
-                            type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
+                    <Button
+                        onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
+                        type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
                 </div>
             </div>
         </div>
     );
 });
 
-type PropsType = { id: string, file: TypeFile & { message?: string }, rights: Rights[], filesTypes: ExpandingObject<string> };
+type PropsType =
+    {
+        id: string, file
+            :
+            TypeFile & { message?: string }, rights
+            :
+            Rights[], filesTypes
+            :
+            ExpandingObject<string>
+    }
+    ;
 
 
 

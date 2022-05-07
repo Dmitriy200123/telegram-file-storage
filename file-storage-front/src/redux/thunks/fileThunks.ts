@@ -7,7 +7,7 @@ import {filesSlice} from "../filesSlice"
 
 const {addMessage, setLoading: setLoadingProfile} = profileSlice.actions;
 const {setFile} = editorSlice.actions;
-const {setFiles, changeFileName, closeModal, removeFile, setLoading, setOpenFile} = filesSlice.actions;
+const {changeFileName, closeModal, removeFile, setLoading, setOpenFile, setFileUrl} = filesSlice.actions;
 
 export const fetchFile = (id: string) => async (dispatch: AppDispatch) => {
     try {
@@ -118,7 +118,3 @@ export const fetchFileText = ({id, type}: { id: string, type: number }) => async
     }
 }
 
-export const fetchFileFile = (url: string) => async (dispatch: AppDispatch) => {
-    await fetch("https://localhost:4566/test/c4644b30-b48c-4212-bd36-41900e310632?AWSAccessKeyId=123&Expires=1651920913&response-content-disposition=attachment%3B%20filename%3Dgoogle.pdf&Signature=j%2Fyzn27H1HjiJS7Ng2uFZ2a%2Fw%2F0%3D", {method: "GET"});
-
-}
