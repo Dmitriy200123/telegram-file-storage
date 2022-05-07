@@ -1,6 +1,6 @@
 import {TokensType} from "../../models/File";
 import {fetchAuth, fetchLog} from "../api/api-auth";
-import {fetchConfigText} from "../api/api";
+import {fetchConfigText} from "../api/apiFiles";
 import {AppDispatch} from "../redux-store";
 import {profileSlice} from "../profileSlice";
 import {MessageTypeEnum} from "../../models/File";

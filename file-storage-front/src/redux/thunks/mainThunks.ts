@@ -1,4 +1,4 @@
-import {fetchConfig, fetchConfigText} from "../api/api";
+import {fetchConfig, fetchConfigText} from "../api/apiFiles";
 import {AppDispatch} from "../redux-store";
 import {filesSliceActions} from "../filesSlice";
 import {profileSlice} from "../profileSlice";

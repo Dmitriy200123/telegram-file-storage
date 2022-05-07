@@ -1,5 +1,4 @@
-import {createAsyncThunk} from "@reduxjs/toolkit";
-import {fetchConfig, fetchConfigText, fPostFile} from "../api/api";
+import {fetchConfig, fetchConfigText, fPostFile} from "../api/apiFiles";
 import {AppDispatch} from "../redux-store";
 import {MessageTypeEnum} from "../../models/File";
 import {profileSlice} from "../profileSlice";
