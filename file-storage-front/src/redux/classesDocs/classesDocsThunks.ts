@@ -95,6 +95,7 @@ export const fetchDeleteClassification = ({id}: { id: string }) => async (dispat
         dispatch(deleteClassification({id}));
         dispatch(setIsFetchClassifications(true));
         dispatch(closeModal());
+        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно удаленна классификация"}));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить"}))
     } finally {
@@ -104,7 +105,7 @@ export const fetchDeleteClassification = ({id}: { id: string }) => async (dispat
 
 type PostClassType = { "name": string, "classificationWords": { "value": string }[] }
 
-export const addClassification = (classification: PostClassType) => async (dispatch: AppDispatch) => {
+export const postAddClassification = (classification: PostClassType) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
     try {
         await fetchConfigText(`/api/documentClassifications`, {
@@ -116,6 +117,7 @@ export const addClassification = (classification: PostClassType) => async (dispa
         dispatch(setClassifications(classification))
         dispatch(setIsFetchClassifications(true));
         dispatch(closeModal())
+        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно загруженна классификация"}));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось добавить классификацию"}))
     } finally {
@@ -133,7 +135,6 @@ export const postAddToClassificationWord = (args: { classId: string, value: stri
         });
         dispatch(addClassificationTag({...args, tagId: "1"}))
         return "error";
-        // dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось отправить класс слово"}))
     } finally {
@@ -147,7 +148,7 @@ export const fetchDeleteToClassificationWord = (args: { classId: string, tagId: 
         await fetchConfigText(`/api/documentClassifications/words/${args.tagId}`, {
             method: "DELETE",
         });
-        dispatch(removeClassificationTag(args))
+        dispatch(removeClassificationTag(args));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить класс слово"}))
     } finally {

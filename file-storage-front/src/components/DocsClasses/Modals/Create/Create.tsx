@@ -3,7 +3,7 @@ import classes from "./../DocsClassesModal/DocsClassesModal.module.scss";
 import {InputText} from "../../../utils/Inputs/Text/InputText";
 import {Button} from "../../../utils/Button/Button";
 import {useAppDispatch} from "../../../../utils/hooks/reduxHooks";
-import {addClassification} from "../../../../redux/classesDocs/classesDocsThunks";
+import {postAddClassification} from "../../../../redux/classesDocs/classesDocsThunks";
 import classNames from 'classnames';
 
 type Props = {
@@ -34,7 +34,7 @@ const Create: FC<Props> = ({onOutsideClick}) => {
     function onSubmit() {
         if (name.length === 0)
             return;
-        dispatch(addClassification({name: name, classificationWords: array}));
+        dispatch(postAddClassification({name: name, classificationWords: array}));
     }
 
     return (
