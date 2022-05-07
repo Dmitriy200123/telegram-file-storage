@@ -40,10 +40,15 @@ export const fetchLogout = () => async (dispatch: AppDispatch) => {
     try {
         dispatch(setLoading(true));
         dispatch(setIsAuth(false))
+        localStorage.setItem("flag", "false");
+        sessionStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`)
+        localStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`)
         await fetchLog("/auth/gitlab/logout");
     } catch (e) {
         dispatch(setLoading(false));
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не войти с помощью гитлаба"}));
+    } finally {
+        dispatch(setLoading(false));
     }
 }
 
