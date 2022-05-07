@@ -13,9 +13,11 @@ import {
     fetchDeleteToClassificationWord,
     postAddToClassificationWord
 } from "../../../redux/classesDocs/classesDocsThunks";
-import {ModalContent} from "../../../models/File";
+import {profileSlice} from "../../../redux/profileSlice";
+import {MessageTypeEnum} from "../../../models/File";
 
 const {openModal} = classesDocsSlice.actions
+const {addMessage} = profileSlice.actions;
 
 interface match<Params extends { [K in keyof Params]?: string } = {}> {
     params: Params;
@@ -65,8 +67,13 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
         return <>Не найдено</>;
 
     function createTag(value: string) {
-        if (classification )
-            dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
+        if (!classification)
+            return;
+        if (classification.classificationWords?.find((c) => c.value === value)){
+            return dispatch(addMessage({type: MessageTypeEnum.Error, value: "Такое слово уже есть"}));
+        }
+        
+        dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
     }
 
     function deleteClassification() {
@@ -97,7 +104,7 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
 
             <div className={classes.classItem__btns}>
                 <Button onClick={deleteClassification}
-                    type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
+                        type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
             </div>
         </div>
     </div>;
