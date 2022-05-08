@@ -44,6 +44,8 @@ export const filesSlice = createSlice({
         },
         setOpenFile(state, payload: PayloadAction<TypeFile>) {
             state.openFile = payload.payload;
+            if (state.files.length === 0)
+                state.files = [payload.payload];
         },
         setOpenFileById(state, payload: PayloadAction<string>) {
             state.modalConfirm.isOpen = true;

@@ -42,7 +42,8 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
             </div>
             <div className="file__content">
                 <h3 className="file__content-title"
-                    onClick={canRename ? openRename : undefined}>{fileName} {canRename && <Edit/>}</h3>
+                    onClick={canRename ? openRename : undefined}>
+                    <span className={"file__content-title-text"}>{fileName}</span> {canRename && <Edit/>}</h3>
                 <div className="file__item"><span>Формат: </span>{filesTypes && filesTypes[fileType]}</div>
                 <div className="file__item"><span>Отправитель: </span><a>{sender?.fullName}</a></div>
                 <div className="file__item"><span>Чат: </span><a>{chat?.name}</a></div>
