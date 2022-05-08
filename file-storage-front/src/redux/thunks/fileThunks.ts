@@ -95,10 +95,10 @@ export const fetchDownloadLink = (id: string) => async (dispatch: AppDispatch) =
     try {
         dispatch(setLoading(true))
         const link = await fetchConfigText(`/api/files/${id}/downloadlink`, {method: "GET"});
-        window.open(link);
-        dispatch(setLoading(false))
+        dispatch(setFileUrl({id, url: link}));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
         dispatch(setLoading(false))
     }
 }

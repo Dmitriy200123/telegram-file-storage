@@ -94,13 +94,9 @@ export const filesSlice = createSlice({
                 state.paginator.currentPage--;
         },
         setFileUrl(state, action: PayloadAction<{ id: string, url: string }>) {
-            state.files = state.files.map((f) => {
-                if (action.payload.id === f.fileId) {
-                    return {...f, url: action.payload.url}
-                }
-
-                return f;
-            })
+            if (state.openFile && state.openFile.fileId === action.payload.id) {
+                state.openFile.url = action.payload.url;
+            }
         }
 
     },
