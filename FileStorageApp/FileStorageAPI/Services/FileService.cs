@@ -11,13 +11,12 @@ using DocumentsIndex.Contracts;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
 using FileStorageAPI.Extensions;
+using FileStorageAPI.Helpers;
 using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
-using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
-using RightServices;
 using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
 using FileInfo = FileStorageAPI.Models.FileInfo;
@@ -34,9 +33,8 @@ namespace FileStorageAPI.Services
         private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
         private readonly IDownloadLinkProvider _downloadLinkProvider;
         private readonly ISenderFormTokenProvider _senderFormTokenProvider;
-        private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
-        private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
         private readonly IDocumentIndexStorage _documentIndexStorage;
+        private readonly IHttpRequestHelper _httpRequestHelper;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
@@ -48,9 +46,9 @@ namespace FileStorageAPI.Services
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
         /// <param name="downloadLinkProvider">Поставщик для получения ссылки на файл</param>
         /// <param name="senderFormTokenProvider"></param>
-        /// <param name="userIdFromTokenProvider">Поставщик для получения Id пользователя из токена</param>
-        /// <param name="accessesByUserIdProvider">Поставщик для получения прав пользователя по Id</param>
         /// <param name="documentIndexStorage">Хранилище текстовых файлов с поиском по содержимому</param>
+        /// <param name="httpRequestHelper"></param>
+        /// <param name="documentsProvider"></param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
@@ -58,9 +56,9 @@ namespace FileStorageAPI.Services
             IExpressionFileFilterProvider expressionFileFilterProvider,
             IDownloadLinkProvider downloadLinkProvider,
             ISenderFormTokenProvider senderFormTokenProvider,
-            IAccessesByUserIdProvider accessesByUserIdProvider,
-            IUserIdFromTokenProvider userIdFromTokenProvider, 
-            IDocumentIndexStorage documentIndexStorage)
+            IDocumentIndexStorage documentIndexStorage, 
+            IHttpRequestHelper httpRequestHelper, 
+            IDocumentsProvider documentsProvider)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
@@ -72,11 +70,8 @@ namespace FileStorageAPI.Services
                 downloadLinkProvider ?? throw new ArgumentNullException(nameof(downloadLinkProvider));
             _senderFormTokenProvider = senderFormTokenProvider ??
                                        throw new ArgumentNullException(nameof(senderFormTokenProvider));
-            _accessesByUserIdProvider = accessesByUserIdProvider ??
-                                        throw new ArgumentNullException(nameof(accessesByUserIdProvider));
-            _userIdFromTokenProvider = userIdFromTokenProvider ??
-                                       throw new ArgumentNullException(nameof(userIdFromTokenProvider));
             _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
+            _httpRequestHelper = httpRequestHelper ?? throw new ArgumentNullException(nameof(httpRequestHelper));
         }
 
         /// <inheritdoc />
@@ -85,7 +80,7 @@ namespace FileStorageAPI.Services
         {
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
-            var chatsId = await GetUserChats(request);
+            var chatsId = await _httpRequestHelper.GetUserChats(request);
            
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var files = await GetFileInfoFromStorage(expression, skip, take);
@@ -98,9 +93,9 @@ namespace FileStorageAPI.Services
             HttpRequest request)
         {
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
             var expression = _expressionFileFilterProvider.GetExpression(fileSearchParameters, chatsId);
             var filesCount = await filesStorage.GetFilesCountAsync(expression);
@@ -115,9 +110,9 @@ namespace FileStorageAPI.Services
             var file = await filesStorage.GetByIdAsync(id, true);
             if (file is null)
                 return RequestResult.NotFound<FileInfo>($"File with identifier {id} not found");
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = hasAnyFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             SetFileChat(filteredFiles);
@@ -134,9 +129,9 @@ namespace FileStorageAPI.Services
             if (file is null)
                 return RequestResult.NotFound<string>($"File with identifier {id} not found");
 
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = hasAnyFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
@@ -245,9 +240,9 @@ namespace FileStorageAPI.Services
         {
             using var fileInfoStorage = _infoStorageFactory.CreateFileStorage();
             var files = await fileInfoStorage.GetAllAsync();
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var filterFiles = hasAnyFilesAccess ? files : files.FilterFiles(sender);
             var filesNames = filterFiles.Select(x => x.Name).ToList();
             return RequestResult.Ok(filesNames);
@@ -273,9 +268,9 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<string>($"Link with identifier {id} not found");
             if (file.Type != FileType.Link)
                 return RequestResult.BadRequest<string>("Invalid file type");
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = hasAnyFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
@@ -295,9 +290,9 @@ namespace FileStorageAPI.Services
                 return RequestResult.NotFound<string>($"Message with identifier {id} not found");
             if (file.Type != FileType.Text)
                 return RequestResult.BadRequest<string>("Invalid file type");
-            var sender = await GetNotNullSenderAsync(request);
+            var sender = await _httpRequestHelper.GetNotNullSenderAsync(request);
             
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
+            var hasAnyFilesAccess = await _httpRequestHelper.HasAnyFilesAccessAsync(request);
             var filesToFilter = new List<DataBaseFile> {file};
             var filteredFiles = hasAnyFilesAccess ? filesToFilter : filesToFilter.FilterFiles(sender);
             if (filteredFiles.Count == 0)
@@ -340,35 +335,6 @@ namespace FileStorageAPI.Services
             return RequestResult.Created<(string Uri, Guid Guid)>((downloadLink, file.Id));
         }
 
-        /// <inheritdoc />
-        public async Task<RequestResult<int>> GetDocumentsCountByParametersAndIds(FileSearchParameters fileSearchParameters, 
-            List<Guid>? guidsToFind, HttpRequest request)
-        {
-            using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var sender = await GetNotNullSenderAsync(request);
-            
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
-            var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
-            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, guidsToFind, chatsId);
-            var filesCount = await filesStorage.GetFilesCountAsync(expression);
-
-            return RequestResult.Ok(filesCount);
-        }
-
-        /// <inheritdoc />
-        public async Task<RequestResult<List<FileInfo>>> GetDocumentsByParametersAndIds(
-            FileSearchParameters fileSearchParameters, List<Guid>? fileIds, HttpRequest request, int skip, int take)
-        {
-            if (skip < 0 || take < 0)
-                return RequestResult.BadRequest<List<FileInfo>>($"Skip or take less than 0");
-            var chatsId = await GetUserChats(request);
-           
-            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, fileIds, chatsId);
-            var files = await GetFileInfoFromStorage(expression, skip, take);
-
-            return RequestResult.Ok(files);
-        }
-
         private async Task<List<FileInfo>> GetFileInfoFromStorage(Expression<Func<DataBaseFile, bool>> expression,
             int? skip, int? take)
         {
@@ -381,37 +347,12 @@ namespace FileStorageAPI.Services
             return convertedFiles;
         }
 
-        private async Task<List<Guid>?> GetUserChats(HttpRequest request)
-        {
-            var sender = await GetNotNullSenderAsync(request);
-            using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            var hasAnyFilesAccess = await HasAnyFilesAccessAsync(request);
-            return hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
-        }
-
         private async Task<bool> UploadFile(DataBaseFile file, Stream stream)
         {
             using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), stream);
             return await filesStorage.AddAsync(file);
-        }
-
-        private async Task<FileSender> GetNotNullSenderAsync(HttpRequest request)
-        {
-            var sender = await _senderFormTokenProvider.GetSenderFromToken(request);
-            
-            if (sender == null)
-                throw new InvalidOperationException("Sender not found");
-
-            return sender;
-        }
-
-        private async Task<bool> HasAnyFilesAccessAsync(HttpRequest request)
-        {
-            var userId = _userIdFromTokenProvider.GetUserIdFromToken(request, Settings.Key);
-            var accesses = await _accessesByUserIdProvider.GetAccessesByUserIdAsync(userId);
-            return accesses.Any(access => access == Accesses.ViewAnyFiles);
         }
 
         private static DataBaseFile CreateFile(FileType fileType, Guid senderId, string name)

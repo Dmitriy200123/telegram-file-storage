@@ -98,28 +98,5 @@ namespace FileStorageAPI.Services
         /// <param name="request">Пришедший запрос</param>
         /// <returns></returns>
         Task<RequestResult<(string Uri, Guid Guid)>> PostLink(UploadTextData uploadTextData, HttpRequest request);
-
-        
-        /// <summary>
-        /// Метод который по фильтрам возвращает количество файлов являющихся документами
-        /// </summary>
-        /// <param name="fileSearchParameters">параметры для поиска файлов</param>
-        /// <param name="guidsToFind">идентификаторы документов среди которых нужно произвоить поиск</param>
-        /// <param name="request">запрос</param>
-        /// <returns></returns>
-        Task<RequestResult<int>> GetDocumentsCountByParametersAndIds(FileSearchParameters fileSearchParameters,
-            List<Guid>? guidsToFind, HttpRequest request);
-
-        /// <summary>
-        /// Метод который по фильтрам возвращает информацию о файлах являющихся документами
-        /// </summary>
-        /// <param name="fileSearchParameters">параметры для поиска файлов</param>
-        /// <param name="fileIds">идентификаторы документов среди которых нужно произвоить поиск</param>
-        /// <param name="request">запрос</param>
-        /// <param name="skip">сколько документов пропустить</param>
-        /// <param name="take">сколько документов взять</param>
-        /// <returns></returns>
-        Task<RequestResult<List<FileInfo>>> GetDocumentsByParametersAndIds(
-            FileSearchParameters fileSearchParameters, List<Guid>? fileIds, HttpRequest request, int skip, int take);
     }
 }
