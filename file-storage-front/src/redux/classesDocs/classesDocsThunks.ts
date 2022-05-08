@@ -129,7 +129,7 @@ export const postAddClassification = (classification: PostClassType) => async (d
 export const postAddToClassificationWord = (args: { classId: string, value: string }) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
     try {
-        const id = (await fetchConfigText(`/api/documentClassifications/${args.classId}/words`, {
+        const id = (await fetchConfig(`/api/documentClassifications/${args.classId}/words`, {
             method: "POST",
             body: {value: args.value}
         }))
