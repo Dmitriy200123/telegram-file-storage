@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using API;
 using DocumentsIndex;
 using FileStorageAPI.Converters;
+using FileStorageAPI.Extensions;
 using FileStorageAPI.Models;
 using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using Microsoft.AspNetCore.Http;
+using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
+using FileInfo = FileStorageAPI.Models.FileInfo;
+using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
+
 
 namespace FileStorageAPI.Services
 {
@@ -21,7 +27,10 @@ namespace FileStorageAPI.Services
         private readonly IClassificationToClassificationInfoConverter _classificationConverter;
         private readonly IDocumentIndexStorage _documentIndexStorage;
         private readonly IInfoStorageFactory _infoStorageFactory;
-        private readonly IDocumentsProvider _documentsProvider;
+        private readonly IExpressionFileFilterProvider _expressionFileFilterProvider;
+        private readonly IFileInfoConverter _fileInfoConverter;
+        private readonly ISenderFormTokenProvider _senderFormTokenProvider;
+        private readonly IAccessService _accessService;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="DocumentsService"/>.
@@ -31,21 +40,24 @@ namespace FileStorageAPI.Services
         /// <param name="infoStorageFactory">Фабрика для создания хранилищ</param>
         /// <param name="fileToDocumentInfoConverter">Конвертер File в DocumentInfo</param>
         /// <param name="classificationConverter">Конвертер DocumentClassification в ClassificationInfo</param>
-        /// <param name="documentsProvider">Поставщик документов по параметрам</param>
         public DocumentsService(
             IDocumentToFileConverter documentToFileConverter,
             IDocumentIndexStorage documentIndexStorage,
             IInfoStorageFactory infoStorageFactory,
             IFileToDocumentInfoConverter fileToDocumentInfoConverter,
-            IClassificationToClassificationInfoConverter classificationConverter, 
-            IDocumentsProvider documentsProvider)
+            IClassificationToClassificationInfoConverter classificationConverter,
+            IExpressionFileFilterProvider expressionFileFilterProvider, 
+            IFileInfoConverter fileInfoConverter, ISenderFormTokenProvider senderFormTokenProvider, IAccessService accessService)
         {
             _documentToFileConverter = documentToFileConverter ?? throw new ArgumentNullException(nameof(documentToFileConverter));
             _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileToDocumentInfoConverter = fileToDocumentInfoConverter ?? throw new ArgumentNullException(nameof(fileToDocumentInfoConverter));
             _classificationConverter = classificationConverter ?? throw new ArgumentNullException(nameof(classificationConverter));
-            _documentsProvider = documentsProvider ?? throw new ArgumentNullException(nameof(documentsProvider));
+            _expressionFileFilterProvider = expressionFileFilterProvider;
+            _fileInfoConverter = fileInfoConverter;
+            _senderFormTokenProvider = senderFormTokenProvider;
+            _accessService = accessService;
         }
 
         /// <inheritdoc />
@@ -55,7 +67,13 @@ namespace FileStorageAPI.Services
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
             
             var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
-            var filesCount = await _documentsProvider.GetDocumentsCountByParametersAndIds(fileSearchParameters, foundedDocuments, request);
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var sender = (await _senderFormTokenProvider.GetSenderFromToken(request)).CheckForNull();
+
+            var hasAnyFilesAccess = await _accessService.HasAnyFilesAccessAsync(request);
+            var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
+            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId);
+            var filesCount = await filesStorage.GetFilesCountAsync(expression);
 
             return RequestResult.Ok(filesCount);
         }
@@ -69,9 +87,16 @@ namespace FileStorageAPI.Services
             var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<DocumentInfo>>($"Skip or take less than 0");
-            var fileInfo = await _documentsProvider.GetDocumentsByParametersAndIds(fileSearchParameters, foundedDocuments, request, skip, take);
+            var sender = (await _senderFormTokenProvider.GetSenderFromToken(request)).CheckForNull();
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var hasAnyFilesAccess = await _accessService.HasAnyFilesAccessAsync(request);
+            var chatsId = hasAnyFilesAccess ? null : sender!.Chats.Select(chat => chat.Id).ToList();
 
-            return RequestResult.Ok(fileInfo);
+            var expression =
+                _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId);
+            var files = await GetFileInfoFromStorage(expression, skip, take);
+
+            return RequestResult.Ok(files.Select(_documentToFileConverter.ToDocumentModel).ToList());
         }
         
         private async Task<List<Guid>?> TryFindInIndexStorage(string? phrase)
@@ -116,6 +141,33 @@ namespace FileStorageAPI.Services
             var classificationInfo = _classificationConverter.ConvertToClassificationInfo(file.Classification);
             
             return RequestResult.Ok(classificationInfo);
+        }
+        
+        private async Task<List<FileInfo>> GetFileInfoFromStorage(Expression<Func<DataBaseFile, bool>> expression,
+            int? skip, int? take)
+        {
+            using var filesStorage = _infoStorageFactory.CreateFileStorage();
+            var filesFromDataBase = await filesStorage.GetByFilePropertiesAsync(expression, true, skip, take);
+            SetFileChat(filesFromDataBase);
+            var convertedFiles = filesFromDataBase
+                .Select(_fileInfoConverter.ConvertFileInfo)
+                .ToList();
+            return convertedFiles;
+        }
+        
+        private static void SetFileChat(IEnumerable<DataBaseFile> files)
+        {
+            var chat = new Chat
+            {
+                Id = Guid.Empty,
+                TelegramId = 0,
+                Name = "Загрузка с сайта",
+                ImageId = null,
+            };
+            foreach (var file in files)
+            {
+                file.Chat ??= chat;
+            }
         }
     }
 }

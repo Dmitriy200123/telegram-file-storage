@@ -10,7 +10,6 @@ using DocumentsIndex.Pipelines;
 using FilesStorage;
 using FilesStorage.Interfaces;
 using FileStorageAPI.Converters;
-using FileStorageAPI.Helpers;
 using FileStorageAPI.Providers;
 using FileStorageAPI.Services;
 using FileStorageApp.Data.InfoStorage.Config;
@@ -88,8 +87,7 @@ namespace FileStorageAPI
                 }
             );
             services.AddCors();
-
-            services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
+            
             services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton(new RightsSettings(Settings.Key));
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
@@ -216,6 +214,7 @@ namespace FileStorageAPI
             services.AddSingleton<IUserInfoService, UserInfoService>();
             services.AddSingleton<IRightsService, RightsService>();
             services.AddSingleton<IDocumentsService, DocumentsService>();
+            services.AddSingleton<IAccessService, AccessService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)
@@ -226,7 +225,6 @@ namespace FileStorageAPI
             services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
             services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
             services.AddSingleton<IAccessesByUserIdProvider, AccessesByUserIdProvider>();
-            services.AddSingleton<IDocumentsProvider, DocumentsProvider>();
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection, string tokenKey, byte[] key)
