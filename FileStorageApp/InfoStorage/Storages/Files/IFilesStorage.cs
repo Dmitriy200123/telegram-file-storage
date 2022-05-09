@@ -23,5 +23,6 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         public Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId);
         
         public Task<bool> DeleteClassificationAsync(Guid fileId, Guid classificationId);
+        public Task<bool> HasClassificationAsync(Guid fileId, Guid classificationId);
     }
 }

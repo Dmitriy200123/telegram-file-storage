@@ -14,10 +14,10 @@ namespace FileStorageAPI.Providers
         private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="SenderFormTokenProvider"/>
         /// </summary>
-        /// <param name="infoStorageFactory"></param>
-        /// <param name="userIdFromTokenProvider"></param>
+        /// <param name="infoStorageFactory">Фабрика для создания хранилищ</param>
+        /// <param name="userIdFromTokenProvider">Получение идентификатора пользователя из токена</param>
         public SenderFormTokenProvider(IInfoStorageFactory infoStorageFactory,
             IUserIdFromTokenProvider userIdFromTokenProvider)
         {

@@ -115,6 +115,19 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             return await UpdateAsync(file);
         }
 
+        public async Task<bool> HasClassificationAsync(Guid fileId, Guid classificationId)
+        {
+            var file = await GetByIdAsync(fileId, true);
+
+            if (file == null)
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
+
+            if (file.Type != FileType.TextDocument)
+                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            
+            return await Classifications.AnyAsync(classification => classification.Id == classificationId);
+        }
+
         private static IQueryable<File> AddOptionsInQuery(IQueryable<File> query, bool useInclude = false, int? skip = null, int? take = null)
         {
             if (useInclude)

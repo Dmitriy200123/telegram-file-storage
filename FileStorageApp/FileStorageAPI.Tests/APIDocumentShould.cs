@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
@@ -89,6 +90,7 @@ namespace FileStorageAPI.Tests
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             await UploadFile();
+            
             var response = await apiClient.GetAsync($"/api/files/documents/count?skip=0&take=2&phrase=good");
 
             response.EnsureSuccessStatusCode();

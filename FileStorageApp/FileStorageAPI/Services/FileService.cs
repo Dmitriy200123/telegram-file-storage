@@ -44,9 +44,9 @@ namespace FileStorageAPI.Services
         /// <param name="fileTypeProvider">Поставщик типа файла</param>
         /// <param name="expressionFileFilterProvider">Поставщик query Expression для поиска данных</param>
         /// <param name="downloadLinkProvider">Поставщик для получения ссылки на файл</param>
-        /// <param name="senderFormTokenProvider"></param>
+        /// <param name="senderFormTokenProvider">Поставщик отправителя файла из токена</param>
         /// <param name="documentIndexStorage">Хранилище текстовых файлов с поиском по содержимому</param>
-        /// <param name="httpRequestHelper"></param>
+        /// <param name="accessService">Сервис отвечающий за опции доступа</param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
@@ -68,7 +68,7 @@ namespace FileStorageAPI.Services
             _senderFormTokenProvider = senderFormTokenProvider ??
                                        throw new ArgumentNullException(nameof(senderFormTokenProvider));
             _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
-            _accessService = accessService;
+            _accessService = accessService ?? throw new ArgumentNullException(nameof(accessService));
         }
 
         /// <inheritdoc />
