@@ -20,8 +20,9 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<string>> GetFileNamesAsync();
         
-        public Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId);
+        public Task<bool> SetClassificationAsync(Guid fileId, Guid classificationId);
         
         public Task<bool> DeleteClassificationAsync(Guid fileId, Guid classificationId);
+        public Task<bool> HasClassificationAsync(Guid fileId, Guid classificationId);
     }
 }

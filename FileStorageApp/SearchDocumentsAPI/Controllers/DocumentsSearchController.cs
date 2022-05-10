@@ -16,7 +16,6 @@ namespace SearchDocumentsAPI.Controllers
     [Route("api/search/documents")]
     [SwaggerTag("Поиск документов")]
     [ApiController]
-    [Authorize]
     public class DocumentsSearchController : ControllerBase
     {
         private readonly IDocumentsSearchService _documentsSearchService;

@@ -29,7 +29,7 @@ namespace FileStorageAPI.Tests
         private readonly WebApplicationFactory<Startup> _applicationFactory;
         private readonly IRightsFilter _fakeRightsFilter;
         private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
-        private readonly ISenderFormTokenProvider _senderFormTokenProvider;
+        private readonly ISenderFromTokenProvider _senderFromTokenProvider;
         private readonly IAccessesByUserIdProvider _accessesByUserIdProvider;
         private const string SenderId = "00000000-0000-0000-0000-000000000001";
 
@@ -46,12 +46,12 @@ namespace FileStorageAPI.Tests
             _accessesByUserIdProvider = A.Fake<IAccessesByUserIdProvider>();
             A.CallTo(() => _userIdFromTokenProvider.GetUserIdFromToken(A<HttpRequest>.Ignored, A<byte[]>.Ignored))
                 .Returns(Guid.Parse(SenderId));
-            A.CallTo(() => _accessesByUserIdProvider.GetAccessesByUserIdAsync(A<Guid>.Ignored)).Returns(new[] { Accesses.ViewAnyFiles });
+            A.CallTo(() => _accessesByUserIdProvider.GetAccessesByUserIdAsync(A<Guid>.Ignored)).Returns(new[] { Access.ViewAnyFiles });
             _fakeRightsFilter = A.Fake<IRightsFilter>();
             A.CallTo(() => _fakeRightsFilter.CheckRightsAsync(A<ActionExecutingContext>.Ignored, A<int[]>.Ignored))
                 .Returns(true);
-            _senderFormTokenProvider = A.Fake<ISenderFormTokenProvider>();
-            A.CallTo(() => _senderFormTokenProvider.GetSenderFromToken(A<HttpRequest>.Ignored))
+            _senderFromTokenProvider = A.Fake<ISenderFromTokenProvider>();
+            A.CallTo(() => _senderFromTokenProvider.GetSenderFromToken(A<HttpRequest>.Ignored))
                 .Returns(Task.FromResult(sender));
             _applicationFactory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(builder =>
@@ -64,7 +64,7 @@ namespace FileStorageAPI.Tests
                         services.AddSingleton(fakeAuthUser ?? new FakeAuthUser());
                         services.AddFakeAuthentication();
                         services.AddSingleton(_userIdFromTokenProvider);
-                        services.AddSingleton(_senderFormTokenProvider);
+                        services.AddSingleton(_senderFromTokenProvider);
                         services.AddSingleton(_accessesByUserIdProvider);
                     });
                 });

@@ -89,6 +89,7 @@ namespace FileStorageAPI.Tests
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
             using var senderStorage = _infoStorageFactory.CreateFileSenderStorage();
             await UploadFile();
+            
             var response = await apiClient.GetAsync($"/api/files/documents/count?skip=0&take=2&phrase=good");
 
             response.EnsureSuccessStatusCode();
@@ -129,7 +130,7 @@ namespace FileStorageAPI.Tests
             await classificationStorage.AddAsync(classification);
 
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
-            await fileStorage.AddClassificationAsync(fileInfo.FileId, classification.Id);
+            await fileStorage.SetClassificationAsync(fileInfo.FileId, classification.Id);
 
             using var apiClient = CreateHttpClient();
             var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}/classification");

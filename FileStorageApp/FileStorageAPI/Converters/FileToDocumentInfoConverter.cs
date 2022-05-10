@@ -26,8 +26,7 @@ namespace FileStorageAPI.Converters
         {
             _chatConverter = chatConverter ?? throw new ArgumentNullException(nameof(chatConverter));
             _senderConverter = senderConverter ?? throw new ArgumentNullException(nameof(senderConverter));
-            _classificationConverter = classificationConverter ??
-                                       throw new ArgumentNullException(nameof(classificationConverter));
+            _classificationConverter = classificationConverter ?? throw new ArgumentNullException(nameof(classificationConverter));
         }
 
         /// <inheritdoc />

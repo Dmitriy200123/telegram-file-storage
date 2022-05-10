@@ -65,7 +65,7 @@ namespace FileStorageAPI.Controllers
         /// Добавляет или удаляет права пользователя. Требуется право "UserAccessesManagement".
         /// </summary>
         [HttpPost("set")]
-        [RightsFilter(Accesses.UserAccessesManagement)]
+        [RightsFilter(Access.UserAccessesManagement)]
         [SwaggerResponse(StatusCodes.Status200OK, "Успешно изменили права")]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Невалидные данные")]
@@ -86,7 +86,7 @@ namespace FileStorageAPI.Controllers
         /// Возвращает информацию о правах пользователя по его идентификатору. Требуется право "UserAccessesManagement".
         /// </summary>
         [HttpGet("userRights")]
-        [RightsFilter(Accesses.UserAccessesManagement)]
+        [RightsFilter(Access.UserAccessesManagement)]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о правах пользователя по его идентификатору",
             typeof(int[]))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Нет такого пользователя")]

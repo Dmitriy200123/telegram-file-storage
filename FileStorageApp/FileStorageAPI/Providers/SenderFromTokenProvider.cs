@@ -8,17 +8,17 @@ using RightServices;
 namespace FileStorageAPI.Providers
 {
     /// <inheritdoc />
-    public class SenderFormTokenProvider : ISenderFormTokenProvider
+    public class SenderFromTokenProvider : ISenderFromTokenProvider
     {
         private readonly IInfoStorageFactory _infoStorageFactory;
         private readonly IUserIdFromTokenProvider _userIdFromTokenProvider;
 
         /// <summary>
-        /// 
+        /// Инициализирует новый экземпляр класса <see cref="SenderFromTokenProvider"/>
         /// </summary>
-        /// <param name="infoStorageFactory"></param>
-        /// <param name="userIdFromTokenProvider"></param>
-        public SenderFormTokenProvider(IInfoStorageFactory infoStorageFactory,
+        /// <param name="infoStorageFactory">Фабрика для создания хранилищ</param>
+        /// <param name="userIdFromTokenProvider">Получение идентификатора пользователя из токена</param>
+        public SenderFromTokenProvider(IInfoStorageFactory infoStorageFactory,
             IUserIdFromTokenProvider userIdFromTokenProvider)
         {
             _infoStorageFactory = infoStorageFactory;

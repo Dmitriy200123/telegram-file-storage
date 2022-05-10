@@ -23,7 +23,7 @@ namespace RightServices
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Accesses>> GetAccessesByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<Access>> GetAccessesByUserIdAsync(Guid userId)
         {
             using var usersStorage = _infoStorageFactory.CreateUsersStorage();
             var user = await usersStorage.GetByIdAsync(userId, true);

@@ -18,7 +18,7 @@ namespace RightServices
         /// Инициализирует новый экземпляр класса <see cref="RightsFilterAttribute"/>.
         /// </summary>
         /// <param name="accesses">Требуемые доступы</param>
-        public RightsFilterAttribute(params Accesses[] accesses)
+        public RightsFilterAttribute(params Access[] accesses)
         {
             _accesses = accesses.Cast<int>().ToArray();
         }

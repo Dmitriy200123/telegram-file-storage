@@ -87,7 +87,7 @@ namespace FileStorageAPI
                 }
             );
             services.AddCors();
-
+            
             services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton(new RightsSettings(Settings.Key));
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
@@ -214,6 +214,7 @@ namespace FileStorageAPI
             services.AddSingleton<IUserInfoService, UserInfoService>();
             services.AddSingleton<IRightsService, RightsService>();
             services.AddSingleton<IDocumentsService, DocumentsService>();
+            services.AddSingleton<IAccessService, AccessService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)
@@ -221,7 +222,7 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
-            services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
+            services.AddSingleton<ISenderFromTokenProvider, SenderFromTokenProvider>();
             services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
             services.AddSingleton<IAccessesByUserIdProvider, AccessesByUserIdProvider>();
         }
