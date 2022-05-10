@@ -1,50 +1,64 @@
-import {createAsyncThunk} from "@reduxjs/toolkit";
 import {TokensType} from "../../models/File";
 import {fetchAuth, fetchLog} from "../api/api-auth";
 import {fetchConfigText} from "../api/apiFiles";
+import {AppDispatch} from "../redux-store";
+import {profileSlice} from "../profileSlice";
+import {MessageTypeEnum} from "../../models/File";
 
+const {addMessage, setLoading, setAuthGitlab, setTokensToLocalStorage, setIsAuth} = profileSlice.actions;
 
-export const fetchIsAuth = createAsyncThunk("profile/isAuth", async (_, thunkAPI) => {
+export const fetchIsAuth = () => async (dispatch: AppDispatch) => {
     const jwtToken = localStorage.getItem("jwtToken");
     const refreshToken = localStorage.getItem("refreshToken");
-    if (jwtToken && refreshToken)
-        try {
-            const tokens:TokensType = {
-                jwtToken: jwtToken,
-                refreshToken: refreshToken
-            };
-            const data:TokensType = await fetchAuth("/auth/gitlab/refresh", {body:tokens, method: "POST"});
-            return data;
-        } catch (e) {
-            return thunkAPI.rejectWithValue("Не удалось");
-        }
-    else
-        return thunkAPI.rejectWithValue("Токены неверные");
-})
-
-export const fetchAuthGitlab = createAsyncThunk("profile/login", async (token:string, thunkAPI) => {
-    try {
-        const data:TokensType = await fetchAuth("/auth/gitlab", {token:token});
-        return data;
-    } catch (e) {
-        return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
+    if (jwtToken === null || refreshToken === null) {
+        return dispatch(setIsAuth(false));
     }
-})
 
-
-export const fetchLogout = createAsyncThunk("profile/logout", async (_, thunkAPI) => {
     try {
+        dispatch(setLoading(true));
+        const tokens: TokensType = {jwtToken, refreshToken};
+        const data: TokensType = await fetchAuth("/auth/gitlab/refresh", {body: tokens, method: "POST"});
+        dispatch(setIsAuth(true));
+        dispatch(setTokensToLocalStorage(data));
+    } catch (e) {
+        dispatch(setLoading(false));
+        dispatch(setIsAuth(false));
+    }
+}
+
+export const fetchAuthGitlab = (token: TokensType) => async (dispatch: AppDispatch) => {
+    try {
+        const data: TokensType = await fetchAuth("/auth/gitlab", {token: token});
+        dispatch(setAuthGitlab(data));
+        dispatch(setIsAuth(true));
+    } catch (e) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось войти с помощью гитлаба"}));
+    }
+}
+
+export const fetchLogout = () => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        dispatch(setIsAuth(false))
+        localStorage.setItem("flag", "false");
+        sessionStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`)
+        localStorage.removeItem(`oidc.user:${process.env.REACT_APP_HOST}:${process.env.REACT_APP_ID}`)
         await fetchLog("/auth/gitlab/logout");
     } catch (e) {
-        return thunkAPI.rejectWithValue("Не войти с помощью гитлаба");
+        dispatch(setLoading(false));
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не войти с помощью гитлаба"}));
+    } finally {
+        dispatch(setLoading(false));
     }
-})
+}
 
-
-export const fetchLogoutTelegram = createAsyncThunk("profile/logout-telegram", async (_, thunkAPI) => {
+export const fetchLogoutTelegram = () => async (dispatch: AppDispatch) => {
     try {
-        await fetchConfigText("/auth/telegram/logout", {method:"POST"});
+        dispatch(setLoading(true));
+        await fetchConfigText("/auth/telegram/logout", {method: "POST"});
     } catch (e) {
-        return thunkAPI.rejectWithValue("Не удалось выйти");
+        dispatch(setLoading(false));
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось выйти"}));
+
     }
-})
+}

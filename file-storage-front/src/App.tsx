@@ -4,7 +4,7 @@ import './App.scss';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
-import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
+import {OpenedFileContainer} from "./components/FilesMain/File/OpenFileContainer";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
@@ -40,7 +40,6 @@ const App: FC = () => {
     const messages = useAppSelector((state) => state.profile.messages);
     const loading = useAppSelector((state) => state.profile.loading);
     const isAuth = useAppSelector((state) => state.profile.isAuth);
-
     useEffect(() => {
         dispatch(fetchIsAuth());
     }, []);

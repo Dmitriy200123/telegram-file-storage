@@ -15,14 +15,6 @@ export const editorSlice = createSlice({
         },
     },
     extraReducers: {
-        [postFile.fulfilled.type]: (state, _) => {
-            state.file = null;
-        },
-        [postFile.pending.type]: (state, _) => {
-        },
-        [postFile.rejected.type]: (state, _) => {
-            state.file = null;
-        },
 
     }
 });
