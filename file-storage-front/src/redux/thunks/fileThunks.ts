@@ -54,7 +54,12 @@ export const postCustomFile = ({
             }
             dispatch(addMessage({type: MessageTypeEnum.Message, value: "Файл успешно загружен"}))
         } catch (err) {
-            dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+            let error = err as Error;
+            if (error.message === "This is not url") {
+                dispatch(addMessage({type: MessageTypeEnum.Error, value: "Проверьте вводимые данные"}))
+            } else {
+                dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+            }
         }
     }
 }
