@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
 using FilesStorage;
@@ -131,7 +130,7 @@ namespace FileStorageAPI.Tests
             await classificationStorage.AddAsync(classification);
 
             using var fileStorage = _infoStorageFactory.CreateFileStorage();
-            await fileStorage.AddClassificationAsync(fileInfo.FileId, classification.Id);
+            await fileStorage.SetClassificationAsync(fileInfo.FileId, classification.Id);
 
             using var apiClient = CreateHttpClient();
             var response = await apiClient.GetAsync($"api/files/documents/{fileInfo.FileId}/classification");

@@ -57,7 +57,6 @@ namespace FileStorageAPI.Controllers
         /// <param name="documentSearchParameters">Параметры поиска документов</param>
         /// <param name="skip">Количество пропускаемых элементов</param>
         /// <param name="take">Количество возвращаемых элементов</param>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает все доступные файлы типа \"Текстовый документ\" для текущего пользователя", typeof(List<DocumentInfo>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Если skip или take меньше 0", typeof(string))]
@@ -72,12 +71,11 @@ namespace FileStorageAPI.Controllers
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
-        
+
         /// <summary>
         /// Возвращает документ по Id
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{documentId:guid}")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает документ", typeof(DocumentInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
@@ -92,12 +90,11 @@ namespace FileStorageAPI.Controllers
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
-        
+
         /// <summary>
         /// Возвращает классификацию по Id документа
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
         [HttpGet("{documentId:guid}/classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает классификацию", typeof(ClassificationInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден. ", typeof(NotFoundResult))]
@@ -114,47 +111,41 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавляет классификацию документа
+        /// Добавляет классификацию документу.
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        /// <param name="documentClassification">Идентификатор классификации</param>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpPost("{documentId:guid}/assign-classification")]
+        /// <param name="documentClassificationId">Идентификатор классификации</param>
+        [HttpPatch("{documentId:guid}/assign-classification")]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает документ", typeof(DocumentInfo))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если документ не имеет тип textDocument", typeof(string))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
-        public async Task<IActionResult> AddClassification(Guid documentId, [FromBody] Guid documentClassification)
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если не найдено документа или классификации", typeof(string))]
+        public async Task<IActionResult> AddClassification(Guid documentId, [FromBody] Guid documentClassificationId)
         {
-            var files = await _documentsService.AddClassification(documentId,documentClassification);
+            var result = await _documentsService.AddClassification(documentId, documentClassificationId);
 
-            return files.ResponseCode switch
+            return result.ResponseCode switch
             {
-                HttpStatusCode.Created => Ok(files.Value),
-                HttpStatusCode.NotFound => NotFound(files.Message),
-                HttpStatusCode.BadRequest => BadRequest(files.Message),
+                HttpStatusCode.Created => Ok(result.Value),
+                HttpStatusCode.NotFound => NotFound(result.ToNotFoundResult()),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }
 
         /// <summary>
-        /// Удаляет классификацию документа
+        /// Удаляет классификацию у документа.
         /// </summary>
         /// <param name="documentId">Id документа</param>
-        /// <param name="documentClassification">Идентификатор классификации</param>
-        /// <exception cref="ArgumentException">Может выброситься, если контроллер не ожидает такой HTTP код</exception>
-        [HttpPost("{documentId:guid}/revoke-classification")]
+        /// <param name="documentClassificationId">Идентификатор классификации</param>
+        [HttpPatch("{documentId:guid}/revoke-classification")]
         [SwaggerResponse(StatusCodes.Status201Created, "Возвращает документ", typeof(DocumentInfo))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Если документ не имеет тип textDocument", typeof(string))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден", typeof(string))]
-        public async Task<IActionResult> DeleteClassification(Guid documentId, [FromBody] Guid documentClassification)
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Если не найдено документа или классификации", typeof(string))]
+        public async Task<IActionResult> DeleteClassification(Guid documentId, [FromBody] Guid documentClassificationId)
         {
-            var files = await _documentsService.DeleteClassification(documentId, documentClassification);
+            var result = await _documentsService.DeleteClassification(documentId, documentClassificationId);
 
-            return files.ResponseCode switch
+            return result.ResponseCode switch
             {
-                HttpStatusCode.Created => Ok(files.Value),
-                HttpStatusCode.NotFound => NotFound(files.Message),
-                HttpStatusCode.BadRequest => BadRequest(files.Message),
+                HttpStatusCode.Created => Ok(result.Value),
+                HttpStatusCode.NotFound => NotFound(result.ToNotFoundResult()),
                 _ => throw new ArgumentException("Unknown response code")
             };
         }

@@ -166,7 +166,7 @@ namespace InfoStorage.Tests
             var classificationId = Guid.NewGuid();
             await AddClassification(classificationId, "test");
 
-            var added = await storage.AddClassificationAsync(file.Id, classificationId);
+            var added = await storage.SetClassificationAsync(file.Id, classificationId);
             added.Should().BeTrue();
 
             using var secondStorage = _infoStorageFactory.CreateFileStorage();
@@ -188,7 +188,7 @@ namespace InfoStorage.Tests
             var classificationId = Guid.NewGuid();
             await AddClassification(classificationId, "test");
 
-            var added = await storage.AddClassificationAsync(file.Id, classificationId);
+            var added = await storage.SetClassificationAsync(file.Id, classificationId);
             added.Should().BeTrue();
 
             using var secondStorage = _infoStorageFactory.CreateFileStorage();

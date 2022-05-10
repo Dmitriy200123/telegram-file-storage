@@ -222,7 +222,7 @@ namespace FileStorageAPI
             services.AddSingleton<IDownloadLinkProvider, DownloadLinkProvider>();
             services.AddSingleton<IFileTypeProvider, FileTypeProvider>();
             services.AddSingleton<IExpressionFileFilterProvider, ExpressionFileFilterProvider>();
-            services.AddSingleton<ISenderFormTokenProvider, SenderFormTokenProvider>();
+            services.AddSingleton<ISenderFromTokenProvider, SenderFromTokenProvider>();
             services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
             services.AddSingleton<IAccessesByUserIdProvider, AccessesByUserIdProvider>();
         }

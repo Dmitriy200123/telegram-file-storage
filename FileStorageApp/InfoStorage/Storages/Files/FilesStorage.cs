@@ -74,15 +74,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<string>> GetFileNamesAsync() => DbSet.Select(fileInfo => fileInfo.Name).ToListAsync();
         
-        public async Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId)
+        public async Task<bool> SetClassificationAsync(Guid fileId, Guid classificationId)
         {
             var file = await GetByIdAsync(fileId, true);
 
-            if (file == null)
-                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
-
-            if (file.Type != FileType.TextDocument)
-                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            if (file is not {Type: FileType.TextDocument})
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId} and type {FileType.TextDocument}");
 
             var classification = await Classifications
                 .FirstOrDefaultAsync(classification => classification.Id == classificationId);
@@ -99,11 +96,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         {
             var file = await GetByIdAsync(fileId, true);
 
-            if (file == null)
-                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
-
-            if (file.Type != FileType.TextDocument)
-                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            if (file is not {Type: FileType.TextDocument})
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId} and type {FileType.TextDocument}");
 
             var classification = file.Classification;
 

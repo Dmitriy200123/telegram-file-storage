@@ -24,11 +24,11 @@ namespace FileStorageAPI.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> HasAnyFilesAccessAsync(HttpRequest request)
+        public async Task<bool> HasAccessAsync(HttpRequest request, Access access)
         {
             var userId = _userIdFromTokenProvider.GetUserIdFromToken(request, Settings.Key);
             var accesses = await _accessesByUserIdProvider.GetAccessesByUserIdAsync(userId);
-            return accesses.Any(access => access == Accesses.ViewAnyFiles);
+            return accesses.Any(currentAccess => currentAccess == access);
         }
     }
 }

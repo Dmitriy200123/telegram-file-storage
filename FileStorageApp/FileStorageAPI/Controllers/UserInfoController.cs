@@ -60,7 +60,7 @@ namespace FileStorageAPI.Controllers
         /// </summary>
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, "Информация о пользователях", typeof(List<UserIdAndFio>))]
-        [RightsFilter(Accesses.UserAccessesManagement)]
+        [RightsFilter(Access.UserAccessesManagement)]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userInfoService.GetUsersInfo();

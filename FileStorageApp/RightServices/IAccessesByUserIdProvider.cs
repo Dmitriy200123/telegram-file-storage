@@ -14,6 +14,6 @@ namespace RightServices
         /// Возвращает права для переданного Id пользователя
         /// </summary>
         /// <param name="userId">Id пользователя</param>
-        Task<IEnumerable<Accesses>> GetAccessesByUserIdAsync(Guid userId);
+        Task<IEnumerable<Access>> GetAccessesByUserIdAsync(Guid userId);
     }
 }

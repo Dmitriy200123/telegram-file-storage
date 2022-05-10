@@ -7,7 +7,7 @@ namespace FileStorageAPI.Providers
     /// <summary>
     /// Поставщик отправителя из токена
     /// </summary>
-    public interface ISenderFormTokenProvider
+    public interface ISenderFromTokenProvider
     {
         /// <summary>
         /// Возвращает отправителя из токена
