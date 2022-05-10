@@ -88,7 +88,7 @@ const DocsClasses: FC<PropsType> = () => {
                         </Button>
                     </div>
                     {classifications && classifications.length > 0 ? <ClassesItems classifications={classifications}/> :
-                        <Empty notFound={(filters.query?.length || 0) > 0}/>}
+                        <Empty notFound={classifications !== null}/>}
                 </div>
                 <Paginator pageHandler={onChangePage} current={filters.page} count={Math.ceil(count / filters.take)}/>
             </div>

@@ -127,7 +127,6 @@ export const fetchFileText = ({id, type}: { id: string, type: number }) => async
             await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
         else if (type === 4)
             await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
-        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно загрузилось!"}))
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
