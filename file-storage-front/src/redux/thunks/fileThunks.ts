@@ -103,6 +103,18 @@ export const fetchDownloadLink = (id: string) => async (dispatch: AppDispatch) =
     }
 }
 
+export const fetchDownloadLinkAndDownloadFile = (id: string) => async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    try {
+        const link = await fetchConfigText(`/api/files/${id}/downloadlink`, {method: "GET"});
+        window.open(link);
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
+        dispatch(setLoading(false))
+    }
+}
+
 export const fetchFileText = ({id, type}: { id: string, type: number }) => async (dispatch: AppDispatch) => {
     try {
         dispatch(setLoading(true));

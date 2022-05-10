@@ -9,7 +9,7 @@ import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
-import {fetchDownloadLink} from "../../redux/thunks/fileThunks";
+import {fetchDownloadLinkAndDownloadFile} from "../../redux/thunks/fileThunks";
 
 const {openModal, setOpenFile} = filesSlice.actions
 
@@ -53,7 +53,8 @@ const Controls = memo(({
                      onClick={() => dispatch(openModal({id, content: ModalContent.Edit}))}>
                     <Edit/><span>Переименовать</span></div>}
                 {+fileType !== 4 && +fileType !== 5 &&
-                <div className={"file-controls__modal-item"} onClick={() => dispatch(fetchDownloadLink(id))}>
+                <div className={"file-controls__modal-item"}
+                     onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
                 {rights.includes(Rights["Удалять файлы"]) &&
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
