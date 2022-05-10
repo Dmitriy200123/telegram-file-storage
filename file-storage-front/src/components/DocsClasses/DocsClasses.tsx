@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useEffect, useState} from 'react';
+import React, {ChangeEvent, FC, useEffect, useRef, useState} from 'react';
 import {InputText} from "../utils/Inputs/Text/InputText";
 import {Button} from "../utils/Button/Button";
 import classes from "./DocsClasses.module.scss";
@@ -37,39 +37,38 @@ const DocsClasses: FC<PropsType> = () => {
     const isFetchClassifications = useAppSelector(state => state.classesDocs.fetchClassifications);
     const [filters, setFilters] = useState({page: 1, take: 10, query: undefined as undefined | string});
 
-    function fetchClasses() {
-        dispatch(fetchCountClassifications(filters.query));
+    function fetchClasses({query, take, page}: { page: number, take: number, query: undefined | string }) {
+        dispatch(fetchCountClassifications(query));
         dispatch(fetchClassifications({
-            skip: filters.take * (filters.page - 1),
-            take: filters.take,
-            query: filters.query
+            skip: take * (page - 1),
+            take: take,
+            query: query
         }));
     }
 
     useEffect(() => {
-        fetchClasses();
+        fetchClasses(filters);
     }, []);
 
     useEffect(() => {
         if (!isFetchClassifications) {
             return
         }
-
         dispatch(setIsFetchClassifications(false));
-        if (classifications && classifications.length !== 0) {
-            return fetchClasses();
-        }
-
-        if (filters.page > 1)
-            setFilters((prev) => ({...prev, page: prev.page - 1}))
+        fetchClasses(filters);
     }, [isFetchClassifications])
 
     function onChangeInput(e: ChangeEvent<HTMLInputElement>) {
         setFilters((prev) => ({...prev, page: 1, query: e.target.value}));
     }
 
+    function onSubmit() {
+        fetchClasses(filters)
+    }
+
     function onChangePage(page: number) {
         setFilters((prev) => ({...prev, page: page}));
+        fetchClasses({...filters, page: page})
     }
 
     return (
@@ -81,7 +80,8 @@ const DocsClasses: FC<PropsType> = () => {
                         <article className={classes.controlInputWrapper}>
                             <InputText className={classes.controlInput} onChange={onChangeInput}
                                        placeholder={"Поиск классификации документов"}/>
-                            <button className={classes.searchBtn} type="submit" onClick={fetchClasses}><Search/></button>
+                            <button className={classes.searchBtn} type="submit" onClick={onSubmit}><Search/>
+                            </button>
                         </article>
                         <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>
                             <PlusIcon className={classes.icon}/>Создать классификацию
