@@ -11,6 +11,7 @@ import OpenClassItem from "./OpenClassItem/OpenClassItem";
 import {fetchClassifications, fetchCountClassifications} from "../../redux/classesDocs/classesDocsThunks";
 import Paginator from "../utils/Paginator/Paginator";
 import {ReactComponent as PlusIcon} from "./../../assets/plus.svg";
+import {ReactComponent as Search} from "../../assets/search.svg";
 
 type PropsType = {}
 
@@ -47,7 +48,7 @@ const DocsClasses: FC<PropsType> = () => {
 
     useEffect(() => {
         fetchClasses();
-    }, [filters]);
+    }, []);
 
     useEffect(() => {
         if (!isFetchClassifications) {
@@ -77,8 +78,11 @@ const DocsClasses: FC<PropsType> = () => {
             <div className={classes.background}>
                 <div className={classes.content}>
                     <div className={classes.controls}>
-                        <InputText className={classes.controlInput} onChange={onChangeInput}
-                                   placeholder={"Поиск классификации документов"}/>
+                        <article className={classes.controlInputWrapper}>
+                            <InputText className={classes.controlInput} onChange={onChangeInput}
+                                       placeholder={"Поиск классификации документов"}/>
+                            <button className={classes.searchBtn} type="submit" onClick={fetchClasses}><Search/></button>
+                        </article>
                         <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>
                             <PlusIcon className={classes.icon}/>Создать классификацию
                         </Button>
@@ -93,8 +97,9 @@ const DocsClasses: FC<PropsType> = () => {
     );
 };
 
-const Empty:FC<{notFound:boolean}> = ({notFound}) => {
-    return <div className={classes.classesEmpty}>Классификации документов {!notFound ? "пока не созданы" : "не найдены"}</div>;
+const Empty: FC<{ notFound: boolean }> = ({notFound}) => {
+    return <div className={classes.classesEmpty}>Классификации
+        документов {!notFound ? "пока не созданы" : "не найдены"}</div>;
 }
 
 
