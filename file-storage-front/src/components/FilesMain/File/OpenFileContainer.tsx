@@ -22,8 +22,8 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     const [urlPreview, setUrlPreview] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!file?.url)
-            dispatch(fetchDownloadLink(id));
+        // if (!file?.url)
+        //     dispatch(fetchDownloadLink(id));
         if (file && id === file?.fileId) return;
         dispatch(fetchFile(id));
     }, [id])
@@ -31,11 +31,16 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     useEffect(() => {
         if (file && (+fileType === 4 || +fileType === 5))
             dispatch(fetchFileText({id, type: +fileType}))
-
         if (file?.url && !urlPreview) {
             getUrlPreview(file.url);
         }
     }, [file])
+
+    useEffect(() => {
+        if (!file?.fileName)
+            return
+        dispatch(fetchDownloadLink(id))
+    }, [file?.fileName])
 
     async function getUrlPreview(urlFile: string) {
         try {
@@ -56,7 +61,8 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
         return null;
 
     const {fileType} = file;
-    return <OpenedFile file={file} filesTypes={filesTypes || {}} id={id} rights={rights || []} urlPreview={urlPreview}/>;
+    return <OpenedFile file={file} filesTypes={filesTypes || {}} id={id} rights={rights || []}
+                       urlPreview={urlPreview}/>;
 })
 
 
