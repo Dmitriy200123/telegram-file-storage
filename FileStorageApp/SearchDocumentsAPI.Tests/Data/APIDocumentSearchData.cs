@@ -19,7 +19,7 @@ namespace SearchDocumentsAPI.Tests.Data
             },
             new object[]
             {
-                "doc",
+                "docx",
                 GetEmptyDocuments("example_one.docx", "example_two.png"),
                 new[] {FirstDocumentId}
             },
@@ -47,7 +47,7 @@ namespace SearchDocumentsAPI.Tests.Data
             },
             new object[]
             {
-                "this",
+                "Hate",
                 GetContentDocuments("example_one.docx", "NEST search", "example_two.docx", "Hate this"),
                 new[] {SecondDocumentId}
             }
