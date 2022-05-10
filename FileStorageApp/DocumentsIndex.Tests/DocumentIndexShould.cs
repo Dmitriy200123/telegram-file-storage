@@ -68,7 +68,7 @@ namespace DocumentsIndex.Tests
             var expectedGuid = Guid.NewGuid();
             var document = await GetDocumentModelByFilename(DocumentName, expectedGuid);
             await _documentIndexStorage.IndexDocumentAsync(document);
-            var searchResponse = await _documentIndexStorage.SearchByNameAsync("testWORD");
+            var searchResponse = await _documentIndexStorage.SearchByNameAsync("testWORD.docx");
 
             searchResponse.Should().NotBeEmpty();
             var actual = searchResponse.First();
