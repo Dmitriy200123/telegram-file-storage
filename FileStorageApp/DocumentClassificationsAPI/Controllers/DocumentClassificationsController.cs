@@ -5,8 +5,10 @@ using System.Net;
 using System.Threading.Tasks;
 using DocumentClassificationsAPI.Models;
 using DocumentClassificationsAPI.Services;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RightServices;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace DocumentClassificationsAPI.Controllers
@@ -32,7 +34,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение классификации по Id
+        /// Получение классификации по Id. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         /// <param name="includeClassificationWords">Включить в классификацию принадлежащий список слов</param>
@@ -41,6 +43,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, когда не удалось найти классификацию", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> FindClassificationById(
             Guid classificationId,
             [FromQuery] bool includeClassificationWords = false
@@ -58,7 +61,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Поиск классификаций по строке
+        /// Поиск классификаций по строке. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="query">Строка</param>
         /// <param name="skip">Количество пропускаемых элементов</param>
@@ -68,6 +71,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает cписок классификаций", typeof(IEnumerable<Classification>))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> FindClassificationsByQuery(
             [FromQuery] string query,
             [FromQuery, Required] int skip,
@@ -86,7 +90,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление классификации
+        /// Добавление классификации. Требуется право "AddClassifications".
         /// </summary>
         /// <param name="classification">Классификация</param>
         [HttpPost]
@@ -94,6 +98,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Возвращается, если классификация с таким именем уже существует", typeof(string))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.AddClassifications)]
         public async Task<IActionResult> AddClassification([FromBody] ClassificationInsert classification)
         {
             var result = await _classificationsService.AddClassificationAsync(classification);
@@ -107,7 +112,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Удаление классификации
+        /// Удаление классификации. Требуется право "DeleteClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         [HttpDelete("{classificationId:guid}")]
@@ -115,6 +120,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.DeleteClassifications)]
         public async Task<IActionResult> DeleteClassification(Guid classificationId)
         {
             var result = await _classificationsService.DeleteClassificationAsync(classificationId);
@@ -128,7 +134,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Переименование классификации
+        /// Переименование классификации. Требуется право "EditClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         /// <param name="newName">Новое имя классификации</param>
@@ -138,6 +144,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.EditClassifications)]
         public async Task<IActionResult> RenameClassification(Guid classificationId, [FromBody, Required] string newName)
         {
             var result = await _classificationsService.RenameClassificationAsync(classificationId, newName);
@@ -152,13 +159,14 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение числа классификаций по строке
+        /// Получение числа классификаций по строке. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="query">Строка</param>
         [HttpGet("count")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает число классификаций", typeof(int))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> GetClassificationsCountByQuery([FromQuery] string query)
         {
             var result = await _classificationsService.GetCountClassificationsByQueryAsync(query);
@@ -171,7 +179,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Добавление слова в классификацию
+        /// Добавление слова в классификацию. Требуется право "EditClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         /// <param name="classificationWord">Слово</param>
@@ -181,6 +189,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.EditClassifications)]
         public async Task<IActionResult> AddWordToClassification(
             Guid classificationId,
             [FromBody] ClassificationWordInsert classificationWord
@@ -199,7 +208,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Удаление слова из классификации
+        /// Удаление слова из классификации. Требуется право "EditClassifications".
         /// </summary>
         /// <param name="wordId">Id классификации</param>
         [HttpDelete("words/{wordId:guid}")]
@@ -207,6 +216,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.EditClassifications)]
         public async Task<IActionResult> DeleteWordFromClassification(Guid wordId)
         {
             var result = await _classificationsService.DeleteWordAsync(wordId);
@@ -220,7 +230,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение списка слов классификации
+        /// Получение списка слов классификации. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param> 
         [HttpGet("{classificationId:guid}/words")]
@@ -228,6 +238,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> GetWordsByClassificationId(Guid classificationId)
         {
             var result = await _classificationsService.GetWordsByClassificationIdAsync(classificationId);
