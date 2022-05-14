@@ -80,7 +80,7 @@ const Main: FC = () => {
                     <Route path={"/Profile"} component={Profile}/>
                     <Route path={"/docs-сlasses"} component={DocsClasses}/>
                     {hasTelegram && <>
-                        <Route exact path={"/files"} component={FilesMainContainer}/>
+                        <Route  path={"/files"} component={FilesMainContainer}/>
                         <Route path={"/file/:id"} component={FilesMainContainer}/>
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}

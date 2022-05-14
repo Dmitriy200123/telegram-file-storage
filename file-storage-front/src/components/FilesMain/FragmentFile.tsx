@@ -68,12 +68,12 @@ const Controls = memo(({
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
-                <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                      onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
-                    <Tag/><span>Присвоить классификацию</span></div>
-                <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                    <Tag/><span>Присвоить классификацию</span></div>}
+                {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                      onClick={() => dispatch(deleteClassificationDocument({documentId: id, classId: ""}))}>
-                    <Reject/><span>Отозвать классфикацию</span></div>
+                    <Reject/><span>Отозвать классфикацию</span></div>}
                 {/*todo classId*/}
                 {rights.includes(Rights["Удалять файлы"]) &&
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}

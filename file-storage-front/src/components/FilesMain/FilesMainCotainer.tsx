@@ -15,7 +15,6 @@ const FilesMainContainer = () => {
                 <Route exact path={"/files"} component={FilesMain}/>
                 <Route path={"/file/:id"} component={OpenedFileContainer}/>
             </Switch>
-            <FilesMain/>
             {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
         </>
     );
