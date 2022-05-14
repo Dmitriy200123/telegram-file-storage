@@ -9,8 +9,8 @@ import {ReactComponent as Delete} from "./../../assets/delete.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
-import {fetchDownloadLinkAndDownloadFile} from "../../redux/thunks/fileThunks";
 import {fetchClassification} from "../../redux/thunks/mainThunks";
+import {deleteClassificationDocument, fetchDownloadLinkAndDownloadFile} from "../../redux/thunks/fileThunks";
 
 const {openModal, setOpenFile} = filesSlice.actions
 
@@ -66,6 +66,13 @@ const Controls = memo(({
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
+                <div className={"file-controls__modal-item"}
+                     onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
+                    <Download/><span>Присвоить классификацию</span></div>
+                <div className={"file-controls__modal-item"}
+                     onClick={() => dispatch(deleteClassificationDocument({documentId: id, classId: ""}))}>
+                    <Download/><span>Отозвать классфикацию</span></div>
+                {/*todo classId*/}
                 {rights.includes(Rights["Удалять файлы"]) &&
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
                      onClick={() => dispatch(openModal({

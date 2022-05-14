@@ -13,7 +13,8 @@ export interface ExpandingObject<T> {
 
 export enum ModalContent {
     Remove,
-    Edit
+    Edit,
+    AddClass,
 }
 
 export enum MessageTypeEnum {

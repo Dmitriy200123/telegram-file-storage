@@ -1,0 +1,70 @@
+@import "src/Variables";
+
+.wrapper {
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.classItems {
+  width: 100%;
+  padding-bottom: 29px;
+  margin-bottom: 26px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  border-bottom: 1px solid #E9ECEF;
+}
+
+.classItemsWrapper {
+  flex: 1 1 auto;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    width: 4px;               /* ширина scrollbar */
+  }
+  &::-webkit-scrollbar-track {}
+  &::-webkit-scrollbar-thumb {
+    background-color: #CED4DA;;    /* цвет плашки */
+    border-radius: 4px;       /* закругления плашки */
+  }
+}
+
+.classItem {
+  cursor: pointer;
+  padding: 12px 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+
+  &_active {
+    background: #EDF7FF;
+  }
+
+  &:hover {
+    background: #c9f0fe;
+  }
+
+  & svg {
+    color: #1976D2;
+  }
+}
+
+.searchWrapper{
+  padding: 0 5px;
+  width: 100%;
+  position: relative;
+}
+
+.searchBtn {
+  position: absolute;
+  background: none;
+  margin: 0;
+  border: none;
+  right: 0.5em;
+  top:0.3em;
+  cursor: pointer;
+  &:hover{
+    color: $menu-color-hover;
+  }
+}

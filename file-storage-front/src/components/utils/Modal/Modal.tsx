@@ -1,8 +1,9 @@
 import React, {memo, MouseEventHandler, useRef} from 'react';
 import "./Modal.scss"
 import {ModalContent} from "../../../models/File";
-import {ModalConfirm} from "./ModalConfirm";
-import {ModalEdit} from "./ModalEdit";
+import {ModalConfirm} from "../../FilesMain/Modals/ModalConfirm";
+import {ModalEdit} from "../../FilesMain/Modals/ModalEdit";
+import {ModalAddClass} from "../../FilesMain/Modals/ModalAddClass/ModalAddClass";
 
 type PropsType = {
     onOutsideClick?: () => void
@@ -42,4 +43,5 @@ export function hocModal<T extends object>(WrappedComponent: React.FC<T>) {
 export const modalContents = {
     [ModalContent.Remove]: ModalConfirm,
     [ModalContent.Edit]: ModalEdit,
+    [ModalContent.AddClass]: ModalAddClass
 }

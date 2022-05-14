@@ -158,8 +158,8 @@
 }
 
 .file-controls {
-
-  &__btn {
+  overflow: hidden;
+  &__btn{
     position: absolute;
     right: 10px;
     top: 10px;
@@ -196,7 +196,8 @@
     }
   }
 
-  &__modal {
+  &__modal{
+    overflow: hidden;
     position: absolute;
     z-index: 2;
     right: 15px;

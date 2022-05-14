@@ -1,4 +1,5 @@
 import {fetchConfig, fetchConfigText, fPostFile} from "../api/apiFiles";
+import {fetchConfig as fetchConfigClass, fetchConfigText as fetchConfigTextClass} from "../api/apiDocsClasses";
 import {AppDispatch} from "../redux-store";
 import {MessageTypeEnum} from "../../models/File";
 import {profileSlice} from "../profileSlice";
@@ -134,3 +135,29 @@ export const fetchFileText = ({id, type}: { id: string, type: number }) => async
     }
 }
 
+export const patchAssignClassification = ({
+                                             documentId,
+                                             classId
+                                         }: { documentId: string, classId: string }) => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const response = await fetchConfigClass(`/api/files/documents/${documentId}/assign-classification`,
+            {method: "PATCH", body: classId});
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
+
+export const deleteClassificationDocument = ({documentId, classId}: { documentId: string, classId: string }) => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const response = await fetchConfigTextClass(`/api/files/documents/${documentId}/revoke-classification`,
+            {method: "PATCH", body: classId});
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
