@@ -159,7 +159,8 @@
 
 .file-controls {
   overflow: hidden;
-  &__btn{
+
+  &__btn {
     position: absolute;
     right: 10px;
     top: 10px;
@@ -196,7 +197,7 @@
     }
   }
 
-  &__modal{
+  &__modal {
     overflow: hidden;
     position: absolute;
     z-index: 2;
@@ -218,7 +219,16 @@
     }
 
     & svg {
-      margin: 5px;
+      margin: 5px 0.5em 5px 5px;
+      flex: 0 0 auto;
+      color: #212529;
+    }
+
+    &ClassSvg svg{
+      width: 1.2em;
+      height: 1.2em;
+      margin-right: 0.3em;
+      margin-bottom: 0.3em;
     }
 
     &:hover {

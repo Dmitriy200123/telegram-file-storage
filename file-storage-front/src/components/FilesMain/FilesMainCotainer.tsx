@@ -1,21 +1,20 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import "./FilesMain.scss"
-import PaginatorNeNorm from '../utils/Paginator/PaginatorNeNorm';
-import FragmentFile from "./FragmentFile";
-import {useHistory} from "react-router-dom";
-import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
-import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
-import {Filters} from "./Filters";
+import {Route, Switch} from "react-router-dom";
+import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import FilesMain from "./FilesMain";
 import {modalContents} from "../utils/Modal/Modal";
+import {OpenedFileContainer} from "./File/OpenFileContainer";
 
 const FilesMainContainer = () => {
     const modalConfirm = useAppSelector((state) => state.filesReducer.modalConfirm);
     const {isOpen, id, content, callbackAccept} = modalConfirm;
     const ModalComponent = modalContents[content || 0];
     return (<>
+            <Switch>
+                <Route exact path={"/files"} component={FilesMain}/>
+                <Route path={"/file/:id"} component={OpenedFileContainer}/>
+            </Switch>
             <FilesMain/>
             {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
         </>

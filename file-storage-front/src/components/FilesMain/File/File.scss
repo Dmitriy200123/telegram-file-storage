@@ -1,3 +1,5 @@
+@import "src/Variables";
+
 .file {
   text-align: left;
 
@@ -12,6 +14,28 @@
 
   &__title {
     font-size: 1.7em;
+  }
+
+  &__classes{
+    display: flex;
+    gap: 24px;
+    color: $menu-color;
+    margin-bottom: 24px;
+  }
+
+  &__classItem{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    &:hover{
+      color: $menu-color-hover;
+    }
+
+    & svg{
+      width: 1.2em;
+      height: 1.2em;
+    }
   }
 
   &__close {

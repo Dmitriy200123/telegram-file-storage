@@ -8,6 +8,9 @@ import {ReactComponent as Edit} from "../../../assets/edit.svg";
 import {ReactComponent as Delete} from "../../../assets/delete.svg";
 import {filesSlice} from "../../../redux/filesSlice";
 import {Button} from "../../utils/Button/Button";
+import {ReactComponent as Tag} from "../../../assets/tag.svg";
+import {deleteClassificationDocument} from "../../../redux/thunks/fileThunks";
+import {ReactComponent as Reject} from "../../../assets/reject.svg";
 
 const {openModal} = filesSlice.actions;
 
@@ -29,6 +32,14 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
         dispatch(openModal({id: id, content: ModalContent.Edit}));
     }
 
+    function openAddClass() {
+        dispatch(openModal({id, content: ModalContent.AddClass}));
+    }
+
+    function removeClass() {
+        dispatch(deleteClassificationDocument({documentId: id, classId: ""}))
+    }
+
     function onDownload() {
         if (url)
             window.open(url);
@@ -44,6 +55,13 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                 <h3 className="file__content-title"
                     onClick={canRename ? openRename : undefined}>
                     <span className={"file__content-title-text"}>{fileName}</span> {canRename && <Edit/>}</h3>
+                    <div className={"file__classes"}>
+                        <div className={"file__classItem"} onClick={openAddClass}>
+                            <Tag/><span>Присвоить классификацию</span></div>
+                        <div className={"file__classItem"}
+                            onClick={removeClass}>
+                            <Reject/><span>Отозвать классфикацию</span></div>
+                    </div>
                 <section className="file__contentTable">
                     <div className="file__item"><span>Формат: </span></div>
                     <div className="file__item">{filesTypes && filesTypes[fileType]}</div>

@@ -6,6 +6,8 @@ import {OutsideAlerter} from "../utils/OutSideAlerter/OutSideAlerter";
 import {ReactComponent as Edit} from "./../../assets/edit.svg";
 import {ReactComponent as Download} from "./../../assets/download_2.svg";
 import {ReactComponent as Delete} from "./../../assets/delete.svg";
+import {ReactComponent as Reject} from "./../../assets/reject.svg";
+import {ReactComponent as Tag} from "./../../assets/tag.svg";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
@@ -66,12 +68,12 @@ const Controls = memo(({
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
-                <div className={"file-controls__modal-item"}
+                <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                      onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
-                    <Download/><span>Присвоить классификацию</span></div>
-                <div className={"file-controls__modal-item"}
+                    <Tag/><span>Присвоить классификацию</span></div>
+                <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                      onClick={() => dispatch(deleteClassificationDocument({documentId: id, classId: ""}))}>
-                    <Download/><span>Отозвать классфикацию</span></div>
+                    <Reject/><span>Отозвать классфикацию</span></div>
                 {/*todo classId*/}
                 {rights.includes(Rights["Удалять файлы"]) &&
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
