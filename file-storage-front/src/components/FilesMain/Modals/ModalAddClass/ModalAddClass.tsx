@@ -8,10 +8,10 @@ import {useAppSelector} from "../../../../utils/hooks/reduxHooks";
 import {InputText} from "../../../utils/Inputs/Text/InputText";
 import {fetchAllClassifications} from "../../../../redux/classesDocs/classesDocsThunks";
 import Classifications from "./SelectListClasses";
-import classes from "./ModalAddClass.module.scss";
 import classNames from "classnames";
 import {patchAssignClassification} from "../../../../redux/thunks/fileThunks";
 import {ReactComponent as Search} from "../../../../assets/search.svg";
+import classes from "./ModalAddClass.module.scss";
 
 const {closeModal} = filesSlice.actions;
 
