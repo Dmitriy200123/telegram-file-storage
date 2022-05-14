@@ -164,7 +164,7 @@ namespace FileStorageAPI.Services
             var bytesArray = memoryStream.ToArray();
             await using var copiedStream = new MemoryStream(bytesArray);
 
-            if (!await UploadFile(file, copiedStream))
+            if (!await UploadFile(file, copiedStream, uploadFile.ContentType))
                 return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to database");
 
             if (file.Type == FileType.TextDocument)
@@ -348,11 +348,11 @@ namespace FileStorageAPI.Services
             return convertedFiles;
         }
 
-        private async Task<bool> UploadFile(DataBaseFile file, Stream stream)
+        private async Task<bool> UploadFile(DataBaseFile file, Stream stream, string? mimeType = null)
         {
             using var physicalFilesStorage = await _filesStorageFactory.CreateAsync();
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
-            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), stream);
+            await physicalFilesStorage.SaveFileAsync(file.Id.ToString(), stream, mimeType);
             return await filesStorage.AddAsync(file);
         }
 

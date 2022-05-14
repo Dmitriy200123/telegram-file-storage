@@ -22,7 +22,7 @@ namespace FilesStorage
             _s3Client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task SaveFileAsync(string key, Stream stream)
+        public async Task SaveFileAsync(string key, Stream stream, string mimeType = null)
         {
             var request = new PutObjectRequest
             {
@@ -30,6 +30,7 @@ namespace FilesStorage
                 CannedACL = _options.Permission,
                 Key = key,
                 InputStream = stream,
+                ContentType = mimeType,
             };
 
             await _s3Client.PutObjectAsync(request);
