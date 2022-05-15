@@ -7,7 +7,8 @@ import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {SubmitHandler, useForm} from "react-hook-form";
 import {fetchClassification, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
-import {Filters} from "./Filters";
+import {Filters} from "./Filters/Filters";
+import {fetchAllClassifications} from "../../redux/classesDocs/classesDocsThunks";
 
 const FilesMain = () => {
     const rights = useAppSelector((state) => state.profile.rights);
@@ -23,6 +24,7 @@ const FilesMain = () => {
     useEffect(() => {
         const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
         dispatch(fetchFilters());
+        dispatch(fetchAllClassifications());
         setValue("fileName", fileName);
         setValue("senderIds", senderId);
         setValue("categories", categories);
@@ -45,6 +47,7 @@ const FilesMain = () => {
             dateTo: formData.date?.dateTo,
             dateFrom: formData.date?.dateFrom,
             chatIds: formData.chatIds,
+
         };
 
         dispatch(fetchFiles({
@@ -61,8 +64,7 @@ const FilesMain = () => {
     const setValueForm = (name: string, value: any) => {
         setValue(name as "fileName" | "senderIds" | "date" | "chatIds" | "categories", value, {
             shouldValidate: true
-        });
-    }
+        });    }
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Поиск файлов</h2>
@@ -86,6 +88,7 @@ export type TypeSelectFilters = {
     date: { dateFrom: string | null, dateTo: string | null },
     chatIds: string[] | undefined | null,
     categories: string[] | undefined | null,
-}
+    classificationIds?: string[] | null
+ }
 
 export default FilesMain;

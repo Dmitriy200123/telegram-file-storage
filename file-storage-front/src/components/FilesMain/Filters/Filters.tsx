@@ -1,14 +1,14 @@
 import React, {FC, memo, useState} from "react";
-import {Select} from "../utils/Inputs/Select";
-import {SelectTime} from "../utils/Inputs/SelectDate";
-import {ReactComponent as Search} from "../../assets/search.svg";
-import {ReactComponent as Cross} from "../../assets/close.svg";
-import {ReactComponent as Settings} from "../../assets/settings-icon.svg";
-import {configFilters} from "./ConfigFilters";
-import {useAppSelector} from "../../utils/hooks/reduxHooks";
+import {Select} from "../../utils/Inputs/Select";
+import {SelectTime} from "../../utils/Inputs/SelectDate";
+import {ReactComponent as Search} from "../../../assets/search.svg";
+import {ReactComponent as Cross} from "../../../assets/close.svg";
+import {ReactComponent as Settings} from "../../../assets/settings-icon.svg";
+import {configFilters} from "../ConfigFilters";
+import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {DefaultValues, KeepStateOptions, UseFormGetValues} from "react-hook-form";
-import {TypeSelectFilters} from "./FilesMain";
-import {SelectText} from "../utils/Inputs/SelectText";
+import {TypeSelectFilters} from "../FilesMain";
+import {SelectText} from "../../utils/Inputs/SelectText";
 
 type TypeProps = {
     setValueForm: (name: string, value: any) => void,
