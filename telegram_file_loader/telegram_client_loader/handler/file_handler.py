@@ -28,21 +28,21 @@ class FileHandler(BaseHandler):
         self.run()
 
     async def _handle_new_message_with_media(self, message: Message):
-        telegram_file: File = self.__get_telegram_file(message)
+        telegram_file, mime_type = self.__get_telegram_file(message)
 
         me = await self.telegram_client.get_me()
         filtered_users: list[User] = await self._get_users_without_me(message.chat, me.id)
         await self.chat_interactor.add_new_users(filtered_users, telegram_file.chat_telegram_id)
 
         file: BytesIO = await self._download_file(message)
-        await self.loader_interactor.save_file(telegram_file, file, message.media.mime_type)
+        await self.loader_interactor.save_file(telegram_file, file, mime_type)
 
     @staticmethod
-    def __get_telegram_file(message: Message) -> File:
+    def __get_telegram_file(message: Message) -> (File, str):
         chat_id = message.chat_id
         sender_id = message.sender.id
 
-        file_type, filename, extension = FileUtil.get_document_file_info(message.media) \
+        file_type, filename, extension, mime_type = FileUtil.get_document_file_info(message.media) \
             if isinstance(message.media, MessageMediaDocument) \
             else FileUtil.get_photo_file_info(message)
 
@@ -55,7 +55,7 @@ class FileHandler(BaseHandler):
             chat_telegram_id=chat_id,
         )
 
-        return telegram_file
+        return telegram_file, mime_type
 
     async def _handle_new_message_with_urls(self, message: Message, urls: list[AnyUrl]):
         for url in urls:
