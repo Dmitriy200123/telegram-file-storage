@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using FileStorageAPI.Extensions;
 using FileStorageAPI.Models;
 using FileStorageAPI.Services;
+using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RightServices;
 using Swashbuckle.AspNetCore.Annotations;
 using NotFoundResult = API.NotFoundResult;
 
@@ -92,12 +94,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает классификацию по Id документа
+        /// Возвращает классификацию по Id документа. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="documentId">Id документа</param>
         [HttpGet("{documentId:guid}/classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает классификацию", typeof(ClassificationInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден. ", typeof(NotFoundResult))]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> FindClassificationByDocumentId(Guid documentId)
         {
             var result = await _documentsService.FindClassificationByDocumentId(documentId);
@@ -111,13 +114,14 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Добавляет классификацию документу.
+        /// Добавляет классификацию документу. Требуется право "AssignClassificationsToDocuments".
         /// </summary>
         /// <param name="documentId">Id документа</param>
         /// <param name="documentClassificationId">Идентификатор классификации</param>
         [HttpPatch("{documentId:guid}/assign-classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает документ", typeof(DocumentInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если не найдено документа или классификации", typeof(string))]
+        [RightsFilter(Access.AssignClassificationsToDocuments)]
         public async Task<IActionResult> AddClassification(Guid documentId, [FromBody] Guid documentClassificationId)
         {
             var result = await _documentsService.AddClassification(documentId, documentClassificationId);
@@ -131,13 +135,14 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Удаляет классификацию у документа.
+        /// Удаляет классификацию у документа. Требуется право "RevokeClassificationsFromDocument".
         /// </summary>
         /// <param name="documentId">Id документа</param>
         /// <param name="documentClassificationId">Идентификатор классификации</param>
         [HttpPatch("{documentId:guid}/revoke-classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает документ", typeof(DocumentInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если не найдено документа или классификации", typeof(string))]
+        [RightsFilter(Access.RevokeClassificationsFromDocument)]
         public async Task<IActionResult> DeleteClassification(Guid documentId, [FromBody] Guid documentClassificationId)
         {
             var result = await _documentsService.DeleteClassification(documentId, documentClassificationId);
