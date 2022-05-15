@@ -35,7 +35,7 @@ class FileHandler(BaseHandler):
         await self.chat_interactor.add_new_users(filtered_users, telegram_file.chat_telegram_id)
 
         file: BytesIO = await self._download_file(message)
-        await self.loader_interactor.save_file(telegram_file, file)
+        await self.loader_interactor.save_file(telegram_file, file, message.media.mime_type)
 
     @staticmethod
     def __get_telegram_file(message: Message) -> File:

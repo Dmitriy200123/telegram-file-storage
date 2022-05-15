@@ -31,13 +31,13 @@ class LoaderInteractor(BaseInteractor):
         self.file_repository = file_repository
         self.documents_index_client = documents_index_client
 
-    async def save_file(self, file_external: FileExternal, file: BytesIO):
+    async def save_file(self, file_external: FileExternal, file: BytesIO, mime_type=None):
         file_sender: FileSender = await self.file_sender_repository \
             .find_by_telegram_id(file_external.sender_telegram_id)
         chat: Chat = await self.chat_repository.find_by_telegram_id(file_external.chat_telegram_id)
         file_info: File = await self.file_repository.create_or_get(file_external, chat.Id, file_sender.Id)
 
-        uuid = await self.file_repository.save_file(file, file_info.Id)
+        uuid = await self.file_repository.save_file(file, file_info.Id, mime_type)
 
         if file_external.type is FileTypeEnum.TextDocument:
             await self.documents_index_client.index_document(
