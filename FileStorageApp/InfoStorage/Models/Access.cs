@@ -46,7 +46,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
         /// Доступ к поиску классификация
         /// </summary>
         [Description("Поиск классификаций")]
-        SearchClassifications = 6,
+        ViewClassifications = 6,
         
         /// <summary>
         /// Возможность добавлять классификации

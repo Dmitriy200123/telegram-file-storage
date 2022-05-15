@@ -36,7 +36,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение классификации по Id. Требуется право "SearchClassifications".
+        /// Получение классификации по Id. Требуется право "ViewClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param>
         /// <param name="includeClassificationWords">Включить в классификацию принадлежащий список слов</param>
@@ -45,7 +45,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, когда не удалось найти классификацию", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        [RightsFilter(Access.SearchClassifications)]
+        [RightsFilter(Access.ViewClassifications)]
         public async Task<IActionResult> FindClassificationById(
             Guid classificationId,
             [FromQuery] bool includeClassificationWords = false
@@ -63,7 +63,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Поиск классификаций по строке. Требуется право "SearchClassifications".
+        /// Поиск классификаций по строке. Требуется право "ViewClassifications".
         /// </summary>
         /// <param name="query">Строка</param>
         /// <param name="skip">Количество пропускаемых элементов</param>
@@ -73,7 +73,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает cписок классификаций", typeof(IEnumerable<Classification>))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        [RightsFilter(Access.SearchClassifications)]
+        [RightsFilter(Access.ViewClassifications)]
         public async Task<IActionResult> FindClassificationsByQuery(
             [FromQuery] string query,
             [FromQuery, Required] int skip,
@@ -161,14 +161,14 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение числа классификаций по строке. Требуется право "SearchClassifications".
+        /// Получение числа классификаций по строке. Требуется право "ViewClassifications".
         /// </summary>
         /// <param name="query">Строка</param>
         [HttpGet("count")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает число классификаций", typeof(int))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        [RightsFilter(Access.SearchClassifications)]
+        [RightsFilter(Access.ViewClassifications)]
         public async Task<IActionResult> GetClassificationsCountByQuery([FromQuery] string query)
         {
             var result = await _classificationsService.GetCountClassificationsByQueryAsync(query);
@@ -232,7 +232,7 @@ namespace DocumentClassificationsAPI.Controllers
         }
 
         /// <summary>
-        /// Получение списка слов классификации. Требуется право "SearchClassifications".
+        /// Получение списка слов классификации. Требуется право "ViewClassifications".
         /// </summary>
         /// <param name="classificationId">Id классификации</param> 
         [HttpGet("{classificationId:guid}/words")]
@@ -240,7 +240,7 @@ namespace DocumentClassificationsAPI.Controllers
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Возвращается, если нет прав на запрос", typeof(string))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Возвращается, если квалификация не найдена", typeof(string))]
         [SwaggerResponse(StatusCodes.Status500InternalServerError, "Произошла неизвестная ошибка")]
-        [RightsFilter(Access.SearchClassifications)]
+        [RightsFilter(Access.ViewClassifications)]
         public async Task<IActionResult> GetWordsByClassificationId(Guid classificationId)
         {
             var result = await _classificationsService.GetWordsByClassificationIdAsync(classificationId);
