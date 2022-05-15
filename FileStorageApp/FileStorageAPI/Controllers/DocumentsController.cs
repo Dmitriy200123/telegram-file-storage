@@ -94,12 +94,13 @@ namespace FileStorageAPI.Controllers
         }
 
         /// <summary>
-        /// Возвращает классификацию по Id документа
+        /// Возвращает классификацию по Id документа. Требуется право "SearchClassifications".
         /// </summary>
         /// <param name="documentId">Id документа</param>
         [HttpGet("{documentId:guid}/classification")]
         [SwaggerResponse(StatusCodes.Status200OK, "Возвращает классификацию", typeof(ClassificationInfo))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Если документ с таким Id не найден. ", typeof(NotFoundResult))]
+        [RightsFilter(Access.SearchClassifications)]
         public async Task<IActionResult> FindClassificationByDocumentId(Guid documentId)
         {
             var result = await _documentsService.FindClassificationByDocumentId(documentId);
