@@ -139,6 +139,7 @@
   &__btns {
     display: flex;
     gap: 8px;
+    margin-bottom: 60px;
   }
 
   &__btn {
@@ -171,6 +172,10 @@
         fill: white;
       }
     }
+  }
+
+  &__embed{
+    height: 80vh;
   }
 }
 

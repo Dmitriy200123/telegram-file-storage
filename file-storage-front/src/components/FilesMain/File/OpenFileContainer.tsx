@@ -44,11 +44,11 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
 
     async function getUrlPreview(urlFile: string) {
         try {
-            const blob = await fetch(urlFile);
+            const response = await fetch(urlFile);
             const binaryData = [];
-            binaryData.push(await blob.blob())
+            binaryData.push(await response.blob())
             const previewUrl = window.URL.createObjectURL(new Blob(binaryData,
-                // {type: 'multipart/form-data'}
+                {type: response.headers.get("content-type") || "text"}
             ));
 
             setUrlPreview(previewUrl);

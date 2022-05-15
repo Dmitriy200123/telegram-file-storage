@@ -93,6 +93,8 @@ const OpenedFile: React.FC<PropsType> = memo(({ id, file, rights, filesTypes, ur
                             onClick={() => dispatch(() => dispatch(openModal({ id: id, content: ModalContent.Remove })))}
                             type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete /></Button>}
                 </div>
+                {urlPreview && <embed className={"file__embed"} src={urlPreview} width="100%"
+                                      />}
             </div>
         </div>
     );
