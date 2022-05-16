@@ -88,8 +88,8 @@ namespace FileStorageAPI
             );
             services.AddCors();
             
-            services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton(new RightsSettings(Settings.Key));
+            services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
             services.AddSingleton(provider =>
                 provider.GetRequiredService<IDocumentIndexFactory>().CreateDocumentIndexStorage());
