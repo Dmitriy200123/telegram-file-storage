@@ -57,8 +57,12 @@ class S3Client:
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key
         ) as client:
+            put_objects_params = {'Body': file,
+                                  'Bucket': self.bucket_name, 'Key': key}
+            if mime_type:
+                put_objects_params['ContentType'] = mime_type
             try:
-                await client.put_object(Body=file, Bucket=self.bucket_name, Key=key, ContentType=mime_type)
+                await client.put_object(**put_objects_params)
             except ClientError as e:
                 logging.error(e)
                 return False
