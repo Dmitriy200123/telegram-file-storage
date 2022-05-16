@@ -66,9 +66,10 @@ class LoaderInteractor(BaseInteractor):
             classifications = await self.documents_classifications_client.get_classifications()
             while len(classifications) != 0:
                 for classification in classifications:
-                    search_result = self.documents_search_client.contains_in_name(
+                    search_result = await self.documents_search_client.contains_in_name(
                         document_id=str_uuid,
-                        queries=classification.classificationWords
+                        queries=[classification_word.value for classification_word in
+                                 classification.classificationWords]
                     )
                     if search_result == 'true':
                         await file_info.update_instance(ClassificationId=classification.id)
