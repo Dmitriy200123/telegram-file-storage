@@ -8,6 +8,12 @@ from postgres.models.db_models.chat import Chat
 from postgres.models.db_models.file_sender import FileSender
 
 
+class DocumentClassifications(BaseModel):
+    Id = UUIDField(primary_key=True, default=uuid.uuid4)
+    Name = CharField()
+    CreatedAt = DateTimeField()
+
+
 class FileTypeEnum(int, Enum):
     Document = 0
     Audio = 1
@@ -26,6 +32,8 @@ class File(BaseModel):
     UploadDate = DateTimeField(default=datetime.now)
     FileSenderId = ForeignKeyField(model=FileSender, db_column='FileSenderId')
     ChatId = ForeignKeyField(model=Chat, null=True, db_column='ChatId')
+    ClassificationId = ForeignKeyField(
+        model=DocumentClassifications, db_column='ClassificationId')
 
     class Meta:
         table_name = 'Files'
