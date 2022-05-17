@@ -99,6 +99,15 @@ namespace FileStorageAPI.Services
             var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId);
             var files = await GetFileInfoFromStorage(expression, skip, take);
 
+            var hasClassificationsAccess = await _accessService.HasAccessAsync(request, Access.ViewClassifications);
+
+            if (!hasClassificationsAccess)
+                files.ForEach(file =>
+                {
+                    file.Classification = null;
+                    file.ClassificationId = null;
+                });
+
             return RequestResult.Ok(files.Select(_fileToDocumentInfoConverter.ConvertToDocumentInfo).ToList());
         }
 
