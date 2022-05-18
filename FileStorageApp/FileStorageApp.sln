@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenGenerator", "TokenGene
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentClassificationsAPI.Tests", "DocumentClassificationsAPI.Tests\DocumentClassificationsAPI.Tests.csproj", "{1EC3CF0E-7CFD-4E14-88D9-0B8D4F879DB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Tests", "API.Tests\API.Tests.csproj", "{C3B3A9BC-B702-4401-8223-632C6FF8F4D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,7 @@ Global
 		{1EC3CF0E-7CFD-4E14-88D9-0B8D4F879DB4} = {BF704669-E5CE-4D3A-BD01-636C2406ACFB}
 		{9EECB882-D2F1-4148-AF3B-A5AB9FBCA1FC} = {E160F0F6-39EF-4E30-817F-0CBFC653A154}
 		{F9EDE00C-53BA-4219-B458-6F8C3A24021F} = {E160F0F6-39EF-4E30-817F-0CBFC653A154}
+		{C3B3A9BC-B702-4401-8223-632C6FF8F4D6} = {E160F0F6-39EF-4E30-817F-0CBFC653A154}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5E9344F5-B34C-4115-93D8-EFB699FF5910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -175,5 +178,9 @@ Global
 		{1EC3CF0E-7CFD-4E14-88D9-0B8D4F879DB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC3CF0E-7CFD-4E14-88D9-0B8D4F879DB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC3CF0E-7CFD-4E14-88D9-0B8D4F879DB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3B3A9BC-B702-4401-8223-632C6FF8F4D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3B3A9BC-B702-4401-8223-632C6FF8F4D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3B3A9BC-B702-4401-8223-632C6FF8F4D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3B3A9BC-B702-4401-8223-632C6FF8F4D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

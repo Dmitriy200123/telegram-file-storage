@@ -2,16 +2,11 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using API.Tests;
 using DocumentClassificationsAPI.Models;
-using FileStorageApp.Data.InfoStorage.Config;
-using FileStorageApp.Data.InfoStorage.Factories;
 using FluentAssertions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using DocumentClassification = FileStorageApp.Data.InfoStorage.Contracts.Classification;
@@ -19,30 +14,8 @@ using DocumentClassificationWord = FileStorageApp.Data.InfoStorage.Contracts.Cla
 
 namespace DocumentClassificationsAPI.Tests
 {
-    public class APIDocumentClassificationsShould
+    public class APIDocumentClassificationsShould : BaseShould<Startup>
     {
-        private WebApplicationFactory<Startup> _applicationFactory;
-        private IInfoStorageFactory _infoStorageFactory;
-
-        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.test.json")
-            .Build();
-
-        [SetUp]
-        public void Setup()
-        {
-            _applicationFactory = new WebApplicationFactory<Startup>()
-                .WithWebHostBuilder(builder => { builder.UseEnvironment("Development"); });
-
-            var dbConfig = new DataBaseConfig($"Server={Config["DbHost"]};" +
-                                              $"Username={Config["DbUser"]};" +
-                                              $"Database={Config["DbName"]};" +
-                                              $"Port={Config["DbPort"]};" +
-                                              $"Password={Config["DbPassword"]};" +
-                                              "SSLMode=Prefer");
-            _infoStorageFactory = new InfoStorageFactory(dbConfig);
-        }
-
         [TearDown]
         public async Task TearDown()
         {
@@ -326,15 +299,6 @@ namespace DocumentClassificationsAPI.Tests
             await storage.AddAsync(classificationInsert);
 
             return classificationId;
-        }
-
-        private HttpClient CreateHttpClient()
-        {
-            var client = _applicationFactory.CreateClient();
-            client.DefaultRequestHeaders
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return client;
         }
     }
 }
