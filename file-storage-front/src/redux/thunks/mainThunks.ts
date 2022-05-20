@@ -4,7 +4,7 @@ import {filesSliceActions} from "../filesSlice";
 import {profileSlice} from "../profileSlice";
 import {MessageTypeEnum} from "../../models/File";
 
-const {setClassificationWord,setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
+const {setClassification, setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
 const {addMessage} = profileSlice.actions;
 
 
@@ -68,7 +68,7 @@ export const fetchClassification = (id: string) => async (dispatch: AppDispatch)
     try {
         dispatch(setLoading(true));
         const response = await fetchConfig(`/api/files/documents/${id}/classification`);
-        dispatch(setClassificationWord({classification: response, fileId: id}))
+        dispatch(setClassification({classification: response, fileId: id}))
     } catch (e) {
         //TODO добавить error или не надо?
     } finally {

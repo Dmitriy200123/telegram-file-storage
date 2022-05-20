@@ -66,7 +66,7 @@ export const filesSlice = createSlice({
 
             state.filesTypes = types;
         },
-        setClassificationWord(state, action: PayloadAction<{fileId: string, classification: {id: string, name: string}}>){
+        setClassification(state, action: PayloadAction<{fileId: string, classification: {id: string, name: string}}>){
            state.files = state.files.map( e => {
                 if (e.fileId === action.payload.fileId){
                     return {...e, classification: action.payload.classification}
