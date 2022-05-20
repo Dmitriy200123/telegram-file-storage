@@ -9,6 +9,7 @@ import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {DefaultValues, KeepStateOptions, UseFormGetValues} from "react-hook-form";
 import {TypeSelectFilters} from "../FilesMain";
 import {SelectText} from "../../utils/Inputs/SelectText";
+import ClassificationFilter from "./ClassificationSelect";
 
 type TypeProps = {
     setValueForm: (name: string, value: any) => void,
@@ -24,8 +25,6 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
     const filesTypes = useAppSelector((state) => state.filesReducer.filesTypes);
     const {optionsName, optionsSender, optionsChat} = configFilters(filesNames, chats, senders);
     const optionsCategory = filesTypes && Object.keys(filesTypes).map((key) => ({label: filesTypes[key], value: key}));
-    const options: Array<{ label: string, value: any }> = [];
-
     function onReset() {
         reset({
             date: {
@@ -35,6 +34,13 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
         }, {
             keepDirty: true,
         });
+    }
+
+    function setValueType(name: string, value: any) {
+        setValueForm(name, value);
+        if (!(value.length === 1 && +value[0] === 6)) {
+            setValueForm("classificationIds", null);
+        }
     }
 
     const valuesCategories = getValues("categories");
@@ -66,13 +72,12 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
                         setValue={setValueForm} placeholder={"Чат"}
                         values={getValues("chatIds")} options={optionsChat} isMulti={true}/>
                 <Select name={"categories"} className={"files__filter files__filter_select"}
-                        setValue={setValueForm} placeholder={"Формат"}
-                        values={valuesCategories} options={optionsCategory} isMulti={true}/>
+                        setValue={setValueType} placeholder={"Формат"}
+                        values={getValues("categories")} options={optionsCategory} isMulti={true}/>
 
                 {valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1 && <>
-                    <Select name={"1"} className={"files__filter files__filter_select"}
-                            setValue={setValueForm} placeholder={"Классификация"}
-                            values={null} options={options} isMulti={true}/>
+                    <ClassificationFilter values={getValues("classificationIds")}
+                                          setValueForm={setValueForm}/>
                 </>}
             </div>
             <button className={"files__reset"} type="reset" onClick={onReset}>

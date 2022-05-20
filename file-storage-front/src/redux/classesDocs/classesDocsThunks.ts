@@ -52,7 +52,7 @@ export const fetchClassifications = (args: FetchClassificationsType) => async (d
 export const fetchAllClassifications = (query?:string) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
     const params: FetchClassificationsType = {
-        skip: 0, take: 1, includeClassificationWords: false, query: query || ""
+        skip: 0, take: 30, includeClassificationWords: false, query: query || ""
     }
 
     try {

@@ -5,7 +5,7 @@ import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {fetchClassification, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
+import {fetchDocuments, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
 import {Filters} from "./Filters/Filters";
 import {fetchAllClassifications} from "../../redux/classesDocs/classesDocsThunks";
@@ -22,7 +22,7 @@ const FilesMain = () => {
     const history = useHistory();
 
     useEffect(() => {
-        const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
+        const {fileName, chats, senderId, categories, date, classificationIds} = GetQueryParamsFromUrl(history);
         dispatch(fetchFilters());
         dispatch(fetchAllClassifications());
         setValue("fileName", fileName);
@@ -30,6 +30,7 @@ const FilesMain = () => {
         setValue("categories", categories);
         setValue("chatIds", chats);
         setValue("date", date);
+        setValue("classificationIds", classificationIds);
     }, []);
 
     useEffect(() => {
@@ -42,20 +43,29 @@ const FilesMain = () => {
         AddToUrlQueryParams(history, formData);
         const form = {
             take: filesInPage,
-            fileName: formData.fileName,
             senderIds: formData.senderIds, categories: formData.categories,
             dateTo: formData.date?.dateTo,
             dateFrom: formData.date?.dateFrom,
             chatIds: formData.chatIds,
-
         };
-
-        dispatch(fetchFiles({
-            skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
-            ...form
-        }));
+        if (formData.categories && formData.categories.length === 1 && +formData.categories[0] === 6) {
+            dispatch(fetchDocuments({
+                skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
+                ...form,
+                phrase: formData.fileName,
+                classificationIds: formData.classificationIds
+            }));
+        }
+        else {
+            dispatch(fetchFiles({
+                skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
+                ...form,
+                fileName: formData.fileName
+            }));
+        }
 
     };
+
     const onChangeForm = handleSubmit(dispatchValuesForm);
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}

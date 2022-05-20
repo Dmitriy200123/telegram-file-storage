@@ -31,6 +31,7 @@ export const fetchFilters = () => async (dispatch: AppDispatch) => {
 type TypeFilesFetchFilters = {
     skip: number,
     take: number,
+    fileName?: string | null,
     categories?: string[] | null | undefined,
     dateTo?: string | null | undefined,
     dateFrom?: string | null | undefined,
@@ -50,6 +51,42 @@ export const fetchFiles = (args:TypeFilesFetchFilters) => async (dispatch: AppDi
     } catch (err) {
         dispatch(setLoading(false));
         dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить файлы"}))
+    }
+};
+
+type TypeDocumentsFetchFilters = {
+    skip: number,
+    take: number,
+    phrase?: string | null,
+    categories?: string[] | null | undefined,
+    dateTo?: string | null | undefined,
+    dateFrom?: string | null | undefined,
+    senderIds?: string[] | null | undefined,
+    chatIds?: string[] | null | undefined,
+    classificationIds?: string[] | null
+}
+
+export const fetchDocuments = (args:TypeDocumentsFetchFilters) => async (dispatch: AppDispatch) => {
+    try {
+        const params: any = {...args};
+        delete params['take'];
+        delete params['skip'];
+        dispatch(setLoading(true));
+        const filesCount = fetchConfigText("/api/files/documents/count", {params: params})
+        const documents = (await fetchConfig(`/api/files/documents`, {params: args}))
+            .map((e:any) => ({
+                fileName: e.documentName,
+                sender: e.sender,
+                fileId: e.documentId,
+                fileType: 6,
+                uploadDate: e.uploadDate,
+                chat: e.chat,
+            }));
+        dispatch(setFiles({files: documents, filesCount: await filesCount}));
+        dispatch(setLoading(false));
+    } catch (err) {
+        dispatch(setLoading(false));
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить документы"}))
     }
 };
 
