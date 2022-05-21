@@ -1,4 +1,4 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useEffect, useState} from 'react';
 import "./FilesMain.scss"
 import {ExpandingObject, ModalContent, Rights, TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
@@ -10,16 +10,26 @@ import {useDispatch} from "react-redux";
 import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
 import {fetchDownloadLinkAndDownloadFile} from "../../redux/thunks/fileThunks";
+import {fetchClassification} from "../../redux/thunks/mainThunks";
 
 const {openModal, setOpenFile} = filesSlice.actions
 
 const FragmentFile: React.FC<PropsType> = ({file, rights, types, fetchFiles}) => {
-    const {fileId, fileName, uploadDate, fileType, sender, chat} = file;
+    const {fileId, fileName, uploadDate, fileType, sender, chat, classification} = file;
     const dispatch = useDispatch();
+    useEffect(() => {
+        if (!classification && +file.fileType === 6) {
+            dispatch(fetchClassification(file.fileId))
+        }
+    }, [classification])
     return <React.Fragment key={fileId}>
-        <Link className={"files__item files__item_name"} to={`/file/${fileId}`} replace onClick={() => {
-            dispatch(setOpenFile(file));
-        }}>{fileName}</Link>
+        <div className={"files__nameClassItems"}>
+            <Link className={"files__item_name"} to={`/file/${fileId}`} replace onClick={() => {
+                dispatch(setOpenFile(file));
+            }}>{fileName}</Link>
+
+            {classification && <div className={"files__item_classf"}>{classification.name}</div>}
+        </div>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{types && types[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>

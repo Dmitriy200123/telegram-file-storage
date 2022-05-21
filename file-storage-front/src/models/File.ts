@@ -38,7 +38,8 @@ export type TypeFile = {
         "name": string,
         "imageId"?: string
     },
-    url?: string
+    url?: string,
+    classification?: {id: string, name: string} | null
 }
 
 export type Chat = {

@@ -4,8 +4,9 @@ import {filesSliceActions} from "../filesSlice";
 import {profileSlice} from "../profileSlice";
 import {MessageTypeEnum} from "../../models/File";
 
-const {setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
+const {setClassification, setFilesTypes, setLoading, setFilters, setFiles} = filesSliceActions;
 const {addMessage} = profileSlice.actions;
+
 
 export const fetchFilters = () => async (dispatch: AppDispatch) => {
     try {
@@ -52,7 +53,6 @@ export const fetchFiles = (args:TypeFilesFetchFilters) => async (dispatch: AppDi
     }
 };
 
-
 export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
     try {
         dispatch(setLoading(true));
@@ -63,3 +63,16 @@ export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
         dispatch( addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить типы файлов"}))
     }
 }
+
+export const fetchClassification = (id: string) => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const response = await fetchConfig(`/api/files/documents/${id}/classification`);
+        dispatch(setClassification({classification: response, fileId: id}))
+    } catch (e) {
+        //TODO добавить error или не надо?
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
+

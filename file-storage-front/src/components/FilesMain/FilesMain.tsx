@@ -5,7 +5,7 @@ import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
+import {fetchClassification, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
 import {Filters} from "./Filters";
 
@@ -51,8 +51,8 @@ const FilesMain = () => {
             skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
             ...form
         }));
-    };
 
+    };
     const onChangeForm = handleSubmit(dispatchValuesForm);
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}

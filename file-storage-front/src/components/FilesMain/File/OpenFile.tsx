@@ -22,7 +22,7 @@ type PropsType = {
 
 const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, urlPreview}) => {
     const dispatch = useAppDispatch();
-    const {fileName, fileType, sender, chat, uploadDate, message, url} = file;
+    const {fileName, fileType, sender, chat, uploadDate, message, url, classification} = file;
     const canRename = rights?.includes(Rights["Переименовывать файлы"]);
 
     function openRename() {
@@ -44,13 +44,24 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                 <h3 className="file__content-title"
                     onClick={canRename ? openRename : undefined}>
                     <span className={"file__content-title-text"}>{fileName}</span> {canRename && <Edit/>}</h3>
-                <div className="file__item"><span>Формат: </span>{filesTypes && filesTypes[fileType]}</div>
-                <div className="file__item"><span>Отправитель: </span><a>{sender?.fullName}</a></div>
-                <div className="file__item"><span>Чат: </span><a>{chat?.name}</a></div>
-                <div className="file__item"><span>Дата отправки: </span>{uploadDate}</div>
-                {message && <div className="file__item">
-                    <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
-                </div>}
+                <section className="file__contentTable">
+                    <div className="file__item"><span>Формат: </span></div>
+                    <div className="file__item">{filesTypes && filesTypes[fileType]}</div>
+                    {classification && <>
+                        <div className="file__item"><span>Классификация: </span></div>
+                        <div className="file__item "><span
+                            className="file__color">{classification.name}</span></div>
+                    </>}
+                    <div className="file__item"><span>Отправитель: </span></div>
+                    <div className="file__item"><a>{sender?.fullName}</a></div>
+                    <div className="file__item"><span>Чат: </span></div>
+                    <div className="file__item"><a>{chat?.name}</a></div>
+                    <div className="file__item"><span>Дата отправки: </span></div>
+                    <div className="file__item">{uploadDate}</div>
+                    {message && <div className="file__item">
+                        <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
+                    </div>}
+                </section>
                 {urlPreview && <embed src={urlPreview} width="100%"
                                       height="375"/>}
                 <div className={"file__btns"}>
