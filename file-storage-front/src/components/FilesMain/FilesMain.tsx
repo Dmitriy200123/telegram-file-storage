@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import "./FilesMain.scss"
 import PaginatorNeNorm from '../utils/Paginator/PaginatorNeNorm';
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
@@ -9,6 +8,8 @@ import {fetchDocuments, fetchFiles, fetchFilters} from "../../redux/thunks/mainT
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
 import {Filters} from "./Filters/Filters";
 import {fetchAllClassifications} from "../../redux/classesDocs/classesDocsThunks";
+import classNames from "classnames";
+import "./FilesMain.scss"
 
 const FilesMain = () => {
     const rights = useAppSelector((state) => state.profile.rights);
@@ -38,7 +39,7 @@ const FilesMain = () => {
     }, [currentPage])
 
 
-    const {handleSubmit, formState:{ errors},setValue, getValues, reset} = useForm<TypeSelectFilters>();
+    const {handleSubmit, formState: {errors}, setValue, getValues, reset} = useForm<TypeSelectFilters>();
     const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
         const form = {
@@ -55,8 +56,7 @@ const FilesMain = () => {
                 phrase: formData.fileName,
                 classificationIds: formData.classificationIds
             }));
-        }
-        else {
+        } else {
             dispatch(fetchFiles({
                 skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
                 ...form,
@@ -74,7 +74,8 @@ const FilesMain = () => {
     const setValueForm = (name: string, value: any) => {
         setValue(name as "fileName" | "senderIds" | "date" | "chatIds" | "categories", value, {
             shouldValidate: true
-        });    }
+        });
+    }
     return (
         <div className={"files-main"}>
             <h2 className={"files-main__title"}>Поиск файлов</h2>
@@ -82,6 +83,15 @@ const FilesMain = () => {
                 <form className={"files"} onSubmit={onChangeForm}>
                     <Filters setValueForm={setValueForm} getValues={getValues} reset={reset}/>
                     <div className={"files__files"}>
+                        <section className={"files__itemsHead"}>
+                            <div className={classNames("files__item", "files__item_title")}>Название</div>
+                            <div className={classNames("files__item", "files__item_title")}>Дата</div>
+                            <div className={classNames("files__item", "files__item_title")}>Тип</div>
+                            <div className={classNames("files__item", "files__item_title")}>Отправитель</div>
+                            <div className={classNames("files__item", "files__item_title", "files__item_relative")}>
+                                Чат
+                            </div>
+                        </section>
                         {FragmentsFiles}
                     </div>
                 </form>
@@ -99,6 +109,6 @@ export type TypeSelectFilters = {
     chatIds: string[] | undefined | null,
     categories: string[] | undefined | null,
     classificationIds?: string[] | null
- }
+}
 
 export default FilesMain;

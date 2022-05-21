@@ -2,7 +2,6 @@ import React, {memo, useEffect, useState} from 'react';
 import "./File.scss"
 import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {fetchDownloadLink, fetchFile, fetchFileText} from "../../../redux/thunks/fileThunks";
-import {filesSlice} from "../../../redux/filesSlice";
 import OpenedFile from "./OpenFile";
 import {fetchClassification} from "../../../redux/thunks/mainThunks";
 
