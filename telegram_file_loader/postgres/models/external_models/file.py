@@ -45,6 +45,8 @@ class File(BaseExternalModel):
 
     @validator('type', pre=True)
     def type_converter(cls, value):  # noqa
+        if isinstance(value, FileTypeEnum):
+            return value
         return ExternalFileType.enum_map()[value]
 
     def dict_non_empty_fields(self):

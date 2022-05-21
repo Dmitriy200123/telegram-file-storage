@@ -1,13 +1,16 @@
 # flake8: noqa
 import ast
+import logging
 from os import getenv
 
 from .base import *
 
+log = logging.getLogger(__name__)
+
 try:
     from .local import *
 except ImportError:
-    print('Not found local.py')
+    log.info('Not found local.py')
 
 # Override config variables from environment
 for var in list(locals()):
@@ -15,7 +18,7 @@ for var in list(locals()):
     if value is None:
         continue
     try:
-        print(f'Found new value for {var=}')
+        log.info(f'Found new value for {var=}')
         locals()[var] = ast.literal_eval(value)
     except:  # noqa
         locals()[var] = value

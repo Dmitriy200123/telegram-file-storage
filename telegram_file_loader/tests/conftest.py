@@ -1,13 +1,19 @@
 import asyncio
+import json
+import pathlib
 import sys
 
 import postgres
 import pytest
+from aioresponses import aioresponses
+from clients.documents_classifications_client import DocumentsClassificationsClient
 from clients.documents_index_client import DocumentsIndexClient
 from clients.documents_search_client import DocumentsSearchClient
 from postgres.models.db_models import Chat, Code, File, FileSender, SenderToChat
 from postgres.models.db_models.marked_text_tags import MarkedTextTags
 from postgres.pg_adapter import Adapter
+
+resources = pathlib.Path(__file__).parent / 'resources'
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -18,6 +24,12 @@ def loop():
     loop = asyncio.get_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture
+def mock_response():
+    with aioresponses(passthrough=['http://127.0.0.1']) as mock:
+        yield mock
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -63,3 +75,20 @@ def index_documents_client():
     client = DocumentsIndexClient()
 
     return client
+
+
+@pytest.fixture(scope='session')
+def classifications_documents_client():
+    client = DocumentsClassificationsClient()
+
+    return client
+
+
+def full_classifications_response():
+    with open(resources / 'full_classifications_response.json', 'r') as file:
+        return json.loads(file.read())
+
+
+def empty_classifications_response():
+    with open(resources / 'empty_classifications_response.json', 'r') as file:
+        return json.loads(file.read())
