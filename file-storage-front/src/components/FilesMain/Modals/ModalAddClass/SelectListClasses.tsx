@@ -18,7 +18,7 @@ const Classifications: React.FC<PropsType> = memo(({classifications, onClick, cl
                 return <div
                     className={classNames(classes.classItem, classActiveId === e.id && classes.classItem_active)}
                     key={e.id} onClick={() => onClick(e.id)}>
-                    <CheckIcon/>
+                    <CheckIcon />
                     <span>{e.name}</span>
                 </div>
             })}

@@ -80,8 +80,6 @@ const OpenedFile: React.FC<PropsType> = memo(({ id, file, rights, filesTypes, ur
                         <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
                     </div>}
                 </section>
-                {urlPreview && <embed src={urlPreview} width="100%"
-                    height="375" />}
                 <div className={"file__btns"}>
                     {+fileType !== 5 && +fileType !== 4 &&
                         <Button className="file__btn" onClick={onDownload} disabled={!file.url}>
