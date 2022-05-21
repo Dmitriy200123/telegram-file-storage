@@ -25,7 +25,6 @@ const FilesMain = () => {
     useEffect(() => {
         const {fileName, chats, senderId, categories, date, classificationIds} = GetQueryParamsFromUrl(history);
         dispatch(fetchFilters());
-        dispatch(fetchAllClassifications());
         setValue("fileName", fileName);
         setValue("senderIds", senderId);
         setValue("categories", categories);
