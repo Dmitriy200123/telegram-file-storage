@@ -30,7 +30,7 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
         if (file && (+fileType === 4 || +fileType === 5))
             dispatch(fetchFileText({id, type: +fileType}))
 
-        if (file?.url && !urlPreview) {
+        if (file && file.url && !urlPreview && [1,2,3,4,5,6].includes(+fileType)) {
             getUrlPreview(file.url);
         }
 
