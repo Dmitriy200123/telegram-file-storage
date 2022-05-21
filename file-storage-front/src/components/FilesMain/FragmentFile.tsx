@@ -86,7 +86,7 @@ const Controls: FC<ControlsPropsType> = memo(({
                 {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
                     <Tag/><span>Присвоить классификацию</span></div>}
-                {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                {+fileType === 6 && classification && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={onRevokeClass}>
                     <Reject/><span>Отозвать классфикацию</span></div>}
                 {/*todo classId*/}
