@@ -8,6 +8,9 @@ import {ReactComponent as Edit} from "../../../assets/edit.svg";
 import {ReactComponent as Delete} from "../../../assets/delete.svg";
 import {filesSlice} from "../../../redux/filesSlice";
 import {Button} from "../../utils/Button/Button";
+import {ReactComponent as Tag} from "../../../assets/tag.svg";
+import {deleteClassificationDocument} from "../../../redux/thunks/fileThunks";
+import {ReactComponent as Reject} from "../../../assets/reject.svg";
 
 const {openModal} = filesSlice.actions;
 
@@ -29,6 +32,16 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
         dispatch(openModal({id: id, content: ModalContent.Edit}));
     }
 
+    function openAddClass() {
+        dispatch(openModal({id, content: ModalContent.AddClass}));
+    }
+
+    function removeClass() {
+        if (!classification)
+            return;
+        dispatch(deleteClassificationDocument({documentId: id, classId: classification.id}))
+    }
+
     function onDownload() {
         if (url)
             window.open(url);
@@ -44,6 +57,13 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                 <h3 className="file__content-title"
                     onClick={canRename ? openRename : undefined}>
                     <span className={"file__content-title-text"}>{fileName}</span> {canRename && <Edit/>}</h3>
+                {+fileType === 6 && <div className={"file__classes"}>
+                    <div className={"file__classItem"} onClick={openAddClass}>
+                        <Tag/><span>Присвоить классификацию</span></div>
+                    {classification && <div className={"file__classItem"}
+                                            onClick={removeClass}>
+                        <Reject/><span>Отозвать классфикацию</span></div>}
+                </div>}
                 <section className="file__contentTable">
                     <div className="file__item"><span>Формат: </span></div>
                     <div className="file__item">{filesTypes && filesTypes[fileType]}</div>
@@ -62,8 +82,6 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                         <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
                     </div>}
                 </section>
-                {urlPreview && <embed src={urlPreview} width="100%"
-                                      height="375"/>}
                 <div className={"file__btns"}>
                     {+fileType !== 5 && +fileType !== 4 &&
                     <Button className="file__btn" onClick={onDownload} disabled={!file.url}>
@@ -75,6 +93,7 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                         onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
                         type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
                 </div>
+                {urlPreview && <embed className={"file__embed"} src={urlPreview} width="100%"/>}
             </div>
         </div>
     );

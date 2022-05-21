@@ -2,8 +2,8 @@ import React, {memo, useEffect, useState} from 'react';
 import "./File.scss"
 import {useAppDispatch, useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {fetchDownloadLink, fetchFile, fetchFileText} from "../../../redux/thunks/fileThunks";
-import {filesSlice} from "../../../redux/filesSlice";
 import OpenedFile from "./OpenFile";
+import {fetchClassification} from "../../../redux/thunks/mainThunks";
 
 export interface match<Params extends { [K in keyof Params]?: string } = {}> {
     params: Params;
@@ -22,8 +22,6 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     const [urlPreview, setUrlPreview] = useState<string | null>(null);
 
     useEffect(() => {
-        // if (!file?.url)
-        //     dispatch(fetchDownloadLink(id));
         if (file && id === file?.fileId) return;
         dispatch(fetchFile(id));
     }, [id])
@@ -31,10 +29,17 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     useEffect(() => {
         if (file && (+fileType === 4 || +fileType === 5))
             dispatch(fetchFileText({id, type: +fileType}))
-        if (file?.url && !urlPreview) {
+
+        if (file && file.url && !urlPreview && [1,2,3,4,5,6].includes(+fileType)) {
             getUrlPreview(file.url);
         }
-    }, [file])
+
+        if (file && !file?.classification && +file.fileType === 6) {
+            dispatch(fetchClassification(file.fileId))
+        }
+    }, [file]);
+
+
 
     useEffect(() => {
         if (!file?.fileName)
@@ -44,11 +49,11 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
 
     async function getUrlPreview(urlFile: string) {
         try {
-            const blob = await fetch(urlFile);
+            const response = await fetch(urlFile);
             const binaryData = [];
-            binaryData.push(await blob.blob())
+            binaryData.push(await response.blob())
             const previewUrl = window.URL.createObjectURL(new Blob(binaryData,
-                // {type: 'multipart/form-data'}
+                {type: response.headers.get("content-type") || "text"}
             ));
 
             setUrlPreview(previewUrl);

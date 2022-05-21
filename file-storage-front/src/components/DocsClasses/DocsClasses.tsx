@@ -79,7 +79,7 @@ const DocsClasses: FC<PropsType> = () => {
                     <div className={classes.controls}>
                         <article className={classes.controlInputWrapper}>
                             <InputText className={classes.controlInput} onChange={onChangeInput}
-                                       placeholder={"Поиск классификации документов"}/>
+                                       placeholder={"Поиск классификаций документов"}/>
                             <button className={classes.searchBtn} type="submit" onClick={onSubmit}><Search/>
                             </button>
                         </article>

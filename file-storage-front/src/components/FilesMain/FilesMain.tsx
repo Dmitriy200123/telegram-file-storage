@@ -1,13 +1,15 @@
 import React, {useEffect} from 'react';
-import "./FilesMain.scss"
 import PaginatorNeNorm from '../utils/Paginator/PaginatorNeNorm';
 import FragmentFile from "./FragmentFile";
 import {useHistory} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../utils/hooks/reduxHooks";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {fetchClassification, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
+import {fetchDocuments, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
-import {Filters} from "./Filters";
+import {Filters} from "./Filters/Filters";
+import {fetchAllClassifications} from "../../redux/classesDocs/classesDocsThunks";
+import classNames from "classnames";
+import "./FilesMain.scss"
 
 const FilesMain = () => {
     const rights = useAppSelector((state) => state.profile.rights);
@@ -21,13 +23,14 @@ const FilesMain = () => {
     const history = useHistory();
 
     useEffect(() => {
-        const {fileName, chats, senderId, categories, date} = GetQueryParamsFromUrl(history);
+        const {fileName, chats, senderId, categories, date, classificationIds} = GetQueryParamsFromUrl(history);
         dispatch(fetchFilters());
         setValue("fileName", fileName);
         setValue("senderIds", senderId);
         setValue("categories", categories);
         setValue("chatIds", chats);
         setValue("date", date);
+        setValue("classificationIds", classificationIds);
     }, []);
 
     useEffect(() => {
@@ -35,24 +38,33 @@ const FilesMain = () => {
     }, [currentPage])
 
 
-    const {handleSubmit, formState:{ errors},setValue, getValues, reset} = useForm<TypeSelectFilters>();
+    const {handleSubmit, formState: {errors}, setValue, getValues, reset} = useForm<TypeSelectFilters>();
     const dispatchValuesForm: SubmitHandler<TypeSelectFilters> = (formData) => {
         AddToUrlQueryParams(history, formData);
         const form = {
             take: filesInPage,
-            fileName: formData.fileName,
             senderIds: formData.senderIds, categories: formData.categories,
             dateTo: formData.date?.dateTo,
             dateFrom: formData.date?.dateFrom,
             chatIds: formData.chatIds,
         };
-
-        dispatch(fetchFiles({
-            skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
-            ...form
-        }));
+        if (formData.categories && formData.categories.length === 1 && +formData.categories[0] === 6) {
+            dispatch(fetchDocuments({
+                skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
+                ...form,
+                phrase: formData.fileName,
+                classificationIds: formData.classificationIds
+            }));
+        } else {
+            dispatch(fetchFiles({
+                skip: currentPage > 0 ? (currentPage - 1) * filesInPage : 0,
+                ...form,
+                fileName: formData.fileName
+            }));
+        }
 
     };
+
     const onChangeForm = handleSubmit(dispatchValuesForm);
 
     const FragmentsFiles = filesData.map((f) => <FragmentFile key={f.fileId} file={f} rights={rights || []}
@@ -70,6 +82,15 @@ const FilesMain = () => {
                 <form className={"files"} onSubmit={onChangeForm}>
                     <Filters setValueForm={setValueForm} getValues={getValues} reset={reset}/>
                     <div className={"files__files"}>
+                        <section className={"files__itemsHead"}>
+                            <div className={classNames("files__item", "files__item_title")}>Название</div>
+                            <div className={classNames("files__item", "files__item_title")}>Дата</div>
+                            <div className={classNames("files__item", "files__item_title")}>Тип</div>
+                            <div className={classNames("files__item", "files__item_title")}>Отправитель</div>
+                            <div className={classNames("files__item", "files__item_title", "files__item_relative")}>
+                                Чат
+                            </div>
+                        </section>
                         {FragmentsFiles}
                     </div>
                 </form>
@@ -86,6 +107,7 @@ export type TypeSelectFilters = {
     date: { dateFrom: string | null, dateTo: string | null },
     chatIds: string[] | undefined | null,
     categories: string[] | undefined | null,
+    classificationIds?: string[] | null
 }
 
 export default FilesMain;

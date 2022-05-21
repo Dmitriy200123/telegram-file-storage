@@ -1,6 +1,6 @@
 import {Chat, ExpandingObject, ModalContent, Sender, TypeFile, TypePaginator} from "../models/File";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-
+import {ClassificationType} from "../models/Classification";
 
 const initialState = {
     chats: null as null | Array<Chat>,
@@ -66,13 +66,16 @@ export const filesSlice = createSlice({
 
             state.filesTypes = types;
         },
-        setClassification(state, action: PayloadAction<{fileId: string, classification: {id: string, name: string}}>){
+        setClassification(state, action: PayloadAction<{fileId: string, classification: ClassificationType | null} >){
            state.files = state.files.map( e => {
                 if (e.fileId === action.payload.fileId){
                     return {...e, classification: action.payload.classification}
                 }
                 return e;
-            } )
+            })
+
+            if (state.openFile && state.openFile.fileId === action.payload.fileId)
+                state.openFile.classification = action.payload.classification;
         },
         setFilters(state, action: PayloadAction<{ chats: Array<Chat>, senders: Array<Sender>, countFiles: string | number, filesNames: string[] | null }>) {
             state.chats = action.payload.chats;
@@ -108,7 +111,8 @@ export const filesSlice = createSlice({
             if (state.openFile && state.openFile.fileId === action.payload.id) {
                 state.openFile.url = action.payload.url;
             }
-        }
+        },
+
 
     },
 

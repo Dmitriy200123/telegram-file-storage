@@ -86,6 +86,10 @@
     padding: 22px 30px;
   }
 
+  &__itemsHead{
+    display: contents;
+  }
+
   &__item {
     padding: 25px 30px;
 
@@ -104,6 +108,11 @@
 
     &_relative {
       position: relative;
+    }
+
+    &_title {
+      font-weight: 600;
+      background: #D2DEF3;
     }
   }
 
@@ -158,6 +167,7 @@
 }
 
 .file-controls {
+  overflow: hidden;
 
   &__btn {
     position: absolute;
@@ -197,6 +207,7 @@
   }
 
   &__modal {
+    overflow: hidden;
     position: absolute;
     z-index: 2;
     right: 15px;
@@ -217,7 +228,16 @@
     }
 
     & svg {
-      margin: 5px;
+      margin: 5px 0.5em 5px 5px;
+      flex: 0 0 auto;
+      color: #212529;
+    }
+
+    &ClassSvg svg{
+      width: 1.2em;
+      height: 1.2em;
+      margin-right: 0.3em;
+      margin-bottom: 0.3em;
     }
 
     &:hover {

@@ -28,7 +28,7 @@ export const Navbar: FC<{ className?: string }> = memo(({className}) => {
                 </>
                 }
                 <Link to={"/docs-сlasses"}
-                      className={"navbar__link"}><Classifications/><span>Классификация документов</span></Link>
+                      className={"navbar__link"}><Classifications/><span>Классификации документов</span></Link>
             </div>
         </div>
     );

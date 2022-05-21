@@ -1,7 +1,7 @@
 export type ClassificationType = {
     "id": string,
     "name": string,
-    "classificationWords": {
+    "classificationWords"?: {
         "id": string,
         "value": string,
         "classificationId": string

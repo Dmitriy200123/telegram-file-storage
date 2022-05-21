@@ -49,6 +49,35 @@ export const fetchClassifications = (args: FetchClassificationsType) => async (d
     }
 };
 
+export const fetchAllClassifications = (query?:string) => async (dispatch: AppDispatch) => {
+    dispatch(setLoading(true));
+    const params: FetchClassificationsType = {
+        skip: 0, take: 30, includeClassificationWords: false, query: query || ""
+    }
+
+    try {
+        const array: ClassificationType[] = [];
+        do {
+            const classifications: ClassificationType[] = await fetchConfig(`/api/documentClassifications`, {
+                method: "GET",
+                params: params
+            });
+            if (classifications.length === 0) {
+                params.take = -1;
+            }
+            else {
+                params.skip+= params.take;
+                array.push(...classifications);
+            }
+        } while (params.take !== -1);
+        dispatch(setClassifications(array));
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить классификации"}))
+    } finally {
+        dispatch(setLoading(false));
+    }
+};
+
 export const fetchClassification = (id:string ) => async (dispatch: AppDispatch) => {
     dispatch(setLoading(true));
 

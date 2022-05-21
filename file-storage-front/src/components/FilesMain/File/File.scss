@@ -1,3 +1,5 @@
+@import "src/Variables";
+
 .file {
   text-align: left;
 
@@ -12,6 +14,28 @@
 
   &__title {
     font-size: 1.7em;
+  }
+
+  &__classes{
+    display: flex;
+    gap: 24px;
+    color: $menu-color;
+    margin-bottom: 24px;
+  }
+
+  &__classItem{
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    &:hover{
+      color: $menu-color-hover;
+    }
+
+    & svg{
+      width: 1.2em;
+      height: 1.2em;
+    }
   }
 
   &__close {
@@ -62,7 +86,7 @@
     grid-column-start: 1;
     grid-column-end: 3;
     display: grid;
-    grid-template-columns: min-content auto;
+    grid-template-columns: max-content auto;
     padding-right: 1em;
     gap: 1em;
     align-items: center;
@@ -115,6 +139,7 @@
   &__btns {
     display: flex;
     gap: 8px;
+    margin-bottom: 60px;
   }
 
   &__btn {
@@ -147,6 +172,10 @@
         fill: white;
       }
     }
+  }
+
+  &__embed{
+    height: 80vh;
   }
 }
 

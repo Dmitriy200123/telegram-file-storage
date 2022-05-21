@@ -1,4 +1,5 @@
 import {fetchConfig, fetchConfigText, fPostFile} from "../api/apiFiles";
+import {fetchConfig as fetchConfigClass, fetchConfigText as fetchConfigTextClass} from "../api/apiDocsClasses";
 import {AppDispatch} from "../redux-store";
 import {MessageTypeEnum} from "../../models/File";
 import {profileSlice} from "../profileSlice";
@@ -7,7 +8,15 @@ import {filesSlice} from "../filesSlice"
 
 const {addMessage, setLoading: setLoadingProfile} = profileSlice.actions;
 const {setFile} = editorSlice.actions;
-const {changeFileName, closeModal, removeFile, setLoading, setOpenFile, setFileUrl} = filesSlice.actions;
+const {
+    changeFileName,
+    closeModal,
+    setClassification,
+    removeFile,
+    setLoading,
+    setOpenFile,
+    setFileUrl
+} = filesSlice.actions;
 
 export const fetchFile = (id: string) => async (dispatch: AppDispatch) => {
     try {
@@ -134,3 +143,35 @@ export const fetchFileText = ({id, type}: { id: string, type: number }) => async
     }
 }
 
+export const patchAssignClassification = ({
+                                              documentId,
+                                              classId
+                                          }: { documentId: string, classId: string }) => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const response = await fetchConfig(`/api/files/documents/${documentId}/assign-classification`,
+            {method: "PATCH", body: classId});
+        dispatch(setClassification({fileId: documentId, classification: response.classification}))
+        dispatch(closeModal());
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
+        dispatch(setLoading(false));
+    }
+}
+
+export const deleteClassificationDocument = ({
+                                                 documentId,
+                                                 classId
+                                             }: { documentId: string, classId: string }) => async (dispatch: AppDispatch) => {
+    try {
+        dispatch(setLoading(true));
+        const response = await fetchConfigText(`/api/files/documents/${documentId}/revoke-classification`,
+            {method: "PATCH", body: classId});
+        dispatch(setClassification({fileId: documentId, classification: null}))
+    } catch (err) {
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))
+    } finally {
+        dispatch(setLoading(false));
+    }
+}

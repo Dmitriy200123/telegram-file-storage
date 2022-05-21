@@ -92,7 +92,7 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
 
     return <div className={classes.classItem}>
         <div className={classes.classItem__header}>
-            <h2 className={classes.classItem__title}>Классификация документов</h2>
+            <h2 className={classes.classItem__title}>Классификации документов</h2>
             <Link className={classes.classItem__close} to={"/docs-сlasses"}/>
         </div>
         <div className={classes.classItem__content}>
