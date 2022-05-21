@@ -1,3 +1,5 @@
+import {ClassificationType} from "./Classification";
+
 export type Nullable<T> = T | null;
 
 export enum Rights {
@@ -40,7 +42,7 @@ export type TypeFile = {
         "imageId"?: string
     },
     url?: string,
-    classification?: {id: string, name: string} | null
+    classification?: ClassificationType |  null
 }
 
 export type Chat = {

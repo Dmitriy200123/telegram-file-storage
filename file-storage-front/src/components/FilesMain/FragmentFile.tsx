@@ -1,4 +1,4 @@
-import React, {memo, useEffect, useState} from 'react';
+import React, {FC, memo, useEffect, useState} from 'react';
 import "./FilesMain.scss"
 import {ExpandingObject, ModalContent, Rights, TypeFile} from "../../models/File";
 import {Link} from 'react-router-dom';
@@ -13,6 +13,7 @@ import {filesSlice} from "../../redux/filesSlice";
 import {Dispatch} from "@reduxjs/toolkit";
 import {fetchClassification} from "../../redux/thunks/mainThunks";
 import {deleteClassificationDocument, fetchDownloadLinkAndDownloadFile} from "../../redux/thunks/fileThunks";
+import {ClassificationType} from "../../models/Classification";
 
 const {openModal, setOpenFile} = filesSlice.actions
 
@@ -35,22 +36,36 @@ const FragmentFile: React.FC<PropsType> = ({file, rights, types, fetchFiles}) =>
         <div className={"files__item"}>{uploadDate}</div>
         <div className={"files__item"}>{types && types[fileType]}</div>
         <div className={"files__item"}>{sender.fullName}</div>
-        <div className={"files__item files__item_relative"}>{chat?.name} <Controls rights={rights} id={fileId}
-                                                                                   fileType={fileType}
-                                                                                   dispatch={dispatch}
-                                                                                   fetchFiles={fetchFiles}/></div>
+        <div className={"files__item files__item_relative"}>{chat?.name}
+            <Controls rights={rights} id={fileId}
+                      fileType={fileType}
+                      dispatch={dispatch}
+                      fetchFiles={fetchFiles}
+                      classification={classification}
+            />
+        </div>
     </React.Fragment>
 };
 
 
-const Controls = memo(({
-                           id,
-                           dispatch,
-                           rights,
-                           fileType,
-                           fetchFiles
-                       }: { id: string, dispatch: Dispatch<any>, rights: Rights[], fileType: string, fetchFiles: (...args: any) => void }) => {
+const Controls: FC<ControlsPropsType> = memo(({
+                                                  id,
+                                                  dispatch,
+                                                  rights,
+                                                  fileType,
+                                                  fetchFiles,
+                                                  classification
+                                              }) => {
     const [isOpen, changeIsOpen] = useState(false);
+
+    function onRevokeClass() {
+        if (!classification)
+            return;
+        dispatch(deleteClassificationDocument({
+            documentId: id,
+            classId: classification.id
+        }));
+    }
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
         <div className={"file-controls"}>
             <button onClick={(e) => {
@@ -69,10 +84,10 @@ const Controls = memo(({
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
                 {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
-                     onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
+                                         onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
                     <Tag/><span>Присвоить классификацию</span></div>}
                 {+fileType === 6 && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
-                     onClick={() => dispatch(deleteClassificationDocument({documentId: id, classId: ""}))}>
+                                         onClick={onRevokeClass}>
                     <Reject/><span>Отозвать классфикацию</span></div>}
                 {/*todo classId*/}
                 {rights.includes(Rights["Удалять файлы"]) &&
@@ -89,6 +104,10 @@ const Controls = memo(({
 });
 
 type PropsType = { file: TypeFile, rights: Rights[], types: undefined | ExpandingObject<string>, fetchFiles: (...args: any) => void };
+type ControlsPropsType = {
+    id: string, dispatch: Dispatch<any>, rights: Rights[], fileType: string, fetchFiles: (...args: any) => void,
+    classification?: ClassificationType | null
+};
 
 export default FragmentFile;
 

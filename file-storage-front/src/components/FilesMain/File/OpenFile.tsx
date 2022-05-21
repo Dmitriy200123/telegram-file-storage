@@ -37,7 +37,9 @@ const OpenedFile: React.FC<PropsType> = memo(({ id, file, rights, filesTypes, ur
     }
 
     function removeClass() {
-        dispatch(deleteClassificationDocument({ documentId: id, classId: "" }))
+        if (!classification)
+            return;
+        dispatch(deleteClassificationDocument({ documentId: id, classId: classification.id }))
     }
 
     function onDownload() {
