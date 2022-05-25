@@ -76,7 +76,7 @@ namespace FileStorageAPI.Services
             var hasAnyFilesAccess = await _accessService.HasAccessAsync(request, Access.ViewAnyFiles);
             var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
             var expression =
-                _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId);
+                _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId, documentSearchParameters.ClassificationIds?.ToList());
             var filesCount = await filesStorage.GetFilesCountAsync(expression);
 
             return RequestResult.Ok(filesCount);
@@ -96,7 +96,7 @@ namespace FileStorageAPI.Services
             var hasAnyFilesAccess = await _accessService.HasAccessAsync(request, Access.ViewAnyFiles);
             var chatsId = hasAnyFilesAccess ? null : sender!.Chats.Select(chat => chat.Id).ToList();
 
-            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId);
+            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId, documentSearchParameters.ClassificationIds?.ToList());
             var files = await GetFileInfoFromStorage(expression, skip, take);
 
             var hasClassificationsAccess = await _accessService.HasAccessAsync(request, Access.ViewClassifications);

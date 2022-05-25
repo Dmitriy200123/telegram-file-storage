@@ -24,13 +24,34 @@ namespace FileStorageAPI.Providers
         }
 
         /// <inheritdoc />
-        public Expression<Func<File, bool>> GetDocumentExpression(FileSearchParameters parameters, List<Guid>? fileIds, List<Guid>? chatsId = null)
+        public Expression<Func<File, bool>> GetDocumentExpression(FileSearchParameters parameters, List<Guid>? fileIds, 
+            List<Guid>? chatsId = null, List<Guid>? classificationIds = null)
         {
-            parameters.FileName = null;
-            var param = Expression.Parameter(typeof(File), "x");
             var basicExpression = GetExpression(parameters, chatsId);
-            Expression<Func<File, bool>> currentExpression = x => fileIds == null || fileIds.Contains(x.Id);
+            var expressionWithFileIds = TryCreateFileIdsExpression(basicExpression, chatsId);
+            var expressionWithClassification = TryCreateClassificationExpression(expressionWithFileIds, classificationIds);
+           
+            return expressionWithClassification ;
+        }
 
+        private Expression<Func<File, bool>> TryCreateFileIdsExpression(Expression<Func<File, bool>> basicExpression, List<Guid>? chatsId)
+        {
+            var param = Expression.Parameter(typeof(File), "x");
+            if (chatsId is null)
+                return basicExpression;
+            Expression<Func<File, bool>> currentExpression = x => chatsId.Contains(x.Id);
+            var bodyResult = Expression.AndAlso(Expression.Invoke(basicExpression, param), Expression.Invoke(currentExpression, param));
+            var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, param);
+            return lambda;
+        }
+
+        private Expression<Func<File, bool>> TryCreateClassificationExpression(Expression<Func<File, bool>> basicExpression, 
+            List<Guid>? classificationIds)
+        {
+            var param = Expression.Parameter(typeof(File), "x");
+            if (classificationIds is null)
+                return basicExpression;
+            Expression<Func<File, bool>> currentExpression = x => classificationIds.Contains(x.ClassificationId!.Value);
             var bodyResult = Expression.AndAlso(Expression.Invoke(basicExpression, param), Expression.Invoke(currentExpression, param));
             var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, param);
             return lambda;

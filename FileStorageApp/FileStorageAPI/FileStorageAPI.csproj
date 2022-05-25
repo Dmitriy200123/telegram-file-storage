@@ -44,6 +44,8 @@
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
       <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
       <ProjectReference Include="..\RightServices\RightServices.csproj" />
+      <ProjectReference Include="..\DocumentClassificationsAPI\DocumentClassificationsAPI.csproj" />
+      <ProjectReference Include="..\SearchDocumentsAPI\SearchDocumentsAPI.csproj" />  
     </ItemGroup>
 
     <ItemGroup>

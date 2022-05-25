@@ -33,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\API\API.csproj" />
       <ProjectReference Include="..\FileStorageAPI\FileStorageAPI.csproj" />
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
       <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
