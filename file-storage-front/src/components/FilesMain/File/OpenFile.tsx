@@ -78,9 +78,6 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                     <div className="file__item"><a>{chat?.name}</a></div>
                     <div className="file__item"><span>Дата отправки: </span></div>
                     <div className="file__item">{uploadDate}</div>
-                    {message && <div className="file__item">
-                        <span>Сообщение: </span>{+fileType === 4 ? <a href={message}>{message} </a> : message}
-                    </div>}
                 </section>
                 <div className={"file__btns"}>
                     {+fileType !== 5 && +fileType !== 4 &&
@@ -93,7 +90,11 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                         onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
                         type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
                 </div>
-                {urlPreview && <Embed urlPreview={urlPreview} type={+fileType}/>}
+                {(message || urlPreview) && <h2 className={"file__previewTitle"}>Соодержимое:</h2>}
+                {message && <div className="file__message">
+                    {+fileType === 4 ? <a href={message}>{message} </a> : message}
+                </div>}
+                {+fileType !== 5 && +fileType !== 4 && urlPreview && <Embed urlPreview={urlPreview} type={+fileType}/>}
             </div>
         </div>
     );
@@ -101,9 +102,9 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
 
 const Embed: FC<{ type: number, urlPreview: string }> = ({type, urlPreview}) => {
     if (type === 3)
-        return <img alt={"image"} className={"file__embed"}  src={urlPreview} width="100%"/>
+        return <img alt={"image"} className={"file__embed"} src={urlPreview} width="100%"/>
     if (type === 2 || type === 1)
-        return <embed src={urlPreview} />
+        return <embed src={urlPreview}/>
 
     return <embed src={urlPreview} className={"file__embed"}/>
 }

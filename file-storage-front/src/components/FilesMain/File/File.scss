@@ -126,6 +126,30 @@
     }
   }
 
+  &__previewTitle{
+    padding-left: 0;
+    margin-bottom: 0.5em;
+  }
+
+  &__message {
+    font-size: 1.15em;
+    margin-bottom: 30px;
+
+    & span {
+      margin-right: 1em;
+      font-weight: 600;
+    }
+
+    & a {
+      color: #1976D3;
+
+      &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    }
+  }
+
 
   &__color {
     background: #C9E4FF;

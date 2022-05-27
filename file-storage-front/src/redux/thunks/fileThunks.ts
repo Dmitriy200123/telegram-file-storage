@@ -15,7 +15,8 @@ const {
     removeFile,
     setLoading,
     setOpenFile,
-    setFileUrl
+    setFileUrl,
+    setMessageOpenFile
 } = filesSlice.actions;
 
 export const fetchFile = (id: string) => async (dispatch: AppDispatch) => {
@@ -131,11 +132,14 @@ export const fetchDownloadLinkAndDownloadFile = (id: string) => async (dispatch:
 
 export const fetchFileText = ({id, type}: { id: string, type: number }) => async (dispatch: AppDispatch) => {
     try {
+        let message = null;
         dispatch(setLoading(true));
         if (type === 5)
-            await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
+            message = await fetchConfigText(`/api/files/${id}/text`, {method: "GET"});
         else if (type === 4)
-            await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
+            message = await fetchConfigText(`/api/files/${id}/link`, {method: "GET"});
+        if (message)
+            dispatch(setMessageOpenFile(message))
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить ссылку на файл"}))

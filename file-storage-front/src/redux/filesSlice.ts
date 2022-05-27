@@ -112,7 +112,10 @@ export const filesSlice = createSlice({
                 state.openFile.url = action.payload.url;
             }
         },
-
+        setMessageOpenFile(state, action: PayloadAction<string>) {
+            if (state.openFile)
+                state.openFile.message = action.payload;
+        }
 
     },
 
