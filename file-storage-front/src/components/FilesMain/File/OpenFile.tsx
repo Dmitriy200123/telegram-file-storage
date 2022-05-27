@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {FC, memo} from 'react';
 import "./File.scss"
 import {ReactComponent as Svg} from "../../../assets/download.svg";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
@@ -93,11 +93,20 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                         onClick={() => dispatch(() => dispatch(openModal({id: id, content: ModalContent.Remove})))}
                         type={"danger"} className={"file__btn_delete"}><span>Удалить</span><Delete/></Button>}
                 </div>
-                {urlPreview && <embed className={"file__embed"} src={urlPreview} width="100%"/>}
+                {urlPreview && <Embed urlPreview={urlPreview} type={+fileType}/>}
             </div>
         </div>
     );
 });
+
+const Embed: FC<{ type: number, urlPreview: string }> = ({type, urlPreview}) => {
+    if (type === 3)
+        return <img alt={"image"} className={"file__embed"}  src={urlPreview} width="100%"/>
+    if (type === 2 || type === 1)
+        return <embed src={urlPreview} />
+
+    return <embed src={urlPreview} className={"file__embed"}/>
+}
 
 export default OpenedFile;
 
