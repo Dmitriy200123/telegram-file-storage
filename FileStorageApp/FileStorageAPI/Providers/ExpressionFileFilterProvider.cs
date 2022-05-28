@@ -23,18 +23,18 @@ namespace FileStorageAPI.Providers
         {
             var basicExpression = GetExpressionForFile(parameters, chatsId);
             var expressionWithDocName = TryCreateDocumentNameExpression(basicExpression, parameters.FileName);
-            var expressionWithFileIds = TryCreateFileIdsExpression(expressionWithDocName, chatsId);
+            var expressionWithFileIds = TryCreateFileIdsExpression(expressionWithDocName, fileIds);
             var expressionWithClassification = TryCreateClassificationExpression(expressionWithFileIds, classificationIds);
            
             return expressionWithClassification;
         }
 
-        private static Expression<Func<File, bool>> TryCreateFileIdsExpression(Expression<Func<File, bool>> basicExpression, List<Guid>? chatsId)
+        private static Expression<Func<File, bool>> TryCreateFileIdsExpression(Expression<Func<File, bool>> basicExpression, List<Guid>? fileIds)
         {
             var param = Expression.Parameter(typeof(File), "x");
-            if (chatsId is null)
+            if (fileIds is null)
                 return basicExpression;
-            Expression<Func<File, bool>> currentExpression = x => chatsId.Contains(x.Id);
+            Expression<Func<File, bool>> currentExpression = x => fileIds.Contains(x.Id);
             var bodyResult = Expression.AndAlso(Expression.Invoke(basicExpression, param), Expression.Invoke(currentExpression, param));
             var lambda = Expression.Lambda<Func<File, bool>>(bodyResult, param);
             return lambda;
