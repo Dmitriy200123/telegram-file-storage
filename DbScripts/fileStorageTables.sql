@@ -74,11 +74,11 @@ create table "Files"
     "ChatId"           uuid
         constraint "FK_Files_Chats_ChatId"
             references "Chats"
-            on delete restrict,
+            on delete cascade,
     "ClassificationId" uuid
         constraint "FK_Files_DocumentClassifications_ClassificationId"
             references "DocumentClassifications"
-            on delete restrict
+            on delete cascade
 );
 
 alter table "Files"
