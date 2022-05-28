@@ -23,7 +23,6 @@ namespace FileStorageAPI.Services
     /// <inheritdoc />
     public class DocumentsService : IDocumentsService
     {
-        private readonly IDocumentToFileConverter _documentToFileConverter;
         private readonly IFileToDocumentInfoConverter _fileToDocumentInfoConverter;
         private readonly IClassificationToClassificationInfoConverter _classificationConverter;
         private readonly IDocumentIndexStorage _documentIndexStorage;
@@ -44,7 +43,6 @@ namespace FileStorageAPI.Services
         /// <param name="senderFromTokenProvider">Поставщик отправителя файла из токена</param>
         /// <param name="accessService">Сервис отвечающий за опции доступа</param>
         public DocumentsService(
-            IDocumentToFileConverter documentToFileConverter,
             IDocumentIndexStorage documentIndexStorage,
             IInfoStorageFactory infoStorageFactory,
             IFileToDocumentInfoConverter fileToDocumentInfoConverter,
@@ -53,7 +51,6 @@ namespace FileStorageAPI.Services
             ISenderFromTokenProvider senderFromTokenProvider,
             IAccessService accessService)
         {
-            _documentToFileConverter = documentToFileConverter ?? throw new ArgumentNullException(nameof(documentToFileConverter));
             _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileToDocumentInfoConverter = fileToDocumentInfoConverter ?? throw new ArgumentNullException(nameof(fileToDocumentInfoConverter));
@@ -68,15 +65,14 @@ namespace FileStorageAPI.Services
             HttpRequest request)
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
-
-            var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            
             using var filesStorage = _infoStorageFactory.CreateFileStorage();
             var sender = (await _senderFromTokenProvider.GetSenderFromToken(request)).CheckForNull();
 
             var hasAnyFilesAccess = await _accessService.HasAccessAsync(request, Access.ViewAnyFiles);
             var chatsId = hasAnyFilesAccess ? null : sender.Chats.Select(chat => chat.Id).ToList();
             var expression =
-                _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId, documentSearchParameters.ClassificationIds?.ToList());
+                _expressionFileFilterProvider.GetDocumentExpression(documentSearchParameters, foundedDocuments, chatsId);
             var filesCount = await filesStorage.GetFilesCountAsync(expression);
 
             return RequestResult.Ok(filesCount);
@@ -87,8 +83,7 @@ namespace FileStorageAPI.Services
             DocumentSearchParameters documentSearchParameters, int skip, int take, HttpRequest request)
         {
             var foundedDocuments = await TryFindInIndexStorage(documentSearchParameters.Phrase);
-
-            var fileSearchParameters = _documentToFileConverter.ToFileSearchParameters(documentSearchParameters);
+            
             if (skip < 0 || take < 0)
                 return RequestResult.BadRequest<List<DocumentInfo>>($"Skip or take less than 0");
             var sender = (await _senderFromTokenProvider.GetSenderFromToken(request)).CheckForNull();
@@ -96,7 +91,7 @@ namespace FileStorageAPI.Services
             var hasAnyFilesAccess = await _accessService.HasAccessAsync(request, Access.ViewAnyFiles);
             var chatsId = hasAnyFilesAccess ? null : sender!.Chats.Select(chat => chat.Id).ToList();
 
-            var expression = _expressionFileFilterProvider.GetDocumentExpression(fileSearchParameters, foundedDocuments, chatsId, documentSearchParameters.ClassificationIds?.ToList());
+            var expression = _expressionFileFilterProvider.GetDocumentExpression(documentSearchParameters, foundedDocuments, chatsId);
             var files = await GetFileInfoFromStorage(expression, skip, take);
 
             var hasClassificationsAccess = await _accessService.HasAccessAsync(request, Access.ViewClassifications);

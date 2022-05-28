@@ -188,6 +188,8 @@ namespace FileStorageAPI.Services
                 var indexResult = await _documentIndexStorage.IndexDocumentAsync(document);
                 if (indexResult)
                     await SetClassification(file.Id);
+                else
+                    Console.WriteLine($"Elastic can't index document with id: {file.Id}");
             }
 
 

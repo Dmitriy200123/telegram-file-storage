@@ -172,7 +172,6 @@ namespace FileStorageAPI
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
             services.AddSingleton<IUserConverter, UserConverter>();
-            services.AddSingleton<IDocumentToFileConverter, DocumentToFileConverter>();
             services.AddSingleton<IFileToDocumentInfoConverter, FileToDocumentInfoConverter>();
             services.AddSingleton<IClassificationToClassificationInfoConverter, 
                 ClassificationToClassificationInfoConverter>();
