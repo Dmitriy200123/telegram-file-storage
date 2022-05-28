@@ -47,8 +47,6 @@ services:
         Develop: "true"
     ports:
       - '3000:3000'
-    depends_on:
-      - dotnet_backend
 
   telegram_auth:
     container_name: telegram_auth
@@ -63,8 +61,6 @@ services:
     build:
       context: telegram_file_loader/
       dockerfile: Dockerfile
-    tty: true
-    stdin_open: true
     environment:
       - Test="true"
       - DB_HOST=postgres
