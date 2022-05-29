@@ -19,7 +19,7 @@ namespace FileStorageAPI.Providers
                         (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                         (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
                         (categories == null || categories.Contains(x.TypeId)) &&
-                        (chatsId == null || chatsId.Contains(x.ChatId!.Value) || x.ChatId == null) &&
+                        (chatsId == null ||  x.ChatId == null || chatsId.Contains(x.ChatId!.Value) ) &&
                         (parameters.SenderIds == null || parameters.SenderIds.Contains(x.FileSenderId)) &&
                         (parameters.ChatIds == null ||
                          x.ChatId != null && parameters.ChatIds.Contains(x.ChatId.Value) ||
@@ -32,11 +32,11 @@ namespace FileStorageAPI.Providers
             List<Guid>? chatsId = null)
         {
             return x =>
-                (parameters.ClassificationIds == null || parameters.ClassificationIds.Contains(x.ClassificationId!.Value)) &&
+                (parameters.ClassificationIds == null || x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(x.ClassificationId!.Value)) &&
                 (fileIds == null || fileIds.Contains(x.Id)) &&
                 (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                 (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
-                (chatsId == null || chatsId.Contains(x.ChatId!.Value) || x.ChatId == null) &&
+                (chatsId == null ||  x.ChatId == null || chatsId.Contains(x.ChatId!.Value) ) &&
                 (parameters.SenderIds == null || parameters.SenderIds.Contains(x.FileSenderId)) &&
                 (parameters.ChatIds == null || x.ChatId != null && parameters.ChatIds.Contains(x.ChatId.Value) ||
                  x.ChatId == null && parameters.ChatIds.Contains(Guid.Empty));
