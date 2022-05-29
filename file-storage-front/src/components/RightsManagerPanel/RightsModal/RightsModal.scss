@@ -1,11 +1,14 @@
 @import "src/Variables";
 
+
 .rights-modal{
+  min-height: 355px;
   width: 620px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
+
   text-align: left;
   font-size: 14rem / $font-size;
 
@@ -26,6 +29,7 @@
   }
 
   &__btns{
+    margin-top: auto;
     align-self: flex-end;
     & button:first-child{
       margin-right: 5px;
@@ -69,6 +73,9 @@
   &__access{
     width: 100%;
     margin-bottom: 10px;
+    & .select__scroll{
+      max-height: 106px;
+    }
   }
   &__option{
     color: black;

@@ -1,5 +1,4 @@
 import React, {memo, useEffect, useState} from "react";
-import "./RightsModal.scss";
 import Modal, {hocModal} from "../../utils/Modal/Modal";
 import {Button} from "../../utils/Button/Button";
 import {useDispatch} from "react-redux";
@@ -8,6 +7,7 @@ import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {Select} from "./Select";
 import {fetchRightsCurrentUser, fetchRightsUserById, postSetRightsUser} from "../../../redux/thunks/rightsThunks";
 import {Rights} from "../../../models/File";
+import "./RightsModal.scss";
 
 const {closeModal} = managePanelSlice.actions;
 
@@ -28,7 +28,7 @@ export const RightsModal: React.FC = memo(() => {
     if (!idUser)
         return null;
 
-    return (<Modal><RightsUI allRights={allRights} rights={rights} idUser={idUser} name={name}/></Modal>);
+    return (<Modal className={"wrapper"}><RightsUI allRights={allRights} rights={rights} idUser={idUser} name={name}/></Modal>);
 })
 
 
