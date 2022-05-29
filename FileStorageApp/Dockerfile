@@ -25,6 +25,7 @@ COPY DocumentsIndex.Contracts/*.csproj ./DocumentsIndex.Contracts/
 COPY DataBaseFiller/*.csproj ./DataBaseFiller/
 
 COPY FileStorageAPI.Tests/*.csproj ./FileStorageAPI.Tests/
+COPY API.Tests/*.csproj ./API.Tests/
 COPY FilesStorageTests/*.csproj ./FilesStorageTests/
 COPY InfoStorage.Tests/*.csproj ./InfoStorage.Tests/
 COPY DocumentsIndex.Tests/*.csproj ./DocumentsIndex.Tests/
