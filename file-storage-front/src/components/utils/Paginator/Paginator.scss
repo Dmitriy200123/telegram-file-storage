@@ -1,9 +1,10 @@
 @import "src/Variables";
 
 .paginator {
+  margin-left: 28px;
   display: flex;
   color: $paginator-num;
-
+  margin-bottom: 30px;
   &__nothing, &__item {
     color: $paginator-num;
     padding: 12px 15px;

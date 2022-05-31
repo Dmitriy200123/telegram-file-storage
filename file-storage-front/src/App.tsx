@@ -75,7 +75,7 @@ const Main: FC = () => {
                     <Logout/></button>
             </header>
             <div className={"app__content-components"}
-                 style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
+                 style={{flex: "1 1 auto", display: "flex", flexDirection: "column", paddingBottom: 40}}>
                 <Switch>
                     <Route path={"/Profile"} component={Profile}/>
                     <Route path={"/docs-сlasses"} component={DocsClasses}/>
