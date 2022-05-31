@@ -32,7 +32,7 @@ export const PreviewFile: React.FC<PropsType> = memo(({
                     <div className={"preview-file__file-load"}>
                         <p className={"preview-file__name"}>{file.name}</p>
                         <button className="preview-file__close" onClick={setFileNull}>1</button>
-                        <div className={"preview-file__loading"}/>
+                        {/*<div className={"preview-file__loading"}/>*/}
                     </div>
                 </div>
                 <div className={"preview-file__btns"}>
