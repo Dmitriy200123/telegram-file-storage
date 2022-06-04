@@ -14,7 +14,7 @@ import {
     postAddToClassificationWord
 } from "../../../redux/classesDocs/classesDocsThunks";
 import {profileSlice} from "../../../redux/profileSlice";
-import {MessageTypeEnum} from "../../../models/File";
+import {MessageTypeEnum, Rights} from "../../../models/File";
 
 const {openModal} = classesDocsSlice.actions
 const {addMessage} = profileSlice.actions;
@@ -54,14 +54,15 @@ const OpenClassItemContainer: React.FC<PropsType> = memo(({match}) => {
 
 
     return (
-        <OpenClassItem openRename={openRename} classification={classification}/>
+        <OpenClassItem openRename={openRename} classification={classification} rights={[Rights["Удаление классификаций"]]}/>
     );
 });
 
-type PropsTypeOpen = { openRename: () => void, classification: ClassificationType | null }
+type PropsTypeOpen = { openRename: () => void, classification: ClassificationType | null, rights?: Rights[] }
 
 
-const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => {
+const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification, }) => {
+    const {rights} = useAppSelector((state) => state.profile);
     const dispatch = useAppDispatch();
     if (!classification)
         return <>Не найдено</>;
@@ -96,16 +97,16 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
             <Link className={classes.classItem__close} to={"/docs-сlasses"}/>
         </div>
         <div className={classes.classItem__content}>
-            <h3 onClick={openRename} className={classes.classItem__contentTitle}>{classification.name} {<Edit/>}</h3>
-            <div className={classes.classItem__tags}>
+            {rights?.includes(Rights["Редактирование классификаций"]) && <h3 onClick={openRename} className={classes.classItem__contentTitle}>{classification.name} {<Edit/>}</h3>}
+            {rights?.includes(Rights["Редактирование классификаций"]) && <div className={classes.classItem__tags}>
                 {tags}
                 <CreateTag setTag={createTag}/>
-            </div>
-
+            </div>}
+            {rights?.includes(Rights["Удаление классификаций"]) &&
             <div className={classes.classItem__btns}>
                 <Button onClick={deleteClassification}
                         type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
-            </div>
+            </div>}
         </div>
     </div>;
 });

@@ -27,8 +27,8 @@ export const Navbar: FC<{ className?: string }> = memo(({className}) => {
                           className={"navbar__link"}><Settings/><span>Предоставление доступа</span></Link>}
                 </>
                 }
-                <Link to={"/docs-сlasses"}
-                      className={"navbar__link"}><Classifications/><span>Классификации документов</span></Link>
+                {rights?.includes(Rights["Поиск классификаций"]) && <Link to={"/docs-сlasses"}
+                      className={"navbar__link"}><Classifications/><span>Классификации документов</span></Link>}
             </div>
         </div>
     );
