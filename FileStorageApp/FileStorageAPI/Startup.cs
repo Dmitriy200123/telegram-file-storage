@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3;
+using DocumentClassificationsAPI.Services;
 using DocumentsIndex.Config;
 using DocumentsIndex.Factories;
 using DocumentsIndex.Pipelines;
@@ -29,6 +30,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RightServices;
+using SearchDocumentsAPI.Services.DocumentsSearch;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 using IAuthenticationService = FileStorageAPI.Services.IAuthenticationService;
 using AuthenticationService = FileStorageAPI.Services.AuthenticationService;
@@ -170,7 +172,6 @@ namespace FileStorageAPI
             services.AddSingleton<ISenderConverter, SenderConverter>();
             services.AddSingleton<IFileInfoConverter, FileInfoConverter>();
             services.AddSingleton<IUserConverter, UserConverter>();
-            services.AddSingleton<IDocumentToFileConverter, DocumentToFileConverter>();
             services.AddSingleton<IFileToDocumentInfoConverter, FileToDocumentInfoConverter>();
             services.AddSingleton<IClassificationToClassificationInfoConverter, 
                 ClassificationToClassificationInfoConverter>();
@@ -215,6 +216,8 @@ namespace FileStorageAPI
             services.AddSingleton<IRightsService, RightsService>();
             services.AddSingleton<IDocumentsService, DocumentsService>();
             services.AddSingleton<IAccessService, AccessService>();
+            services.AddSingleton<IDocumentClassificationsService, DocumentClassificationsService>();
+            services.AddSingleton<IDocumentsSearchService, DocumentsSearchService>();
         }
 
         private static void RegisterProviders(IServiceCollection services)

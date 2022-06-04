@@ -90,6 +90,8 @@ namespace DocumentsIndex
         /// <inheritdoc />
         public async Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings)
         {
+            if (subStrings.Length == 0)
+                return false;
             var searchResponses = await _elasticClient
                 .SearchAsync<ElasticDocument>(s => s
                     .Query(q => CreateForSubStrings(q, subStrings)

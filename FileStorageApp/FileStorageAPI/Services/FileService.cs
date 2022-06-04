@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using API;
+using DocumentClassificationsAPI.Services;
 using DocumentsIndex;
 using DocumentsIndex.Contracts;
 using FilesStorage.Interfaces;
@@ -17,6 +18,7 @@ using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
 using Microsoft.AspNetCore.Http;
+using SearchDocumentsAPI.Services.DocumentsSearch;
 using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;
 using DataBaseFile = FileStorageApp.Data.InfoStorage.Models.File;
 using FileInfo = FileStorageAPI.Models.FileInfo;
@@ -35,6 +37,9 @@ namespace FileStorageAPI.Services
         private readonly ISenderFromTokenProvider _senderFromTokenProvider;
         private readonly IDocumentIndexStorage _documentIndexStorage;
         private readonly IAccessService _accessService;
+        private readonly IDocumentClassificationsService _documentClassificationsService;
+        private readonly IDocumentsSearchService _documentsSearchService;
+        private readonly IDocumentsService _documentsService;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="FileService"/>
@@ -48,6 +53,9 @@ namespace FileStorageAPI.Services
         /// <param name="senderFromTokenProvider">Поставщик отправителя файла из токена</param>
         /// <param name="documentIndexStorage">Хранилище текстовых файлов с поиском по содержимому</param>
         /// <param name="accessService">Сервис отвечающий за опции доступа</param>
+        /// <param name="documentClassificationsService">Сервис отвечающий за классификацию документов</param>
+        /// <param name="documentsSearchService">Сервис для поиска документов</param>
+        /// <param name="documentsService">Сервис для работы с документами</param>
         public FileService(IInfoStorageFactory infoStorageFactory,
             IFileInfoConverter fileInfoConverter,
             IFilesStorageFactory filesStorageFactory,
@@ -56,7 +64,10 @@ namespace FileStorageAPI.Services
             IDownloadLinkProvider downloadLinkProvider,
             ISenderFromTokenProvider senderFromTokenProvider,
             IDocumentIndexStorage documentIndexStorage,
-            IAccessService accessService)
+            IAccessService accessService, 
+            IDocumentClassificationsService documentClassificationsService, 
+            IDocumentsSearchService documentsSearchService, 
+            IDocumentsService documentsService)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
             _fileInfoConverter = fileInfoConverter ?? throw new ArgumentNullException(nameof(fileInfoConverter));
@@ -70,6 +81,9 @@ namespace FileStorageAPI.Services
                                        throw new ArgumentNullException(nameof(senderFromTokenProvider));
             _documentIndexStorage = documentIndexStorage ?? throw new ArgumentNullException(nameof(documentIndexStorage));
             _accessService = accessService ?? throw new ArgumentNullException(nameof(accessService));
+            _documentClassificationsService = documentClassificationsService;
+            _documentsSearchService = documentsSearchService;
+            _documentsService = documentsService;
         }
 
         /// <inheritdoc />
@@ -169,10 +183,12 @@ namespace FileStorageAPI.Services
 
             if (file.Type == FileType.TextDocument)
             {
-                //memoryStream.Seek(0, SeekOrigin.Begin);
                 var document = new Document(file.Id, bytesArray, file.Name);
-                if (!await _documentIndexStorage.IndexDocumentAsync(document))
-                    return RequestResult.InternalServerError<(string uri, FileInfo info)>("Can't add to elastic");
+                var indexResult = await _documentIndexStorage.IndexDocumentAsync(document);
+                if (indexResult)
+                    await SetClassification(file.Id);
+                else
+                    Console.WriteLine($"Elastic can't index document with id: {file.Id}");
             }
 
 
@@ -380,6 +396,31 @@ namespace FileStorageAPI.Services
             foreach (var file in files)
             {
                 file.Chat ??= chat;
+            }
+        }
+
+        private async Task SetClassification(Guid fileId)
+        {
+            const int take = 100;
+            var currentSkip = 0;
+            while (true)
+            {
+                var findClassificationResult = await _documentClassificationsService
+                    .FindClassificationByQueryAsync("", currentSkip, take, true);
+                var currentClassifications = findClassificationResult.Value?.ToList();
+                if(currentClassifications is null || currentClassifications.Count == 0)
+                    break;
+                foreach (var classification in currentClassifications)
+                {
+                    var words = classification.ClassificationWords.Select(x => x.Value).ToArray();
+                    var containsResult = await _documentsSearchService.ContainsInDocumentNameByIdAsync(fileId, words);
+                    if (!containsResult.Value)
+                        continue;
+                    
+                    await _documentsService.AddClassification(fileId, classification.Id);
+                    break;
+                }
+                currentSkip += take;
             }
         }
     }

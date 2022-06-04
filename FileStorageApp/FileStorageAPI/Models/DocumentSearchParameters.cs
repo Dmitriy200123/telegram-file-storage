@@ -1,5 +1,4 @@
 ﻿using System;
-using FileStorageApp.Data.InfoStorage.Enums;
 
 namespace FileStorageAPI.Models
 {
@@ -33,11 +32,6 @@ namespace FileStorageAPI.Models
         /// </summary>
         public Guid[]? ChatIds { get; set; }
 
-        /// <summary>
-        /// Категории файлов.
-        /// </summary>
-        public FileType[]? Categories { get; set; }
-        
         /// <summary>
         /// Идентификаторы классификаций
         /// </summary>
