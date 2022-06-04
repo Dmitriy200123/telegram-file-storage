@@ -8,7 +8,7 @@ from clients.base_client import BaseClient
 
 @dataclasses.dataclass
 class DocumentsIndexClient(BaseClient):
-    base_url: str = config.DOCUMENTS_API_URL
+    base_url: str = config.SEARCH_DOCUMENT_URL
     index_url = base_url + '/index'
 
     async def index_document(self, document_id: str, name: str, content: BytesIO):

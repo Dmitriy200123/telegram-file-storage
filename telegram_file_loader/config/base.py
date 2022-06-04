@@ -43,7 +43,7 @@ API_HASH = '4c6c01da1fc915ffb51e4147bfae915c'
 NUMBER = '+6287812030334'
 
 # Урлы сервисов
-DOCUMENTS_API_URL = 'http://localhost:5002/api'
+SEARCH_DOCUMENT_URL = 'http://localhost:5002/api'
 DOCUMENT_CLASSIFICATIONS_API_URL = 'http://localhost:5003/api/documentClassifications'
 DOCUMENT_CLASSIFICATIONS_API_AUTH_TOKEN = 'yopta_token'
 DOCUMENT_CLASSIFICATIONS_API_DEFAULT_TAKE = 100
