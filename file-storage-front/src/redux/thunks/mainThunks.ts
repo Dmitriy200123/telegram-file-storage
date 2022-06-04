@@ -24,7 +24,7 @@ export const fetchFilters = () => async (dispatch: AppDispatch) => {
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(setLoading(false));
-        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить фильтры"}));
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось получить фильтры"}));
     }
 };
 
@@ -50,7 +50,7 @@ export const fetchFiles = (args:TypeFilesFetchFilters) => async (dispatch: AppDi
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(setLoading(false));
-        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить файлы"}))
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось получить файлы"}))
     }
 };
 
@@ -86,7 +86,7 @@ export const fetchDocuments = (args:TypeDocumentsFetchFilters) => async (dispatc
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(setLoading(false));
-        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить документы"}))
+        dispatch(addMessage({type:MessageTypeEnum.Error,value:"Не удалось получить документы"}))
     }
 };
 
@@ -97,7 +97,7 @@ export const fetchFilesTypes = () => async (dispatch: AppDispatch) => {
         dispatch(setLoading(false));
     } catch (err) {
         dispatch(setLoading(false));
-        dispatch( addMessage({type:MessageTypeEnum.Error,value:"Не удалось загрузить типы файлов"}))
+        dispatch( addMessage({type:MessageTypeEnum.Error,value:"Не удалось получить типы файлов"}))
     }
 }
 

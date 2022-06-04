@@ -32,7 +32,7 @@ export const fetchAuthGitlab = (token: TokensType) => async (dispatch: AppDispat
         dispatch(setAuthGitlab(data));
         dispatch(setIsAuth(true));
     } catch (e) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось войти с помощью гитлаба"}));
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось авторизоваться с помощью Gitlab"}));
     }
 }
 
@@ -46,7 +46,7 @@ export const fetchLogout = () => async (dispatch: AppDispatch) => {
         await fetchLog("/auth/gitlab/logout");
     } catch (e) {
         dispatch(setLoading(false));
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не войти с помощью гитлаба"}));
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось выйти из аккаунта"}));
     } finally {
         dispatch(setLoading(false));
     }
@@ -58,7 +58,7 @@ export const fetchLogoutTelegram = () => async (dispatch: AppDispatch) => {
         await fetchConfigText("/auth/telegram/logout", {method: "POST"});
     } catch (e) {
         dispatch(setLoading(false));
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось выйти"}));
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось отвязать аккаунт в telegram"}));
 
     }
 }

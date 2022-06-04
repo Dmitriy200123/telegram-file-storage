@@ -43,7 +43,7 @@ export const fetchClassifications = (args: FetchClassificationsType) => async (d
         });
         dispatch(setClassifications(classifications));
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить классификации"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось получить классификации"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -72,7 +72,7 @@ export const fetchAllClassifications = (query?:string) => async (dispatch: AppDi
         } while (params.take !== -1);
         dispatch(setClassifications(array));
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить классификации"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось получить классификации"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -89,7 +89,7 @@ export const fetchClassification = (id:string ) => async (dispatch: AppDispatch)
 
         dispatch(setClassification(classification));
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось получить классификацию"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -109,7 +109,7 @@ export const fetchRenameClassification = ({
         dispatch(renameClassification({id, name}));
         dispatch(closeModal());
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось загрузить файл"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось переименовать классификацию"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -124,9 +124,9 @@ export const fetchDeleteClassification = ({id}: { id: string }) => async (dispat
         dispatch(deleteClassification({id}));
         dispatch(setIsFetchClassifications(true));
         dispatch(closeModal());
-        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно удаленна классификация"}));
+        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Классификация успешно удалена"}));
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить классификацию"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -146,7 +146,7 @@ export const postAddClassification = (classification: PostClassType) => async (d
         dispatch(setClassifications(classification))
         dispatch(setIsFetchClassifications(true));
         dispatch(closeModal())
-        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Успешно загруженна классификация"}));
+        dispatch(addMessage({type: MessageTypeEnum.Message, value: "Классификация успешно загружена"}));
     } catch (err) {
         dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось добавить классификацию"}))
     } finally {
@@ -166,7 +166,7 @@ export const postAddToClassificationWord = (args: { classId: string, value: stri
         dispatch(addClassificationTag({...args, tagId: id}))
         return "error";
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось отправить класс слово"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось добавить слово в классификацию"}))
     } finally {
         dispatch(setLoading(false));
     }
@@ -180,7 +180,7 @@ export const fetchDeleteToClassificationWord = (args: { classId: string, tagId: 
         });
         dispatch(removeClassificationTag(args));
     } catch (err) {
-        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить класс слово"}))
+        dispatch(addMessage({type: MessageTypeEnum.Error, value: "Не удалось удалить слово из классификации"}))
     } finally {
         dispatch(setLoading(false));
     }
