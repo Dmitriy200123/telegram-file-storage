@@ -43,7 +43,7 @@ namespace SearchDocumentsAPI
         {
             services.AddSingleton(Configuration);
             services.AddControllers();
-            
+
             var tokenKey = Configuration["TokenKey"];
             var key = Encoding.ASCII.GetBytes(tokenKey);
             services.AddAuthentication(x =>
@@ -76,7 +76,7 @@ namespace SearchDocumentsAPI
 
             ConfigureSwagger(services);
             ConfigureDependencies(services);
-            
+
             ServicePointManager.ServerCertificateValidationCallback +=
                 (_, _, _, _) => true; //Там че-то сложно с сертами на localhost пришел тыкнуть это
         }
@@ -112,15 +112,16 @@ namespace SearchDocumentsAPI
             services.AddSingleton<IDocumentIndexFactory, DocumentIndexFactory>();
             services.AddSingleton<IDocumentsIndexService, DocumentsIndexService>();
             services.AddSingleton<IDocumentsSearchService, DocumentsSearchService>();
-            // TODO: в конфиг
-            services.AddSingleton<IElasticConfig>(_ => new ElasticConfig("http://localhost:9200", "testindex"));
+            
+            services.AddSingleton<IElasticConfig>(_ =>
+                new ElasticConfig(Configuration["ElasticSearchUrl"], Configuration["ElasticSearchIndex"]));
             services.AddSingleton(provider =>
             {
                 var factory = provider.GetRequiredService<IDocumentIndexFactory>();
                 return factory.CreateDocumentIndexStorage();
             });
         }
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment() || env.IsEnvironment("Docker"))
@@ -146,7 +147,7 @@ namespace SearchDocumentsAPI
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
-        
+
         static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode) =>
             context =>
             {
