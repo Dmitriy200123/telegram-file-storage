@@ -50,10 +50,15 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     async function getUrlPreview(urlFile: string) {
         try {
             const response = await fetch(urlFile);
+            const mimeType = response.headers.get("content-type") || "text/plain";
+            //todo: костыль preview
+            if (+fileType === 6 && (mimeType !== "application/pdf" && mimeType !== "text/plain")) {
+                return;
+            }
             const binaryData = [];
             binaryData.push(await response.blob())
             const previewUrl = window.URL.createObjectURL(new Blob(binaryData,
-                {type: response.headers.get("content-type") || "text"}
+                {type: mimeType}
             ));
 
             setUrlPreview(previewUrl);

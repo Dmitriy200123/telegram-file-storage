@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import "./Messages.scss";
 import {MessageType, MessageTypeEnum} from "../../../models/File";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
@@ -11,7 +11,6 @@ type PropsType = { className?: string, messages: Array<MessageType> };
 export const Messages: React.FC<PropsType> = ({messages, className}) => {
     const messagesUi = messages.map(({value, type}, index) => <Message key={index} type={type} value={value}
                                                                        index={index}/>);
-
     return (
         <section className={(`${className} ` ?? "") + "messages"}>
             {messagesUi}
@@ -19,46 +18,42 @@ export const Messages: React.FC<PropsType> = ({messages, className}) => {
     )
 }
 
+const messagesConfig = {
+    [MessageTypeEnum.Error]: {
+        text: "Проблема",
+        className: "color-error",
+        icon: error,
+    },
+    [MessageTypeEnum.Message]: {
+        className: "color-success",
+        text: "Успешно",
+        icon: success,
+    }
+}
+
 const Message: React.FC<{ value: string, type: MessageTypeEnum, index: Number }> = ({value, type, index}) => {
     const dispatch = useAppDispatch();
-    const dict = {
-        [MessageTypeEnum.Error]: {
-            text: "Проблема",
-            icon: null,
-        },
-        [MessageTypeEnum.Message]: {
-            text: "Успешно",
-            icon: null,
-        }
-    }
-
+    const currentConfig = messagesConfig[type];
     function onClose() {
         dispatch(clearMessage(index));
     }
 
-    if (dict[type].text == "Успешно") {
-        return (
-            <div className={"message color-success"}>
-                <img src={success}/>
-                <h2>
-                    {dict[type].text}
-                </h2>
-                <p className={"p-padding"}>{value}</p>
-                <button className={"close-button"} onClick={onClose}/>
-            </div>
-        )
-    } else {
-        return (
-            <div className={"message color-error"}>
-                <img src={error}/>
-                <h2>
-                    {dict[type].text}
-                </h2>
-                <p className={"p-padding"}>{value}</p>
-                <button className={"close-button"} onClick={onClose}/>
-            </div>
-        )
-    }
+    useEffect(() => {
+        if (MessageTypeEnum.Message === type) {
+            setTimeout(() => onClose(), 1500);
+        }
+    },[type])
+
+    return (
+        <div className={"message " + currentConfig.className}>
+            <img src={currentConfig.icon}/>
+            <h2>
+                {currentConfig.text}
+            </h2>
+            <p className={"p-padding"}>{value}</p>
+            <button className={"close-button"} onClick={onClose}/>
+        </div>
+    )
 }
 
 

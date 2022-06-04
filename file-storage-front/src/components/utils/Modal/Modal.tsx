@@ -4,12 +4,14 @@ import {ModalContent} from "../../../models/File";
 import {ModalConfirm} from "../../FilesMain/Modals/ModalConfirm";
 import {ModalEdit} from "../../FilesMain/Modals/ModalEdit";
 import {ModalAddClass} from "../../FilesMain/Modals/ModalAddClass/ModalAddClass";
+import classNames from "classnames";
 
 type PropsType = {
     onOutsideClick?: () => void
-    className?: string
+    className?: string,
+    classNameWrapper?: string,
 }
-const Modal: React.FC<PropsType> = memo(({children, onOutsideClick, className}) => {
+const Modal: React.FC<PropsType> = memo(({children, onOutsideClick, className, classNameWrapper}) => {
     const ref = useRef<HTMLDivElement>(null);
     const onOutClick: MouseEventHandler<HTMLDivElement> = (event) => {
         if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -18,7 +20,7 @@ const Modal: React.FC<PropsType> = memo(({children, onOutsideClick, className}) 
     };
 
     return (
-        <div className={"modal"} onClick={onOutClick}>
+        <div className={classNames("modal", classNameWrapper)} onClick={onOutClick}>
             <div className={"modal__content" + (className ? ` ${className}` : "")} ref={ref}>
                 {children}
             </div>

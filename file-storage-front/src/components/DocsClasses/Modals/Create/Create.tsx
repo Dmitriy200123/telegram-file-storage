@@ -56,8 +56,8 @@ const Create: FC<Props> = ({onOutsideClick}) => {
             </div>
 
             <div className={classes.btns}>
-                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
                 <Button onClick={onSubmit} disabled={name.length === 0}>ОК</Button>
+                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
             </div>
         </div>
     );

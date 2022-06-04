@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, FC, KeyboardEvent, useEffect, useRef, useState} from 'react';
 import {InputText} from "../utils/Inputs/Text/InputText";
 import {Button} from "../utils/Button/Button";
 import classes from "./DocsClasses.module.scss";
@@ -66,6 +66,12 @@ const DocsClasses: FC<PropsType> = () => {
         fetchClasses(filters)
     }
 
+    function onEnter(e: KeyboardEvent<HTMLInputElement>) {
+        if (e.key === "Enter") {
+            fetchClasses(filters)
+        }
+    }
+
     function onChangePage(page: number) {
         setFilters((prev) => ({...prev, page: page}));
         fetchClasses({...filters, page: page})
@@ -78,7 +84,7 @@ const DocsClasses: FC<PropsType> = () => {
                 <div className={classes.content}>
                     <div className={classes.controls}>
                         <article className={classes.controlInputWrapper}>
-                            <InputText className={classes.controlInput} onChange={onChangeInput}
+                            <InputText onKeyPress={onEnter} className={classes.controlInput} onChange={onChangeInput}
                                        placeholder={"Поиск классификаций документов"}/>
                             <button className={classes.searchBtn} type="submit" onClick={onSubmit}><Search/>
                             </button>
