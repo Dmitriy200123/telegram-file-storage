@@ -14,7 +14,7 @@ namespace FileStorageAPI.Providers
         public Expression<Func<File, bool>> GetExpression(FileSearchParameters parameters, List<Guid>? chatsId = null)
         {
             var categories = parameters.Categories?.Cast<int>().ToList();
-            return x => (parameters.FileName == null || x.Name == parameters.FileName) &&
+            return x => (parameters.FileName == null || x.Name.Contains(parameters.FileName)) &&
                         (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                         (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
                         (categories == null || categories.Contains(x.TypeId)) &&
