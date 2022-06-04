@@ -78,7 +78,7 @@ create table "Files"
     "ClassificationId" uuid
         constraint "FK_Files_DocumentClassifications_ClassificationId"
             references "DocumentClassifications"
-            on delete cascade
+            on delete set null
 );
 
 alter table "Files"
