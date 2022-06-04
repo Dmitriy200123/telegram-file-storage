@@ -29,8 +29,8 @@ const Edit: FC<PropsType> = ({onOutsideClick, args}) => {
             <h2 className={classes.title}>Переименовать</h2>
             <InputText value={name} onChange={onChange}/>
             <div className={classes.btns}>
-                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
                 <Button onClick={onSubmit} disabled={name.length === 0 || name === args.name}>ОК</Button>
+                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
             </div>
         </div>
     );

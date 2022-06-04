@@ -75,8 +75,8 @@ const RightsUI: React.FC<PropsType> = memo(({allRights, name, rights, idUser}) =
                 </div>
             </div>
             <div className={"rights-modal__btns"}>
-                <Button type={"transparent"} onClick={close}>ОТМЕНА</Button>
                 <Button onClick={post}>ОК</Button>
+                <Button type={"transparent"} onClick={close}>ОТМЕНА</Button>
             </div>
         </div>
     );
