@@ -9,7 +9,14 @@ from aioresponses import aioresponses
 from clients.documents_classifications_client import DocumentsClassificationsClient
 from clients.documents_index_client import DocumentsIndexClient
 from clients.documents_search_client import DocumentsSearchClient
-from postgres.models.db_models import Chat, Code, File, FileSender, SenderToChat
+from postgres.models.db_models import (
+    Chat,
+    Code,
+    DocumentClassifications,
+    File,
+    FileSender,
+    SenderToChat,
+)
 from postgres.models.db_models.marked_text_tags import MarkedTextTags
 from postgres.pg_adapter import Adapter
 
@@ -41,6 +48,7 @@ def init_db():
     SenderToChat.create_table()
     MarkedTextTags.create_table()
     Code.create_table()
+    DocumentClassifications.create_table()
 
     return postgres.basic.manager
 
@@ -61,6 +69,7 @@ def clean_db(init_db):
     SenderToChat.truncate_table(cascade=True)
     MarkedTextTags.truncate_table(cascade=True)
     Code.truncate_table(cascade=True)
+    DocumentClassifications.truncate_table(cascade=True)
 
 
 @pytest.fixture(scope='session')

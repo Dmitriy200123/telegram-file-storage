@@ -13,6 +13,9 @@ class DocumentClassifications(BaseModel):
     Name = CharField()
     CreatedAt = DateTimeField()
 
+    class Meta:
+        table_name = 'DocumentClassifications'
+
 
 class FileTypeEnum(int, Enum):
     Document = 0
@@ -33,7 +36,7 @@ class File(BaseModel):
     FileSenderId = ForeignKeyField(model=FileSender, db_column='FileSenderId')
     ChatId = ForeignKeyField(model=Chat, null=True, db_column='ChatId')
     ClassificationId = ForeignKeyField(
-        model=DocumentClassifications, db_column='ClassificationId')
+        model=DocumentClassifications, null=True, db_column='ClassificationId')
 
     class Meta:
         table_name = 'Files'

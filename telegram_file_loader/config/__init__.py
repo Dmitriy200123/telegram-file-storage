@@ -1,10 +1,16 @@
 # flake8: noqa
 import ast
 import logging
+import sys
 from os import getenv
 
 from .base import *
 
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO,
+    format='[%(asctime)s] {%(name)s} %(levelname)s - %(message)s'
+)
 log = logging.getLogger(__name__)
 
 try:
