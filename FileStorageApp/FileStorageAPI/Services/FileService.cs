@@ -17,7 +17,6 @@ using FileStorageAPI.Providers;
 using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
-using FileStorageApp.Data.InfoStorage.Storages.DocumentClassifications;
 using Microsoft.AspNetCore.Http;
 using SearchDocumentsAPI.Services.DocumentsSearch;
 using Chat = FileStorageApp.Data.InfoStorage.Models.Chat;

@@ -1,5 +1,4 @@
 ﻿using System;
-using FileStorageApp.Data.InfoStorage.Enums;
 
 namespace FileStorageAPI.Models
 {
