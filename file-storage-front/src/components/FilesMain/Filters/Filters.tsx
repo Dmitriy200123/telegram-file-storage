@@ -10,6 +10,7 @@ import {DefaultValues, KeepStateOptions, UseFormGetValues} from "react-hook-form
 import {TypeSelectFilters} from "../FilesMain";
 import {SelectText} from "../../utils/Inputs/SelectText";
 import ClassificationFilter from "./ClassificationSelect";
+import {Rights} from "../../../models/File";
 
 type TypeProps = {
     setValueForm: (name: string, value: any) => void,
@@ -19,6 +20,7 @@ type TypeProps = {
 
 export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) => {
     const [isOpen, changeIsOpen] = useState(false);
+    const {rights} = useAppSelector((state) => state.profile);
     const filesNames = useAppSelector((state) => state.filesReducer.filesNames);
     const chats = useAppSelector((state) => state.filesReducer.chats);
     const senders = useAppSelector((state) => state.filesReducer.senders);
@@ -75,7 +77,7 @@ export const Filters: FC<TypeProps> = memo(({setValueForm, getValues, reset}) =>
                         setValue={setValueType} placeholder={"Формат"}
                         values={getValues("categories")} options={optionsCategory} isMulti={true}/>
 
-                {valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1 && <>
+                {rights?.includes(Rights["Поиск классификаций"]) && valuesCategories && valuesCategories.includes('6') && valuesCategories.length === 1 && <>
                     <ClassificationFilter values={getValues("classificationIds")}
                                           setValueForm={setValueForm}/>
                 </>}

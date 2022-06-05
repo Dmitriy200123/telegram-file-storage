@@ -30,7 +30,7 @@ export const Controls: FC<PropsControlType> = memo(({id, name}) => {
     }
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
          <div>
-             {rights?.includes(Rights["Редактирование классификаций"]) && rights?.includes(Rights["Удаление классификаций"]) &&<div onClick={(e) => {
+             {(rights?.includes(Rights["Редактирование классификаций"]) || rights?.includes(Rights["Удаление классификаций"])) && <div onClick={(e) => {
                 e.preventDefault();
                 changeIsOpen(true);
             }} className={classesItems.controls__btn}>

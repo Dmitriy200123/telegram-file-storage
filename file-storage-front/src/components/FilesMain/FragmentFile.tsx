@@ -21,7 +21,7 @@ const FragmentFile: React.FC<PropsType> = ({file, rights, types, fetchFiles}) =>
     const {fileId, fileName, uploadDate, fileType, sender, chat, classification} = file;
     const dispatch = useDispatch();
     useEffect(() => {
-        if (!classification && +file.fileType === 6) {
+        if (!classification && +file.fileType === 6 && rights?.includes(Rights["Поиск классификаций"])) {
             dispatch(fetchClassification(file.fileId))
         }
     }, [classification])
@@ -83,10 +83,10 @@ const Controls: FC<ControlsPropsType> = memo(({
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
-                {+fileType === 6 && rights.includes(Rights["Присвоение классификаций"]) && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                {rights?.includes(Rights["Присвоение классификаций"]) && +fileType === 6 && rights.includes(Rights["Поиск классификаций"]) && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
                     <Tag/><span>Присвоить классификацию</span></div>}
-                { rights.includes(Rights["Отзыв классификаций"]) && +fileType === 6 && classification && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                { rights?.includes(Rights["Отзыв классификаций"]) && +fileType === 6 && classification && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={onRevokeClass}>
                     <Reject/><span>Отозвать классфикацию</span></div>}
                 {/*todo classId*/}

@@ -40,12 +40,12 @@ const DocsClasses: FC<PropsType> = () => {
     const {rights} = useAppSelector((state) => state.profile);
 
     function fetchClasses({query, take, page}: { page: number, take: number, query: undefined | string }) {
-        dispatch(fetchCountClassifications(query));
-        dispatch(fetchClassifications({
-            skip: take * (page - 1),
-            take: take,
-            query: query
-        }));
+            dispatch(fetchCountClassifications(query));
+            dispatch(fetchClassifications({
+                skip: take * (page - 1),
+                take: take,
+                query: query
+            }));
     }
 
     useEffect(() => {
