@@ -109,15 +109,6 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
     );
 });
 
-const Embed: FC<{ type: number, urlPreview: string }> = ({type, urlPreview}) => {
-    if (type === 3)
-        return <img alt={"image"} className={"file__embed"} src={urlPreview} width="100%"/>
-    if (type === 2 || type === 1)
-        return <embed src={urlPreview}/>
-
-    return <embed src={urlPreview} className={"file__embed"}/>
-}
-
 export default OpenedFile;
 
 

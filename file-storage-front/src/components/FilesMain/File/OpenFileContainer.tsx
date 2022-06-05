@@ -27,10 +27,11 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     }, [id])
 
     useEffect(() => {
-        if (file && (+fileType === 4 || +fileType === 5))
+        if (file && (+fileType === 4 || +fileType === 5) && !file.message) {
             dispatch(fetchFileText({id, type: +fileType}))
+        }
 
-        if (file && file.url && !urlPreview && [1,2,3,4,5,6].includes(+fileType)) {
+        if (file && file.url && !urlPreview && [1, 2, 3, 6].includes(+fileType)) {
             getUrlPreview(file.url);
         }
 
@@ -40,9 +41,8 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
     }, [file]);
 
 
-
     useEffect(() => {
-        if (!file?.fileName)
+        if (!file?.fileName || file.url)
             return
         dispatch(fetchDownloadLink(id))
     }, [file?.fileName])
