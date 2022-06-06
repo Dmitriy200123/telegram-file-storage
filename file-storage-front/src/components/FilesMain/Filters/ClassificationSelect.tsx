@@ -15,7 +15,8 @@ const ClassificationFilter: FC<PropsType> = ({setValueForm, values}) => {
     useEffect(() => {
         if (!classifications || classifications.length === 0)
             dispatch(fetchAllClassifications());
-    }, [])
+    }, []);
+    options?.unshift({value: '00000000-0000-0000-0000-000000000000', label: 'Без классификации'});
     
     return (<Select name={"classificationIds"} className={"files__filter files__filter_select"}
                     setValue={setValueForm} placeholder={"Классификация"}
