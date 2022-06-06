@@ -10,6 +10,7 @@
 
 .background {
   padding: 32px;
+  padding-bottom: 8px;
   background: #C9E4FF;
   display: flex;
   flex-direction: column;
@@ -77,4 +78,27 @@
   margin-bottom: 0.2em;
   vertical-align: middle;
   margin-right: math.div(13em,14);
+}
+
+.controlInputWrapper{
+  position: relative;
+  width: 100%;
+}
+
+.controlInput{
+  min-width: 200px;
+  padding-right: 2em;
+}
+
+.searchBtn {
+  position: absolute;
+  background: none;
+  margin: 0;
+  border: none;
+  right: 0.2em;
+  top:0.3em;
+  cursor: pointer;
+  &:hover{
+    color: $menu-color-hover;
+  }
 }

@@ -22,11 +22,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<File>> GetAllAsync(bool useInclude = false, int? skip = null, int? take = null)
         {
-            var query = DbSet.AsQueryable();
+            var query = DbSet
+                .AsQueryable()
+                .OrderByDescending(x => x.UploadDate)
+                .ThenBy(x => x.Id);
 
             return AddOptionsInQuery(query, useInclude, skip, take)
-                .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -42,11 +43,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             if (expression == null)
                 throw new ArgumentNullException(nameof(expression));
 
-            var query = DbSet.Where(expression);
+            var query = DbSet
+                .Where(expression)
+                .OrderByDescending(x => x.UploadDate)
+                .ThenBy(x => x.Id);
 
             return AddOptionsInQuery(query, useInclude, skip, take)
-                .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -55,11 +57,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             if (subString == null)
                 throw new ArgumentNullException(nameof(subString));
 
-            var query = DbSet.Where(x => x.Name.Contains(subString));
+            var query = DbSet
+                .Where(x => x.Name.Contains(subString))
+                .OrderByDescending(x => x.UploadDate)
+                .ThenBy(x => x.Id);
 
             return AddOptionsInQuery(query, useInclude, skip, take)
-                .OrderByDescending(x => x.UploadDate)
-                .ThenBy(x => x.Id)
                 .ToListAsync();
         }
 
@@ -74,15 +77,12 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
 
         public Task<List<string>> GetFileNamesAsync() => DbSet.Select(fileInfo => fileInfo.Name).ToListAsync();
         
-        public async Task<bool> AddClassificationAsync(Guid fileId, Guid classificationId)
+        public async Task<bool> SetClassificationAsync(Guid fileId, Guid classificationId)
         {
             var file = await GetByIdAsync(fileId, true);
 
-            if (file == null)
-                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
-
-            if (file.Type != FileType.TextDocument)
-                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            if (file is not {Type: FileType.TextDocument})
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId} and type {FileType.TextDocument}");
 
             var classification = await Classifications
                 .FirstOrDefaultAsync(classification => classification.Id == classificationId);
@@ -99,11 +99,8 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
         {
             var file = await GetByIdAsync(fileId, true);
 
-            if (file == null)
-                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
-
-            if (file.Type != FileType.TextDocument)
-                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            if (file is not {Type: FileType.TextDocument})
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId} and type {FileType.TextDocument}");
 
             var classification = file.Classification;
 
@@ -113,6 +110,19 @@ namespace FileStorageApp.Data.InfoStorage.Storages.Files
             file.Classification = null;
 
             return await UpdateAsync(file);
+        }
+
+        public async Task<bool> HasClassificationAsync(Guid fileId, Guid classificationId)
+        {
+            var file = await GetByIdAsync(fileId, true);
+
+            if (file == null)
+                throw NotFoundException.NotFoundEntity<File>($"Not found {nameof(File)} with Id {fileId}");
+
+            if (file.Type != FileType.TextDocument)
+                throw new ArgumentException($"Type of {nameof(File)} isn't {FileType.TextDocument}");
+            
+            return await Classifications.AnyAsync(classification => classification.Id == classificationId);
         }
 
         private static IQueryable<File> AddOptionsInQuery(IQueryable<File> query, bool useInclude = false, int? skip = null, int? take = null)

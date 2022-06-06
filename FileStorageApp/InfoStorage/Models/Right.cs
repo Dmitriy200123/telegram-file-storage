@@ -15,9 +15,9 @@ namespace FileStorageApp.Data.InfoStorage.Models
         public int Access { get; set; }
 
         [NotMapped]
-        public Accesses AccessType
+        public Access AccessType
         {
-            get => (Accesses) Access;
+            get => (Access) Access;
 
             set => Access = (int) value;
         }

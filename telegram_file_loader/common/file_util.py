@@ -19,15 +19,15 @@ class FileUtil:
         filename = filename_attribute.file_name
         extension = filename.split('.')[-1]
 
-        return file_type, filename, extension
+        return file_type, filename, extension, document.mime_type
 
     @staticmethod
-    def get_photo_file_info(message: Message) -> (str, str, str):
+    def get_photo_file_info(message: Message) -> (str, str, str, str):
         file_type = FileUtil.DEFAULT_PHOTO_MIME_TYPE
         filename: str = FileUtil.get_photo_name(message.date)
         extension = FileUtil.DEFAULT_PHOTO_EXTENSION
 
-        return file_type, filename, extension
+        return file_type, filename, extension, f'{FileUtil.DEFAULT_PHOTO_MIME_TYPE}/{FileUtil.DEFAULT_PHOTO_EXTENSION}'
 
     @staticmethod
     def get_photo_name(date=datetime.now()) -> str:

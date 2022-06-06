@@ -23,8 +23,8 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:5002
       - ASPNETCORE_ENVIRONMENT=Docker
     ports:
-      - '5002:5002' 
-  
+      - '5002:5002'
+
   dotnet_classification_backend:
     container_name: dotnet_classification_backend
     build:
@@ -36,7 +36,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
     ports:
       - '5003:5003'
-    
+
 
   front:
     container_name: front
@@ -47,8 +47,6 @@ services:
         Develop: "true"
     ports:
       - '3000:3000'
-    depends_on:
-      - dotnet_backend
 
   telegram_auth:
     container_name: telegram_auth
@@ -63,8 +61,6 @@ services:
     build:
       context: telegram_file_loader/
       dockerfile: Dockerfile
-    tty: true
-    stdin_open: true
     environment:
       - Test="true"
       - DB_HOST=postgres
@@ -77,8 +73,9 @@ services:
       - AWS_ACCESS_KEY_ID="123"
       - AWS_SECRET_ACCESS_KEY="123"
       - SEARCH_DOCUMENT_URL=http://dotnet_search_backend:5002/api
-        
-              
+      - DOCUMENT_CLASSIFICATIONS_API_URL=http://dotnet_classification_backend:5003/api/documentClassifications
+
+
   s3:
     image: localstack/localstack:0.13
     container_name: s3

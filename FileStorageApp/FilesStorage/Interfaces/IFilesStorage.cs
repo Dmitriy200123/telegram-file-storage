@@ -8,7 +8,7 @@ namespace FilesStorage.Interfaces
 {
     public interface IFilesStorage : IDisposable
     {
-        Task SaveFileAsync(string key, Stream stream);
+        Task SaveFileAsync(string key, Stream stream, string mimeType = null);
 
         Task<File> GetFileAsync(string key, string fileName = null);
 

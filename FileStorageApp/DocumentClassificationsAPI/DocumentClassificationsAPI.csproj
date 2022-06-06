@@ -23,8 +23,8 @@
       <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
       <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
       <PackageReference Include="morelinq" Version="3.3.2" />
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+      <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
       <PackageReference Include="Unchase.Swashbuckle.AspNetCore.Extensions" Version="2.6.12" />
     </ItemGroup>
 
@@ -36,6 +36,7 @@
       <ProjectReference Include="..\API\API.csproj" />
       <ProjectReference Include="..\InfoStorage\InfoStorage.csproj" />
       <ProjectReference Include="..\JwtAuth\JwtAuth.csproj" />
+      <ProjectReference Include="..\RightServices\RightServices.csproj" />
     </ItemGroup>
 
 </Project>

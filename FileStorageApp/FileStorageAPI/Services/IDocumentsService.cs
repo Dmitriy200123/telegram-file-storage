@@ -36,5 +36,21 @@ namespace FileStorageAPI.Services
         /// </summary>
         /// <param name="documentId">Id документа</param>
         Task<RequestResult<ClassificationInfo?>> FindClassificationByDocumentId(Guid documentId);
+
+        /// <summary>
+        /// Добавляет классификацию документу
+        /// </summary>
+        /// <param name="documentId">Идентификатор документа</param>
+        /// <param name="classificationId">Идентификатор классификации</param>
+        /// <returns></returns>
+        Task<RequestResult<DocumentInfo>> AddClassification(Guid documentId, Guid classificationId);
+        
+        /// <summary>
+        /// Удаляет классификацию документа
+        /// </summary>
+        /// <param name="documentId">Идентификатор документа</param>
+        /// <param name="classificationId">Идентификатор классификации</param>
+        /// <returns></returns>
+        Task<RequestResult<DocumentInfo>> DeleteClassification(Guid documentId, Guid classificationId);
     }
 }

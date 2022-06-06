@@ -5,7 +5,7 @@ namespace FileStorageApp.Data.InfoStorage.Models
     /// <summary>
     /// Права пользователей на различные функции в сервисе.
     /// </summary>
-    public enum Accesses
+    public enum Access
     {
         /// <summary>
         /// Дефолтные права для всех пользователей, нужно чтобы кто-то случайно не занял ноль и потом не стрельнул себе в ногу
@@ -40,6 +40,42 @@ namespace FileStorageApp.Data.InfoStorage.Models
         /// Возможность просматривать любые файлы
         /// </summary>
         [Description("Просматривать файлы из любых чатов")]
-        ViewAnyFiles = 5
+        ViewAnyFiles = 5,
+        
+        /// <summary>
+        /// Доступ к поиску классификация
+        /// </summary>
+        [Description("Поиск классификаций")]
+        ViewClassifications = 6,
+        
+        /// <summary>
+        /// Возможность добавлять классификации
+        /// </summary>
+        [Description("Добавление классификаций")]
+        AddClassifications = 7,
+        
+        /// <summary>
+        /// Возможность редактировать классификации
+        /// </summary>
+        [Description("Редактирование классификаций")]
+        EditClassifications = 8,
+        
+        /// <summary>
+        /// Возможность удалять классификации
+        /// </summary>
+        [Description("Удаление классификаций")]
+        DeleteClassifications = 9,
+
+        /// <summary>
+        /// Возможность присвоения классификаций документам
+        /// </summary>
+        [Description("Присвоение классификаций")]
+        AssignClassificationsToDocuments = 10,
+
+        /// <summary>
+        /// Возможность отзыва классификаций из документов
+        /// </summary>
+        [Description("Отзыв классификаций")]
+        RevokeClassificationsFromDocument = 11
     }
 }

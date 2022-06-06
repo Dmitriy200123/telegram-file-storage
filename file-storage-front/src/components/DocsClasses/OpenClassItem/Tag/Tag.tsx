@@ -1,9 +1,8 @@
-import React, {ChangeEvent, FC, memo, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, FC, KeyboardEvent, memo, useEffect, useRef, useState} from 'react';
 import classes from "./Tag.module.scss";
 import {ReactComponent as Cross} from "./../../../../assets/cross.svg";
 import {Button} from "../../../utils/Button/Button";
 import {ClassificationType} from "../../../../models/Classification";
-import {set} from "react-hook-form";
 
 type PropsType = {
     tag: NonNullable<ClassificationType["classificationWords"]>[0],
@@ -11,9 +10,9 @@ type PropsType = {
 }
 
 
-const Tag: FC<PropsType> = memo(({tag,removeTag}) => {
+const Tag: FC<PropsType> = memo(({tag, removeTag}) => {
     return <div className={classes.tag}>
-        <div  className={classes.input} >{tag.value}</div>
+        <div className={classes.input}>{tag.value}</div>
         <Cross className={classes.cross} onClick={removeTag}/>
     </div>;
 });
@@ -29,7 +28,7 @@ export const CreateTag: FC<{ setTag: (value: string) => void }> = ({setTag}) => 
 
 type PropsTagCreateType = {
     close: () => void,
-    setTag: (e:string) => void
+    setTag: (e: string) => void
 }
 
 export const TagCreate: FC<PropsTagCreateType> = memo(({close, setTag}) => {
@@ -52,6 +51,12 @@ export const TagCreate: FC<PropsTagCreateType> = memo(({close, setTag}) => {
         input.current.style.width = Math.max(input.current.scrollWidth, 10) + "px";
     }
 
+    function onEnter(e: KeyboardEvent<HTMLInputElement>) {
+        if (input.current && e.key === "Enter") {
+            input.current.blur()
+        }
+    }
+
     function onBlur() {
         if (text.length > 0)
             setTag(text);
@@ -59,13 +64,9 @@ export const TagCreate: FC<PropsTagCreateType> = memo(({close, setTag}) => {
     }
 
     return <div className={classes.tag}>
-        <input ref={input} value={text} onChange={onChange} className={classes.input} onBlur={onBlur}/>
+        <input onKeyPress={onEnter} ref={input} value={text} onChange={onChange} className={classes.input}
+               onBlur={onBlur}/>
     </div>;
 });
 
 export default Tag;
-
-
-
-
-

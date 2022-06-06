@@ -27,7 +27,7 @@ namespace SearchDocumentsAPI.Tests
         public void Setup()
         {
             _applicationFactory = new WebApplicationFactory<Startup>()
-                .WithWebHostBuilder(builder => { builder.UseEnvironment("Debug"); });
+                .WithWebHostBuilder(builder => { builder.UseEnvironment("Development"); });
 
             _config = new ElasticConfig("http://localhost:9200", "testindex");
             var factory = new DocumentIndexFactory(new PipelineCreator(), _config);

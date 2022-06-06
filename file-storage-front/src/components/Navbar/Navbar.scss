@@ -22,14 +22,17 @@
     justify-items: center;
     &:hover{
       color: $menu-color-hover;
-      & path{
-        stroke: $menu-color-hover;
-      }
+    }
+
+    &_stroke {
+
     }
 
     & svg{
+      flex: 0 0 auto;
+      width: 1.2em;
+      height: 1.2em;
       & path{
-        stroke: black;
       }
       margin-right: 12px;
     }

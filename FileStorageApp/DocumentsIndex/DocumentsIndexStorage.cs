@@ -69,6 +69,7 @@ namespace DocumentsIndex
         /// <inheritdoc />
         public async Task<List<Guid>> FindInTextOrNameAsync(string query)
         {
+            var name = query.ReplaceDelimitersToWhiteSpaces();
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q =>
                     q.QueryString(m => m
@@ -80,7 +81,7 @@ namespace DocumentsIndex
                     || q.QueryString(m => m
                         .Fields(f => f
                             .Field(p => p.Name))
-                        .Query(query)
+                        .Query(name)
                         .Analyzer(Analyzers.CustomAnalyzer))
                 ));
             return searchResponse.Hits.Select(x => x.Source.Id).ToList();
@@ -89,6 +90,8 @@ namespace DocumentsIndex
         /// <inheritdoc />
         public async Task<bool> IsContainsInNameAsync(Guid documentId, string[] subStrings)
         {
+            if (subStrings.Length == 0)
+                return false;
             var searchResponses = await _elasticClient
                 .SearchAsync<ElasticDocument>(s => s
                     .Query(q => CreateForSubStrings(q, subStrings)
@@ -106,6 +109,7 @@ namespace DocumentsIndex
         /// <inheritdoc />
         public async Task<List<Guid>> SearchByNameAsync(string name)
         {
+            name = name.ReplaceDelimitersToWhiteSpaces();
             var searchResponse = await _elasticClient.SearchAsync<ElasticDocument>(s => s
                 .Query(q => q
                     .QueryString(m => m

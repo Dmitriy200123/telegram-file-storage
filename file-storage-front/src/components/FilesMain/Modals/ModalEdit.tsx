@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import "./Modal.scss"
-import {Button} from "../Button/Button";
-import Modal from "./Modal";
+import {Button} from "../../utils/Button/Button";
+import Modal from "../../utils/Modal/Modal";
 import {useDispatch} from "react-redux";
 import {filesSlice} from "../../../redux/filesSlice";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";

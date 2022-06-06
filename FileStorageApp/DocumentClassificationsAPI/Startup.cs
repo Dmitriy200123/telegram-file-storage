@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RightServices;
 using Unchase.Swashbuckle.AspNetCore.Extensions.Extensions;
 
 namespace DocumentClassificationsAPI
@@ -102,7 +103,7 @@ namespace DocumentClassificationsAPI
             });
         }
 
-        private static void ConfigureDependencies(IServiceCollection services)
+        private void ConfigureDependencies(IServiceCollection services)
         {
             services.AddSingleton<IDataBaseConfig>(provider =>
             {
@@ -110,6 +111,12 @@ namespace DocumentClassificationsAPI
                 return CreateDataBaseConfig(configuration);
             });
             services.AddSingleton<IInfoStorageFactory, InfoStorageFactory>();
+            var tokenKey = Configuration["TokenKey"];
+            var key = Encoding.ASCII.GetBytes(tokenKey);
+            services.AddSingleton(new RightsSettings(key));
+            services.AddSingleton<IUserIdFromTokenProvider, UserIdFromTokenProvider>();
+            services.AddSingleton<IAccessesByUserIdProvider, AccessesByUserIdProvider>();
+            services.AddSingleton<IRightsFilter, RightsFilter>();
             services.AddSingleton<IDocumentClassificationsService, DocumentClassificationsService>();
         }
 

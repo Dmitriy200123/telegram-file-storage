@@ -25,7 +25,7 @@ class FileRepository(BaseRepository):
 
         return file
 
-    async def save_file(self, file: BytesIO, key=None) -> UUID:
+    async def save_file(self, file: BytesIO, key=None, mime_type=None) -> UUID:
         key: UUID = key or uuid4()
-        await self.s3_client.upload_file(key=str(key), file=file)
+        await self.s3_client.upload_file(key=str(key), file=file, mime_type=mime_type)
         return key

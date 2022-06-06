@@ -1,9 +1,12 @@
+import logging
 from functools import partial
 from typing import Optional
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 from ujson import dumps
+
+log = logging.getLogger(__name__)
 
 
 class BaseClient:
@@ -24,7 +27,7 @@ class BaseClient:
         async with self.get_session() as session:
             async with session.request(method=method, url=full_url, **params) as response:
                 text_response = await response.text()
-                print(f'Get response {text_response=}')
+                log.info(f'Get response {text_response=}')
 
                 if self.raise_for_status:
                     response.raise_for_status()

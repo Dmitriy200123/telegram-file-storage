@@ -1,19 +1,23 @@
 @import "src/Variables";
+
 .files-main {
+  background: #E5E5E5;
+
   &__content {
-    background: #E5E5E5;
     padding: 28px;
   }
 
   &__title {
+    background: white;
     width: 100%;
     padding: 18px 0 18px 25px;
     text-align: left;
-     color: #1976D3;
+    color: #1976D3;
     font-weight: normal;
     font-size: 1.28em;
   }
 }
+
 
 .files {
   background: white;
@@ -29,16 +33,18 @@
     font-size: 1.15em;
   }
 
-  &__filters{
+  &__filters {
     padding: 32px 32px 26px;
     background: $menu-color;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    &-main{
+
+    &-main {
       position: relative;
       display: flex;
       gap: 16px;
+
       & .files__filter {
         flex: 1 1 auto;
       }
@@ -48,9 +54,9 @@
       }
     }
 
-    &-add{
+    &-add {
       //align-self: flex-start;
-      &-block{
+      &-block {
         display: flex;
         flex-wrap: wrap;
         gap: 16px;
@@ -58,13 +64,13 @@
         margin-bottom: 16px;
       }
 
-      &_hidden{
+      &_hidden {
         display: none;
       }
     }
   }
 
-  &__reset{
+  &__reset {
     color: white;
     background: none;
     border: none;
@@ -72,14 +78,28 @@
     align-items: center;
     gap: 13px;
 
-    &:hover{
+    &:hover {
       cursor: pointer;
       color: black;
     }
   }
 
+  &__nameClassItems {
+    padding: 22px 30px;
+  }
+
+  &__itemsHead{
+    display: contents;
+  }
+
   &__item {
     padding: 25px 30px;
+
+    &_classf {
+      font-size: 13px;
+      line-height: 18px;
+      color: #91989E;;
+    }
 
     &_name {
       &:hover {
@@ -87,12 +107,18 @@
         cursor: pointer;
       }
     }
-    &_relative{
+
+    &_relative {
       position: relative;
+    }
+
+    &_title {
+      font-weight: 600;
+      background: #D2DEF3;
     }
   }
 
-  &__btn-search{
+  &__btn-search {
     top: 0;
     bottom: 0;
     margin: auto;
@@ -105,13 +131,14 @@
     align-items: center;
     justify-content: center;
     padding: 5px;
-    &:hover{
+
+    &:hover {
       cursor: pointer;
       color: $menu-color;
     }
   }
 
-  &__btn-open-filter{
+  &__btn-open-filter {
     width: 168px;
     background: white;
     border: 1px solid #CED4DA;
@@ -123,7 +150,8 @@
     align-items: center;
     line-height: 20px;
     padding: 0 12px;
-    &:active, &:focus, &:hover{
+
+    &:active, &:focus, &:hover {
       cursor: pointer;
       box-shadow: 0px 0px 0px 2px rgba(87, 161, 237, 0.6);
       outline: 0;
@@ -141,11 +169,12 @@
 }
 
 .file-controls {
+  overflow: hidden;
 
-  &__btn{
+  &__btn {
     position: absolute;
     right: 10px;
-    top:10px;
+    top: 10px;
 
     background: none;
     border: none;
@@ -172,13 +201,15 @@
 
     &:hover {
       cursor: pointer;
+
       &:before, &:after, & .file-controls__circle {
         background: #1976D3;
       }
     }
   }
 
-  &__modal{
+  &__modal {
+    overflow: hidden;
     position: absolute;
     z-index: 2;
     right: 15px;
@@ -190,20 +221,32 @@
     box-shadow: 0px 8px 8px rgba(34, 40, 53, 0.04);
   }
 
-  &__modal-item{
+  &__modal-item {
     display: flex;
     align-items: center;
-    &:not(:last-of-type){
+
+    &:not(:last-of-type) {
       margin-bottom: 10px;
     }
-    & svg{
-      margin: 5px;
+
+    & svg {
+      margin: 5px 0.5em 5px 5px;
+      flex: 0 0 auto;
+      color: #212529;
     }
 
-    &:hover{
+    &ClassSvg svg{
+      width: 1.2em;
+      height: 1.2em;
+      margin-right: 0.3em;
+      margin-bottom: 0.3em;
+    }
+
+    &:hover {
       cursor: pointer;
     }
-    &_delete{
+
+    &_delete {
       color: #EB3235;
     }
   }

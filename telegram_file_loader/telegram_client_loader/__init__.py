@@ -1,5 +1,7 @@
 import config
+from clients.documents_classifications_client import DocumentsClassificationsClient
 from clients.documents_index_client import DocumentsIndexClient
+from clients.documents_search_client import DocumentsSearchClient
 from clients.s3_client import S3Client
 from common.interactor.chat_interactor import ChatInteractor
 from common.interactor.loader_interactor import LoaderInteractor
@@ -17,7 +19,13 @@ from telethon import TelegramClient
 from urlextract import URLExtract
 
 
-async def start(pg_adapter: Adapter, s3_client: S3Client, documents_index_client: DocumentsIndexClient):
+async def start(
+        pg_adapter: Adapter,
+        s3_client: S3Client,
+        documents_index_client: DocumentsIndexClient,
+        documents_search_client: DocumentsSearchClient,
+        documents_classifications_client: DocumentsClassificationsClient
+):
     url_extractor = URLExtract()
 
     telegram_client = TelegramClient(
@@ -40,7 +48,9 @@ async def start(pg_adapter: Adapter, s3_client: S3Client, documents_index_client
         file_sender_repository=file_sender_repository,
         url_repository=url_repository,
         tag_repository=tag_repository,
-        documents_index_client=documents_index_client
+        documents_index_client=documents_index_client,
+        documents_search_client=documents_search_client,
+        documents_classifications_client=documents_classifications_client,
     )
     chat_interactor = ChatInteractor(
         chat_repository=chat_repository,

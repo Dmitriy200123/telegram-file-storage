@@ -1,19 +1,15 @@
-FROM node:12-alpine as build
+FROM node:14 as build
 ARG Develop
 WORKDIR /app
 COPY package.json /app/package.json
-RUN npm install --only=prod
 COPY . /app
+RUN yarn install --production
 
 RUN rm -rf /app/.env
 
-RUN if [ "$Develop" == "true" ]; then \
-        cp .env.config.dev /app/.env; \
-    else \
-        cp .env.config.prod /app/.env; \
-    fi;
+RUN cp .env.config.dev /app/.env;
 
-RUN npm run build
+RUN yarn build
 
 # Поднимаен нгинкс для статики прода
 FROM nginx:1.21 AS start_prod

@@ -22,10 +22,11 @@ const Remove: FC<PropsType> = ({onOutsideClick, args}) => {
 
     return (
         <div className={classes.block}>
-            <h2 className={classes.title}>Точно удалить ?</h2>
+            <h2 className={classes.title}>Подтверждение</h2>
+            <p>Вы действительно ходите удалить классификацию ?</p>
             <div className={classes.btns}>
-                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
                 <Button onClick={onSubmit}>ОК</Button>
+                <Button type={"transparent"} onClick={onOutsideClick}>ОТМЕНА</Button>
             </div>
         </div>
     );

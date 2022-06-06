@@ -1,13 +1,13 @@
 import React, {memo, useEffect, useState} from "react";
-import "./RightsModal.scss";
-import Modal, {hocModal} from "../../utils/Modal/Modal";
+import Modal from "../../utils/Modal/Modal";
 import {Button} from "../../utils/Button/Button";
 import {useDispatch} from "react-redux";
 import {managePanelSlice} from "../../../redux/managePanelSlice";
 import {useAppSelector} from "../../../utils/hooks/reduxHooks";
 import {Select} from "./Select";
-import {fetchRightsCurrentUser, fetchRightsUserById, postSetRightsUser} from "../../../redux/thunks/rightsThunks";
+import {fetchRightsUserById, postSetRightsUser} from "../../../redux/thunks/rightsThunks";
 import {Rights} from "../../../models/File";
+import "./RightsModal.scss";
 
 const {closeModal} = managePanelSlice.actions;
 
@@ -28,7 +28,7 @@ export const RightsModal: React.FC = memo(() => {
     if (!idUser)
         return null;
 
-    return (<Modal><RightsUI allRights={allRights} rights={rights} idUser={idUser} name={name}/></Modal>);
+    return (<Modal className={"wrapper"}><RightsUI allRights={allRights} rights={rights} idUser={idUser} name={name}/></Modal>);
 })
 
 
@@ -50,8 +50,8 @@ const RightsUI: React.FC<PropsType> = memo(({allRights, name, rights, idUser}) =
     async function post() {
         if (!idUser)
             return;
-        const grant = newRights.filter((e) => !rights.includes(e));
-        const revoke = rights.filter((e) => !newRights.includes(e));
+        const grant = newRights.filter((e) => !rights?.includes(e));
+        const revoke = rights.filter((e) => !newRights?.includes(e));
         if (grant.length === 0 && revoke.length === 0) {
             close();
             return;
@@ -75,8 +75,8 @@ const RightsUI: React.FC<PropsType> = memo(({allRights, name, rights, idUser}) =
                 </div>
             </div>
             <div className={"rights-modal__btns"}>
-                <Button type={"transparent"} onClick={close}>ОТМЕНА</Button>
                 <Button onClick={post}>ОК</Button>
+                <Button type={"transparent"} onClick={close}>ОТМЕНА</Button>
             </div>
         </div>
     );

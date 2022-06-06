@@ -5,6 +5,7 @@ import {ReactComponent as Logo} from "./../../assets/logo.svg";
 import {ReactComponent as Download} from "./../../assets/download_2.svg";
 import {ReactComponent as Search} from "./../../assets/search.svg";
 import {ReactComponent as Settings} from "./../../assets/settings.svg";
+import {ReactComponent as Classifications} from "./../../assets/classification.svg";
 import {useAppSelector} from "../../utils/hooks/reduxHooks";
 import {Rights} from "../../models/File";
 
@@ -26,8 +27,8 @@ export const Navbar: FC<{ className?: string }> = memo(({className}) => {
                           className={"navbar__link"}><Settings/><span>Предоставление доступа</span></Link>}
                 </>
                 }
-                <Link to={"/docs-сlasses"}
-                      className={"navbar__link"}><Settings/><span>Классификация документов</span></Link>
+                {rights?.includes(Rights["Поиск классификаций"]) && <Link to={"/docs-сlasses"}
+                      className={"navbar__link"}><Classifications/><span>Классификации документов</span></Link>}
             </div>
         </div>
     );

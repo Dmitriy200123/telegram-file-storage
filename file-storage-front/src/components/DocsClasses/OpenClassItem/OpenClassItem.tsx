@@ -13,9 +13,11 @@ import {
     fetchDeleteToClassificationWord,
     postAddToClassificationWord
 } from "../../../redux/classesDocs/classesDocsThunks";
-import {ModalContent} from "../../../models/File";
+import {profileSlice} from "../../../redux/profileSlice";
+import {MessageTypeEnum, Rights} from "../../../models/File";
 
 const {openModal} = classesDocsSlice.actions
+const {addMessage} = profileSlice.actions;
 
 interface match<Params extends { [K in keyof Params]?: string } = {}> {
     params: Params;
@@ -52,21 +54,27 @@ const OpenClassItemContainer: React.FC<PropsType> = memo(({match}) => {
 
 
     return (
-        <OpenClassItem openRename={openRename} classification={classification}/>
+        <OpenClassItem openRename={openRename} classification={classification} rights={[Rights["Удаление классификаций"]]}/>
     );
 });
 
-type PropsTypeOpen = { openRename: () => void, classification: ClassificationType | null }
+type PropsTypeOpen = { openRename: () => void, classification: ClassificationType | null, rights?: Rights[] }
 
 
-const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => {
+const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification, }) => {
+    const {rights} = useAppSelector((state) => state.profile);
     const dispatch = useAppDispatch();
     if (!classification)
         return <>Не найдено</>;
 
     function createTag(value: string) {
-        if (classification )
-            dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
+        if (!classification)
+            return;
+        if (classification.classificationWords?.find((c) => c.value === value)){
+            return dispatch(addMessage({type: MessageTypeEnum.Error, value: "Такое слово уже есть"}));
+        }
+        
+        dispatch(postAddToClassificationWord({classId: classification?.id || "", value}))
     }
 
     function deleteClassification() {
@@ -85,20 +93,20 @@ const OpenClassItem: FC<PropsTypeOpen> = memo(({openRename, classification}) => 
 
     return <div className={classes.classItem}>
         <div className={classes.classItem__header}>
-            <h2 className={classes.classItem__title}>Классификация документов</h2>
+            <h2 className={classes.classItem__title}>Классификации документов</h2>
             <Link className={classes.classItem__close} to={"/docs-сlasses"}/>
         </div>
         <div className={classes.classItem__content}>
-            <h3 onClick={openRename} className={classes.classItem__contentTitle}>{classification.name} {<Edit/>}</h3>
-            <div className={classes.classItem__tags}>
+            {rights?.includes(Rights["Редактирование классификаций"]) && <h3 onClick={openRename} className={classes.classItem__contentTitle}>{classification.name} {<Edit/>}</h3>}
+            {rights?.includes(Rights["Редактирование классификаций"]) && <div className={classes.classItem__tags}>
                 {tags}
                 <CreateTag setTag={createTag}/>
-            </div>
-
+            </div>}
+            {rights?.includes(Rights["Удаление классификаций"]) &&
             <div className={classes.classItem__btns}>
                 <Button onClick={deleteClassification}
-                    type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
-            </div>
+                        type={"danger"} className={classes.classItem__btn_delete}><span>Удалить</span><Delete/></Button>
+            </div>}
         </div>
     </div>;
 });

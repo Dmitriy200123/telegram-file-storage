@@ -41,11 +41,12 @@ class S3Client:
         ) as s3:
             return await s3.create_bucket(Bucket=bucket_name or self.bucket_name)
 
-    async def upload_file(self, key: str, file: BytesIO) -> bool:
+    async def upload_file(self, key: str, file: BytesIO, mime_type=None) -> bool:
         """Загружает файлик в S3
 
         :param file: read-like байты файла
         :param key: имя файла в S3
+        :param mime_type: mime type файла
         :return: Удачно или нет загружен
         """
 
@@ -56,8 +57,12 @@ class S3Client:
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key
         ) as client:
+            put_objects_params = {'Body': file,
+                                  'Bucket': self.bucket_name, 'Key': key}
+            if mime_type:
+                put_objects_params['ContentType'] = mime_type
             try:
-                await client.put_object(Body=file, Bucket=self.bucket_name, Key=key)
+                await client.put_object(**put_objects_params)
             except ClientError as e:
                 logging.error(e)
                 return False

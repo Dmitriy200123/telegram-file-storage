@@ -1,3 +1,5 @@
+import {ClassificationType} from "./Classification";
+
 export type Nullable<T> = T | null;
 
 export enum Rights {
@@ -5,6 +7,12 @@ export enum Rights {
     "Переименовывать файлы" = 2,
     "Удалять файлы" = 3,
     "Редактировать права пользователей" = 4,
+    "Поиск классификаций" = 6,
+    "Добавление классификаций" = 7,
+    "Редактирование классификаций" = 8,
+    "Удаление классификаций" = 9,
+    "Присвоение классификаций" = 10,
+    "Отзыв классификаций"= 11,
 }
 
 export interface ExpandingObject<T> {
@@ -13,7 +21,8 @@ export interface ExpandingObject<T> {
 
 export enum ModalContent {
     Remove,
-    Edit
+    Edit,
+    AddClass,
 }
 
 export enum MessageTypeEnum {
@@ -38,7 +47,8 @@ export type TypeFile = {
         "name": string,
         "imageId"?: string
     },
-    downloadLink?: string
+    url?: string,
+    classification?: ClassificationType |  null
 }
 
 export type Chat = {

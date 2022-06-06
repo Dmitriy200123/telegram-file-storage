@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FileStorageApp.Data.InfoStorage.Config;
 using FileStorageApp.Data.InfoStorage.Factories;
 using FileStorageApp.Data.InfoStorage.Models;
+using FileStorageApp.Data.InfoStorage.Storages.Rights;
 using FileStorageApp.Data.InfoStorage.Storages.Users;
 using JwtAuth;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +24,8 @@ namespace TokenGenerator
             var storage = new InfoStorageFactory(CreateDataBaseConfig());
             var refreshTokenGenerator = new RefreshTokenGenerator();
             var userStorage = storage.CreateUsersStorage();
-            var newUser = await CreateNewUserAsync(userStorage, arguments);
+            var rightsStorage = storage.CreateRightsStorage();
+            var newUser = await CreateNewUserAsync(userStorage, rightsStorage, arguments);
             
             var claimName = new Claim(ClaimTypes.Name, newUser.ToString());
             var tokenGenerator = new JwtAuthenticationManager(Configuration["TokenKey"], refreshTokenGenerator, storage);
@@ -50,7 +53,7 @@ namespace TokenGenerator
             return new DataBaseConfig(connectionString);
         }
 
-        private static async Task<Guid> CreateNewUserAsync(IUsersStorage usersStorage, string name)
+        private static async Task<Guid> CreateNewUserAsync(IUsersStorage usersStorage, IRightsStorage rightsStorage, string name)
         {
             var guid = Guid.NewGuid();
             var user = new User
@@ -63,7 +66,26 @@ namespace TokenGenerator
                 Name = name
             };
             await usersStorage.AddAsync(user);
+            await AddAccessOptionsToUser(guid, rightsStorage);
             return guid;
+        }
+
+        private static async Task AddAccessOptionsToUser(Guid userId, IRightsStorage rightsStorage)
+        {
+            var accesses = Enum
+                .GetValues(typeof(Access))
+                .Cast<int>()
+                .Where(x => x != 0);
+            foreach (var elem in accesses)
+            {
+                var rightModel = new Right
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = userId,
+                    Access = elem,
+                };
+                await rightsStorage.AddAsync(rightModel);
+            }
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SearchDocumentsAPI.Services.DocumentsSearch;
@@ -16,7 +15,6 @@ namespace SearchDocumentsAPI.Controllers
     [Route("api/search/documents")]
     [SwaggerTag("Поиск документов")]
     [ApiController]
-    [Authorize]
     public class DocumentsSearchController : ControllerBase
     {
         private readonly IDocumentsSearchService _documentsSearchService;

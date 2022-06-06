@@ -22,7 +22,7 @@ namespace FileStorageAPI.Services
         public RightsService(IInfoStorageFactory infoStorageFactory)
         {
             _infoStorageFactory = infoStorageFactory ?? throw new ArgumentNullException(nameof(infoStorageFactory));
-            _enumValues = Enum.GetValues(typeof(Accesses)).Cast<Accesses>().Cast<int>().ToArray();
+            _enumValues = Enum.GetValues(typeof(Access)).Cast<Access>().Cast<int>().ToArray();
         }
 
         /// <inheritdoc />
@@ -46,9 +46,9 @@ namespace FileStorageAPI.Services
         /// <inheritdoc />
         public RequestResult<RightDescription[]> GetRightsDescription()
         {
-            var descriptions = Enum.GetValues(typeof(Accesses))
-                .Cast<Accesses>()
-                .Where(x => x != Accesses.Default)
+            var descriptions = Enum.GetValues(typeof(Access))
+                .Cast<Access>()
+                .Where(x => x != Access.Default)
                 .Select(t => new RightDescription((int) t, t.GetEnumDescription()))
                 .ToArray();
 

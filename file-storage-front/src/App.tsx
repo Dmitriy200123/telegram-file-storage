@@ -4,7 +4,7 @@ import './App.scss';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Provider, useDispatch} from "react-redux";
 import {setupStore} from "./redux/redux-store";
-import {OpenedFileContainer} from "./components/FilesMain/File/OpenFile";
+import {OpenedFileContainer} from "./components/FilesMain/File/OpenFileContainer";
 import FilesMain from "./components/FilesMain/FilesMain";
 import {useAppDispatch, useAppSelector} from "./utils/hooks/reduxHooks";
 import {LoadFileMain} from "./components/LoadFile/LoadFileMain";
@@ -21,6 +21,7 @@ import {fetchFilesTypes} from "./redux/thunks/mainThunks";
 import DocsClasses from "./components/DocsClasses/DocsClasses";
 import {StartPage} from "./components/StartPage/StartPage";
 import {Messages} from "./components/utils/Messages/Messages";
+import FilesMainContainer from "./components/FilesMain/FilesMainCotainer";
 
 const store = setupStore();
 
@@ -40,7 +41,6 @@ const App: FC = () => {
     const messages = useAppSelector((state) => state.profile.messages);
     const loading = useAppSelector((state) => state.profile.loading);
     const isAuth = useAppSelector((state) => state.profile.isAuth);
-
     useEffect(() => {
         dispatch(fetchIsAuth());
     }, []);
@@ -64,11 +64,8 @@ const Main: FC = () => {
 
     const rights = useAppSelector((state) => state.profile.rights);
     const hasTelegram = useAppSelector((state) => state.profile.hasTelegram);
-
     const loading = useAppSelector((state) => state.filesReducer.loading);
-    const modalConfirm = useAppSelector((state) => state.filesReducer.modalConfirm);
-    const {isOpen, id, content, callbackAccept} = modalConfirm;
-    const ModalComponent = modalContents[content || 0];
+
     return (<>
         <Navbar className={"app__navbar"}/>
         {loading && <Loading/>}
@@ -78,13 +75,13 @@ const Main: FC = () => {
                     <Logout/></button>
             </header>
             <div className={"app__content-components"}
-                 style={{flex: "1 1 auto", display: "flex", flexDirection: "column"}}>
+                 style={{flex: "1 1 auto", display: "flex", flexDirection: "column", paddingBottom: 40}}>
                 <Switch>
                     <Route path={"/Profile"} component={Profile}/>
                     <Route path={"/docs-сlasses"} component={DocsClasses}/>
                     {hasTelegram && <>
-                        <Route exact path={"/files"} component={FilesMain}/>
-                        <Route path={"/file/:id"} component={OpenedFileContainer}/>
+                        <Route  path={"/files"} component={FilesMainContainer}/>
+                        <Route path={"/file/:id"} component={FilesMainContainer}/>
                         {rights?.includes(Rights["Редактировать права пользователей"]) &&
                         <Route path={"/admin"} component={RightsManagerPanel}/>}
                         {rights?.includes(Rights["Загружать файлы"]) &&
@@ -92,7 +89,7 @@ const Main: FC = () => {
                     </>}
                 </Switch>
             </div>
-            {isOpen && id && <ModalComponent id={id} callbackAccept={callbackAccept}/>}
+
         </div>
     </>)
 }

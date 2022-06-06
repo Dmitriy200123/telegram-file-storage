@@ -8,27 +8,23 @@ export function separateStringExtension(line:string) {
 }
 
 export const AddToUrlQueryParams = (history: any, values: Object) => {
-    const urlParams = {};
+    const urlParams:{[key:string]: string} = {};
     Object.keys(values).forEach(key => {
         // @ts-ignore
         const value = values[key];
         if (key === "date" && value) {
             if (value.dateFrom) {
-                // @ts-ignore
                 urlParams["dateFrom"] = value.dateFrom;
             }
             if (value.dateTo) {
-                // @ts-ignore
                 urlParams["dateTo"] = value.dateTo;
             }
         } else if (value) {
             if (value instanceof Array) {
                 if (value.length > 0) {
-                    // @ts-ignore
                     urlParams[key] = value.join(`&`)
                 }
             } else {
-                // @ts-ignore
                 urlParams[key] = value;
             }
         }
@@ -43,8 +39,9 @@ export const GetQueryParamsFromUrl = (history: any) => {
     const urlSearchParams = new URLSearchParams(history.location.search);
     const fileName = urlSearchParams.get("fileName");
     const senderId = urlSearchParams.get("senderIds")?.split("&")?.map((e) => e);
+    const classificationIds = urlSearchParams.get("classificationIds")?.split("&")?.map((e) => e);
     const categories = urlSearchParams.get("categories")?.split("&")?.map((e) => e);
     const date = {dateFrom: urlSearchParams.get("dateFrom"), dateTo: urlSearchParams.get("dateTo")}
     const chats = urlSearchParams.get("chatIds")?.split("&")?.map((e) => e);
-    return {fileName, senderId, categories, date, chats};
+    return {fileName, senderId, categories, date, chats,classificationIds};
 }
