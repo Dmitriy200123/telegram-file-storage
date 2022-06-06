@@ -7,7 +7,6 @@ import {SubmitHandler, useForm} from "react-hook-form";
 import {fetchDocuments, fetchFiles, fetchFilters} from "../../redux/thunks/mainThunks";
 import {AddToUrlQueryParams, GetQueryParamsFromUrl} from "../../utils/functions";
 import {Filters} from "./Filters/Filters";
-import {fetchAllClassifications} from "../../redux/classesDocs/classesDocsThunks";
 import classNames from "classnames";
 import "./FilesMain.scss"
 
