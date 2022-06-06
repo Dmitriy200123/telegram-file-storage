@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using FileStorageAPI.Models;
+using FileStorageApp.Data.InfoStorage.Enums;
 using FileStorageApp.Data.InfoStorage.Models;
 
 namespace FileStorageAPI.Providers
@@ -14,7 +15,7 @@ namespace FileStorageAPI.Providers
         public Expression<Func<File, bool>> GetExpression(FileSearchParameters parameters, List<Guid>? chatsId = null)
         {
             var categories = parameters.Categories?.Cast<int>().ToList();
-            return x => (parameters.FileName == null || x.Name.Contains(parameters.FileName)) &&
+            return x => (parameters.FileName == null || x.Name.ToLower().Contains(parameters.FileName.ToLower())) &&
                         (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                         (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
                         (categories == null || categories.Contains(x.TypeId)) &&
@@ -31,6 +32,7 @@ namespace FileStorageAPI.Providers
             List<Guid>? chatsId = null)
         {
             return x =>
+                x.TypeId == (int)FileType.TextDocument && 
                 (parameters.ClassificationIds == null || x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(x.ClassificationId!.Value)
                 || !x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(Guid.Empty)) &&
                 (fileIds == null || fileIds.Contains(x.Id)) &&
