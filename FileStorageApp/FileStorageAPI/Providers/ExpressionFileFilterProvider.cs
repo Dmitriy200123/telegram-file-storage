@@ -31,7 +31,8 @@ namespace FileStorageAPI.Providers
             List<Guid>? chatsId = null)
         {
             return x =>
-                (parameters.ClassificationIds == null || x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(x.ClassificationId!.Value)) &&
+                (parameters.ClassificationIds == null || x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(x.ClassificationId!.Value)
+                || !x.ClassificationId.HasValue && parameters.ClassificationIds.Contains(Guid.Empty)) &&
                 (fileIds == null || fileIds.Contains(x.Id)) &&
                 (parameters.DateFrom == null || parameters.DateFrom <= x.UploadDate) &&
                 (parameters.DateTo == null || parameters.DateTo >= x.UploadDate) &&
