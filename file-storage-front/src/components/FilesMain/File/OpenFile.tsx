@@ -1,4 +1,4 @@
-import React, {FC, memo, useState} from 'react';
+import React, {memo} from 'react';
 import "./File.scss"
 import {ReactComponent as Svg} from "../../../assets/download.svg";
 import {useAppDispatch} from "../../../utils/hooks/reduxHooks";
@@ -62,7 +62,7 @@ const OpenedFile: React.FC<PropsType> = memo(({id, file, rights, filesTypes, url
                         <h3 className="file__content-title"
                             onClick={canRename ? openRename : undefined}>
                             <span className={"file__content-title-text"}>{fileName}</span> {canRename && <Edit/>}</h3>
-                        {+fileType === 6 && rights.includes(Rights["Присвоение классификаций"]) && <div className={"file__classes"}>
+                        {+fileType === 6 && rights.includes(Rights["Присвоение классификаций"]) && rights?.includes(Rights["Поиск классификаций"]) && <div className={"file__classes"}>
                             <div className={"file__classItem"} onClick={openAddClass}>
                                 <Tag/><span>Присвоить классификацию</span></div>
                             {rights?.includes(Rights["Отзыв классификаций"]) && classification && <div className={"file__classItem"}

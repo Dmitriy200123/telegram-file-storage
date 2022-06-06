@@ -36,7 +36,7 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
             getUrlPreview(file.url);
         }
 
-        if (file && !file?.classification && +file.fileType === 6 && rights?.includes(Rights["Поиск классификаций"])) {
+        if (file && !file?.classification && +file.fileType === 6 && rights?.includes(Rights["РџРѕРёСЃРє РєР»Р°СЃСЃРёС„РёРєР°С†РёР№"])) {
             dispatch(fetchClassification(file.fileId))
         }
     }, [file]);
@@ -52,7 +52,6 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
         try {
             const response = await fetch(urlFile);
             const mimeType = response.headers.get("content-type") || "text/plain";
-            //todo: РєРѕСЃС‚С‹Р»СЊ preview
             if (+fileType === 6 && (mimeType !== "application/pdf" && mimeType !== "text/plain")) {
                 return;
             }
@@ -73,8 +72,8 @@ export const OpenedFileContainer: React.FC<{ match: match<{ id: string }> }> = m
 
     const {fileType} = file;
     return <OpenedFile file={file} filesTypes={filesTypes || {}} id={id} rights={rights || []}
-                       urlPreview={urlPreview}/>;
-})
+    urlPreview={urlPreview}/>;
+});
 
 
 

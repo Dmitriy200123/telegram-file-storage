@@ -29,7 +29,7 @@ export const Controls: FC<PropsControlType> = memo(({id, name}) => {
         //    todo: redirect
     }
     return <OutsideAlerter onOutsideClick={() => changeIsOpen(false)}>
-         <div>
+         <div className={classesItems.controls}>
              {(rights?.includes(Rights["Редактирование классификаций"]) || rights?.includes(Rights["Удаление классификаций"])) && <div onClick={(e) => {
                 e.preventDefault();
                 changeIsOpen(true);

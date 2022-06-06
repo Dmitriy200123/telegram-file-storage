@@ -75,7 +75,7 @@ const Controls: FC<ControlsPropsType> = memo(({
                 <div className={"file-controls__circle"}/>
             </button>
             {isOpen && <section className={"file-controls__modal"}>
-                {rights.includes(Rights["Переименовывать файлы"]) &&
+                {rights?.includes(Rights["Переименовывать файлы"]) &&
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(openModal({id, content: ModalContent.Edit}))}>
                     <Edit/><span>Переименовать</span></div>}
@@ -83,14 +83,14 @@ const Controls: FC<ControlsPropsType> = memo(({
                 <div className={"file-controls__modal-item"}
                      onClick={() => dispatch(fetchDownloadLinkAndDownloadFile(id))}>
                     <Download/><span>Скачать</span></div>}
-                {rights?.includes(Rights["Присвоение классификаций"]) && +fileType === 6 && rights.includes(Rights["Поиск классификаций"]) && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
+                {rights?.includes(Rights["Присвоение классификаций"]) && +fileType === 6 && rights?.includes(Rights["Поиск классификаций"]) && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={() => dispatch(openModal({id, content: ModalContent.AddClass}))}>
                     <Tag/><span>Присвоить классификацию</span></div>}
                 { rights?.includes(Rights["Отзыв классификаций"]) && +fileType === 6 && classification && <div className={"file-controls__modal-item file-controls__modal-itemClassSvg"}
                                          onClick={onRevokeClass}>
                     <Reject/><span>Отозвать классфикацию</span></div>}
                 {/*todo classId*/}
-                {rights.includes(Rights["Удалять файлы"]) && rights.includes(Rights["Удаление классификаций"]) &&
+                {rights?.includes(Rights["Удалять файлы"]) && rights?.includes(Rights["Удаление классификаций"]) &&
                 <div className={"file-controls__modal-item file-controls__modal-item_delete"}
                      onClick={() => dispatch(openModal({
                          id, content: ModalContent.Remove, callbackAccept: () => fetchFiles()
