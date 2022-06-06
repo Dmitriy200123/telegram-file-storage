@@ -10,6 +10,7 @@ import {Route, Switch} from "react-router-dom";
 import OpenClassItem from "./OpenClassItem/OpenClassItem";
 import {fetchClassifications, fetchCountClassifications} from "../../redux/classesDocs/classesDocsThunks";
 import Paginator from "../utils/Paginator/Paginator";
+import {Rights} from "../../models/File";
 import {ReactComponent as PlusIcon} from "./../../assets/plus.svg";
 import {ReactComponent as Search} from "../../assets/search.svg";
 
@@ -36,14 +37,15 @@ const DocsClasses: FC<PropsType> = () => {
     const count = useAppSelector(state => state.classesDocs.count);
     const isFetchClassifications = useAppSelector(state => state.classesDocs.fetchClassifications);
     const [filters, setFilters] = useState({page: 1, take: 10, query: undefined as undefined | string});
+    const {rights} = useAppSelector((state) => state.profile);
 
     function fetchClasses({query, take, page}: { page: number, take: number, query: undefined | string }) {
-        dispatch(fetchCountClassifications(query));
-        dispatch(fetchClassifications({
-            skip: take * (page - 1),
-            take: take,
-            query: query
-        }));
+            dispatch(fetchCountClassifications(query));
+            dispatch(fetchClassifications({
+                skip: take * (page - 1),
+                take: take,
+                query: query
+            }));
     }
 
     useEffect(() => {
@@ -83,15 +85,17 @@ const DocsClasses: FC<PropsType> = () => {
             <div className={classes.background}>
                 <div className={classes.content}>
                     <div className={classes.controls}>
+                        {rights?.includes(Rights["Поиск классификаций"]) &&
                         <article className={classes.controlInputWrapper}>
                             <InputText onKeyPress={onEnter} className={classes.controlInput} onChange={onChangeInput}
                                        placeholder={"Поиск классификаций документов"}/>
                             <button className={classes.searchBtn} type="submit" onClick={onSubmit}><Search/>
                             </button>
-                        </article>
+                        </article>}
+                        {rights?.includes(Rights["Добавление классификаций"]) &&
                         <Button onClick={() => dispatch(openModal({type: "create"}))} className={classes.controlBtn}>
                             <PlusIcon className={classes.icon}/>Создать классификацию
-                        </Button>
+                        </Button>}
                     </div>
                     {classifications && classifications.length > 0 ? <ClassesItems classifications={classifications}/> :
                         <Empty notFound={classifications !== null}/>}
