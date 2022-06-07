@@ -27,8 +27,8 @@ class BaseInteractor:
 
         return self.url_repository.find_urls(message)
 
-    def get_url_name(self, url: AnyUrl) -> str:
-        return self.url_repository.get_name(url)
+    async def get_url_name(self, url: AnyUrl) -> str:
+        return await self.url_repository.get_name(url)
 
     async def find_marked_text(self, message: str) -> Any:
         if not await self.tag_repository.has_tags(message):

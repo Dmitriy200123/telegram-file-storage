@@ -83,7 +83,7 @@ class LoaderInteractor(BaseInteractor):
             log.info('Not found any classifications')
 
     async def save_url(self, url: AnyUrl, sender_id: int, chat_id: int):
-        name: str = self.get_url_name(url)
+        name = await self.get_url_name(url)
         file_info: FileExternal = FileExternal(
             name=name,
             type=FileTypeEnum.Link,
