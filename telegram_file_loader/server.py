@@ -5,6 +5,7 @@ import sys
 import config
 import postgres
 import telegram_client_loader
+from clients.base_client import BaseClient
 from clients.documents_classifications_client import DocumentsClassificationsClient
 from clients.documents_index_client import DocumentsIndexClient
 from clients.documents_search_client import DocumentsSearchClient
@@ -21,6 +22,7 @@ async def init():
     documents_index_client = DocumentsIndexClient()
     documents_search_client = DocumentsSearchClient()
     documents_classifications_client = DocumentsClassificationsClient()
+    http_client = BaseClient()
 
     await telegram_client_loader.start(
         pg_adapter=adapter,
@@ -28,6 +30,7 @@ async def init():
         documents_index_client=documents_index_client,
         documents_search_client=documents_search_client,
         documents_classifications_client=documents_classifications_client,
+        http_client=http_client,
     )
 
     log.info('loaded success')

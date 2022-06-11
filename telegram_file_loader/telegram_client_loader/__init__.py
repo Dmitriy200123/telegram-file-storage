@@ -1,4 +1,5 @@
 import config
+from clients.base_client import BaseClient
 from clients.documents_classifications_client import DocumentsClassificationsClient
 from clients.documents_index_client import DocumentsIndexClient
 from clients.documents_search_client import DocumentsSearchClient
@@ -24,7 +25,8 @@ async def start(
         s3_client: S3Client,
         documents_index_client: DocumentsIndexClient,
         documents_search_client: DocumentsSearchClient,
-        documents_classifications_client: DocumentsClassificationsClient
+        documents_classifications_client: DocumentsClassificationsClient,
+        http_client: BaseClient,
 ):
     url_extractor = URLExtract()
 
@@ -39,7 +41,7 @@ async def start(
     file_sender_repository = FileSenderRepository(pg_adapter)
     file_repository = FileRepository(pg_adapter, s3_client)
     sender_to_chat_repository = SenderToChatRepository(pg_adapter)
-    url_repository = UrlRepository(url_extractor)
+    url_repository = UrlRepository(url_extractor, http_client)
     tag_repository = TagRepository(pg_adapter)
 
     loader_interactor = LoaderInteractor(
